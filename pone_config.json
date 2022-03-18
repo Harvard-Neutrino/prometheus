@@ -1,0 +1,9 @@
+{
+    "photon_propagation": {
+        "wavelength_range": [
+            290,
+            700
+        ],
+        "medium": "pone"
+    }
+}

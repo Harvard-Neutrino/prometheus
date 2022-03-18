@@ -1,0 +1,5 @@
+# ppc configuration file: follow strict order below
+5     # over-R: DOM radius "oversize" scaling factor
+1.0   # overall DOM efficiency correction
+0     # 0=HG; 1=SAM
+0.8   # g=<cos(theta)>

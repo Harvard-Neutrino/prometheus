@@ -1,0 +1,25 @@
+ppc-gpu needs the following tables:
+
+cfg.txt	      configuration file with various parameters (DOM efficiency correction is set in this file)
+
+wv.dat	      wavelength-tabulated DOM acceptance calculated from qe_dom2007a table of efficiency.h file
+as.dat	      parameters of the angular sensitivity polynomial expansion
+	      before running the program create a link to one of the provided files:
+	      as.nominal     nominal (measured in the lab)
+	      as.holeice     hole ice (corrected by hole ice model)
+
+rnd.txt	      table of random number multipliers for the multiply-with-carry random number generator
+
+tilt.par      files describing the ice tilt
+tilt.dat      delete unless using icemodel.sp2 (SPICE^2)
+
+icemodel.par  file with 6 parameters of the icemodel
+icemodel.dat  main ice properties table: depth/b_e(400)/a_dust(400)/\delta\tau (as in report icecube/200911002)
+	      before running the program create a link to one of the provided files:
+	      icemodel.aha   AHA model
+	      icemodel.sp1   SPICE model
+	      icemodel.sp2   SPICE^2 model
+	      icemodel.sp2+  SPICE^2+ model
+	      **ATTENTION**
+	      You must delete files tilt.par and tilt.dat if using AHA or SPICE, but not SPICE^2
+	      Only SPICE^2 and higher have been fitted to use the tilted ice description.

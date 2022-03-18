@@ -1,0 +1,7 @@
+# Ignore everything in this directory
+*
+# Don't ignore the attribute lists
+!icecube-f2k
+!pone_triangle-f2k
+# Except this file
+!.gitignore
