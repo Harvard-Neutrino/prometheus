@@ -1,0 +1,9 @@
+# ppc configuration file: follow strict order below
+5     # over-R: DOM radius "oversize" scaling factor
+1.0   # overall DOM efficiency correction
+0.41  # 0=HG; 1=SAM
+0.9   # g=<cos(theta)>
+
+216   # direction of ice tilt (perp. to flow)
+0.04  # magnitude of ice anisotropy along tilt
+-0.08 # magnitude of ice anisotropy along flow
