@@ -244,6 +244,12 @@ class HEBE(object):
                 )
         config["runtime"] = None
         print('Finished dump')
+        if config["general"]["clean up"]:
+            print('-------------------------------------------')
+            print('-------------------------------------------')
+            self._clean_up()
+            print("Finished cleaning")
+
         print('Have a good day!')
         print('-------------------------------------------')
         print('-------------------------------------------')
@@ -523,3 +529,17 @@ class HEBE(object):
         """ What to do when the hebe instance is deleted
         """
         print("I am melting.... AHHHHHH!!!!")
+
+    def _clean_up(self):
+        """ Remove temporary and intermediate files.
+        """
+        print("Removing intermediate data files.")
+        os.remove(config['lepton injector']['simulation']['output name'])
+        for key in self._results.keys():
+            try:
+                os.remove(
+                    config['photon propagator']['storage location'] + key + '.parquet'
+                )
+            except FileNotFoundError:
+                continue
+

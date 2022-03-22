@@ -18,7 +18,8 @@ _baseconfig = {
         "random state seed": 1337,
         'config location': '../run/config.json',
         'meta data file': True,  # Switch to store meta data file
-        'meta name': 'meta_data'
+        'meta name': 'meta_data',
+        'clean up': True,  # Delete all intermediate and temporary files
     },
     ###########################################################################
     # Scenario input
