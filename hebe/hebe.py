@@ -535,6 +535,7 @@ class HEBE(object):
         """
         print("Removing intermediate data files.")
         os.remove(config['lepton injector']['simulation']['output name'])
+        os.remove('./config.lic')
         for key in self._results.keys():
             try:
                 os.remove(
