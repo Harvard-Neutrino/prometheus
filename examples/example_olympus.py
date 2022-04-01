@@ -21,9 +21,10 @@ def main(args=None):
         print('CURRENT SET %d' % rset)
         config["general"]["random state seed"] = rset
         config["general"]["meta_name"] = 'meta_data_%d' % rset
+        config['general']['clean up'] = False
         config['lepton injector']['simulation']['output name'] = "./output/data_%d_output_LI.h5" % rset
         config['photon propagator']['storage location'] = './output/rset_%d_' % rset
-        config['lepton injector']['simulation']['nevents'] = 100
+        config['lepton injector']['simulation']['nevents'] = 10
         config['lepton injector']['simulation']['minimal energy'] = 1e3
         config['lepton injector']['simulation']['maximal energy'] = 1e4
         config['lepton injector']['simulation']["injection radius"] = 150
