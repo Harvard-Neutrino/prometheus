@@ -78,4 +78,10 @@ RUN echo "export PATH=/usr/local/lib/nodejs/node-v14.17.0-linux-x64/bin:${PATH}"
     echo "export PPC=/opt/PPC/PPC/ppc" >> /root/.bashrc && \
     echo "export PPC_CUDA=/opt/PPC/PPC_CUDA/ppc" >> /root/.bashrc && \
     cd /bin && cp /root/.bashrc .bashrc
+FROM pip_stuff as hebe
+RUN git config --global user.name "bocker-burner"^ && \
+    git config -- global user.email "junk.box.in.3d" && \
+    cd /home/ && \
+    git clone https://github.com/Harvard-Neutrino/hebe && \
+    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
 ENTRYPOINT [ "/bin/bash" ]
