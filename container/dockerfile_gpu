@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:18.04 as base
+FROM nvidia/cuda:11.4.1-cudnn8-devel-ubuntu20.04 as base
+CMD nvidia-smi
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
     apt-get -y --no-install-recommends install \
@@ -72,6 +73,7 @@ RUN pip install --upgrade pip && \
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 RUN pip install fennel_seed[jax]
 RUN conda install -c conda-forge pyarrow
+RUN pip install --upgrade "jax[cuda]" -f https://storage.googleapis.com/jax-releases/jax_releases.html
 RUN echo "export PATH=/usr/local/lib/nodejs/node-v14.17.0-linux-x64/bin:${PATH}" >> /root/.bashrc && \
     echo "export PYTHONPATH=${PYTHONPATH}:/opt/PROPOSAL/build/src/pyPROPOSAL:/usr/lib/nuSQuIDS/resources/python/bindings/:/workspaces/repos/hyperion:/workspaces/repos/olympus" >> /root/.bashrc && \
     echo "export LD_LIBRARY_PATH=/usr/local/cuda-11/lib64/:${LD_LIBRARY_PATH}" >> /root/.bashrc && \

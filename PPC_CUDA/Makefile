@@ -1,5 +1,5 @@
 ifndef arch
-arch	=	52
+arch	=	50
 endif
 
 nvcc	=	nvcc ppc.cu -Xptxas=-v -arch=sm_$(arch) \
