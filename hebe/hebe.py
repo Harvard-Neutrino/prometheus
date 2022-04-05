@@ -244,6 +244,12 @@ class HEBE(object):
                 )
         config["runtime"] = None
         print('Finished dump')
+        if config["general"]["clean up"]:
+            print('-------------------------------------------')
+            print('-------------------------------------------')
+            self._clean_up()
+            print("Finished cleaning")
+
         print('Have a good day!')
         print('-------------------------------------------')
         print('-------------------------------------------')
@@ -334,21 +340,25 @@ class HEBE(object):
         # TODO: Remove hard coding
         meta_a = ak.Array({
             'event_id': events_idx,
-            'initial_type': comb_type,
-            'initial_position': comb_pos,
-            'initial_direction': comb_dir,
-            'initial_energy': comb_energy,
-            'photons': {
-                'dom_ids_1': all_ids_dic['final_1'],
-                't_1': all_times_dic['final_1'],
-                'wave_1': all_wavelength_dic['final_1'],
-                'dom_hit_point_1': all_dom_hit_points_dic['final_1'],
-                'photon_dir_1': all_photon_dir_dic['final_1'],
-                'dom_ids_2': all_ids_dic['final_2'],
-                't_2': all_times_dic['final_2'],
-                'wave_2': all_wavelength_dic['final_2'],
-                'dom_hit_point_2': all_dom_hit_points_dic['final_2'],
-                'photon_dir_2': all_photon_dir_dic['final_2']
+            'mc_truth': {
+                'type': comb_type,
+                'position': comb_pos,
+                'direction': comb_dir,
+                'energy': comb_energy,
+            },
+            'photons_1': {
+                'sensor_id': all_ids_dic['final_1'],
+                't': all_times_dic['final_1'],
+                'wave': all_wavelength_dic['final_1'],
+                'sensor_hit_point': all_dom_hit_points_dic['final_1'],
+                'photon_dir': all_photon_dir_dic['final_1'],
+            },
+            'photons_2': {
+                'sensor_id': all_ids_dic['final_2'],
+                't': all_times_dic['final_2'],
+                'wave': all_wavelength_dic['final_2'],
+                'sensor_hit_point': all_dom_hit_points_dic['final_2'],
+                'photon_dir': all_photon_dir_dic['final_2']
             }
         })
         ak.to_parquet(
@@ -454,15 +464,19 @@ class HEBE(object):
 
         meta_a = ak.Array({
             'event_id': events_idx,
-            'initial_type': comb_type,
-            'initial_position': comb_pos,
-            'initial_direction': comb_dir,
-            'initial_energy': comb_energy,
-            'photons': {
-                'dom_ids_1': all_ids_1,
-                't_1': all_hits_1,
-                'dom_ids_2': all_ids_2,
-                't_2': all_hits_2,
+            'mc_truth': {
+                'type': comb_type,
+                'position': comb_pos,
+                'direction': comb_dir,
+                'energy': comb_energy,
+            },
+            'photons_1': {
+                'sensor_id': all_ids_1,
+                't': all_hits_1,
+            },
+            'photons_2': {
+                'sensor_id': all_ids_2,
+                't': all_hits_2,
             }
         })
         ak.to_parquet(
@@ -515,3 +529,18 @@ class HEBE(object):
         """ What to do when the hebe instance is deleted
         """
         print("I am melting.... AHHHHHH!!!!")
+
+    def _clean_up(self):
+        """ Remove temporary and intermediate files.
+        """
+        print("Removing intermediate data files.")
+        os.remove(config['lepton injector']['simulation']['output name'])
+        os.remove('./config.lic')
+        for key in self._results.keys():
+            try:
+                os.remove(
+                    config['photon propagator']['storage location'] + key + '.parquet'
+                )
+            except FileNotFoundError:
+                continue
+
