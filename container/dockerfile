@@ -60,7 +60,7 @@ RUN cd /opt && mkdir PPC && \
     sed -i 's/if(flag) flag=/if(flag) flag=static_cast<bool>/g' ini.cxx && \
     make cpu && cd /home 
 FROM ppc as hebe
-RUN cd /home/ && \
+RUN cd /opt && \
     git clone https://docker-burner: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@github.com/Harvard-Neutrino/hebe.git && \
     cd hebe
 FROM hebe as pip_stuff
@@ -79,5 +79,6 @@ RUN echo "export PATH=/usr/local/lib/nodejs/node-v14.17.0-linux-x64/bin:${PATH}"
     echo "export EARTH_PARAMS=/opt/LI/source/resources/earthparams/" >> /root/.bashrc && \
     echo "export PPC=/opt/PPC/PPC/ppc" >> /root/.bashrc && \
     echo "export PPC_CUDA=/opt/PPC/PPC_CUDA/ppc" >> /root/.bashrc && \
-    cd /bin && cp /root/.bashrc .bashrc
+    cd /bin && cp /root/.bashrc .bashrc && \
+    cd /opt/hebe
 ENTRYPOINT [ "/bin/bash" ]
