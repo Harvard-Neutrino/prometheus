@@ -61,7 +61,7 @@ RUN cd /opt && mkdir PPC && \
     sed -i 's/if(flag) flag=/if(flag) flag=static_cast<bool>/g' ini.cxx && \
     make cpu && cd /home 
 FROM ppc as hebe
-RUN cd /home/ && \
+RUN cd /opt && \
     git clone https://docker-burner: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@github.com/Harvard-Neutrino/hebe.git && \
     cd hebe
 FROM hebe as pip_stuff
