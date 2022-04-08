@@ -45,7 +45,7 @@ The beta version of Hebe does as of yet not have any documentation. Please conta
 
 While you can install Hebe manually using the raw code from here, we highly recommend downloading the docker or singularity images from: [repo](https://drive.google.com/drive/folders/1-PbSiZQr0n85g9PrhbHMeURDOA02QUSY?usp=sharing).
 
-Then load the docker image. In the container you would find hebe under /home/hebe/ .
+Then load the docker image. In the container you would find hebe under /opt/hebe/ .
 
 We also offer a singularity image should you need it in the same [repo](https://drive.google.com/drive/folders/1-PbSiZQr0n85g9PrhbHMeURDOA02QUSY?usp=sharing), which may be useful for running simulations on a cluster.
 
