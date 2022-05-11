@@ -45,6 +45,8 @@ _baseconfig = {
     # Detector
     ###########################################################################
     "detector": {
+        'new detector': False,  # Flag to generate a new detector file
+        'detector specs file': 'unnamed',  # Name of the file to use for build
         'file name': '../hebe/data/icecube-f2k',
         'injection offset': [0., 0., -2000.],
     },

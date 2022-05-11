@@ -84,6 +84,9 @@ class HEBE(object):
         print('-------------------------------------------')
         print('Setting up the detector')
         self._dh = DH()
+        if config['detector']['new detector']:
+            print('Building a new detector')
+            self._dh.make_detector_from_file()
         self._det = self._dh.from_f2k()
         print('Finished the detector')
         # Setting up the lepton propagator
