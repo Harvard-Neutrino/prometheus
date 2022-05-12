@@ -119,7 +119,7 @@ class DH(object):
         coordinates
         """
         tmp = np.loadtxt(config["detector"]['detector specs file'])
-        xy_coords = np.column_stack((tmp[0],tmp[1]))
+        xy_coords = np.column_stack((tmp[0], tmp[1]))
         self.make_detector(xy_coords, tmp[2].astype(int), tmp[3])
 
     def make_detector(
