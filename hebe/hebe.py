@@ -281,6 +281,7 @@ class HEBE(object):
         The first two are the hit doms for the event, while the second two
         record the time.
         """
+        print("Loading LI file")
         LI_file = h5py.File(LI_file)
         # TODO: Currently the names are hardcoded. This should be changed
         initial_types_1 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_1'][:]])
@@ -299,6 +300,7 @@ class HEBE(object):
         all_wavelength_dic = {}
         all_dom_hit_points_dic = {}
         all_photon_dir_dic = {}
+        print("Grabbing results")
         for key in self._results.keys():
             all_ids = []
             all_times = []
@@ -319,12 +321,13 @@ class HEBE(object):
                         dom_hit_point.append([hit[4], hit[5]])
                         photon_dir.append([[hit[6], hit[7]]])
                 # No hits
+                # TODO: Fix the need to add something to array
                 else:
-                    dom_ids.append([])
-                    times.append([])
-                    wavelengths.append([])
-                    dom_hit_point.append([])
-                    photon_dir.append([])
+                    dom_ids.append(-1)
+                    times.append(-1)
+                    wavelengths.append(-1)
+                    dom_hit_point.append([-1, -1])
+                    photon_dir.append([[-1, -1]])
                 all_ids.append(dom_ids)
                 all_times.append(times)
                 all_wavelength.append(wavelengths)
@@ -335,6 +338,7 @@ class HEBE(object):
             all_wavelength_dic[key] = all_wavelength
             all_dom_hit_points_dic[key] = all_dom_hit_points
             all_photon_dir_dic[key] = all_photon_dir
+        print("Combining simulaton sets")
         # Combining
         comb_type = np.stack((initial_types_1, initial_types_2), axis = 1)
         comb_pos = np.stack((initial_pos_1, initial_pos_2), axis = 1)
@@ -364,6 +368,7 @@ class HEBE(object):
                 'photon_dir': all_photon_dir_dic['final_2']
             }
         })
+        print("Converting to parquet")
         ak.to_parquet(
             meta_a,
             config['photon propagator']['storage location'] +

@@ -24,7 +24,7 @@ def main(args=None):
         config['lepton injector']['simulation']['is ranged'] = False
         config['lepton injector']['simulation']['output name'] = "./output/data_%d_output_LI.h5" % rset
         config['photon propagator']['storage location'] = './output/rset_%d_' % rset
-        nevent = 1
+        nevent = 10
         config['lepton injector']['simulation']['nevents'] = nevent
         config['lepton injector']['simulation']['minimal energy'] = 1e3
         config['lepton injector']['simulation']['maximal energy'] = 1e4
@@ -39,10 +39,10 @@ def main(args=None):
         config['run']['group name'] = 'VolumeInjector0'
         hebe = HEBE(userconfig=config)
         hebe.sim()
-        for idx in range(nevent):
-            print('Plotting')
-            event = {'final_1':[hebe.results['final_1'][idx]], 'final_2':[hebe.results['final_2'][idx]]}
-            hebe.ppc_event_plotting(event, fig_name=f'./{pname}_test_{idx}.pdf', show_track=False, show_dust_layer=True)
+        # for idx in range(nevent):
+        #     print('Plotting')
+        #     event = {'final_1':[hebe.results['final_1'][idx]], 'final_2':[hebe.results['final_2'][idx]]}
+        #     hebe.ppc_event_plotting(event, fig_name=f'./{pname}_test_{idx}.pdf', show_track=False, show_dust_layer=True)
     except:
         print("Error in the simulation")
 
