@@ -88,8 +88,12 @@ def _ppc_sim(
     """
     # TODO figure out what format the losses should have and make that
     # Compute losses and write them to the temporary outfile
+    print("=================")
+    print(ppc_config['f2k_tmpfile'])
+    print("=================")
 
-    with open(f"{ppc_config['f2k_tmpfile']}", "w") as ppc_f:
+    f2k_file = ppc_config['f2k_tmpfile'].replace("event", f"{ppc_config['f2k_prefix']}event")
+    with open(f2k_file, "w") as ppc_f:
         # The particle is a charged lepton and should be handled by PROPOSAL
         if abs(event['particle_id']) in [11,13,15]:
             event_dir = sph_to_cart_jnp(
@@ -114,8 +118,10 @@ def _ppc_sim(
     # This file path is hardcoded into PPC. Don't change
     geo_tmpfile = f'{ppc_config["ppctables"]}/geo-f2k'
     # Write the geometry out to an f2k file
-    dh.to_f2k(det, geo_tmpfile, serial_nos=[m.serial_no for m in det.modules])
-    command = f"{ppc_config['ppc_exe']} {ppc_config['device']} < {ppc_config['f2k_tmpfile']} > {ppc_config['ppc_tmpfile']}"
+    #dh.to_f2k(det, geo_tmpfile, serial_nos=[m.serial_no for m in det.modules])
+    ppc_file = ppc_config['ppc_tmpfile'].replace("event", f"{ppc_config['ppc_prefix']}_event")
+    command = f"{ppc_config['ppc_exe']} {ppc_config['device']} < {f2k_file} > {ppc_file}"
+    print(command)
     import os
     tenv = os.environ.copy()
     tenv["PPCTABLESDIR"] = ppc_config["ppctables"]
@@ -123,10 +129,10 @@ def _ppc_sim(
     import subprocess
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
     process.wait()
-    hits = _parse_ppc(ppc_config['ppc_tmpfile'])
+    hits = _parse_ppc(ppc_file)
     ## Cleanup f2k_tmpfile
-    #os.remove(ppc_config['f2k_tmpfile'])
-    #os.remove(ppc_config['ppc_tmpfile'])
+    os.remove(ppc_file)
+    os.remove(f2k_file)
     return hits, None
 
 

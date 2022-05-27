@@ -8,6 +8,7 @@ import numpy as np
 import h5py
 import awkward as ak
 import pyarrow.parquet as pq
+import pyarrow 
 from .config import config
 from .detector_handler import DH
 from .photonpropagator import PP
@@ -124,13 +125,14 @@ class HEBE(object):
         # Loading LI data
         print('-------------------------------------------')
         start = time()
-        print('Setting up and running LI')
-        if config['lepton injector']['inject']:
-            print('Injecting')
-            self._LI = LepInj()
-        else:
-            print('Not injection')
-        print('Finished LI, loading data')
+        if not config["lepton injector"]["use existing injection"]:
+            print('Setting up and running LI')
+            if config['lepton injector']['inject']:
+                print('Injecting')
+                self._LI = LepInj()
+            else:
+                print('Not injection')
+            print('Finished LI, loading data')
         self._LI_raw = h5py.File(
             config['lepton injector']['simulation']['output name']
         )
@@ -239,9 +241,9 @@ class HEBE(object):
         else:
             if config['general']['meta data file']:
                 print('Storing meta data')
-                self.construct_meta_data_set_ppc(
-                    config['lepton injector']['simulation']['output name']
-                )
+                #self.construct_meta_data_set_ppc(
+                #    config['lepton injector']['simulation']['output name']
+                #)
         config["runtime"] = None
         print('Finished dump')
         if config["general"]["clean up"]:
@@ -278,16 +280,29 @@ class HEBE(object):
         The first two are the hit doms for the event, while the second two
         record the time.
         """
-        LI_file = h5py.File(LI_file)
-        # TODO: Currently the names are hardcoded. This should be changed
-        initial_types_1 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_1'][:]])
-        initial_types_2 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_2'][:]])
-        initial_pos_1 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_1'][:]])
-        initial_pos_2 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_2'][:]])
-        initial_dir_1 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_1'][:]])
-        initial_dir_2 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_2'][:]])
-        initial_energy_1 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_1'][:]])
-        initial_energy_2 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_2'][:]])
+        LI_file = h5py.File(LI_file, "r")
+        # TODO Make this prettier
+        if config['run']['subset']['switch']:
+            n = config['run']['subset']['switch']
+            # TODO: Currently the names are hardcoded. This should be changed
+            initial_types_1 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_1'][:n]])
+            initial_types_2 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_2'][:n]])
+            initial_pos_1 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_1'][:n]])
+            initial_pos_2 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_2'][:n]])
+            initial_dir_1 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_1'][:n]])
+            initial_dir_2 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_2'][:n]])
+            initial_energy_1 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_1'][:n]])
+            initial_energy_2 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_2'][:n]])
+        else:
+            # TODO: Currently the names are hardcoded. This should be changed
+            initial_types_1 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_1'][:]])
+            initial_types_2 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_2'][:]])
+            initial_pos_1 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_1'][:]])
+            initial_pos_2 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_2'][:]])
+            initial_dir_1 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_1'][:]])
+            initial_dir_2 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_2'][:]])
+            initial_energy_1 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_1'][:]])
+            initial_energy_2 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_2'][:]])
         events_idx = np.array(range(len(initial_types_1)))
         # TODO: Optimize this. Currently this is extremely inefficient.
         # first set
@@ -297,6 +312,7 @@ class HEBE(object):
         all_dom_hit_points_dic = {}
         all_photon_dir_dic = {}
         for key in self._results.keys():
+            print(key)
             all_ids = []
             all_times = []
             all_wavelength = []
@@ -310,18 +326,29 @@ class HEBE(object):
                 photon_dir = []  # Zenith azimuth in radians
                 if len(event) > 0:
                     for hit in event:
-                        dom_ids.append(hit[1])
+                        dom_ids.append([hit[0],hit[1]])
                         times.append(hit[2])
                         wavelengths.append(hit[3])
                         dom_hit_point.append([hit[4], hit[5]])
                         photon_dir.append([[hit[6], hit[7]]])
                 # No hits
                 else:
-                    dom_ids.append([])
-                    times.append([])
-                    wavelengths.append([])
-                    dom_hit_point.append([])
-                    photon_dir.append([])
+                    #dom_ids.append(pyarrow.Array.from_pandas([]))
+                    #times.append(pyarrow.Array.from_pandas([]))
+                    #wavelengths.append(pyarrow.Array.from_pandas([]))
+                    #dom_hit_point.append(pyarrow.Array.from_pandas([]))
+                    #photon_dir.append(pyarrow.Array.from_pandas([]))
+                    # TODO fix this and ask for foregiveness
+                    dom_ids.append(ak.Array([-1, -1]))
+                    times.append(-1)
+                    #wavelengths.append(-1)
+                    #dom_hit_point.append(ak.Array([-1, -1]))
+                    #photon_dir.append(ak.Array([-1, -1]))
+                dom_ids = ak.Array(dom_ids)
+                times = ak.Array(times)
+                #wavelengths = ak.Array(wavelengths)
+                #dom_hit_point = ak.Array(dom_hit_point)
+                #photon_dir = ak.Array(photon_dir)
                 all_ids.append(dom_ids)
                 all_times.append(times)
                 all_wavelength.append(wavelengths)
@@ -349,16 +376,16 @@ class HEBE(object):
             'photons_1': {
                 'sensor_id': all_ids_dic['final_1'],
                 't': all_times_dic['final_1'],
-                'wave': all_wavelength_dic['final_1'],
-                'sensor_hit_point': all_dom_hit_points_dic['final_1'],
-                'photon_dir': all_photon_dir_dic['final_1'],
+                #'wave': all_wavelength_dic['final_1'],
+                #'sensor_hit_point': all_dom_hit_points_dic['final_1'],
+                #'photon_dir': all_photon_dir_dic['final_1'],
             },
             'photons_2': {
                 'sensor_id': all_ids_dic['final_2'],
                 't': all_times_dic['final_2'],
-                'wave': all_wavelength_dic['final_2'],
-                'sensor_hit_point': all_dom_hit_points_dic['final_2'],
-                'photon_dir': all_photon_dir_dic['final_2']
+                #'wave': all_wavelength_dic['final_2'],
+                #'sensor_hit_point': all_dom_hit_points_dic['final_2'],
+                #'photon_dir': all_photon_dir_dic['final_2']
             }
         })
         ak.to_parquet(
@@ -479,6 +506,8 @@ class HEBE(object):
                 't': all_hits_2,
             }
         })
+        print(meta_a.photons_1["sensor_id"])
+        print(meta_a.photons_1["t"])
         ak.to_parquet(
             meta_a,
             config['photon propagator']['storage location'] +
