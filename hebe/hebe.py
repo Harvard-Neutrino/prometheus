@@ -241,9 +241,9 @@ class HEBE(object):
         else:
             if config['general']['meta data file']:
                 print('Storing meta data')
-                #self.construct_meta_data_set_ppc(
-                #    config['lepton injector']['simulation']['output name']
-                #)
+                self.construct_meta_data_set_ppc(
+                    config['lepton injector']['simulation']['output name']
+                )
         config["runtime"] = None
         print('Finished dump')
         if config["general"]["clean up"]:
