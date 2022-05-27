@@ -11,7 +11,6 @@ import sys
 import json
 import awkward as ak
 import numpy as np
-import plotly.graph_objects as go
 from .utils import write_to_f2k_format
 
 from .detector_handler import DH
@@ -350,6 +349,7 @@ class PP(object):
             plot_hull=False):
         """ helper function to plot events
         """
+        import plotly.graph_objects as go
         if plot_tfirst:
             plot_target = ak.fill_none(ak.firsts(hit_times, axis=1), np.nan)
         else:
