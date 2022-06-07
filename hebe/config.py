@@ -80,7 +80,7 @@ _baseconfig = {
             'minZenith': 80.,  # deg
             'maxZenith': 180.,
             'minAzimuth': 0.,
-            'maxAzimuth': 180.,
+            'maxAzimuth': 360.,
             'earth model location': "earthparams/",
             'earth model': "Planet",
             'output name': "./data_output.h5",
