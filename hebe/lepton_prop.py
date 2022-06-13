@@ -171,7 +171,7 @@ def _new_proposal_losses(
         total_loss = np.sum([len(losses[loss]) for loss in losses if loss != 'continuous'])
     return losses, total_loss
 
-def jeff_losses(
+def energy_losses(
     prop,
     p_def, 
     energy, 
@@ -349,8 +349,8 @@ class LP(object):
         )
         return prop
 
-    def j_losses(self, event, prop_len):
-        losses = jeff_losses(
+    def energy_losses(self, event, prop_len):
+        losses = energy_losses(
             self.prop,
             self.args['p_def'], 
             event['energy'],
