@@ -103,7 +103,7 @@ def _ppc_sim(
             event["dir"] = event_dir
             r = np.linalg.norm(event["pos"])
             # This is probably where we would factor it out
-            losses, total_loss = lp.j_losses(event, r+padding)
+            losses, total_loss = lp.energy_losses(event, r+padding)
         # The event is a hadronic shower (I think?)
         else:
             key = PDG_to_f2k[event['particle_id']]
