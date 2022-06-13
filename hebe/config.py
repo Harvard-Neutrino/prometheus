@@ -80,7 +80,7 @@ _baseconfig = {
             'minZenith': 80.,  # deg
             'maxZenith': 180.,
             'minAzimuth': 0.,
-            'maxAzimuth': 180.,
+            'maxAzimuth': 360.,
             'earth model location': "earthparams/",
             'earth model': "Planet",
             'output name': "./data_output.h5",
@@ -90,6 +90,7 @@ _baseconfig = {
             "cylinder radius":700, # m
             "cylinder height":1000, # m
         },
+        'use existing injection': False
     },
     ###########################################################################
     # Lepton propagator
@@ -125,6 +126,8 @@ _baseconfig = {
             'location':'../PPC_CUDA/',
             'ppc_tmpfile':'.event_hits.ppc.tmp',
             'f2k_tmpfile':'.event_losses.f2k.tmp',
+            'ppc_prefix':'',
+            'f2k_prefix':'',
             'ppctables':'../PPC_CUDA/',
             'ppc_exe':'../PPC_CUDA/ppc', # binary executable
             'device':0, # GPU
