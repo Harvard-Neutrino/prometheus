@@ -11,8 +11,7 @@ try:
 except ImportError:
     raise ImportError('Could not import proposal!')
 
-
-def jeff_losses(
+def _old_proposal_losses(
     prop,
     p_def, 
     energy, 
@@ -21,15 +20,7 @@ def jeff_losses(
     position=(0,0,0),
     propagation_length=1e5
 ):
-    '''
-    p_energies: particle energy array in units of GeV
-    mcp_def: PROPOSAL mCP definition
-    direction: (vx,vy,vz)
-    propagation_length: cm
-    prop : use a pregenerated propagator object if provided.
-    Else will make one on the fly.
-    '''
-    
+
     losses = {}
     losses['continuous'] = []
     losses['epair'] = []
@@ -42,14 +33,80 @@ def jeff_losses(
     m_to_cm = 1e2
     cm_to_m = 1/m_to_cm
 
+    position_cm = position * m_to_cm
+    propagation_length_cm = propagation_length * m_to_cm
+    particle = pp.particle.DynamicData(p_def.particle_type)
+    particle.position = pp.Vector3D(*position)
+    particle.direction = pp.Vector3D(*direction)
+    particle.propagated_distance = 0
+    particle.energy = energy * GeV_to_MeV
+    secondarys = prop.propagate(particle, propagation_length)
+    for sec in secondarys.particles:
+        log_sec_energy = np.log10((sec.parent_particle_energy - sec.energy) * MeV_to_GeV)
+        pos = np.array([sec.position.x, sec.position.y, sec.position.z])*cm_to_m
+        # TODO make this more compact with dict
+        if sec.type == int(pp.particle.Interaction_Type.ContinuousEnergyLoss):
+            losses['continuous'].append([log_sec_energy, pos])
+        elif sec.type == int(pp.particle.Interaction_Type.Epair):
+            losses['epair'].append([log_sec_energy, pos])
+        elif sec.type == int(pp.particle.Interaction_Type.Brems):
+            losses['brems'].append([log_sec_energy, pos])
+        elif sec.type == int(pp.particle.Interaction_Type.DeltaE):
+            losses['ioniz'].append([log_sec_energy, pos])
+        elif sec.type == int(pp.particle.Interaction_Type.NuclInt):
+            losses['photo'].append([log_sec_energy, pos])
+        else:
+            pass
+    # TODO: Update this ugly fix
+    cont_loss_sum = sum([np.power(10, loss[0]) for loss in losses["continuous"]])
+    total_dist = np.sqrt(np.sum(np.square(pos-position)))
+    print(total_dist)
+    #total_dist = secondarys.track_propagated_distances()[-1] * cm_to_m
+    # TODO: Add this to config
+    cont_resolution = 1.
+    loss_dists = np.arange(0, total_dist, cont_resolution)
+    # TODO: Remove this really ugly fix
+    if len (loss_dists) == 0:
+        cont_loss_sum = 1.
+        total_dist = 1.1
+        loss_dists = np.array([0., 1.])
+    e_loss = cont_loss_sum / len(loss_dists)
+    # TODO: Check direction and position
+    losses['continuous'] = ([
+        [e_loss,
+         dist * direction + position]
+        for dist in loss_dists])
+    # TODO This should probably be an awkward array
+    losses['continuous'] = np.array(losses['continuous'], dtype='object')
+    losses['brems'] = np.array(losses['brems'], dtype='object')
+    losses['epair'] = np.array(losses['epair'], dtype='object')
+    losses['photo'] = np.array(losses['photo'], dtype='object')
+    losses['ioniz'] = np.array(losses['ioniz'], dtype='object')
+    total_loss = None
+    return losses, total_loss
+
+def _new_proposal_losses(
+    prop,
+    p_def, 
+    energy, 
+    soft_losses,
+    direction=(0, 0, -1), 
+    position=(0,0,0),
+    propagation_length=1e5
+):
+    losses = {}
+    losses['continuous'] = []
+    losses['epair'] = []
+    losses['brems'] = []
+    losses['ioniz'] = []
+    losses['photo'] = []
+    # TODO move this to units file or some shit
+    GeV_to_MeV = 1e3
+    MeV_to_GeV = 1e-3
+    m_to_cm = 1e2
+    cm_to_m = 1/m_to_cm
     position = position * m_to_cm
     propagation_length = propagation_length * m_to_cm
-    # particle = pp.particle.DynamicData(p_def.particle_type)
-    # particle.position = pp.Vector3D(*position)
-    # particle.direction = pp.Vector3D(*direction)
-    # particle.propagated_distance = 0
-    # particle.energy = energy * GeV_to_MeV
-    # secondarys = prop.propagate(particle, propagation_length)
     # TODO: Check if init state needs to be set
     init_state = pp.particle.ParticleState()
     init_state.position = pp.Cartesian3D(
@@ -59,23 +116,6 @@ def jeff_losses(
     init_state.direction = pp.Cartesian3D(*direction)
     secondarys = prop.propagate(init_state, propagation_length)  # cm
 
-    # for sec in secondarys.particles:
-    #     log_sec_energy = np.log10((sec.parent_particle_energy - sec.energy) * MeV_to_GeV)
-    #     pos = np.array([sec.position.x, sec.position.y, sec.position.z])*cm_to_m
-    #     # TODO make this more compact with dict
-    #     if sec.type == int(pp.particle.Interaction_Type.ContinuousEnergyLoss):
-    #         losses['continuous'].append([log_sec_energy, pos])
-    #     elif sec.type == int(pp.particle.Interaction_Type.Epair):
-    #         losses['epair'].append([log_sec_energy, pos])
-    #     elif sec.type == int(pp.particle.Interaction_Type.Brems):
-    #         losses['brems'].append([log_sec_energy, pos])
-    #     elif sec.type == int(pp.particle.Interaction_Type.DeltaE):
-    #         losses['ioniz'].append([log_sec_energy, pos])
-    #     elif sec.type == int(pp.particle.Interaction_Type.NuclInt):
-    #         losses['photo'].append([log_sec_energy, pos])
-    #     else:
-    #         pass
-    # New interface
     for loss in secondarys.stochastic_losses():
         # dist = loss.position.z / 100
         e_loss = loss.energy / 1e3
@@ -130,6 +170,46 @@ def jeff_losses(
     else:
         total_loss = np.sum([len(losses[loss]) for loss in losses if loss != 'continuous'])
     return losses, total_loss
+
+def energy_losses(
+    prop,
+    p_def, 
+    energy, 
+    soft_losses,
+    direction=(0, 0, -1), 
+    position=(0,0,0),
+    propagation_length=1e5
+):
+    '''
+    p_energies: particle energy array in units of GeV
+    mcp_def: PROPOSAL mCP definition
+    direction: (vx,vy,vz)
+    propagation_length: cm
+    prop : use a pregenerated propagator object if provided.
+    Else will make one on the fly.
+    '''
+    
+
+    if int(pp.__version__.split('.')[0]) < 7:
+        return _old_proposal_losses(
+            prop,
+            p_def, 
+            energy, 
+            soft_losses,
+            direction=direction, 
+            position=position,
+            propagation_length=propagation_length
+        )
+    else:
+        return _new_proposal_losses(
+            prop,
+            p_def,
+            energy,
+            soft_losses,
+            direction=direction,
+            position=position,
+            propagation_length=propagation_length
+        )
 
 def _make_particle(p_string: str):
     ''' Builds a proposal particle
@@ -269,8 +349,8 @@ class LP(object):
         )
         return prop
 
-    def j_losses(self, event, prop_len):
-        losses = jeff_losses(
+    def energy_losses(self, event, prop_len):
+        losses = energy_losses(
             self.prop,
             self.args['p_def'], 
             event['energy'],
