@@ -461,7 +461,7 @@ class HEBE(object):
             all_ids_2.append(dom_ids_2)
         all_ids_2 = ak.Array(all_ids_2)
         all_hits_2 =  []
-        for event in results1:
+        for event in results2:
             all_hits_2.append(ak.flatten(event, axis=None))
         all_hits_2 = ak.Array(all_hits_2)
         # Combining
@@ -471,31 +471,31 @@ class HEBE(object):
         comb_energy = np.stack((initial_energy_1, initial_energy_2), axis = 1)
         # Positional sensor information
         sensor_pos_1 = np.array([
-            np.array(self._det.module_coords)[hits]
+            self._det.module_coords[hits]
             for hits in all_ids_1
-        ])
+        ], dtype=object)
         sensor_pos_2 = np.array([
-            np.array(self._det.module_coords)[hits]
+            self._det.module_coords[hits]
             for hits in all_ids_2
-        ])
+        ], dtype=object)
         sensor_string_id_1 = np.array([
             np.array(self._det._om_keys)[event]
             for event in all_ids_1
-        ])
+        ], dtype=object)
         sensor_string_id_2 = np.array([
             np.array(self._det._om_keys)[event]
             for event in all_ids_2
-        ])
+        ], dtype=object)
         # Total
         sensor_id_all = np.concatenate((all_ids_1, all_ids_2), axis=1)
         sensor_pos_all = np.array([
-            np.array(self._det.module_coords)[hits]
+           self._det.module_coords[hits]
             for hits in sensor_id_all
-        ])
+        ], dtype=object)
         sensor_string_id_all = np.array([
             np.array(self._det._om_keys)[event]
             for event in sensor_id_all
-        ])
+        ], dtype=object)
         # This is as inefficient as possible
         meta_a = ak.Array({
             'event_id': events_idx,
@@ -507,32 +507,50 @@ class HEBE(object):
             },
             'lepton': {
                 'sensor_id': all_ids_1,
-                'sensor_pos_x': sensor_pos_1[:, 0],
-                'sensor_pos_y': sensor_pos_1[:, 1],
-                'sensor_pos_z': sensor_pos_1[:, 2],
+                'sensor_pos_x': np.array([
+                    event[:, 0] for event in sensor_pos_1
+                ], dtype=object),
+                'sensor_pos_y': np.array([
+                    event[:, 1] for event in sensor_pos_1
+                ], dtype=object),
+                'sensor_pos_z': np.array([
+                    event[:, 2] for event in sensor_pos_1
+                ], dtype=object),
                 'sensor_string_id': np.array([
                     event[:, 0] for event in sensor_string_id_1
-                ]),
+                ], dtype=object),
                 't': all_hits_1,
             },
             'hadron': {
                 'sensor_id': all_ids_2,
-                'sensor_pos_x': sensor_pos_2[:, 0],
-                'sensor_pos_y': sensor_pos_2[:, 1],
-                'sensor_pos_z': sensor_pos_2[:, 2],
+                'sensor_pos_x': np.array([
+                    event[:, 0] for event in sensor_pos_2
+                ], dtype=object),
+                'sensor_pos_y': np.array([
+                    event[:, 1] for event in sensor_pos_2
+                ], dtype=object),
+                'sensor_pos_z': np.array([
+                    event[:, 2] for event in sensor_pos_2
+                ], dtype=object),
                 'sensor_string_id': np.array([
                     event[:, 0] for event in sensor_string_id_2
-                ]),
+                ], dtype=object),
                 't': all_hits_2,
             },
             'total': {
                 'sensor_id': sensor_id_all,
-                'sensor_pos_x': sensor_pos_all[:, 0],
-                'sensor_pos_y': sensor_pos_all[:, 1],
-                'sensor_pos_z': sensor_pos_all[:, 2],
+                'sensor_pos_x': np.array([
+                    event[:, 0] for event in sensor_pos_all
+                ], dtype=object),
+                'sensor_pos_y': np.array([
+                    event[:, 1] for event in sensor_pos_all
+                ], dtype=object),
+                'sensor_pos_z': np.array([
+                    event[:, 2] for event in sensor_pos_all
+                ], dtype=object),
                 'sensor_string_id': np.array([
                     event[:, 0] for event in sensor_string_id_all
-                ]),
+                ], dtype=object),
                 't': np.concatenate((all_hits_1, all_hits_2), axis=1),
             },
         })
