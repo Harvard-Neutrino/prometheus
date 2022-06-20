@@ -17,10 +17,10 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v3.22.2/cmake-3.22.2
     cd cmake-3.22.2 && ./bootstrap && make -j4 && make install
 ENV PATH="/root/miniconda3/bin:${PATH}"
 ARG PATH="/root/miniconda3/bin:${PATH}"
-RUN cd /root &&\
+RUN cd /opt &&\
     wget \
     https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh --no-check-certificate\
-    && mkdir /root/.conda \
+    && mkdir /opt/.conda \
     && bash Miniconda3-latest-Linux-x86_64.sh -b \
     && rm -f Miniconda3-latest-Linux-x86_64.sh
 RUN conda install pip
@@ -81,6 +81,7 @@ RUN echo "export PATH=/usr/local/lib/nodejs/node-v14.17.0-linux-x64/bin:${PATH}"
     echo "export PPC=/opt/PPC/PPC/ppc" >> /root/.bashrc && \
     echo "export PPC_CUDA=/opt/PPC/PPC_CUDA/ppc" >> /root/.bashrc && \
     cd /bin && cp /root/.bashrc .bashrc && \
+    cd /opt && cp /root/.bashrc .bashrc && \
     cd /opt/hebe
 
 # Create some non-root user that owns the data and other directories by default
