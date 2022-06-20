@@ -81,6 +81,4 @@ RUN echo "export PATH=/usr/local/lib/nodejs/node-v14.17.0-linux-x64/bin:${PATH}"
     echo "export PPC_CUDA=/opt/PPC/PPC_CUDA/ppc" >> /root/.bashrc && \
     cd /bin && cp /root/.bashrc .bashrc && \
     cd /opt/hebe
-RUN useradd -u 1337 hebenr
-USER hebenr
 ENTRYPOINT [ "/bin/bash" ]
