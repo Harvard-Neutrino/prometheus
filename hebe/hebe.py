@@ -353,14 +353,14 @@ class HEBE(object):
                 'direction': comb_dir,
                 'energy': comb_energy,
             },
-            'photons_1': {
+            'lepton': {
                 'sensor_id': all_ids_dic['final_1'],
                 't': all_times_dic['final_1'],
                 'wave': all_wavelength_dic['final_1'],
                 'sensor_hit_point': all_dom_hit_points_dic['final_1'],
                 'photon_dir': all_photon_dir_dic['final_1'],
             },
-            'photons_2': {
+            'hadron': {
                 'sensor_id': all_ids_dic['final_2'],
                 't': all_times_dic['final_2'],
                 'wave': all_wavelength_dic['final_2'],
@@ -469,7 +469,34 @@ class HEBE(object):
         comb_pos = np.stack((initial_pos_1, initial_pos_2), axis = 1)
         comb_dir = np.stack((initial_dir_1, initial_dir_2), axis = 1)
         comb_energy = np.stack((initial_energy_1, initial_energy_2), axis = 1)
-
+        # Positional sensor information
+        sensor_pos_1 = np.array([
+            np.array(self._det.module_coords)[hits]
+            for hits in all_ids_1
+        ])
+        sensor_pos_2 = np.array([
+            np.array(self._det.module_coords)[hits]
+            for hits in all_ids_2
+        ])
+        sensor_string_id_1 = np.array([
+            np.array(self._det._om_keys)[event]
+            for event in all_ids_1
+        ])
+        sensor_string_id_2 = np.array([
+            np.array(self._det._om_keys)[event]
+            for event in all_ids_2
+        ])
+        # Total
+        sensor_id_all = np.concatenate((all_ids_1, all_ids_2), axis=1)
+        sensor_pos_all = np.array([
+            np.array(self._det.module_coords)[hits]
+            for hits in sensor_id_all
+        ])
+        sensor_string_id_all = np.array([
+            np.array(self._det._om_keys)[event]
+            for event in sensor_id_all
+        ])
+        # This is as inefficient as possible
         meta_a = ak.Array({
             'event_id': events_idx,
             'mc_truth': {
@@ -478,14 +505,36 @@ class HEBE(object):
                 'direction': comb_dir,
                 'energy': comb_energy,
             },
-            'photons_1': {
+            'lepton': {
                 'sensor_id': all_ids_1,
+                'sensor_pos_x': sensor_pos_1[:, 0],
+                'sensor_pos_y': sensor_pos_1[:, 1],
+                'sensor_pos_z': sensor_pos_1[:, 2],
+                'sensor_string_id': np.array([
+                    event[:, 0] for event in sensor_string_id_1
+                ]),
                 't': all_hits_1,
             },
-            'photons_2': {
+            'hadron': {
                 'sensor_id': all_ids_2,
+                'sensor_pos_x': sensor_pos_2[:, 0],
+                'sensor_pos_y': sensor_pos_2[:, 1],
+                'sensor_pos_z': sensor_pos_2[:, 2],
+                'sensor_string_id': np.array([
+                    event[:, 0] for event in sensor_string_id_2
+                ]),
                 't': all_hits_2,
-            }
+            },
+            'total': {
+                'sensor_id': sensor_id_all,
+                'sensor_pos_x': sensor_pos_all[:, 0],
+                'sensor_pos_y': sensor_pos_all[:, 1],
+                'sensor_pos_z': sensor_pos_all[:, 2],
+                'sensor_string_id': np.array([
+                    event[:, 0] for event in sensor_string_id_all
+                ]),
+                't': np.concatenate((all_hits_1, all_hits_2), axis=1),
+            },
         })
         ak.to_parquet(
             meta_a,
