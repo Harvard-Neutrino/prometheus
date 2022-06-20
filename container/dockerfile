@@ -72,6 +72,7 @@ RUN pip install --upgrade pip && \
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 RUN pip install fennel_seed[jax]
 RUN conda install -c conda-forge pyarrow
+FROM pip_stuff as pathing_stuff
 RUN echo "export PATH=/usr/local/lib/nodejs/node-v14.17.0-linux-x64/bin:${PATH}" >> /root/.bashrc && \
     echo "export PYTHONPATH=${PYTHONPATH}:/opt/PROPOSAL/build/src/pyPROPOSAL:/usr/lib/nuSQuIDS/resources/python/bindings/:/workspaces/repos/hyperion:/workspaces/repos/olympus" >> /root/.bashrc && \
     echo "export LD_LIBRARY_PATH=/usr/local/cuda-11/lib64/:${LD_LIBRARY_PATH}" >> /root/.bashrc && \
@@ -81,4 +82,11 @@ RUN echo "export PATH=/usr/local/lib/nodejs/node-v14.17.0-linux-x64/bin:${PATH}"
     echo "export PPC_CUDA=/opt/PPC/PPC_CUDA/ppc" >> /root/.bashrc && \
     cd /bin && cp /root/.bashrc .bashrc && \
     cd /opt/hebe
+
+# Create some non-root user that owns the data and other directories by default
+RUN useradd -r myuser          # no specific user ID
+RUN mkdir /data && chown myuser /data && chown -R myuser /opt
+RUN mkdir /home/myuser
+RUN chown myuser /home/myuser
+USER myuser
 ENTRYPOINT [ "/bin/bash" ]
