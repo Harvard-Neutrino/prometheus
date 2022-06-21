@@ -1,0 +1,138 @@
+WARNING "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" doesn't exist, ensure exists for build
+Bootstrap: docker
+From: ubuntu:18.04 
+Stage: base
+
+%post
+# syntax=docker/dockerfile:1
+DEBIAN_FRONTEND=noninteractive
+apt-get update && \
+apt-get -y --no-install-recommends install \
+build-essential \
+gcc \
+g++ \
+git \
+libssl-dev \
+python3-dev \
+ca-certificates \
+wget libgsl-dev pkg-config libhdf5-serial-dev libboost-all-dev python-dev && \
+rm -rf /var/lib/apt/lists/*
+wget https://github.com/Kitware/CMake/releases/download/v3.22.2/cmake-3.22.2.tar.gz --no-check-certificate && \
+tar -zxvf cmake-3.22.2.tar.gz && \
+cd cmake-3.22.2 && ./bootstrap && make -j4 && make install
+PATH="/opt/miniconda3/bin:${PATH}"
+PATH="/opt/miniconda3/bin:${PATH}"
+cd /opt &&\
+wget \
+https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh --no-check-certificate\
+&& mkdir /opt/.conda \
+&& bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda3\
+&& rm -f Miniconda3-latest-Linux-x86_64.sh
+conda install pip
+pip install --upgrade pip
+pip install conan && \
+conan profile new default --detect && conan profile update settings.compiler.libcxx=libstdc++11 default && \
+mkdir /opt/PROPOSAL && cd /opt/PROPOSAL && \
+git clone https://github.com/tudo-astroparticlephysics/PROPOSAL.git . && \
+mkdir -p build && cd build && conan install .. -o with_python=True && \
+conan build ..
+%environment
+export DEBIAN_FRONTEND=noninteractive
+export PATH="/opt/miniconda3/bin:${PATH}"
+
+Bootstrap: docker
+From: base 
+Stage: base_tables
+
+%files
+build_proposal_tables.py /opt/PROPOSAL/build_proposal_tables.py
+%post
+PYTHONPATH=$PYTHONPATH:/opt/PROPOSAL/build/src/pyPROPOSAL python3 /opt/PROPOSAL/build_proposal_tables.py
+
+Bootstrap: docker
+From: base_tables 
+Stage: leptoninjector
+
+%post
+conda install -c conda-forge photospline && \
+mkdir /opt/LI && cd /opt/LI && \
+git clone https://github.com/icecube/LeptonInjector.git && \
+mv LeptonInjector source && mkdir build && mkdir install && \
+cd build && cmake -DCMAKE_INSTALL_PREFIX=../install ../source && \
+make -j4 && make install
+
+Bootstrap: docker
+From: leptoninjector 
+Stage: ppc
+
+%post
+cd /opt && mkdir PPC && \
+cd PPC && \
+wget https://user-web.icecube.wisc.edu/~dima/work/WISC/ppc/bkp/gpu.tgz && \
+tar -xzf gpu.tgz && mv gpu PPC && \
+wget https://user-web.icecube.wisc.edu/~dima/work/WISC/ppc/bkp/dat.tgz && \
+tar -xzf dat.tgz && \
+cd PPC && \
+mv ../dat/wham/rnd.txt . && \
+mv ../dat/wham/geo-f2k . && \
+mv ../dat/wham/icemodel.dat . && \
+mv ../dat/wham/wv.dat . && \
+mv ../dat/wham/as.dat . && \
+mv ../dat/wham/cfg.txt . && \
+mv ../dat/wham/icemodel.par . && \
+# correcting some errors in the file
+sed -i 's/if(flag) flag=/if(flag) flag=static_cast<bool>/g' ini.cxx && \
+make cpu && cd /home
+
+Bootstrap: docker
+From: ppc 
+Stage: hebe
+
+%post
+cd /opt && \
+git clone https://docker-burner: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@github.com/Harvard-Neutrino/hebe.git && \
+cd hebe
+
+Bootstrap: docker
+From: hebe 
+Stage: pip_stuff
+
+%files
+"https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
+%post
+pip install --upgrade pip && \
+pip install torch-geometric jupyterlab awkward numba seaborn tqdm ipywidgets aquirdturtle_collapsible_headings plotly && \
+pip install matplotlib_inline Geometry3D && \
+pip install flake8 h5py scipy distrax dm-haiku==0.0.5 && \
+pip install optax && pip install -U jaxlib
+pip install fennel_seed[jax]
+conda install -c conda-forge pyarrow
+
+Bootstrap: docker
+From: pip_stuff 
+Stage: pathing_stuff
+
+%post
+echo "export PATH=/usr/local/lib/nodejs/node-v14.17.0-linux-x64/bin:${PATH}" >> /root/.bashrc && \
+echo "export PYTHONPATH=${PYTHONPATH}:/opt/PROPOSAL/build/src/pyPROPOSAL:/usr/lib/nuSQuIDS/resources/python/bindings/:/workspaces/repos/hyperion:/workspaces/repos/olympus" >> /root/.bashrc && \
+echo "export LD_LIBRARY_PATH=/usr/local/cuda-11/lib64/:${LD_LIBRARY_PATH}" >> /root/.bashrc && \
+echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/LI/install/lib" >> /root/.bashrc && \
+echo "export EARTH_PARAMS=/opt/LI/source/resources/earthparams/" >> /root/.bashrc && \
+echo "export PPC=/opt/PPC/PPC/ppc" >> /root/.bashrc && \
+echo "export PPC_CUDA=/opt/PPC/PPC_CUDA/ppc" >> /root/.bashrc && \
+cd /bin && cp /root/.bashrc .bashrc && \
+cd /opt && cp /root/.bashrc .bashrc && \
+cd /opt/hebe
+
+# Create some non-root user that owns the data and other directories by default
+useradd -r myuser          # no specific user ID
+mkdir /data && chown myuser /data && chown -R myuser /opt
+mkdir /home/myuser
+cd /home/myuser cp /root/.bashrc .bashrc
+chown -R myuser /home/myuser
+su -  myuser # USER myuser
+SHELL ["/bin/bash", "-c"]
+%runscript
+exec /bin/bash "$@"
+%startscript
+exec /bin/bash "$@"
