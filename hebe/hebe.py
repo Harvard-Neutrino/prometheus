@@ -507,8 +507,6 @@ class HEBE(object):
                 't': all_hits_2,
             }
         })
-        print(meta_a.photons_1["sensor_id"])
-        print(meta_a.photons_1["t"])
         ak.to_parquet(
             meta_a,
             config['photon propagator']['storage location'] +

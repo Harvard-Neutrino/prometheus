@@ -45,8 +45,8 @@ _baseconfig = {
     # Detector
     ###########################################################################
     "detector": {
-        'file name': '../hebe/data/icecube-f2k',
-        'injection offset': [0., 0., -2000.],
+        'file name': './data/icecube-f2k',
+        #'injection offset': [0., 0., -2000.],
     },
     ###########################################################################
     # Paricles
