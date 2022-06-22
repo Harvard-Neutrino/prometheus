@@ -85,11 +85,6 @@ def _ppc_sim(
     res_record : 
         
     """
-    # TODO figure out what format the losses should have and make that
-    # Compute losses and write them to the temporary outfile
-    print("=================")
-    print(ppc_config['f2k_tmpfile'])
-    print("=================")
 
     f2k_file = ppc_config['f2k_tmpfile'].replace("event", f"{ppc_config['f2k_prefix']}event")
     with open(f2k_file, "w") as ppc_f:
@@ -110,7 +105,6 @@ def _ppc_sim(
             losses = {key:[[np.log10(event['energy']), event['pos']]]}
             total_loss = None
         # Make array with energy loss information and write it into the output file
-        # print(losses)
         output_info = [np.cos(event['theta']), event['phi'], event['energy'], event["pos"], losses]
         write_to_f2k_format(output_info, ppc_f, 0)
     # Propagate with PPC
@@ -120,7 +114,6 @@ def _ppc_sim(
     #dh.to_f2k(det, geo_tmpfile, serial_nos=[m.serial_no for m in det.modules])
     ppc_file = ppc_config['ppc_tmpfile'].replace("event", f"{ppc_config['ppc_prefix']}_event")
     command = f"{ppc_config['ppc_exe']} {ppc_config['device']} < {f2k_file} > {ppc_file}"
-    print(command)
     import os
     tenv = os.environ.copy()
     tenv["PPCTABLESDIR"] = ppc_config["ppctables"]
