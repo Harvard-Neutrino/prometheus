@@ -56,14 +56,14 @@ Which detector do you want to use?
         # compute recc. selection vol
         d_coords = fu.get_xyz(dfile)
         d_cyl = fu.get_cylinder(d_coords)
-        cylRadius = d_cyl[0]
-        cylHeight = d_cyl[1]
-        endcap_len = fu.get_endcap(d_coords)
-        inj_radius = fu.get_injRadius(d_coords)
+        dd.cylRadius = round(d_cyl[0]+fu.padding)
+        dd.cylHeight = round(d_cyl[1]+2*fu.padding)
+        dd.endcap_len = round(fu.get_endcap(d_coords))
+        dd.inj_radius = round(fu.get_injRadius(d_coords))
 
-        print('\nReccomended selection volume:\n  Injection radius: '+str(inj_radius)+' m')
-        print('  Endcap length: '+str(endcap_len)+' m'+'\n  Cylinder radius: '+str(cylRadius)+' m')
-        print('  Cylinder height: '+str(cylHeight)+' m')
+        print('\nReccomended selection volume:\n  Injection radius: '+str(dd.inj_radius)+' m')
+        print('  Endcap length: '+str(dd.endcap_len)+' m'+'\n  Cylinder radius: '+str(dd.cylRadius)+' m')
+        print('  Cylinder height: '+str(dd.cylHeight)+' m')
         
         useRec_q()
     else:
@@ -75,8 +75,8 @@ def useRec_q():
     medium_q()
     
     if use_rec in ylist:
-        cpath['injection radius'] = dd.injRadius
-        cpath['endcap length'] = dd.endLength
+        cpath['injection radius'] = dd.inj_radius
+        cpath['endcap length'] = dd.endcap_len
         cpath['cylinder radius'] = dd.cylRadius
         cpath['cylinder height'] = dd.cylHeight
     elif use_rec in nlist:
@@ -110,7 +110,7 @@ def event_q():
 
 def interaction_q():
     i_type = input('Which interaction type CC/NC/GR: ')
-    if i_type.lower() in 'cc nc gr':
+    if i_type.lower() in ['cc','nc','gr']:
         global state_key
         state_key += i_type.lower()
         cpath['final state 1'] = dd.final_state[state_key][0]

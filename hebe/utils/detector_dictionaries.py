@@ -1,6 +1,10 @@
 # detector_dictionaries.py
 # David Kim
 
+cylRadius = 900
+cylHeight = 900
+endcap_len = 700
+inj_radius = 1000
 
 # default vaules for detectors
 # actually calculate for orca

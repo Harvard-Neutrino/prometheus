@@ -29,33 +29,33 @@ def get_xyz(fname):
     det = from_f2k(fname)
     return det[0]
 
-def offset(array):
+def offset(coords):
     # return x st x+mean(x,y,z) = <o,o,o>
-    xyz_avg = np.average(array,0)
+    xyz_avg = np.average(coords,0)
     return -1*xyz_avg
 
-def get_cylinder(array):
+def get_cylinder(coords):
     # return cylinder (radius, height)
-    if max(np.average(array,0)) > 5:
-        array = array+offset(array)
+    if max(np.average(coords,0)) > 5:
+        coords = coords+offset(coords)
     
     out_cylinder = (
-            np.linalg.norm(array[:, :2], axis=1).max(),
-            np.ptp(array[:,2:]),
+            np.linalg.norm(coords[:, :2], axis=1).max(),
+            np.ptp(coords[:,2:]),
         )
     
     return out_cylinder
     
-def get_endcap(array):
+def get_endcap(coords):
     # return endcap len
-    cyl = get_cylinder(array)
+    cyl = get_cylinder(coords)
     r = cyl[0]; z = cyl[1]
     theta = (np.pi/2)-2*np.arctan(2*r/z)
-    endcap_len = np.cos(theta)*(get_injRadius(array)-padding)
+    endcap_len = np.cos(theta)*(get_injRadius(coords)-padding)
     return endcap_len
 
-def get_injRadius(array):
-    cyl = get_cylinder(array)
+def get_injRadius(coords):
+    cyl = get_cylinder(coords)
     injRad = 0.5*(np.sqrt(cyl[0]**2+cyl[1]**2))+padding
     return injRad
 
