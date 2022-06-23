@@ -1,7 +1,7 @@
 # hebe_ui.py
 # David Kim
 
-from .config import config
+from hebe import config
 import detector_dictionaries as dd
 import f2k_utils as fu
 
@@ -92,7 +92,7 @@ def useRec_q():
 
 def medium_q():
     medium = input('Medium? ice/water: ')
-    if medium.lower() in ['ice','water']:
+    if medium.lower() in 'ice water':
         cpath['medium'] = medium
     else:
         print('invalid input')
@@ -109,8 +109,8 @@ def event_q():
         event_q()
 
 def interaction_q():
-    i_type = input('Which interaction type CC/NC: ')
-    if i_type.lower() in ['cc','nc']:
+    i_type = input('Which interaction type CC/NC/GR: ')
+    if i_type.lower() in 'cc nc gr':
         global state_key
         state_key += i_type.lower()
         cpath['final state 1'] = dd.final_state[state_key][0]
