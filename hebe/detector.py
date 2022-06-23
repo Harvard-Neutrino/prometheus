@@ -5,8 +5,9 @@
 
 import numpy as np
 import awkward as ak
+from scipy import stats
 from .config import config
-from .utils import iter_or_rep
+from utils import iter_or_rep
 #import sys
 #sys.path.append('../')
 #from olympus.event_generation.detector import (  # noqa: E402
@@ -198,7 +199,7 @@ def make_line(x, y, n_z, dist_z, rng, baseline_noise_rate, line_id, efficiency=0
     for i, pos_z in enumerate(np.linspace(-dist_z * n_z / 2, dist_z * n_z / 2, n_z)):
         pos = np.array([x, y, pos_z])
         noise_rate = (
-            scipy.stats.gamma.rvs(1, 0.25, random_state=rng) * baseline_noise_rate
+            stats.gamma.rvs(1, 0.25, random_state=rng) * baseline_noise_rate
         )
         mod = Module(
             pos, key=(line_id, i), noise_rate=noise_rate, efficiency=efficiency
