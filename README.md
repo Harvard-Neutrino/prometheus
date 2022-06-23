@@ -48,5 +48,12 @@ While you can install Hebe manually using the raw code from here, we highly reco
 Then load the docker image. In the container you would find hebe under /opt/hebe/ .
 
 We also offer a singularity image should you need it in the same [repo](https://drive.google.com/drive/folders/1-PbSiZQr0n85g9PrhbHMeURDOA02QUSY?usp=sharing), which may be useful for running simulations on a cluster.
+This are currently in beta and require some setup:
+
+1. Download the latest .sif file (currently v3.0.3)
+2. run ``` singularity shell name_of_file.sif ```
+3. enter the /opt folder ```cd /opt ```
+4. source the bash file ``` source .bashrc ```
+5. clone hebe from the repository to a folder of your choice. The setup should now be done
 
 For GPU usage the repository offers a GPU docker image, which you will need to use to build an image yourself. Then you will also have to compile ppc (using e.g. make gpu in the PPC_CUDA folder) youself. Note that you may change the arch version in the makefile of PPC to do this, depending on your hardware.
