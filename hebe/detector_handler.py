@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
-# detector_handler.py
+
 # Authors: Christian Haack, Jeffrey Lazar, Stephan Meighen-Berger,
 # Deals with detector stuff
 
 import sys
 import numpy as np
-from config import config
+from hebe.config import config
 sys.path.append('../')
 from olympus.event_generation.detector import (  # noqa: E402
     Detector, Module
