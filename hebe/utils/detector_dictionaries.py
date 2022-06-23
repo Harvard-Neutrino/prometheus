@@ -43,16 +43,16 @@ final_state = {
 
 # move this somewhere else
 def out_doc(cdict):
-    with open('config_settings.txt','w') as out
+    with open('config_settings.txt','w') as out:
 
-    for key in cdict:
-        out.write('\n'+key+': \n')
-        for param in cdict[key]:
-            if isinstance(cdict[key][param], dict):
-                out.write('  '+param+': \n')
-                for val in cdict[key][param]:
-                    out.write('    '+val+': '+str(cdict[key][param][val])+'\n')
-            else:
-                out.write('  '+param+': '+str(cdict[key][param])+'\n')
+        for key in cdict:
+            out.write('\n'+key+': \n')
+            for param in cdict[key]:
+                if isinstance(cdict[key][param], dict):
+                    out.write('  '+param+': \n')
+                    for val in cdict[key][param]:
+                        out.write('    '+val+': '+str(cdict[key][param][val])+'\n')
+                else:
+                    out.write('  '+param+': '+str(cdict[key][param])+'\n')
     
 
