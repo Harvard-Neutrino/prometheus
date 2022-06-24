@@ -16,7 +16,7 @@ run:
   noise: False
 
 detector: 
-  file name: ../data/pone_triangle-f2k
+  file name: ../hebe/data/pone_triangle-f2k
 
 particles: 
   track particles: [13, -13]
@@ -31,9 +31,9 @@ lepton injector:
     nevents: 1.0
     diff xsec: /test_xs.fits
     total xsec: /test_xs_total.fits
-    is ranged: True
-    final state 1: EMinus
-    final state 2: Hadrons
+    is ranged: False
+    final state 1: TauMinus
+    final state 2: NuTaubar
     minimal energy: 1.0
     maximal energy: 1.0
     power law: 1.0
@@ -45,12 +45,12 @@ lepton injector:
     earth model: Planet
     output name: ./data_output.h5
     lic name: ./config.lic
-    injection radius: 650.8326400438907
-    endcap length: 114.14047087432557
-    cylinder radius: 207.73502691896257
-    cylinder height: 1300.0
-    medium: ice
-  use existing injection: True
+    injection radius: 900
+    endcap length: 900
+    cylinder radius: 700
+    cylinder height: 1000
+    medium: water
+  use existing injection: False
 
 lepton propagator: 
   name: proposal

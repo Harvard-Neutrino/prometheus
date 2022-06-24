@@ -7,7 +7,7 @@ import numpy as np
 import awkward as ak
 from scipy import stats
 from .config import config
-from utils import iter_or_rep
+from .utils.iter_or_rep import iter_or_rep
 #import sys
 #sys.path.append('../')
 #from olympus.event_generation.detector import (  # noqa: E402

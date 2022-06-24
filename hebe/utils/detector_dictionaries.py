@@ -42,13 +42,17 @@ final_state = {
     'nutaubar/cc':['TauPlus','Hadrons'],
     'nuebar/nc':['NuEBar','Hadrons'],
     'numubar/nc':['NuMuBar','Hadrons'],
-    'nutaubar/nc':['NuTauBar','Hadrons']
+    'nutaubar/nc':['NuTauBar','Hadrons'],
+    
+    'nuebar/hadron':['Hadrons','Hadrons'],
+    'nuebar/e':['EMinus','NuEBar'],
+    'nuebar/mu':['MuMinus','NuMubar'],
+    'nuebar/tau':['TauMinus','NuTaubar']
 }
 
 # move this somewhere else
 def out_doc(cdict):
     with open('config_settings.txt','w') as out:
-
         for key in cdict:
             out.write('\n'+key+': \n')
             for param in cdict[key]:

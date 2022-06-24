@@ -100,24 +100,37 @@ def medium_q():
 
 
 def event_q():
+    global state_key
     e_type = input('\nWhich event type? NuE/NuMu/NuTau/NuEBar/NuMuBar/NuTauBar: ')
     if e_type.lower() in ['nue','numu','nutau','nuebar','numubar','nutaubar']:
-        global state_key
         state_key = e_type.lower()+'/'
     else:
         print('invalid input')
         event_q()
 
 def interaction_q():
+    global state_key
     i_type = input('Which interaction type CC/NC/GR: ')
-    if i_type.lower() in ['cc','nc','gr']:
-        global state_key
+    if i_type.lower() in ['cc','nc']:
         state_key += i_type.lower()
+        cpath['final state 1'] = dd.final_state[state_key][0]
+        cpath['final state 2'] = dd.final_state[state_key][1]
+    elif i_type.lower() == 'gr' and state_key == 'nuebar/':
+        gr_q()
+    else:
+        print('invalid input')
+        interaction_q()
+
+def gr_q():
+    global state_key
+    gr_final = input('Final type? hadron/e/mu/tau: ')
+    if gr_final.lower() in ['hardon','e','mu','tau']:
+        state_key += gr_final.lower()
         cpath['final state 1'] = dd.final_state[state_key][0]
         cpath['final state 2'] = dd.final_state[state_key][1]
     else:
         print('invalid input')
-        interaction_q()
+        gr_q()
 
 def misc_q():
     n_events = input('\nNumber of events: ')
