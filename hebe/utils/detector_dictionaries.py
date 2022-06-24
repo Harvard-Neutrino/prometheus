@@ -7,7 +7,6 @@ endcap_len = 700
 inj_radius = 1000
 
 # default vaules for detectors
-# actually calculate for orca
 detectors = {
     'icecube': {
         'file name': '../hebe/data/icecube-f2k',
@@ -20,10 +19,10 @@ detectors = {
 
     'orca': {
         'file name': '../hebe/data/pone_triangle-f2k',
-        'injection radius': 900,
-        'endcap length': 900,
-        'cylinder radius': 700,
-        'cylinder height': 1000,       
+        'injection radius': 651,
+        'endcap length': 264,
+        'cylinder radius': 208,
+        'cylinder height': 1300,       
         'medium': 'water'
     }
 }
