@@ -20,9 +20,24 @@ def from_f2k(fname):
                 np.array([float(line[2]), float(line[3]),
                 float(line[4])]))
             keys.append((int(line[5]), int(line[6])))
-            #keys.append(tuple(int(line[5:])))
         pos_out = np.vstack([a for a in pos])
     return pos_out, keys, sers
+
+def clean_icecube(fname):
+    with open(fname,'r') as f2k_in:
+        line_list = f2k_in.readlines()
+    with open(fname,'w') as f2k_in:
+        count = 1
+        for line in line_list[:2]:
+            f2k_in.write(line)
+        for line in line_list[2:]:
+            if count >= 65:
+                count = 1
+            if count not in list(range(61,66)):
+                f2k_in.write(line)
+            count += 1
+
+#clean_icecube('../data/copy-f2k')
 
 def get_xyz(fname):
     # return 3xn array
@@ -41,7 +56,7 @@ def get_cylinder(coords):
     
     out_cylinder = (
             np.linalg.norm(coords[:, :2], axis=1).max(),
-            np.ptp(coords[:,2:]),
+            np.ptp(coords[:,2:])
         )
     
     return out_cylinder
@@ -51,12 +66,10 @@ def get_endcap(coords):
     cyl = get_cylinder(coords)
     r = cyl[0]; z = cyl[1]
     theta = (np.pi/2)-2*np.arctan(2*r/z)
-    endcap_len = np.cos(theta)*(get_injRadius(coords)-padding)
+    endcap_len = padding + np.cos(theta)*(get_injRadius(coords)-padding)
     return endcap_len
 
 def get_injRadius(coords):
     cyl = get_cylinder(coords)
-    injRad = 0.5*(np.sqrt(cyl[0]**2+cyl[1]**2))+padding
+    injRad = padding + 0.5*(np.sqrt(cyl[0]**2+cyl[1]**2))
     return injRad
-
-print('success!')
