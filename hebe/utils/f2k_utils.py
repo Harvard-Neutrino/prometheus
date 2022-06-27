@@ -3,7 +3,7 @@
 
 import numpy as np
 
-padding = 150
+padding = 200
 
 def from_f2k(fname):
      # List for the (x,y,z) positions of each OM
@@ -71,5 +71,5 @@ def get_endcap(coords):
 
 def get_injRadius(coords):
     cyl = get_cylinder(coords)
-    injRad = padding + 0.5*(np.sqrt(cyl[0]**2+cyl[1]**2))
+    injRad = padding + (np.sqrt(cyl[0]**2+(0.5*cyl[1])**2))
     return injRad
