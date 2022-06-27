@@ -16,7 +16,7 @@ run:
   noise: False
 
 detector: 
-  file name: ../data/pone_triangle-f2k
+  file name: ../data/combined-f2k
 
 particles: 
   track particles: [13, -13]
@@ -28,27 +28,27 @@ lepton injector:
   location: /opt/LI/install/lib/python3.9/site-packages
   xsec location: /opt/LI/source/resources/
   simulation: 
-    nevents: 4.0
+    nevents: 3.0
     diff xsec: /test_xs.fits
     total xsec: /test_xs_total.fits
     is ranged: False
-    final state 1: EMinus
+    final state 1: NuMu
     final state 2: Hadrons
     minimal energy: 4.0
-    maximal energy: 4.0
-    power law: 4.0
-    minZenith: 4.0
-    maxZenith: 4.0
+    maximal energy: 5.0
+    power law: 8.0
+    minZenith: 6.0
+    maxZenith: 7.0
     minAzimuth: 0.0
     maxAzimuth: 360.0
     earth model location: earthparams/
     earth model: Planet
     output name: ./data_output.h5
     lic name: ./config.lic
-    injection radius: 1
-    endcap length: 1
-    cylinder radius: 1
-    cylinder height: 1
+    injection radius: 734
+    endcap length: 553
+    cylinder radius: 389
+    cylinder height: 1400
     medium: ice
   use existing injection: False
 
