@@ -50,9 +50,19 @@ Which detector do you want to use?
         print(dname.lower()+' loaded')
 
     elif dname.lower() == 'uf':
-        dfile = input('File: ')
-        config['detector']['file name'] = dfile
+        dfile_q()
 
+        print('\nReccomended selection volume:\n  Injection radius: '+str(dd.inj_radius)+' m')
+        print('  Endcap length: '+str(dd.endcap_len)+' m'+'\n  Cylinder radius: '+str(dd.cylRadius)+' m')
+        print('  Cylinder height: '+str(dd.cylHeight)+' m')
+        useRec_q()
+    else:
+        print('invalid input')
+        detector_q()
+
+def dfile_q():
+    try:
+        dfile = input('File: ')        
         # compute recc. selection vol
         d_coords = fk.get_xyz(dfile)
         d_cyl = fk.get_cylinder(d_coords)
@@ -60,15 +70,10 @@ Which detector do you want to use?
         dd.cylHeight = round(d_cyl[1]+2*fk.padding)
         dd.endcap_len = round(fk.get_endcap(d_coords))
         dd.inj_radius = round(fk.get_injRadius(d_coords))
-
-        print('\nReccomended selection volume:\n  Injection radius: '+str(dd.inj_radius)+' m')
-        print('  Endcap length: '+str(dd.endcap_len)+' m'+'\n  Cylinder radius: '+str(dd.cylRadius)+' m')
-        print('  Cylinder height: '+str(dd.cylHeight)+' m')
-        
-        useRec_q()
-    else:
-        print('invalid input')
-        detector_q()
+        config['detector']['file name'] = dfile
+    except:
+        print('File not found')
+        dfile_q()
 
 def useRec_q():
     use_rec= input('Use reccomended selection volume? yes/no: ')
@@ -88,7 +93,7 @@ def useRec_q():
         print('invalid input')
         useRec_q()
     
-    print('user detector loaded')
+    print('detector loaded')
 
 def medium_q():
     medium = input('Medium? ice/water: ')
