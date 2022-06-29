@@ -1,9 +1,15 @@
 # hebe_ui.py
 # David Kim
 
+<<<<<<< HEAD
 from hebe import config
 import detector_dictionaries as dd
 import f2k_utils as fk
+=======
+from .config import config
+import detector_dictionaries as dd
+import f2k_utils as fu
+>>>>>>> befddad641bf476d7d20b565f69fa8a540daccba
 
 cpath = config['lepton injector']['simulation']
 ylist = ['yes','ye','y']; nlist = ['no','n']
