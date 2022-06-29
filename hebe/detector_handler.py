@@ -4,7 +4,11 @@
 
 import sys
 import numpy as np
+<<<<<<< HEAD
 from hebe.config import config
+=======
+from config import config
+>>>>>>> 804768aabb8f47f728baa1041a70d364a2bcf19a
 sys.path.append('../')
 from olympus.event_generation.detector import (  # noqa: E402
     Detector, Module
