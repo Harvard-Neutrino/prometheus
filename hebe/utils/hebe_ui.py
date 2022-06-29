@@ -1,21 +1,15 @@
 # hebe_ui.py
 # David Kim
 
-<<<<<<< HEAD
 from hebe import config
 import detector_dictionaries as dd
 import f2k_utils as fk
-=======
-from .config import config
-import detector_dictionaries as dd
-import f2k_utils as fu
->>>>>>> befddad641bf476d7d20b565f69fa8a540daccba
 
 cpath = config['lepton injector']['simulation']
 ylist = ['yes','ye','y']; nlist = ['no','n']
 
-def injector_q():
 
+def injector_q():
     use_li = input("\nUse existing injection? yes/no: ")
 
     if use_li.lower() in ylist:
@@ -35,6 +29,9 @@ def ranged_q():
         ranged_q()
 
 def detector_q():
+    """
+    Sets detector file and calculates selection volume
+    """
     dname = input(
     '''
 Which detector do you want to use?
@@ -68,7 +65,8 @@ Which detector do you want to use?
 
 def dfile_q():
     try:
-        dfile = input('File: ')        
+        dfile = input('File: ') 
+               
         # compute recc. selection vol
         d_coords = fk.get_xyz(dfile)
         d_cyl = fk.get_cylinder(d_coords)

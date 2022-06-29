@@ -24,6 +24,8 @@ def from_f2k(fname):
     return pos_out, keys, sers
 
 def clean_icecube(fname):
+    ''' Removes IceTop modules from icecube-f2k
+    '''
     with open(fname,'r') as f2k_in:
         line_list = f2k_in.readlines()
     with open(fname,'w') as f2k_in:
@@ -40,17 +42,17 @@ def clean_icecube(fname):
 #clean_icecube('../data/copy-f2k')
 
 def get_xyz(fname):
-    # return 3xn array
+    # returns 3xn array
     det = from_f2k(fname)
     return det[0]
 
 def offset(coords):
-    # return x st x+mean(x,y,z) = <o,o,o>
+    # returns x st x+mean(x,y,z) = <o,o,o>
     xyz_avg = np.average(coords,0)
     return -1*xyz_avg
 
 def get_cylinder(coords):
-    # return cylinder (radius, height)
+    # returns cylinder (radius, height) from 3xn array
     if max(np.average(coords,0)) > 5:
         coords = coords+offset(coords)
     
@@ -62,7 +64,6 @@ def get_cylinder(coords):
     return out_cylinder
     
 def get_endcap(coords):
-    # return endcap len
     cyl = get_cylinder(coords)
     r = cyl[0]; z = cyl[1]
     theta = (np.pi/2)-2*np.arctan(2*r/z)
