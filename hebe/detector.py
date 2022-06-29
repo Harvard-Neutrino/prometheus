@@ -7,11 +7,6 @@ import numpy as np
 import awkward as ak
 from .config import config
 from .utils import iter_or_rep
-#import sys
-#sys.path.append('../')
-#from olympus.event_generation.detector import (  # noqa: E402
-#    Detector, Module
-#)
 
 class Module(object):
     """
@@ -47,12 +42,19 @@ class Detector(object):
     """
     def __init__(self, modules):
         """Initialize detector."""
-        self.modules = modules
+        #self.modules = modules
+        #self.module_coords = np.vstack([m.pos for m in self.modules])
+        # We need to move all our modules to a coordinate system
+        # Where (0,0,0) is the center of the detector
+        self._offset = np.mean(np.vstack([m.pos for m in modules]), axis=0)
+        self.modules = [Module(m.pos-self._offset, m.key,
+            noise_rate=m.noise_rate, efficiency=m.efficiency, serial_no=m.serial_no) 
+        for m in modules]
         self.module_coords = np.vstack([m.pos for m in self.modules])
         self.module_coords_ak = ak.Array(self.module_coords)
         self.module_efficiencies = np.asarray([m.efficiency for m in self.modules])
         self.module_noise_rates = np.asarray([m.noise_rate for m in self.modules])
-
+        
         # TODO replace this with the functions David writes
         self._outer_radius = np.linalg.norm(self.module_coords, axis=1).max()
         self._outer_cylinder = (
@@ -81,6 +83,10 @@ class Detector(object):
     @property
     def outer_cylinder(self):
         return self._outer_cylinder
+
+    @property
+    def offset(self):
+        return self._offset
 
     def to_f2k(
             self,
@@ -123,7 +129,8 @@ class Detector(object):
             keys = [m.key for m in self.modules]
         with open(geo_file, "w") as f2k_out:
             for mac_id, serial_no, pos, key in zip(
-                    mac_ids, serial_nos, self.module_coords, keys):
+                mac_ids, serial_nos, self.module_coords+self._offset, keys
+            ):
                 line = f"{mac_id}\t{serial_no}\t{pos[0]}\t{pos[1]}\t{pos[2]}"
                 if hasattr(key, "__iter__"):
                     for x in key:
