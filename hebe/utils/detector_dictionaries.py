@@ -1,6 +1,7 @@
 # detector_dictionaries.py
 # David Kim
 
+from .config import config
 
 # default vaules for detectors
 # actually calculate for orca
@@ -24,7 +25,6 @@ detectors = {
     }
 }
 
-# Table of event & interaction types to final states
 final_state = {
     'nue/cc':['EMinus','Hadrons'],
     'numu/cc':['MuMinus','Hadrons'],
@@ -41,9 +41,15 @@ final_state = {
     'nutaubar/nc':['NuTauBar','Hadrons']
 }
 
+# placeholders
+injRadius = 900
+endLength = 900
+cylRadius = 700
+cylHeight = 1000
+
 # move this somewhere else
 def out_doc(cdict):
-    with open('config_settings.txt','w') as out
+    out = open('config_settings.txt','w')
 
     for key in cdict:
         out.write('\n'+key+': \n')
@@ -54,5 +60,5 @@ def out_doc(cdict):
                     out.write('    '+val+': '+str(cdict[key][param][val])+'\n')
             else:
                 out.write('  '+param+': '+str(cdict[key][param])+'\n')
-    
+    out.close()
 
