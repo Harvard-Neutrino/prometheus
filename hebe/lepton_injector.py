@@ -35,7 +35,10 @@ class LepInj(object):
         for id_name, names in enumerate([
                 self._spars['final state 1'], self._spars['final state 2']
                 ]):
-            if names in 'EMinus EPlus MuMinus TauMinus TauPlus'.split():
+            if names in 'EMinus EPlus MuMinus MuPlus TauMinus TauPlus'.split():
+                print("fuck")
+                print(names)
+                print(id_name)
                 particles.append(getattr(LI.Particle.ParticleType, names))
             elif names == 'Hadrons':
                 particles.append(LI.Particle.ParticleType.Hadrons)

@@ -60,7 +60,6 @@ def _old_proposal_losses(
     # TODO: Update this ugly fix
     cont_loss_sum = sum([np.power(10, loss[0]) for loss in losses["continuous"]])
     total_dist = np.sqrt(np.sum(np.square(pos-position)))
-    print(total_dist)
     #total_dist = secondarys.track_propagated_distances()[-1] * cm_to_m
     # TODO: Add this to config
     cont_resolution = 1.
