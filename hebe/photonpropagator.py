@@ -13,10 +13,11 @@ import awkward as ak
 import numpy as np
 from .utils import write_to_f2k_format
 
-from .detector_handler import DH
+#from .detector_handler import DH
 # sys.path.append(config['photon propagator']['location'])
 sys.path.append('../')
 
+# TODO should these be moved inside the set up function
 from olympus.event_generation.photon_propagation.norm_flow_photons import (  # noqa
     make_generate_norm_flow_photons
 )
@@ -59,7 +60,6 @@ def _parse_ppc(ppc_f):
 
 def _ppc_sim(
         event,
-        dh,
         det,
         lp,
         ppc_config,
@@ -85,11 +85,6 @@ def _ppc_sim(
     res_record : 
         
     """
-    # TODO figure out what format the losses should have and make that
-    # Compute losses and write them to the temporary outfile
-    print("=================")
-    print(ppc_config['f2k_tmpfile'])
-    print("=================")
 
     f2k_file = ppc_config['f2k_tmpfile'].replace("event", f"{ppc_config['f2k_prefix']}event")
     with open(f2k_file, "w") as ppc_f:
@@ -110,7 +105,6 @@ def _ppc_sim(
             losses = {key:[[np.log10(event['energy']), event['pos']]]}
             total_loss = None
         # Make array with energy loss information and write it into the output file
-        # print(losses)
         output_info = [np.cos(event['theta']), event['phi'], event['energy'], event["pos"], losses]
         write_to_f2k_format(output_info, ppc_f, 0)
     # Propagate with PPC
@@ -120,7 +114,6 @@ def _ppc_sim(
     #dh.to_f2k(det, geo_tmpfile, serial_nos=[m.serial_no for m in det.modules])
     ppc_file = ppc_config['ppc_tmpfile'].replace("event", f"{ppc_config['ppc_prefix']}_event")
     command = f"{ppc_config['ppc_exe']} {ppc_config['device']} < {f2k_file} > {ppc_file}"
-    print(command)
     import os
     tenv = os.environ.copy()
     tenv["PPCTABLESDIR"] = ppc_config["ppctables"]
@@ -199,30 +192,25 @@ class PP(object):
     ----------
     lp : LP object
         A lepton propagation instance
-    dh : dictionary
+    det : dictionary
         A detector dictionary
     '''
     def __init__(self, lp: LP, det):
         print('--------------------------------------------')
         print('Constructing the photon propagator')
+        self._local_conf = config['photon propagator']['olympus']
+        self.__lp = lp
+        self.__det = det
         if config['photon propagator']['name'] == 'olympus':
-            self._local_conf = config['photon propagator']['olympus']
-            self.__lp = lp
-            self.__det = det
             self._olympus_setup()
             self._plotting = self._olympus_plot_event
             self._sim = self._olympus_sim
         elif config['photon propagator']['name'] == 'PPC':
-            self._local_conf = config['photon propagator']['PPC']
-            self.__lp = lp
-            self.__det = det
-            self.__dh = DH()
             # TODO add in event displays
             # self._plotting = plot_event
             # TODO make a function for propagating photons
             self._sim = lambda event: _ppc_sim(
                     event,
-                    self.__dh,
                     self.__det,
                     self.__lp,
                     self._local_conf,
@@ -232,13 +220,11 @@ class PP(object):
             self._local_conf = config['photon propagator']['PPC_CUDA']
             self.__lp = lp
             self.__det = det
-            self.__dh = DH()
             # TODO add in event displays
             #self._plotting = plot_event
             # TODO make a function for propagating photons
             self._sim = lambda event: _ppc_sim(
                     event, 
-                    self.__dh,
                     self.__det,
                     self.__lp, 
                     self._local_conf,
@@ -250,31 +236,6 @@ class PP(object):
                 'Unknown photon propagator! Check the config file'
             )
         print('--------------------------------------------')
-
-    #def _ppc_setup(self):
-    #    ''' Sets up PPC.
-    #    '''
-    #    print('Using PPC')
-    #    print('Setting up the medium')
-    #    self._pprop_config = json.load(open(
-    #        self._pprop_path))['photon_propagation']
-    #    # The medium
-    #    self._ref_ix_f, self._sca_a_f, self._sca_l_f = medium_collections[
-    #        self._pprop_config['medium']
-    #    ]
-    #    print('Finished the medium')
-    #    print('-------------------------------------------------------')
-    #    print('Setting up the photon generator')
-    #    if self._local_conf['files']:
-    #        self._gen_ph = make_generate_norm_flow_photons(
-    #            self._local_conf['location'] + self._local_conf['flow'],
-    #            self._local_conf['location'] + self._local_conf['counts'],
-    #            c_medium=self._c_medium_f(
-    #                self._local_conf['wavelength']) / 1E9
-    #        )
-    #    else:
-    #        ValueError('Currently only file runs for olympus are supported!')
-    #    print('Finished the photon generator')
 
     def _olympus_setup(self):
         ''' Sets up olympus.

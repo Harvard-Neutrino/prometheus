@@ -1,9 +1,8 @@
 # hebe_ui.py
 # David Kim
 
-from hebe import config
+from config import config
 import detector_dictionaries as dd
-import f2k_utils as fu
 
 cpath = config['lepton injector']['simulation']
 ylist = ['yes','ye','y']; nlist = ['no','n']
@@ -53,17 +52,10 @@ Which detector do you want to use?
         dfile = input('File: ')
         config['detector']['file name'] = dfile
 
-        # compute recc. selection vol
-        d_coords = fu.get_xyz(dfile)
-        d_cyl = fu.get_cylinder(d_coords)
-        cylRadius = d_cyl[0]
-        cylHeight = d_cyl[1]
-        endcap_len = fu.get_endcap(d_coords)
-        inj_radius = fu.get_injRadius(d_coords)
-
-        print('\nReccomended selection volume:\n  Injection radius: '+str(inj_radius)+' m')
-        print('  Endcap length: '+str(endcap_len)+' m'+'\n  Cylinder radius: '+str(cylRadius)+' m')
-        print('  Cylinder height: '+str(cylHeight)+' m')
+        # actually compute recc. selection vol
+        print('\nReccomended selection volume:\n  Injection radius: '+str(dd.injRadius)+' m')
+        print('  Endcap length: '+str(dd.endLength)+' m'+'\n  Cylinder radius: '+str(dd.cylRadius)+' m')
+        print('  Cylinder height: '+str(dd.cylHeight)+' m')
         
         useRec_q()
     else:
@@ -92,7 +84,7 @@ def useRec_q():
 
 def medium_q():
     medium = input('Medium? ice/water: ')
-    if medium.lower() in 'ice water':
+    if medium.lower() in ['ice','water']:
         cpath['medium'] = medium
     else:
         print('invalid input')
@@ -109,8 +101,8 @@ def event_q():
         event_q()
 
 def interaction_q():
-    i_type = input('Which interaction type CC/NC/GR: ')
-    if i_type.lower() in 'cc nc gr':
+    i_type = input('Which interaction type CC/NC: ')
+    if i_type.lower() in ['cc','nc']:
         global state_key
         state_key += i_type.lower()
         cpath['final state 1'] = dd.final_state[state_key][0]
