@@ -165,7 +165,7 @@ def run():
     interaction_q()
     misc_q()
     print('\ngenerating config file')
-    dd.out_doc(config)
+    #dd.out_doc(config)
     print('\nconfig set!\n')
 
 run()
