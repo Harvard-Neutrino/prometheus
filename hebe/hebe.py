@@ -16,6 +16,7 @@ from .photonpropagator import PP
 from .lepton_prop import LP
 from .lepton_injector import LepInj
 from .ppc_plotting import plot_event
+from .particle import Particle
 
 from tqdm import tqdm
 from time import time
@@ -186,20 +187,29 @@ class HEBE(object):
                 pos = np.array(event[2])
                 # Introducing an injection offset caused by the different
                 # coordinate systems between LI and the t2k file.
-                pos = pos + np.array(config['detector']['injection offset'])
-                injection_event = {
-                    "time": 0.,
-                    "theta": event[3][0],
-                    "phi": event[3][1],
-                    # TODO: This needs to be removed once the coordinate
-                    # systems match!
-                    "pos": pos,
-                    "energy": event[4],
-                    "particle_id": event_id,
-                    'length': config['lepton propagator']['track length'],
-                    'event id': event_id
-                }
-                res_event, res_record = self._pp._sim(injection_event)
+                # TODO calculate the detector offset automatically
+                pos = pos
+                #pos = pos + np.array(config['detector']['injection offset'])
+                direction = [
+                    np.cos(event[3][1])*np.sin(event[3][0]),
+                    np.sin(event[3][1])*np.sin(event[3][0]),
+                    np.cos(event[3][0])
+                ]
+
+                primary_particle = Particle(event_id, event[4], pos, direction)
+                #injection_event = {
+                #    "time": 0.,
+                #    "theta": event[3][0],
+                #    "phi": event[3][1],
+                #    # TODO: This needs to be removed once the coordinate
+                #    # systems match!
+                #    "pos": pos,
+                #    "energy": event[4],
+                #    "particle_id": event_id,
+                #    'length': config['lepton propagator']['track length'],
+                #    'event id': event_id
+                #}
+                res_event, res_record = self._pp._sim(primary_particle)
                 self._results[key].append(res_event)
                 self._results_record[key].append(res_record)
             print('-------------------------------')
@@ -313,7 +323,6 @@ class HEBE(object):
         all_dom_hit_points_dic = {}
         all_photon_dir_dic = {}
         for key in self._results.keys():
-            print(key)
             all_ids = []
             all_times = []
             all_wavelength = []
