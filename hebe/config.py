@@ -95,7 +95,8 @@ _baseconfig = {
             "cylinder radius":700, # m
             "cylinder height":1000, # m
         },
-        'use existing injection': False
+        'use existing injection': False,
+        'force injection params': False
     },
     ###########################################################################
     # Lepton propagator
@@ -114,7 +115,8 @@ _baseconfig = {
         'lpm_effect' : True,
         'continuous_randomization' : True,
         'soft_losses' : True,
-        'scattering model' : "Moliere"
+        'scattering model' : "Moliere",
+        'force propagation params':False
 
     },
     ###########################################################################
