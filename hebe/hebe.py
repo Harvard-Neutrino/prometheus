@@ -9,7 +9,7 @@ import h5py
 import awkward as ak
 import pyarrow.parquet as pq
 import pyarrow 
-from .utils.f2k_utils import get_endcap,get_injRadius,get_cylinder
+from .utils.f2k_utils import get_endcap,get_injRadius,get_cylinder,padding
 from .config import config
 from .detector import detector_from_f2k
 #from .detector_handler import DH
@@ -91,8 +91,8 @@ class HEBE(object):
         self._det = detector_from_f2k(config["detector"]["file name"])
         endcap = get_endcap(self._det.module_coords)
         injradius = get_injRadius(self._det.module_coords)
-        cylRadius = get_cylinder(self._det.module_coords)[0] + fk.padding
-        cylHeight = get_cylinder(self._det.module_coords)[1] + fk.padding
+        cylRadius = get_cylinder(self._det.module_coords)[0] + padding
+        cylHeight = get_cylinder(self._det.module_coords)[1] + padding
         if not config["lepton injector"]["force injection params"]:
             warn('Overwriting injection parameters with calculated values')
             config["lepton injector"]["simulation"]["endcap length"] = endcap
