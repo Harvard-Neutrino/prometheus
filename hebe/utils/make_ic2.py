@@ -25,8 +25,10 @@ def make_ic2(fname):
     ic1_det = dt.detector_from_f2k('../data/icecube_clean-f2k')
 
     for xy in xylist:
-        x = xy[0]; y = xy[1]
-        nline_det = dt.make_line(x,y,120,16)
-        ic1_det += nline_det
+        x = xy[0]; sy = xy[1]
+        line_det = dt.make_line(x,y,120,16)
+        ic1_det += line_det
 
     return ic1_det
+
+make_ic2('../data/ic2_data')
