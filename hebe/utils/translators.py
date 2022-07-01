@@ -21,7 +21,7 @@ f2k_to_PDG = {val:key for key, val in PDG_to_f2k.items()}
 
 # mapping from https://github.com/icecube/LeptonInjector/blob/master/private/LeptonInjector/Particle.cxx
 PDG_to_pstring = {
-    0:"Unknonw"
+    0:"Unknown",
     11:"EMinus",
     12:"NuE",
     13:"MuMinus",
@@ -47,6 +47,8 @@ pstring_to_PDG = {val:key for key, val in PDG_to_pstring.items()}
 # Mapping from https://github.com/tudo-astroparticlephysics/PROPOSAL/blob/master/src/PROPOSAL/PROPOSAL/particle/Particle.h
 # to https://www.zeuthen.desy.de/~steffenp/f2000/f2000_1.5.html#SEC26
 int_type_to_str = {
+    211:"pi+",
+    -211:"pi-",
     #1000000001:"",
     1000000002:"brems",
     1000000003:"delta",
@@ -57,6 +59,7 @@ int_type_to_str = {
     1000000007:"hadr",
     # What do we do with this ???????
     1000000008:"delta",
+    -2000001006:"hadr",
 }
 
 str_to_int_type = {val:key for key, val in int_type_to_str.items()}

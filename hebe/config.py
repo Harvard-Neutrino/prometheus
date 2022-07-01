@@ -142,7 +142,8 @@ _baseconfig = {
             'f2k_prefix':'',
             'ppctables':'../PPC_CUDA/',
             'ppc_exe':'../PPC_CUDA/ppc', # binary executable
-            'device':0, # GPU
+            'device':0, # GPU,
+            'supress_output': True,
         },
         'PPC': {
             'location': '../PPC/',
@@ -151,6 +152,7 @@ _baseconfig = {
             'ppctables': '../PPC/',
             'ppc_exe': '../PPC/ppc',  # binary executable
             'device': 0,  # CPU
+            'supress_output': True,
         },
     },
     ###########################################################################

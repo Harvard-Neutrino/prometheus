@@ -117,7 +117,7 @@ def plot_event(
         N = 1000
         _xx = np.linspace(-500, 500, N)
         _yy = np.linspace(-500, 500, N)
-        _zz = np.random.uniform(-1980, -2080, N)
+        _zz = np.random.uniform(-32, -132, N)
         ax.scatter(_xx, _yy, _zz, alpha=0.02, s=500 * np.random.rand(N), color='k')
 
     # Plot IceCube DOM locations in the background, if requested

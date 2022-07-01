@@ -6,12 +6,13 @@
 # imports
 import functools
 from .config import config
-from .lepton_prop import LP
+from hebe.lepton_prop import LP
 import sys
 import json
 import awkward as ak
 import numpy as np
-from .utils import write_to_f2k_format
+from .utils import serialize_to_f2k, PDG_to_f2k
+from .lepton_prop import Loss
 
 #from .detector_handler import DH
 # sys.path.append(config['photon propagator']['location'])
@@ -32,19 +33,11 @@ from olympus.event_generation.utils import sph_to_cart_jnp  # noqa: E402
 from hyperion.medium import medium_collections  # noqa: E402
 from hyperion.constants import Constants  # noqa: E402
 
-# A dict for converting PDG names to f2k names
-# TODO momve this outside
-PDG_type = [22, 11, -11, 13, -13, 2212]
-f2k_type = ['gamma', 'e-', 'e+', 'mu-', 'mu+', 'hadr']
-PDG_to_f2k = {x:y for x, y in zip(PDG_type, f2k_type)}
-
 def _parse_ppc(ppc_f):
     res_result = [] # timing and module
     hits = []
     with open(ppc_f) as ppc_out:
         for line in ppc_out:
-            #if "EE" in line: # Event is over
-            #    hits = []
             if "HIT" in line: # Photon was seen
                 l = line.split()
                 '''(string number, dom number, time, wavelength, 
@@ -59,13 +52,13 @@ def _parse_ppc(ppc_f):
 
 
 def _ppc_sim(
-        event,
-        det,
-        lp,
-        ppc_config,
-        padding
-        ):
-    """ Utilizes ppc to propagate light for the injected object
+    particle,
+    det,
+    lp,
+    **kwargs
+):
+    """
+    Utilizes PPC to propagate light for the injected object
 
     Parameters
     ---------
@@ -85,46 +78,62 @@ def _ppc_sim(
     res_record : 
         
     """
-
-    f2k_file = ppc_config['f2k_tmpfile'].replace("event", f"{ppc_config['f2k_prefix']}event")
-    with open(f2k_file, "w") as ppc_f:
-        # The particle is a charged lepton and should be handled by PROPOSAL
-        if abs(event['particle_id']) in [11,13,15]:
-            event_dir = sph_to_cart_jnp(
-                event["theta"],
-                event["phi"]
-            )
-            event_dir *= -1
-            event["dir"] = event_dir
-            r = np.linalg.norm(event["pos"])
-            # This is probably where we would factor it out
-            losses, total_loss = lp.energy_losses(event, r+padding)
-        # The event is a hadronic shower (I think?)
-        else:
-            key = PDG_to_f2k[event['particle_id']]
-            losses = {key:[[np.log10(event['energy']), event['pos']]]}
-            total_loss = None
-        # Make array with energy loss information and write it into the output file
-        output_info = [np.cos(event['theta']), event['phi'], event['energy'], event["pos"], losses]
-        write_to_f2k_format(output_info, ppc_f, 0)
-    # Propagate with PPC
-    # This file path is hardcoded into PPC. Don't change
-    geo_tmpfile = f'{ppc_config["ppctables"]}/geo-f2k'
-    # Write the geometry out to an f2k file
-    #dh.to_f2k(det, geo_tmpfile, serial_nos=[m.serial_no for m in det.modules])
-    ppc_file = ppc_config['ppc_tmpfile'].replace("event", f"{ppc_config['ppc_prefix']}_event")
-    command = f"{ppc_config['ppc_exe']} {ppc_config['device']} < {f2k_file} > {ppc_file}"
     import os
-    tenv = os.environ.copy()
-    tenv["PPCTABLESDIR"] = ppc_config["ppctables"]
-
     import subprocess
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
-    process.wait()
-    hits = _parse_ppc(ppc_file)
-    ## Cleanup f2k_tmpfile
-    os.remove(ppc_file)
-    os.remove(f2k_file)
+    geo_tmpfile = f'{kwargs["ppctables"]}/geo-f2k'
+    ppc_file = kwargs['ppc_tmpfile'].replace("event", f"{kwargs['ppc_prefix']}_event")
+    f2k_file = kwargs['f2k_tmpfile'].replace("event", f"{kwargs['f2k_prefix']}event")
+    if kwargs["supress_output"]:
+        command = f"{kwargs['ppc_exe']} {kwargs['device']} < {f2k_file} > {ppc_file} 2>/dev/null"
+    else:
+        command = f"{kwargs['ppc_exe']} {kwargs['device']} < {f2k_file} > {ppc_file}"
+    # The particle is a charged lepton and should be handled by PROPOSAL
+    if abs(int(particle)) in [12, 14, 16]: # It's a neutrino
+        hits = []
+    else: # It's something that deposits energy
+        if abs(int(particle)) in [11, 13, 15]: # It's a charged lepton
+            lp.energy_losses(particle)
+            for child in particle.children:
+                print(child)
+                # TODO put this in config
+                if child.e > 1:
+                    _ppc_sim(child, det, lp, **kwargs)
+        elif abs(int(particle))==111: # It's a neutral pion
+            # TODO handle this correctl by converting to photons after prop
+            return [], None
+        elif abs(int(particle))==211: # It's a charged pion
+            print("ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ")
+            loss = Loss(int(particle), particle.e, particle.position)
+            particle.add_loss(loss)
+        elif int(particle)==-2000001006: # Hadrons
+            print("FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK ")
+            loss = loss(int(particle), particle.e, particle.position)
+            particle.add_loss(loss)
+            #int_type = 
+            #loss = Loss
+            #key = PDG_to_f2k[int(particle)]
+            #losses = {key:[[particle.e, particle.position]]}
+            #total_loss = None
+        # Make array with energy loss information and write it into the output file
+        print(f"Initial particle had energy {particle.e}")
+        loss_e = [loss.e for loss in particle.losses]
+        print(f"Total of losses is {np.sum(loss_e)}")
+        serialize_to_f2k(particle, f2k_file, det.offset)
+        # Propagate with PPC
+        # This file path is hardcoded into PPC. Don't change
+        # Write the geometry out to an f2k file
+        det.to_f2k(
+            geo_tmpfile, serial_nos=[m.serial_no for m in det.modules]
+        )
+        tenv = os.environ.copy()
+        tenv["PPCTABLESDIR"] = kwargs["ppctables"]
+
+        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
+        process.wait()
+        hits = _parse_ppc(ppc_file)
+        ## Cleanup f2k_tmpfile
+        os.remove(ppc_file)
+        os.remove(f2k_file)
     return hits, None
 
 
@@ -198,10 +207,10 @@ class PP(object):
     def __init__(self, lp: LP, det):
         print('--------------------------------------------')
         print('Constructing the photon propagator')
-        self._local_conf = config['photon propagator']['olympus']
         self.__lp = lp
         self.__det = det
         if config['photon propagator']['name'] == 'olympus':
+            self._local_conf = config['photon propagator']['olympus']
             self._olympus_setup()
             self._plotting = self._olympus_plot_event
             self._sim = self._olympus_sim
@@ -209,26 +218,23 @@ class PP(object):
             # TODO add in event displays
             # self._plotting = plot_event
             # TODO make a function for propagating photons
-            self._sim = lambda event: _ppc_sim(
-                    event,
-                    self.__det,
-                    self.__lp,
-                    self._local_conf,
-                    config['lepton propagator']['propagation padding'],
+            # TODO move plotting to a HEBE object
+            self._sim = lambda particle: _ppc_sim(
+                particle,
+                self.__det,
+                self.__lp,
+                config["photon propagator"]["PPC"]
             )
         elif config['photon propagator']['name'] == 'PPC_CUDA':
-            self._local_conf = config['photon propagator']['PPC_CUDA']
             self.__lp = lp
             self.__det = det
             # TODO add in event displays
             #self._plotting = plot_event
-            # TODO make a function for propagating photons
-            self._sim = lambda event: _ppc_sim(
-                    event, 
+            self._sim = lambda particle: _ppc_sim(
+                    particle, 
                     self.__det,
                     self.__lp, 
-                    self._local_conf,
-                    config['lepton propagator']['propagation padding'],
+                    **config["photon propagator"]["PPC_CUDA"]
             )
             
         else:
