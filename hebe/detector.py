@@ -111,7 +111,7 @@ class Detector(object):
         else:
             import string, random
             serial_nos = ["0x"+"".join(random.choices(
-                string.ascii_lowercase + string.digits, k=12
+                '0123456789abcdef', k=12
             )) 
                     for _ in range(len(self.modules))
                     ]
