@@ -5,6 +5,7 @@
 
 import numpy as np
 import awkward as ak
+<<<<<<< HEAD
 from scipy import stats
 from .config import config
 from .utils.iter_or_rep import iter_or_rep
@@ -13,6 +14,10 @@ from .utils.iter_or_rep import iter_or_rep
 #from olympus.event_generation.detector import (  # noqa: E402
 #    Detector, Module
 #)
+=======
+from .config import config
+from .utils import iter_or_rep
+>>>>>>> bff5dd3750dc710ffb6ff865477f8a9facc425d0
 
 class Module(object):
     """
@@ -48,12 +53,27 @@ class Detector(object):
     """
     def __init__(self, modules):
         """Initialize detector."""
+<<<<<<< HEAD
         self.modules = modules
+=======
+        #self.modules = modules
+        #self.module_coords = np.vstack([m.pos for m in self.modules])
+        # We need to move all our modules to a coordinate system
+        # Where (0,0,0) is the center of the detector
+        self._offset = np.mean(np.vstack([m.pos for m in modules]), axis=0)
+        self.modules = [Module(m.pos-self._offset, m.key,
+            noise_rate=m.noise_rate, efficiency=m.efficiency, serial_no=m.serial_no) 
+        for m in modules]
+>>>>>>> bff5dd3750dc710ffb6ff865477f8a9facc425d0
         self.module_coords = np.vstack([m.pos for m in self.modules])
         self.module_coords_ak = ak.Array(self.module_coords)
         self.module_efficiencies = np.asarray([m.efficiency for m in self.modules])
         self.module_noise_rates = np.asarray([m.noise_rate for m in self.modules])
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> bff5dd3750dc710ffb6ff865477f8a9facc425d0
         # TODO replace this with the functions David writes
         self._outer_radius = np.linalg.norm(self.module_coords, axis=1).max()
         self._outer_cylinder = (
@@ -68,8 +88,13 @@ class Detector(object):
         return self.modules[idx]
 
     def __add__(self, other):
+<<<<<<< HEAD
         modules = np.hstack([self.modules, other.modules])
         return Detector(modules)
+=======
+        modules = np.hcat(self.modules, other.modules)
+        Detector(modules)
+>>>>>>> bff5dd3750dc710ffb6ff865477f8a9facc425d0
 
     @property
     def n_modules(self):
@@ -83,6 +108,13 @@ class Detector(object):
     def outer_cylinder(self):
         return self._outer_cylinder
 
+<<<<<<< HEAD
+=======
+    @property
+    def offset(self):
+        return self._offset
+
+>>>>>>> bff5dd3750dc710ffb6ff865477f8a9facc425d0
     def to_f2k(
             self,
             geo_file,
@@ -124,7 +156,12 @@ class Detector(object):
             keys = [m.key for m in self.modules]
         with open(geo_file, "w") as f2k_out:
             for mac_id, serial_no, pos, key in zip(
+<<<<<<< HEAD
                     mac_ids, serial_nos, self.module_coords, keys):
+=======
+                mac_ids, serial_nos, self.module_coords+self._offset, keys
+            ):
+>>>>>>> bff5dd3750dc710ffb6ff865477f8a9facc425d0
                 line = f"{mac_id}\t{serial_no}\t{pos[0]}\t{pos[1]}\t{pos[2]}"
                 if hasattr(key, "__iter__"):
                     for x in key:

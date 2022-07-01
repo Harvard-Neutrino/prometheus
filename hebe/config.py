@@ -56,7 +56,7 @@ _baseconfig = {
         # Track particles
         'track particles': [13, -13],
         # Everything here will be treated explicitly
-        'explicit': [11, -11, 111, 211, 13, -13],
+        'explicit': [11, -11, 111, 211, 13, -13, 15, -15],
         # Everything else is replaced by
         'replacement': 2212,
     },
@@ -100,11 +100,16 @@ _baseconfig = {
         'track length': 5000,  # maximum track length to model
         'lepton': 'MuMinus',
         'medium': 'Water',
-        'v_cut': 1,
-        'e_cut': 500,  # MeV
+        # TODO I made these numbers up !!!!!!!!!!
+        'vcut': [1e-3, 1e-3],
+        'ecut': [-1.0, -1.0],  # MeV
         'soft_losses': False,
-        'propagation padding': 1000,
+        'propagation padding': 900,
         'interpolation': True,
+        'lpm_effect' : True,
+        'continuous_randomization' : True,
+        'soft_losses' : True,
+        'scattering model' : "Moliere"
 
     },
     ###########################################################################

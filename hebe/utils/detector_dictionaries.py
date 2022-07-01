@@ -1,10 +1,10 @@
 # detector_dictionaries.py
 # David Kim
 
-cylRadius = 900
-cylHeight = 900
-endcap_len = 700
-inj_radius = 1000
+cylRadius = 1200
+cylHeight = 1200
+endcap_len = 1200
+inj_radius = 1200
 
 # default vaules for detectors
 detectors = {
