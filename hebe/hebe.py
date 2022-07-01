@@ -90,19 +90,19 @@ class HEBE(object):
         print('Setting up the detector')
         #self._dh = DH()
         self._det = detector_from_f2k(config["detector"]["file name"])
-        endcap = get_endcap(self._det.module_coords)
-        injradius = get_injRadius(self._det.module_coords)
-        cylRadius = get_cylinder(self._det.module_coords)[0] + fk.padding
-        cylHeight = get_cylinder(self._det.module_coords)[1] + fk.padding
-        if not config["lepton injector"]["force injection params"]:
-            warn('Overwriting injection parameters with calculated values')
-            config["lepton injector"]["simulation"]["endcap length"] = endcap
-            config["lepton injector"]["simulation"]["injection radius"] = inj_radius
-            config["lepton injector"]["simulation"]["cylinder radius"] = cylRadius
-            config["lepton injector"]["simulation"]["cylinder height"] = cylHeight
-        if not config["lepton propagator"]["force propagation params"]:
-            warn('Overwriting propagation parameters with calculated values')
-            config["lepton propogator"]["propogation padding"] = inj_radius
+        #endcap = get_endcap(self._det.module_coords)
+        #injradius = get_injRadius(self._det.module_coords)
+        #cylRadius = get_cylinder(self._det.module_coords)[0] + fk.padding
+        #cylHeight = get_cylinder(self._det.module_coords)[1] + fk.padding
+        #if not config["lepton injector"]["force injection params"]:
+        #    warn('Overwriting injection parameters with calculated values')
+        #    config["lepton injector"]["simulation"]["endcap length"] = endcap
+        #    config["lepton injector"]["simulation"]["injection radius"] = inj_radius
+        #    config["lepton injector"]["simulation"]["cylinder radius"] = cylRadius
+        #    config["lepton injector"]["simulation"]["cylinder height"] = cylHeight
+        #if not config["lepton propagator"]["force propagation params"]:
+        #    warn('Overwriting propagation parameters with calculated values')
+        #    config["lepton propogator"]["propogation padding"] = inj_radius
         print('Finished the detector')
         # Setting up the lepton propagator
         print('-------------------------------------------')
