@@ -91,18 +91,18 @@ class HEBE(object):
         #self._dh = DH()
         self._det = detector_from_f2k(config["detector"]["file name"])
         endcap = get_endcap(self._det.module_coords)
-        injradius = get_injRadius(self._det.module_coords)
-        cylRadius = get_cylinder(self._det.module_coords)[0] + padding
-        cylHeight = get_cylinder(self._det.module_coords)[1] + padding
+        inj_radius = get_injRadius(self._det.module_coords)
+        cyl_radius = get_cylinder(self._det.module_coords)[0] + padding
+        cyl_height = get_cylinder(self._det.module_coords)[1] + padding
         if not config["lepton injector"]["force injection params"]:
             warn('Overwriting injection parameters with calculated values')
             config["lepton injector"]["simulation"]["endcap length"] = endcap
             config["lepton injector"]["simulation"]["injection radius"] = inj_radius
-            config["lepton injector"]["simulation"]["cylinder radius"] = cylRadius
-            config["lepton injector"]["simulation"]["cylinder height"] = cylHeight
+            config["lepton injector"]["simulation"]["cylinder radius"] = cyl_radius
+            config["lepton injector"]["simulation"]["cylinder height"] = cyl_height
         if not config["lepton propagator"]["force propagation params"]:
             warn('Overwriting propagation parameters with calculated values')
-            config["lepton propogator"]["propogation padding"] = inj_radius
+            config["lepton propagator"]["propogation padding"] = inj_radius
         print('Finished the detector')
         # Setting up the lepton propagator
         print('-------------------------------------------')

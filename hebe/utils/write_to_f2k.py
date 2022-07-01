@@ -1,8 +1,33 @@
 import numpy as np
 from .convert_loss_name import convert_loss_name
+from .units import SpeedOfLight, s_to_ns
+
+def serialize_particle(particle, output_f2k, offset):
+    offpos = particle.position + offset
+    offpos[2] += 1948.07
+    theta = np.arccos(particle.direction[2])
+    phi = np.arctan2(particle.direction[1], particle.direction[0])
+    output_f2k.write(
+        f'MC E {particle.e} x {offpos[0]} y {offpos[1]} z {offpos[2]} theta {theta} phi {phi}\n'
+    )
+
+def serialize_loss(loss, parent, output_f2k, offset):
+    d = np.linalg.norm(loss.position - parent.position)
+    offpos = loss.position + offset
+    offpos[2] += 1948.07
+    theta = np.arccos(parent.direction[2])
+    phi = np.arctan2(parent.direction[1], parent.direction[0])
+    c = SpeedOfLight
+    c /= s_to_ns
+    dt = d / c
+    line = f'TR 0 {0} {str(loss)} {offpos[0]} {offpos[1]} {offpos[2]} {theta} {phi} 0 {loss.e} {dt} \n'
+    #line = f'TR 0 {loss.int_type} {str(loss)} {offpos[0]} {offpos[1]} {offpos[2]} {theta} {phi} 0 {loss.e} {dt} \n'
+    output_f2k.write(line)
+
+
 
 # Create an f2k file from given events
-def write_to_f2k_format(mCPEnergyLosses, output_f2k, index):
+def serialize_to_f2k(particle, fname, det_offset):
     '''
         output_f2k: file name where the data will be written to
         This format output can be passed to PPC to propagate the photons.
@@ -25,55 +50,14 @@ def write_to_f2k_format(mCPEnergyLosses, output_f2k, index):
             energy is the track's initial energy in GeV.
         - Time is the track's initial time in nanoseconds.
     '''
-    # TODO put this in units or some shit
-    # Useful constants
-    km_to_m = 1e3
-    MeV_to_GeV = 1e-3
-
-    # Speed of light [m/s]
-    SpeedOfLight = 299792458
-
-    # Useful unit conversions
-    meter_to_cm = 1e2
-    km_to_cm = 1e5
-    km_to_m = 1e3
-    cm_to_m = 1e-2
-    GeV_to_MeV = 1e3
-    MeV_to_GeV = 1e-3
-    s_to_ns = 1e9
-
-    # TODO move this to the config file?
-    ic_depth = 1970 # m
-    costh, phi, E, iposition, losses = mCPEnergyLosses
-    output_f2k.write('EM {i} 1 {depth_in_meters} 0 0 0 \n'.format(i=index, depth_in_meters=ic_depth * km_to_m))
-    output_f2k.write('MC E {E} x {x} y {y} z {z} theta {theta} phi {phi}\n'.format(
-        E=E,
-        x=iposition[0],
-        y=iposition[1],
-        z=iposition[2],
-        theta=np.arccos(costh),
-        phi=phi)
-    )
-    for ii, type_of_loss in enumerate(losses.keys()):
-        for loss in losses[type_of_loss]:
-            dr = iposition - loss[1]
-            d = np.sqrt(np.square(dr[0]) + np.square(dr[1]) + np.square(dr[2]))
-            # Convert speed of light to m/ns
-            c = SpeedOfLight
-            c /= s_to_ns
-            dt = d / c
-            magic_format = 'TR {i} {ii} {type_of_loss} {x} {y} {z} {theta} {phi} 0 {ee} {t} \n'.format(
-                i=index,
-                ii=ii,
-                type_of_loss=convert_loss_name(type_of_loss),
-                x=loss[1][0],
-                y=loss[1][1],
-                z=loss[1][2] + ic_depth,
-                theta=np.arccos(costh),
-                phi=phi,
-                ee=10**loss[0],
-                t=dt
-            )
-            output_f2k.write(magic_format)
-    output_f2k.write('EE\n')
-
+    index = 0
+    with open(fname, "w") as output_f2k:
+        output_f2k.write(f'EM {index} 1 {det_offset[2]} 0 0 0 \n')
+        serialize_particle(particle, output_f2k, det_offset)
+        for loss in particle.losses:
+            serialize_loss(loss, particle, output_f2k, det_offset)
+        for child in particle.children:
+            serialize_particle(child, output_f2k, det_offset)
+            for loss in child.losses:
+                serialize_loss(loss, child, output_f2k, det_offset)
+        output_f2k.write('EE\n')
