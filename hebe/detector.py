@@ -68,8 +68,8 @@ class Detector(object):
         return self.modules[idx]
 
     def __add__(self, other):
-        modules = np.hcat(self.modules, other.modules)
-        Detector(modules)
+        modules = np.hstack([self.modules, other.modules])
+        return Detector(modules)
 
     @property
     def n_modules(self):
