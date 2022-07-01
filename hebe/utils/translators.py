@@ -1,4 +1,5 @@
-# A dict for converting PDG names to f2k names
+# A dict for converting PDG names to f2k names from
+# https://www.zeuthen.desy.de/~steffenp/f2000/f2000_1.5.html#SEC26
 PDG_to_f2k = {
     11:"e-", 
     -11:"e+",
@@ -18,7 +19,9 @@ PDG_to_f2k = {
 
 f2k_to_PDG = {val:key for key, val in PDG_to_f2k.items()}
 
+# mapping from https://github.com/icecube/LeptonInjector/blob/master/private/LeptonInjector/Particle.cxx
 PDG_to_pstring = {
+    0:"Unknonw"
     11:"EMinus",
     12:"NuE",
     13:"MuMinus",
@@ -36,10 +39,13 @@ PDG_to_pstring = {
     211:'PiPlus', # I'm not sure that these are defined either but...
     -211:'PiMinus', # I'm not sure that these are defined either but...
     111:'PiZero', # I'm not sure that these are defined either but...
+    -2000001006:"Hadrons",
 }
 
 pstring_to_PDG = {val:key for key, val in PDG_to_pstring.items()}
 
+# Mapping from https://github.com/tudo-astroparticlephysics/PROPOSAL/blob/master/src/PROPOSAL/PROPOSAL/particle/Particle.h
+# to https://www.zeuthen.desy.de/~steffenp/f2000/f2000_1.5.html#SEC26
 int_type_to_str = {
     #1000000001:"",
     1000000002:"brems",
