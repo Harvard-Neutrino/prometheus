@@ -9,11 +9,11 @@ PDG_to_f2k = {
     14:"nu_mu",
     -14:"~nu_mu",
     22:"gamma",
-    2212:'p-',
     211:'pi+',
-    -211:'pi0',
-    111:'pi0',
-
+    -211:'pi-',
+    111:'pi0', # This is technically not defined but...
+    2212:'p+',
+    -2212:'p-',
 }
 
 f2k_to_PDG = {val:key for key, val in PDG_to_f2k.items()}
@@ -31,10 +31,11 @@ PDG_to_pstring = {
     -14:"NuMuBar",
     -15:"TauPlus",
     -16:"NuTaBar",
-    2212:"Proton",
-    211:'PiPlus',
-    -211:'PiMinus',
-    111:'PiZero',
+    2212:"Proton", # I'm not sure that these are defined either but...
+    -2212:"AntiProton", # I'm not sure that these are defined either but...
+    211:'PiPlus', # I'm not sure that these are defined either but...
+    -211:'PiMinus', # I'm not sure that these are defined either but...
+    111:'PiZero', # I'm not sure that these are defined either but...
 }
 
 pstring_to_PDG = {val:key for key, val in PDG_to_pstring.items()}
