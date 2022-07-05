@@ -46,7 +46,7 @@ class Detector(object):
         #self.module_coords = np.vstack([m.pos for m in self.modules])
         # We need to move all our modules to a coordinate system
         # Where (0,0,0) is the center of the detector
-        self._offset = np.mean(np.vstack([m.pos for m in modules]), axis=0)
+        self._offset = np.mean(np.array([m.pos for m in modules]), axis=0)
         self.modules = [Module(m.pos-self._offset, m.key,
             noise_rate=m.noise_rate, efficiency=m.efficiency, serial_no=m.serial_no) 
         for m in modules]
@@ -71,6 +71,20 @@ class Detector(object):
     def __add__(self, other):
         modules = np.hcat(self.modules, other.modules)
         Detector(modules)
+
+    def subdetectors(self, nmodules):
+        start = 0
+        end = nmodules
+        slc = slice(start, end)
+        subdetectors = [Detector(self.modules[slc])]
+        while end <= len(self.modules):
+            start += nmodules
+            end += nmodules
+            slc = slice(start, end)
+            print(slc)
+            subdet = Detector(self.modules[slc])
+            subdetectors.append(subdet)
+        return subdetectors
 
     @property
     def n_modules(self):
@@ -111,7 +125,7 @@ class Detector(object):
         else:
             import string, random
             serial_nos = ["0x"+"".join(random.choices(
-                string.ascii_lowercase + string.digits, k=12
+                '0123456789abcdef', k=12
             )) 
                     for _ in range(len(self.modules))
                     ]

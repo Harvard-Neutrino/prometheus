@@ -80,10 +80,11 @@ def _ppc_sim(
     """
     import os
     import subprocess
+    # This file path is hardcoded into PPC. Don't change
     geo_tmpfile = f'{kwargs["ppctables"]}/geo-f2k'
     ppc_file = kwargs['ppc_tmpfile'].replace("event", f"{kwargs['ppc_prefix']}_event")
     f2k_file = kwargs['f2k_tmpfile'].replace("event", f"{kwargs['f2k_prefix']}event")
-    if kwargs["supress_output"]:
+    if  not kwargs["supress_output"]:
         command = f"{kwargs['ppc_exe']} {kwargs['device']} < {f2k_file} > {ppc_file} 2>/dev/null"
     else:
         command = f"{kwargs['ppc_exe']} {kwargs['device']} < {f2k_file} > {ppc_file}"
@@ -94,7 +95,6 @@ def _ppc_sim(
         if abs(int(particle)) in [11, 13, 15]: # It's a charged lepton
             lp.energy_losses(particle)
             for child in particle.children:
-                print(child)
                 # TODO put this in config
                 if child.e > 1:
                     _ppc_sim(child, det, lp, **kwargs)
@@ -102,34 +102,34 @@ def _ppc_sim(
             # TODO handle this correctl by converting to photons after prop
             return [], None
         elif abs(int(particle))==211: # It's a charged pion
-            print("ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ALERT ")
             loss = Loss(int(particle), particle.e, particle.position)
             particle.add_loss(loss)
         elif int(particle)==-2000001006: # Hadrons
-            print("FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK FUCK ")
             loss = loss(int(particle), particle.e, particle.position)
             particle.add_loss(loss)
-            #int_type = 
-            #loss = Loss
-            #key = PDG_to_f2k[int(particle)]
-            #losses = {key:[[particle.e, particle.position]]}
-            #total_loss = None
         # Make array with energy loss information and write it into the output file
-        print(f"Initial particle had energy {particle.e}")
-        loss_e = [loss.e for loss in particle.losses]
-        print(f"Total of losses is {np.sum(loss_e)}")
         serialize_to_f2k(particle, f2k_file, det.offset)
-        # Propagate with PPC
-        # This file path is hardcoded into PPC. Don't change
-        # Write the geometry out to an f2k file
         det.to_f2k(
-            geo_tmpfile, serial_nos=[m.serial_no for m in det.modules]
+            geo_tmpfile,
+            #serial_nos=[m.serial_no for m in det.modules]
         )
         tenv = os.environ.copy()
         tenv["PPCTABLESDIR"] = kwargs["ppctables"]
 
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
         process.wait()
+        hits = _parse_ppc(ppc_file)
+        # Propagate with PPC
+        # Write the geometry out to an f2k file
+        #tenv = os.environ.copy()
+        #tenv["PPCTABLESDIR"] = kwargs["ppctables"]
+        ## TODO move 5200 to globals
+        #det.to_f2k(geo_tmpfile)
+        #subdetectors = det.subdetectors(5200)
+        #for subdetector in subdetectors:
+        #    subdetector.to_f2k(geo_tmpfile)
+        #    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
+        #    process.wait()
         hits = _parse_ppc(ppc_file)
         ## Cleanup f2k_tmpfile
         os.remove(ppc_file)
