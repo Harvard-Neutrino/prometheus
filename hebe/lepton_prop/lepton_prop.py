@@ -114,7 +114,6 @@ class LP(object):
 
     # TODO make this two functions ?
     def _make_old_propdict(self, pstr, **kwargs):
-        print(pstr)
         """Set up a proposal propagator for version <= 6"""
         print('----------------------------------------------------')
         from .old_proposal import make_propagator
