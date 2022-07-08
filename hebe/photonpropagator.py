@@ -82,9 +82,9 @@ def _ppc_sim(
     import subprocess
     # This file path is hardcoded into PPC. Don't change
     geo_tmpfile = f'{kwargs["ppctables"]}/geo-f2k'
-    ppc_file = kwargs['ppc_tmpfile'].replace("event", f"{kwargs['ppc_prefix']}_event")
-    f2k_file = kwargs['f2k_tmpfile'].replace("event", f"{kwargs['f2k_prefix']}event")
-    if  not kwargs["supress_output"]:
+    ppc_file = f"{kwargs['ppc_tmpfile']}_{str(particle)}"
+    f2k_file = f"{kwargs['f2k_tmpfile']}_{str(particle)}"
+    if kwargs["supress_output"]:
         command = f"{kwargs['ppc_exe']} {kwargs['device']} < {f2k_file} > {ppc_file} 2>/dev/null"
     else:
         command = f"{kwargs['ppc_exe']} {kwargs['device']} < {f2k_file} > {ppc_file}"
@@ -94,24 +94,43 @@ def _ppc_sim(
     else: # It's something that deposits energy
         if abs(int(particle)) in [11, 13, 15]: # It's a charged lepton
             lp.energy_losses(particle)
+            # TODO do this recursively...
             for child in particle.children:
                 # TODO put this in config
-                if child.e > 1:
-                    _ppc_sim(child, det, lp, **kwargs)
+                if child.e > 1 and abs(int(child)) in [11, 13, 15]:
+                    lp.energy_losses(child)
+                elif child.e > 1 and abs(int(child))==111: # It's a neutral pion
+                    # TODO handle this correctl by converting to photons after prop
+                    pass
+                elif child.e > 1 and abs(int(child))==211: # It's a charged pion
+                    loss = Loss(int(child), child.e, child.position)
+                    child.add_loss(loss)
+                elif child.e > 1 and abs(int(child))==311: # It's a neutral kaon
+                    # TODO handle this correctl by converting to photons after prop
+                    pass
+                elif int(child)==-2000001006 or int(child)==2212: # Hadrons
+                    loss = Loss(int(child), child.e, child.position)
+                    child.add_loss(loss)
         elif abs(int(particle))==111: # It's a neutral pion
             # TODO handle this correctl by converting to photons after prop
             return [], None
         elif abs(int(particle))==211: # It's a charged pion
             loss = Loss(int(particle), particle.e, particle.position)
             particle.add_loss(loss)
-        elif int(particle)==-2000001006: # Hadrons
-            loss = loss(int(particle), particle.e, particle.position)
+        elif abs(int(particle))==311: # It's a neutral kaon
+            # TODO handle this correctl by converting to photons after prop
+            return [], None
+        elif int(particle)==-2000001006 or int(particle)==2212: # Hadrons
+            loss = Loss(int(particle), particle.e, particle.position)
             particle.add_loss(loss)
+        else:
+            print(repr(particle))
+            raise ValueError("Unrecognized particle")
         # Make array with energy loss information and write it into the output file
         serialize_to_f2k(particle, f2k_file, det.offset)
         det.to_f2k(
             geo_tmpfile,
-            #serial_nos=[m.serial_no for m in det.modules]
+            serial_nos=[m.serial_no for m in det.modules]
         )
         tenv = os.environ.copy()
         tenv["PPCTABLESDIR"] = kwargs["ppctables"]
@@ -120,18 +139,9 @@ def _ppc_sim(
         process.wait()
         hits = _parse_ppc(ppc_file)
         # Propagate with PPC
-        # Write the geometry out to an f2k file
-        #tenv = os.environ.copy()
-        #tenv["PPCTABLESDIR"] = kwargs["ppctables"]
-        ## TODO move 5200 to globals
-        #det.to_f2k(geo_tmpfile)
-        #subdetectors = det.subdetectors(5200)
-        #for subdetector in subdetectors:
-        #    subdetector.to_f2k(geo_tmpfile)
-        #    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
-        #    process.wait()
         hits = _parse_ppc(ppc_file)
-        ## Cleanup f2k_tmpfile
+        del particle
+        # Cleanup f2k_tmpfile
         os.remove(ppc_file)
         os.remove(f2k_file)
     return hits, None
