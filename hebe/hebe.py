@@ -151,7 +151,7 @@ class HEBE(object):
                 print('Not injection')
             print('Finished LI, loading data')
         self._LI_raw = h5py.File(
-            config['lepton injector']['simulation']['output name']
+            config['lepton injector']['simulation']['output name'], "r"
         )
         self._final_states = {}
         for elem in config['run']['data sets']:
