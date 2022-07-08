@@ -210,9 +210,8 @@ def main(args):
     config['photon propagator'][photo_prop]['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/"
     config['photon propagator'][photo_prop]['ppctables'] = "../PPC_CUDA/"
     config['photon propagator'][photo_prop]['ppc_exe'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/ppc"
-    config['photon propagator'][photo_prop]['supress_output'] = False
     hebe = HEBE(userconfig=config)
-    #hebe.sim()
+    hebe.sim()
     if not args.no_plot:
         print('Plotting')
         import awkward as ak
