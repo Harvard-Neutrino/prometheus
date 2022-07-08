@@ -19,8 +19,8 @@ class Loss(object):
     def __str__(self):
         return self._str
 
-    def __rep__(self):
-        return self._str
+    def __repr__(self):
+        return f"Interaction type: {self.int_type}\nEnergy: {self.e}\nPosition: {self.position}"
 
     @property
     def int_type(self):
