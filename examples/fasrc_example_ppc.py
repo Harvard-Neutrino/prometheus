@@ -115,6 +115,13 @@ def initialize_args():
     )
     # I/O
     parser.add_argument(
+        "--no_plot",
+        dest="no_plot",
+        action="store_true",
+        default=False,
+        help="Don't make plots"
+    )
+    parser.add_argument(
         "--geo_file",
         dest="geo_file",
         type=str,
@@ -185,7 +192,6 @@ def main(args):
     config['lepton injector']['simulation']['final state 2'] = args.final_2
     config['lepton injector']['simulation']['minimal energy'] = args.emin
     config['lepton injector']['simulation']['maximal energy'] = args.emax
-    # TODO do this automatically with David's functions
     config['lepton injector']['simulation']["injection radius"] = args.injection_radius
     config['lepton injector']['simulation']["endcap length"] = args.endcap_length
     config['lepton injector']['simulation']["cylinder radius"] = args.cylinder_radius
@@ -206,11 +212,14 @@ def main(args):
     config['photon propagator'][photo_prop]['ppc_exe'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/ppc"
     config['photon propagator'][photo_prop]['supress_output'] = False
     hebe = HEBE(userconfig=config)
-    hebe.sim()
-    print('Plotting')
-    for idx in range(nevent):
-        event = {'final_1':[hebe.results['final_1'][idx]], 'final_2':[hebe.results['final_2'][idx]]}
-        hebe.ppc_event_plotting(event, fig_name=f'./plots/{args.final_1}_{args.final_2}_{seed}_{idx}.pdf', show_track=False, show_dust_layer=True)
+    #hebe.sim()
+    if not args.no_plot:
+        print('Plotting')
+        import awkward as ak
+        events = ak.from_parquet(f"{config['photon propagator']['storage location']}meta_data.parquet")
+        for idx, event in enumerate(events):
+            from hebe.ppc_plotting import plot_event
+            plot_event(event, hebe._det, fig_name=f'./plots/{args.final_1}_{args.final_2}_{seed}_{idx}.pdf', show_track=False, show_dust_layer=True)
 
     del hebe
 
