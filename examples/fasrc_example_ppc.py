@@ -32,6 +32,13 @@ def initialize_args():
     )
     # Injection
     parser.add_argument(
+        "--padding",
+        dest="padding",
+        type=float,
+        default=200,
+        help="Padding when injecting in volume mode. Should be about an absorption length"
+    )
+    parser.add_argument(
         "--final_1",
         dest="final_1",
         type=str,
@@ -70,6 +77,7 @@ def initialize_args():
         default=1.0,
         help="Spectral index for sampling"
     )
+    # These LI options are now defunct. You need to do a bit more if you wanna play with them
     parser.add_argument(
         "--endcap_length",
         dest="endcap_length",
@@ -106,6 +114,13 @@ def initialize_args():
         help="Force volume injection."
     )
     # I/O
+    parser.add_argument(
+        "--geo_file",
+        dest="geo_file",
+        type=str,
+        default="../hebe/data/icecube-f2k",
+        help="F2k file describing the geometry of the detector"
+    )
     parser.add_argument(
         "--output_prefix",
         dest="output_prefix",
@@ -148,6 +163,8 @@ def main(args):
         clepton = args.final_2
     else:
         raise ValueError("What's happening here")
+    config["detector"]["file name"] = args.geo_file
+    config["detector"]["padding"] = args.padding
     if clepton in ranged_leptons:
         if not args.force_volume:
             print("Doing ranged injection")
@@ -173,26 +190,27 @@ def main(args):
     config['lepton injector']['simulation']["endcap length"] = args.endcap_length
     config['lepton injector']['simulation']["cylinder radius"] = args.cylinder_radius
     config['lepton injector']['simulation']["cylinder height"] = args.cylinder_height
+    config['lepton injector']['simulation']["power law"] = args.gamma
     config['detector']['injection offset'] = [0., 0., -2000]
     config["general"]["random state seed"] = seed
     config["general"]["meta_name"] = 'meta_data_%d' % seed
     config['lepton injector']['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/lib64/"
     config['lepton injector']['xsec location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/LeptonInjector/resources/"
-    config["detector"]["file name"] = '../hebe/data/icecube-f2k'
     config['photon propagator']['storage location'] = f'{args.output_prefix}/seed_{seed}_'
     photo_prop = "PPC_CUDA"
     config['photon propagator']['name'] = photo_prop
     config['photon propagator'][photo_prop]['ppc_tmpfile'] = args.ppc_tmpfile.replace(".ppc", f"{seed}.ppc")
     config['photon propagator'][photo_prop]['f2k_tmpfile'] = args.f2k_tmpfile.replace(".f2k", f"{seed}.f2k")
-    config['photon propagator'][photo_prop]['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA/"
+    config['photon propagator'][photo_prop]['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/"
     config['photon propagator'][photo_prop]['ppctables'] = "../PPC_CUDA/"
-    config['photon propagator'][photo_prop]['ppc_exe'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA/ppc"
+    config['photon propagator'][photo_prop]['ppc_exe'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/ppc"
+    config['photon propagator'][photo_prop]['supress_output'] = False
     hebe = HEBE(userconfig=config)
     hebe.sim()
     print('Plotting')
     for idx in range(nevent):
         event = {'final_1':[hebe.results['final_1'][idx]], 'final_2':[hebe.results['final_2'][idx]]}
-        hebe.ppc_event_plotting(event, fig_name=f'./{args.final_1}_{args.final_2}_{seed}_{idx}.pdf', show_track=False, show_dust_layer=True)
+        hebe.ppc_event_plotting(event, fig_name=f'./plots/{args.final_1}_{args.final_2}_{seed}_{idx}.pdf', show_track=False, show_dust_layer=True)
 
     del hebe
 
