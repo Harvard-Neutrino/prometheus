@@ -108,7 +108,7 @@ _baseconfig = {
         'medium': 'Water',
         # TODO I made these numbers up !!!!!!!!!!
         'vcut': [1e-3, 1e-3],
-        'ecut': [-1.0, -1.0],  # MeV
+        'ecut': [1.0, 1.0],  # MeV
         'soft_losses': False,
         'propagation padding': 900,
         'interpolation': True,
