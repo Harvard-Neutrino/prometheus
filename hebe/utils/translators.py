@@ -10,9 +10,10 @@ PDG_to_f2k = {
     14:"nu_mu",
     -14:"~nu_mu",
     22:"gamma",
-    211:'pi+',
-    -211:'pi-',
     111:'pi0', # This is technically not defined but...
+    211:'hadr',
+    -211:'hadr',
+    311:'k0', # This is technically not defined but...
     2212:'p+',
     -2212:'p-',
 }
@@ -38,6 +39,7 @@ PDG_to_pstring = {
     -2212:"AntiProton", # I'm not sure that these are defined either but...
     211:'PiPlus', # I'm not sure that these are defined either but...
     -211:'PiMinus', # I'm not sure that these are defined either but...
+    311:'KZero', # I'm not sure that these are defined either but...
     111:'PiZero', # I'm not sure that these are defined either but...
     -2000001006:"Hadrons",
 }
@@ -47,8 +49,8 @@ pstring_to_PDG = {val:key for key, val in PDG_to_pstring.items()}
 # Mapping from https://github.com/tudo-astroparticlephysics/PROPOSAL/blob/master/src/PROPOSAL/PROPOSAL/particle/Particle.h
 # to https://www.zeuthen.desy.de/~steffenp/f2000/f2000_1.5.html#SEC26
 int_type_to_str = {
-    211:"pi+",
-    -211:"pi-",
+    211:"hadr",
+    -211:"hadr",
     #1000000001:"",
     1000000002:"brems",
     1000000003:"delta",
@@ -60,6 +62,7 @@ int_type_to_str = {
     # What do we do with this ???????
     1000000008:"delta",
     -2000001006:"hadr",
+    2212:"hadr",
 }
 
 str_to_int_type = {val:key for key, val in int_type_to_str.items()}
