@@ -120,18 +120,14 @@ def old_proposal_losses(
     secondarys = prop.propagate(
         particle_dd, propagation_length * m_to_cm
     )
+    del particle_dd
     continuous_loss = 0
     for sec in secondarys.particles:
-	    # TODO this line always seemed weird to me. Check it
         sec_energy = (sec.parent_particle_energy - sec.energy) * MeV_to_GeV
         # This should work with just the position but that requires some testing
         pos = np.array([sec.position.x, sec.position.y, sec.position.z]) * cm_to_m
         if sec.type > 1000000000: # This is an energy loss
             particle.add_loss(Loss(sec.type, sec_energy, pos))
-        #    if sec.type==1000000008:
-        #        continuous_loss += sec_energy
-        #    else:
-        #        particle.add_loss(Loss(sec.type, sec_energy, pos))
         else: # This is a particle. Might need to propagate
             child = Particle(
                 sec.type,
@@ -141,27 +137,5 @@ def old_proposal_losses(
                 parent=particle
             )
             particle.add_child(child)
-    #for child in particle.children:
-    #    print(repr(child))
-    # TODO: Figure out how to handle this...
-    #cont_loss_sum = sum([
-    #    loss for loss in particle.losses if los.int_type==1000000001
-    #])
-    #total_dist = np.sqrt(np.sum(np.square(pos-position)))
-    ## TODO: Add this to config
-    #cont_resolution = 1.
-    #loss_dists = np.arange(0, total_dist, cont_resolution)
-    ## TODO: Remove this really ugly fix
-    #if len (loss_dists) == 0:
-    #    cont_loss_sum = 1.
-    #    total_dist = 1.1
-    #    loss_dists = np.array([0., 1.])
-    #e_loss = cont_loss_sum / len(loss_dists)
-    ## TODO: Check direction and position
-    #losses['continuous'] = ([
-    #    [e_loss,
-    #     dist * direction + position]
-    #    for dist in loss_dists])
     total_loss = None
-    # Should we return here or just make this a modifying function
     return particle
