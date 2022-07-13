@@ -107,8 +107,8 @@ _baseconfig = {
         'lepton': 'MuMinus',
         'medium': 'Water',
         # TODO I made these numbers up !!!!!!!!!!
-        'vcut': [1e-3, 1e-3],
-        'ecut': [1.0, 1.0],  # MeV
+        'vcut': [1e-3, 1e-2],
+        'ecut': [500.0, 500.0],  # MeV
         'soft_losses': False,
         'propagation padding': 900,
         'interpolation': True,
