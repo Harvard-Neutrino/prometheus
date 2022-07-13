@@ -14,6 +14,8 @@ PDG_to_f2k = {
     211:'hadr',
     -211:'hadr',
     311:'k0', # This is technically not defined but...
+    321:'k+', # This is technically not defined but...
+    -321:'k-', # This is technically not defined but...
     2212:'p+',
     -2212:'p-',
 }
@@ -51,6 +53,8 @@ pstring_to_PDG = {val:key for key, val in PDG_to_pstring.items()}
 int_type_to_str = {
     211:"hadr",
     -211:"hadr",
+    321:"hadr",
+    -321:"hadr",
     #1000000001:"",
     1000000002:"brems",
     1000000003:"delta",
