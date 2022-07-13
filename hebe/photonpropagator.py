@@ -111,6 +111,11 @@ def _ppc_sim(
                 elif int(child)==-2000001006 or int(child)==2212: # Hadrons
                     loss = Loss(int(child), child.e, child.position)
                     child.add_loss(loss)
+            if abs(int(particle))==15:
+                with open("./output/children.txt", "w+") as outfile:
+                    outfile.write(f"{str(particle)} {particle.e} {particle.position[0]} {particle.position[1]} {particle.position[2]}\n")
+                    for child in particle.children:
+                        outfile.write(f"{str(child)} {child.e} {child.position[0]} {child.position[1]} {child.position[2]}\n")
         elif abs(int(particle))==111: # It's a neutral pion
             # TODO handle this correctl by converting to photons after prop
             return [], None
@@ -138,10 +143,9 @@ def _ppc_sim(
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
         process.wait()
         hits = _parse_ppc(ppc_file)
-        # Propagate with PPC
-        hits = _parse_ppc(ppc_file)
         del particle
         # Cleanup f2k_tmpfile
+        # TODO maybe make this optional
         os.remove(ppc_file)
         os.remove(f2k_file)
     return hits, None
