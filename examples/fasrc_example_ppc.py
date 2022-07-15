@@ -172,6 +172,8 @@ def main(args):
         raise ValueError("What's happening here")
     config["detector"]["file name"] = args.geo_file
     config["detector"]["padding"] = args.padding
+    config["general"]["random state seed"] = seed
+    config["general"]["meta_name"] = 'meta_data_%d' % seed
     if clepton in ranged_leptons:
         if not args.force_volume:
             print("Doing ranged injection")
@@ -185,23 +187,25 @@ def main(args):
         print("Doing volume injection")
         config['run']['group name'] = 'VolumeInjector0'
         config['lepton injector']['simulation']['is ranged'] = False
+    if args.injection:
+        config["lepton injector"]["inject"] = False
+        config['lepton injector']['simulation']['output name'] = args.injection
+        config['run']['group name'] = 'RangedInjector0'
+    else:
+        config['lepton injector']['simulation']['output name'] = f"{args.output_prefix}/data_{seed}_output_LI.h5"
+        config['lepton injector']['simulation']['nevents'] = nevent
+        config['lepton injector']['simulation']['final state 1'] = args.final_1
+        config['lepton injector']['simulation']['final state 2'] = args.final_2
+        config['lepton injector']['simulation']['minimal energy'] = args.emin
+        config['lepton injector']['simulation']['maximal energy'] = args.emax
+        config['lepton injector']['simulation']["injection radius"] = args.injection_radius
+        config['lepton injector']['simulation']["endcap length"] = args.endcap_length
+        config['lepton injector']['simulation']["cylinder radius"] = args.cylinder_radius
+        config['lepton injector']['simulation']["cylinder height"] = args.cylinder_height
+        config['lepton injector']['simulation']["power law"] = args.gamma
+        config['lepton injector']['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/lib64/"
+        config['lepton injector']['xsec location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/LeptonInjector/resources/"
     config['lepton propagator']["lepton"] = clepton
-    config['lepton injector']['simulation']['output name'] = f"{args.output_prefix}/data_{seed}_output_LI.h5"
-    config['lepton injector']['simulation']['nevents'] = nevent
-    config['lepton injector']['simulation']['final state 1'] = args.final_1
-    config['lepton injector']['simulation']['final state 2'] = args.final_2
-    config['lepton injector']['simulation']['minimal energy'] = args.emin
-    config['lepton injector']['simulation']['maximal energy'] = args.emax
-    config['lepton injector']['simulation']["injection radius"] = args.injection_radius
-    config['lepton injector']['simulation']["endcap length"] = args.endcap_length
-    config['lepton injector']['simulation']["cylinder radius"] = args.cylinder_radius
-    config['lepton injector']['simulation']["cylinder height"] = args.cylinder_height
-    config['lepton injector']['simulation']["power law"] = args.gamma
-    config['detector']['injection offset'] = [0., 0., -2000]
-    config["general"]["random state seed"] = seed
-    config["general"]["meta_name"] = 'meta_data_%d' % seed
-    config['lepton injector']['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/lib64/"
-    config['lepton injector']['xsec location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/LeptonInjector/resources/"
     config['photon propagator']['storage location'] = f'{args.output_prefix}/seed_{seed}_'
     photo_prop = "PPC_CUDA"
     config['photon propagator']['name'] = photo_prop

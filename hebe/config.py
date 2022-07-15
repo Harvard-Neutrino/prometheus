@@ -95,7 +95,6 @@ _baseconfig = {
             "cylinder radius":700, # m
             "cylinder height":1000, # m
         },
-        'use existing injection': False,
         'force injection params': False
     },
     ###########################################################################
@@ -108,7 +107,7 @@ _baseconfig = {
         'medium': 'Water',
         # TODO I made these numbers up !!!!!!!!!!
         'vcut': [1e-3, 1e-2],
-        'ecut': [500.0, 500.0],  # MeV
+        'ecut': [100.0, 500.0],  # MeV
         'soft_losses': False,
         'propagation padding': 900,
         'interpolation': True,
