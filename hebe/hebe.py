@@ -90,6 +90,7 @@ class HEBE(object):
         print('Setting up the detector')
         #self._dh = DH()
         self._det = detector_from_f2k(config["detector"]["file name"])
+        print('Finished the detector')
         endcap = get_endcap(self._det.module_coords)
         inj_radius = get_injRadius(self._det.module_coords)
         cyl_radius = get_cylinder(self._det.module_coords)[0] + padding
@@ -103,7 +104,6 @@ class HEBE(object):
         if not config["lepton propagator"]["force propagation params"]:
             warn('Overwriting propagation parameters with calculated values')
             config["lepton propagator"]["propogation padding"] = inj_radius
-        print('Finished the detector')
         # Setting up the lepton propagator
         print('-------------------------------------------')
         print('Setting up leptopn propagation')
@@ -142,13 +142,13 @@ class HEBE(object):
         # Loading LI data
         print('-------------------------------------------')
         start = time()
-        if not config["lepton injector"]["use existing injection"]:
+        if config["lepton injector"]["inject"]:
             print('Setting up and running LI')
             if config['lepton injector']['inject']:
                 print('Injecting')
                 self._LI = LepInj()
             else:
-                print('Not injection')
+                print('Not injecting')
             print('Finished LI, loading data')
         self._LI_raw = h5py.File(
             config['lepton injector']['simulation']['output name'], "r"
