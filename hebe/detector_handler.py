@@ -5,7 +5,7 @@
 
 import sys
 import numpy as np
-from config import config
+from .config import config
 sys.path.append('../')
 from olympus.event_generation.detector import (  # noqa: E402
     Detector, Module
