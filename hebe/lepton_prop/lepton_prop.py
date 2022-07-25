@@ -17,7 +17,8 @@ def energy_losses(
     prop,
     pdef,
     particle,
-    padding
+    padding,
+    r_inice
 ):
     '''
     p_energies: particle energy array in units of GeV
@@ -33,7 +34,8 @@ def energy_losses(
             prop,
             pdef,
             particle,
-            padding
+            padding,
+            r_inice
         )
     else:
         from .new_proposal import new_proposal_losses
@@ -53,30 +55,36 @@ class LP(object):
     '''
     def __init__(self):
         if config['lepton propagator']['name'] == 'proposal':
-            self.args = {}
+            self._prop_dict = {}
+            self._pdef_dict = {}
             print('Using proposal')
+            self._kwargs = config["lepton propagator"].copy()
+            self._kwargs["r_detector"] = config["detector"]["radius"]
+            self._kwargs["r_max"] = config["detector"]["r_max"]
+            self._kwargs["medium_str"] = config["detector"]["medium"]
             self.__pp_version = pp.__version__
             print('The proposal version is ' + str(self.__pp_version))
-            self.kwargs = config["lepton propagator"].copy()
-            self.kwargs["r_detector"] = config["detector"]["radius"]
-            self.kwargs["r_max"] = config["detector"]["r_max"]
-            self.kwargs["medium_str"] = config["detector"]["medium"]
             if parse(self.__pp_version) > parse('7.0.0'):
                 print('Using new setup')
-                self.prop_dict = self._new_proposal_setup()
+                from .new_proposal import make_propagator, make_pdef
+                self._make_propagator = make_propagator
+                self._make_pdef = make_pdef
             else:
                 print('Using a version before 7.0.0')
-                self.prop_dict = self._make_old_propdict(
-                    config["lepton propagator"]["lepton"],
-                    **self.kwargs
-                )
-                self.pdef_dict = self._make_old_pdefdict(
-                    config["lepton propagator"]["lepton"]
-                )
+                from .old_proposal import make_propagator, make_pdef
+                self._make_prop= make_propagator
+                self._make_pdef = make_pdef
         else:
             raise ValueError(
                 'Unknown lepton propagator! Check the config file'
             )
+
+    def __getitem__(self, key):
+        if key not in self._pdef_dict.keys():
+            self._pdef_dict[key] = self._make_pdef(key)
+        if key not in self._prop_dict.keys():
+            self._prop_dict[key] = self._make_prop(key, **self._kwargs)
+        return self._pdef_dict[key], self._prop_dict[key]
 
     def _new_proposal_setup(self):
         """Set up a proposal propagator for version > 7"""
@@ -88,7 +96,8 @@ class LP(object):
             "interpolate": config['lepton propagator']['interpolation'],
             "cuts": pp.EnergyCutSettings(
                 self.args['ecut'], self.args['vcut'],
-                self.args['soft_losses']),
+                self.args['soft_losses']
+            ),
         }
         cross = pp.crosssection.make_std_crosssection(
             **args
@@ -112,46 +121,50 @@ class LP(object):
         print('----------------------------------------------------')
         return prop
 
-    # TODO make this two functions ?
-    def _make_old_propdict(self, pstr, **kwargs):
-        """Set up a proposal propagator for version <= 6"""
-        print('----------------------------------------------------')
-        from .old_proposal import make_propagator
-        if pstr in "EMinus EPlus MuMinus MuPlus".split():
-            prop_dict = {pstr: make_propagator(pstr, **kwargs)}
-        else: # Taus can produce other leptons
-            if "Tau" not in pstr:
-                raise Exception("What is happening here ?????")
-            prop_dict = {pstr: make_propagator(pstr, **kwargs)}
-            pstr = "E" + pstr[3:]
-            prop_dict[pstr] = make_propagator(pstr, **kwargs)
-            pstr = "Mu" + pstr[1:]
-            prop_dict[pstr] = make_propagator(pstr, **kwargs)
 
-        return prop_dict
 
-    def _make_old_pdefdict(self, pstr):
-        """Set up a proposal propagator for version <= 6"""
-        print('----------------------------------------------------')
-        from .old_proposal import make_pdef
-        if pstr in "EMinus EPlus MuMinus MuPlus".split():
-            pdef_dict = {pstr: make_pdef(pstr)}
-        else: # Taus can produce other leptons
-            if "Tau" not in pstr:
-                raise Exception("What is happening here ?????")
-            pdef_dict = {pstr: make_pdef(pstr)}
-            pstr = "E" + pstr[3:]
-            pdef_dict[pstr] = make_pdef(pstr)
-            pstr = "Mu" + pstr[1:]
-            pdef_dict[pstr] = make_pdef(pstr)
+    #def _make_old_propdict(self, pstr, **kwargs):
+    #    """Set up a proposal propagator for version <= 6"""
+    #    print('----------------------------------------------------')
+    #    from .old_proposal import make_propagator
+    #    if pstr in "EMinus EPlus MuMinus MuPlus".split():
+    #        prop_dict = {pstr: make_propagator(pstr, **kwargs)}
+    #    else: # Taus can produce other leptons
+    #        if "Tau" not in pstr:
+    #            raise Exception("What is happening here ?????")
+    #        prop_dict = {pstr: make_propagator(pstr, **kwargs)}
+    #        pstr = "E" + pstr[3:]
+    #        prop_dict[pstr] = make_propagator(pstr, **kwargs)
+    #        pstr = "Mu" + pstr[1:]
+    #        prop_dict[pstr] = make_propagator(pstr, **kwargs)
 
-        return pdef_dict
+    #    return prop_dict
+
+    #def _make_old_pdefdict(self, pstr):
+    #    """Set up a proposal propagator for version <= 6"""
+    #    print('----------------------------------------------------')
+    #    from .old_proposal import make_pdef
+    #    if pstr in "EMinus EPlus MuMinus MuPlus".split():
+    #        pdef_dict = {pstr: make_pdef(pstr)}
+    #    else: # Taus can produce other leptons
+    #        if "Tau" not in pstr:
+    #            raise Exception("What is happening here ?????")
+    #        pdef_dict = {pstr: make_pdef(pstr)}
+    #        pstr = "E" + pstr[3:]
+    #        pdef_dict[pstr] = make_pdef(pstr)
+    #        pstr = "Mu" + pstr[1:]
+    #        pdef_dict[pstr] = make_pdef(pstr)
+
+    #    return pdef_dict
 
     def energy_losses(self, particle):
+        pdef, prop = self[str(particle)]
         losses = energy_losses(
-            self.prop_dict,
-            self.pdef_dict,
+            prop,
+            pdef,
             particle,
-            self.kwargs["propagation padding"]
+            self._kwargs["propagation padding"],
+            # TODO get this out of here !!!!!!!!
+            1881.4563710308082+1000
         )
         return losses

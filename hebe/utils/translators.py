@@ -51,8 +51,10 @@ pstring_to_PDG = {val:key for key, val in PDG_to_pstring.items()}
 # Mapping from https://github.com/tudo-astroparticlephysics/PROPOSAL/blob/master/src/PROPOSAL/PROPOSAL/particle/Particle.h
 # to https://www.zeuthen.desy.de/~steffenp/f2000/f2000_1.5.html#SEC26
 int_type_to_str = {
+    111:"epair",
     211:"hadr",
     -211:"hadr",
+    311:"hadr",
     321:"hadr",
     -321:"hadr",
     #1000000001:"",

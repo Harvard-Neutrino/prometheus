@@ -63,6 +63,9 @@ class Detector(object):
         )
         self._n_modules = len(modules)
         self._om_keys = [om.key for om in self.modules]
+        print("============================")
+        print(self.outer_radius)
+        print("============================")
 
     def __getitem__(self, key):
         idx = self._om_keys.index(key)
@@ -72,19 +75,19 @@ class Detector(object):
         modules = np.hcat(self.modules, other.modules)
         Detector(modules)
 
-    def subdetectors(self, nmodules):
-        start = 0
-        end = nmodules
-        slc = slice(start, end)
-        subdetectors = [Detector(self.modules[slc])]
-        while end <= len(self.modules):
-            start += nmodules
-            end += nmodules
-            slc = slice(start, end)
-            print(slc)
-            subdet = Detector(self.modules[slc])
-            subdetectors.append(subdet)
-        return subdetectors
+    #def subdetectors(self, nmodules):
+    #    start = 0
+    #    end = nmodules
+    #    slc = slice(start, end)
+    #    subdetectors = [Detector(self.modules[slc])]
+    #    while end <= len(self.modules):
+    #        start += nmodules
+    #        end += nmodules
+    #        slc = slice(start, end)
+    #        print(slc)
+    #        subdet = Detector(self.modules[slc])
+    #        subdetectors.append(subdet)
+    #    return subdetectors
 
     @property
     def n_modules(self):

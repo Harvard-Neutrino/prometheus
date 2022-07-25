@@ -33,12 +33,13 @@ class Particle(object):
         return int(self._pdg_code)
 
     def __repr__(self):
-        return f"""pdg_code : {self._pdg_code}
-        name : {self._str}
-        e : {self._e}
-        position : {self._position}
-        direction : {self._direction}
-        children : {self._children}"""
+        s = f"pdg_code : {self._pdg_code}\n"
+        s += f"name : {self._str}\n"
+        s += f"e : {self._e}\n"
+        s += f"position : {self._position}\n"
+        s += f"direction : {self._direction}\n"
+        s += f"children : {self._children}"
+        return s
 
     @property
     def e(self):
