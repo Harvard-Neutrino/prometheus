@@ -12,6 +12,7 @@ from ..particle import Particle
 from ..utils import iter_or_rep
 from  ..utils.units import GeV_to_MeV, cm_to_m, m_to_cm, MeV_to_GeV
 
+
 def make_pdef(pstr):
     if pstr in 'MuMinus MuPlus EMinus EPlus TauMinus TauPlus'.split():
         pdef = getattr(pp.particle, f'{pstr}Def')()
@@ -108,13 +109,12 @@ def make_propagator(
     
 
 def old_proposal_losses(
-    prop_dict,
-    pdef_dict,
+    prop,
+    pdef,
     particle,
-    padding
+    padding,
+    r_inice
 ):
-    prop = prop_dict[str(particle)]
-    pdef = pdef_dict[str(particle)]
     particle_dd = _init_dynamic_data(particle, pdef)
     propagation_length = np.linalg.norm(particle.position) + padding
     secondarys = prop.propagate(
@@ -127,7 +127,8 @@ def old_proposal_losses(
         # This should work with just the position but that requires some testing
         pos = np.array([sec.position.x, sec.position.y, sec.position.z]) * cm_to_m
         if sec.type > 1000000000: # This is an energy loss
-            particle.add_loss(Loss(sec.type, sec_energy, pos))
+            if np.linalg.norm(pos) <= r_inice:
+                particle.add_loss(Loss(sec.type, sec_energy, pos))
         else: # This is a particle. Might need to propagate
             child = Particle(
                 sec.type,

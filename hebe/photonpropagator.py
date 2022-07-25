@@ -50,7 +50,6 @@ def _parse_ppc(ppc_f):
                 )
     return hits
 
-
 def _ppc_sim(
     particle,
     det,
@@ -88,29 +87,34 @@ def _ppc_sim(
         command = f"{kwargs['ppc_exe']} {kwargs['device']} < {f2k_file} > {ppc_file} 2>/dev/null"
     else:
         command = f"{kwargs['ppc_exe']} {kwargs['device']} < {f2k_file} > {ppc_file}"
-    # The particle is a charged lepton and should be handled by PROPOSAL
     if abs(int(particle)) in [12, 14, 16]: # It's a neutrino
-        hits = []
+        pass
     else: # It's something that deposits energy
+        # TODO put this in config
+        r_inice = det.outer_radius + 1000
         if abs(int(particle)) in [11, 13, 15]: # It's a charged lepton
             lp.energy_losses(particle)
             # TODO do this recursively...
             for child in particle.children:
                 # TODO put this in config
-                if child.e > 1 and abs(int(child)) in [11, 13, 15]:
-                    lp.energy_losses(child)
-                elif child.e > 1 and abs(int(child))==111: # It's a neutral pion
-                    # TODO handle this correctl by converting to photons after prop
-                    pass
-                elif child.e > 1 and abs(int(child))==211: # It's a charged pion
-                    loss = Loss(int(child), child.e, child.position)
-                    child.add_loss(loss)
-                elif child.e > 1 and abs(int(child))==311: # It's a neutral kaon
-                    # TODO handle this correctl by converting to photons after prop
-                    pass
-                elif int(child)==-2000001006 or int(child)==2212: # Hadrons
-                    loss = Loss(int(child), child.e, child.position)
-                    child.add_loss(loss)
+                if child.e > 1: # GeV
+                    if abs(int(child)) in [11, 13, 15]:
+                        lp.energy_losses(child)
+                    elif abs(int(child))==111: # It's a neutral pion
+                        # TODO handle this correctl by converting to photons after prop
+                        pass
+                    elif abs(int(child))==211: # It's a charged pion
+                        if np.linalg.norm(child.position) <= r_inice:
+                            loss = Loss(int(child), child.e, child.position)
+                            child.add_loss(loss)
+                    elif abs(int(child))==311: # It's a neutral kaon
+                        # TODO handle this correctly by converting to photons after prop
+                        pass
+                    elif int(child)==-2000001006 or int(child)==2212: # Hadrons
+                        if np.linalg.norm(child.position) <= r_inice:
+                            loss = Loss(int(child), child.e, child.position)
+                            child.add_loss(loss)
+            print(repr(particle))
             if abs(int(particle))==15:
                 with open("./output/children.txt", "w+") as outfile:
                     outfile.write(f"{str(particle)} {particle.e} {particle.position[0]} {particle.position[1]} {particle.position[2]}\n")
@@ -120,14 +124,16 @@ def _ppc_sim(
             # TODO handle this correctl by converting to photons after prop
             return [], None
         elif abs(int(particle))==211: # It's a charged pion
-            loss = Loss(int(particle), particle.e, particle.position)
-            particle.add_loss(loss)
+            if np.linalg.norm(particle.position) <= r_inice:
+                loss = Loss(int(particle), particle.e, particle.position)
+                particle.add_loss(loss)
         elif abs(int(particle))==311: # It's a neutral kaon
             # TODO handle this correctl by converting to photons after prop
             return [], None
         elif int(particle)==-2000001006 or int(particle)==2212: # Hadrons
-            loss = Loss(int(particle), particle.e, particle.position)
-            particle.add_loss(loss)
+            if np.linalg.norm(particle.position) <= r_inice:
+                loss = Loss(int(particle), particle.e, particle.position)
+                particle.add_loss(loss)
         else:
             print(repr(particle))
             raise ValueError("Unrecognized particle")
