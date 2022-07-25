@@ -85,6 +85,9 @@ class HEBE(object):
         print('-------------------------------------------')
         print('Setting up the detector')
         self._dh = DH()
+        if config['detector']['new detector']:
+            print('Building a new detector')
+            self._dh.make_detector_from_file()
         self._det = self._dh.from_f2k()
         print('Finished the detector')
         # Setting up the lepton propagator
@@ -280,29 +283,17 @@ class HEBE(object):
         The first two are the hit doms for the event, while the second two
         record the time.
         """
-        LI_file = h5py.File(LI_file, "r")
-        # TODO Make this prettier
-        if config['run']['subset']['switch']:
-            n = config['run']['subset']['switch']
-            # TODO: Currently the names are hardcoded. This should be changed
-            initial_types_1 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_1'][:n]])
-            initial_types_2 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_2'][:n]])
-            initial_pos_1 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_1'][:n]])
-            initial_pos_2 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_2'][:n]])
-            initial_dir_1 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_1'][:n]])
-            initial_dir_2 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_2'][:n]])
-            initial_energy_1 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_1'][:n]])
-            initial_energy_2 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_2'][:n]])
-        else:
-            # TODO: Currently the names are hardcoded. This should be changed
-            initial_types_1 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_1'][:]])
-            initial_types_2 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_2'][:]])
-            initial_pos_1 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_1'][:]])
-            initial_pos_2 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_2'][:]])
-            initial_dir_1 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_1'][:]])
-            initial_dir_2 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_2'][:]])
-            initial_energy_1 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_1'][:]])
-            initial_energy_2 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_2'][:]])
+        print("Loading LI file")
+        LI_file = h5py.File(LI_file)
+        # TODO: Currently the names are hardcoded. This should be changed
+        initial_types_1 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_1'][:]])
+        initial_types_2 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_2'][:]])
+        initial_pos_1 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_1'][:]])
+        initial_pos_2 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_2'][:]])
+        initial_dir_1 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_1'][:]])
+        initial_dir_2 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_2'][:]])
+        initial_energy_1 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_1'][:]])
+        initial_energy_2 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_2'][:]])
         events_idx = np.array(range(len(initial_types_1)))
         # TODO: Optimize this. Currently this is extremely inefficient.
         # first set
@@ -311,6 +302,7 @@ class HEBE(object):
         all_wavelength_dic = {}
         all_dom_hit_points_dic = {}
         all_photon_dir_dic = {}
+        print("Grabbing results")
         for key in self._results.keys():
             print(key)
             all_ids = []
@@ -332,23 +324,13 @@ class HEBE(object):
                         dom_hit_point.append([hit[4], hit[5]])
                         photon_dir.append([[hit[6], hit[7]]])
                 # No hits
+                # TODO: Fix the need to add something to array
                 else:
-                    #dom_ids.append(pyarrow.Array.from_pandas([]))
-                    #times.append(pyarrow.Array.from_pandas([]))
-                    #wavelengths.append(pyarrow.Array.from_pandas([]))
-                    #dom_hit_point.append(pyarrow.Array.from_pandas([]))
-                    #photon_dir.append(pyarrow.Array.from_pandas([]))
-                    # TODO fix this and ask for foregiveness
-                    dom_ids.append(ak.Array([-1, -1]))
+                    dom_ids.append(-1)
                     times.append(-1)
-                    #wavelengths.append(-1)
-                    #dom_hit_point.append(ak.Array([-1, -1]))
-                    #photon_dir.append(ak.Array([-1, -1]))
-                dom_ids = ak.Array(dom_ids)
-                times = ak.Array(times)
-                #wavelengths = ak.Array(wavelengths)
-                #dom_hit_point = ak.Array(dom_hit_point)
-                #photon_dir = ak.Array(photon_dir)
+                    wavelengths.append(-1)
+                    dom_hit_point.append([-1, -1])
+                    photon_dir.append([[-1, -1]])
                 all_ids.append(dom_ids)
                 all_times.append(times)
                 all_wavelength.append(wavelengths)
@@ -359,6 +341,7 @@ class HEBE(object):
             all_wavelength_dic[key] = all_wavelength
             all_dom_hit_points_dic[key] = all_dom_hit_points
             all_photon_dir_dic[key] = all_photon_dir
+        print("Combining simulaton sets")
         # Combining
         comb_type = np.stack((initial_types_1, initial_types_2), axis = 1)
         comb_pos = np.stack((initial_pos_1, initial_pos_2), axis = 1)
@@ -373,14 +356,14 @@ class HEBE(object):
                 'direction': comb_dir,
                 'energy': comb_energy,
             },
-            'photons_1': {
+            'lepton': {
                 'sensor_id': all_ids_dic['final_1'],
                 't': all_times_dic['final_1'],
                 #'wave': all_wavelength_dic['final_1'],
                 #'sensor_hit_point': all_dom_hit_points_dic['final_1'],
                 #'photon_dir': all_photon_dir_dic['final_1'],
             },
-            'photons_2': {
+            'hadron': {
                 'sensor_id': all_ids_dic['final_2'],
                 't': all_times_dic['final_2'],
                 #'wave': all_wavelength_dic['final_2'],
@@ -388,6 +371,7 @@ class HEBE(object):
                 #'photon_dir': all_photon_dir_dic['final_2']
             }
         })
+        print("Converting to parquet")
         ak.to_parquet(
             meta_a,
             config['photon propagator']['storage location'] +
@@ -480,7 +464,7 @@ class HEBE(object):
             all_ids_2.append(dom_ids_2)
         all_ids_2 = ak.Array(all_ids_2)
         all_hits_2 =  []
-        for event in results1:
+        for event in results2:
             all_hits_2.append(ak.flatten(event, axis=None))
         all_hits_2 = ak.Array(all_hits_2)
         # Combining
@@ -488,7 +472,34 @@ class HEBE(object):
         comb_pos = np.stack((initial_pos_1, initial_pos_2), axis = 1)
         comb_dir = np.stack((initial_dir_1, initial_dir_2), axis = 1)
         comb_energy = np.stack((initial_energy_1, initial_energy_2), axis = 1)
-
+        # Positional sensor information
+        sensor_pos_1 = np.array([
+            self._det.module_coords[hits]
+            for hits in all_ids_1
+        ], dtype=object)
+        sensor_pos_2 = np.array([
+            self._det.module_coords[hits]
+            for hits in all_ids_2
+        ], dtype=object)
+        sensor_string_id_1 = np.array([
+            np.array(self._det._om_keys)[event]
+            for event in all_ids_1
+        ], dtype=object)
+        sensor_string_id_2 = np.array([
+            np.array(self._det._om_keys)[event]
+            for event in all_ids_2
+        ], dtype=object)
+        # Total
+        sensor_id_all = np.concatenate((all_ids_1, all_ids_2), axis=1)
+        sensor_pos_all = np.array([
+           self._det.module_coords[hits]
+            for hits in sensor_id_all
+        ], dtype=object)
+        sensor_string_id_all = np.array([
+            np.array(self._det._om_keys)[event]
+            for event in sensor_id_all
+        ], dtype=object)
+        # This is as inefficient as possible
         meta_a = ak.Array({
             'event_id': events_idx,
             'mc_truth': {
@@ -497,14 +508,54 @@ class HEBE(object):
                 'direction': comb_dir,
                 'energy': comb_energy,
             },
-            'photons_1': {
+            'lepton': {
                 'sensor_id': all_ids_1,
+                'sensor_pos_x': np.array([
+                    event[:, 0] for event in sensor_pos_1
+                ], dtype=object),
+                'sensor_pos_y': np.array([
+                    event[:, 1] for event in sensor_pos_1
+                ], dtype=object),
+                'sensor_pos_z': np.array([
+                    event[:, 2] for event in sensor_pos_1
+                ], dtype=object),
+                'sensor_string_id': np.array([
+                    event[:, 0] for event in sensor_string_id_1
+                ], dtype=object),
                 't': all_hits_1,
             },
-            'photons_2': {
+            'hadron': {
                 'sensor_id': all_ids_2,
+                'sensor_pos_x': np.array([
+                    event[:, 0] for event in sensor_pos_2
+                ], dtype=object),
+                'sensor_pos_y': np.array([
+                    event[:, 1] for event in sensor_pos_2
+                ], dtype=object),
+                'sensor_pos_z': np.array([
+                    event[:, 2] for event in sensor_pos_2
+                ], dtype=object),
+                'sensor_string_id': np.array([
+                    event[:, 0] for event in sensor_string_id_2
+                ], dtype=object),
                 't': all_hits_2,
-            }
+            },
+            'total': {
+                'sensor_id': sensor_id_all,
+                'sensor_pos_x': np.array([
+                    event[:, 0] for event in sensor_pos_all
+                ], dtype=object),
+                'sensor_pos_y': np.array([
+                    event[:, 1] for event in sensor_pos_all
+                ], dtype=object),
+                'sensor_pos_z': np.array([
+                    event[:, 2] for event in sensor_pos_all
+                ], dtype=object),
+                'sensor_string_id': np.array([
+                    event[:, 0] for event in sensor_string_id_all
+                ], dtype=object),
+                't': np.concatenate((all_hits_1, all_hits_2), axis=1),
+            },
         })
         print(meta_a.photons_1["sensor_id"])
         print(meta_a.photons_1["t"])

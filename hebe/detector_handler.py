@@ -10,6 +10,7 @@ sys.path.append('../')
 from olympus.event_generation.detector import (  # noqa: E402
     Detector, Module
 )
+from scipy.stats import gamma
 
 class DH(object):
     """ Interface for detector methods
@@ -110,3 +111,95 @@ class DH(object):
             )]
         d = Detector(modules)
         return d
+
+    def make_detector_from_file(
+            self, random_state_seed=1337, noise_rate=1e-6,
+            efficiency=0.2) -> None:
+        """ Same as make_detector, just uses a plain csv file to load
+        coordinates
+        """
+        tmp = np.loadtxt(config["detector"]['detector specs file'])
+        xy_coords = np.column_stack((tmp[0], tmp[1]))
+        self.make_detector(xy_coords, tmp[2].astype(int), tmp[3])
+
+    def make_detector(
+            self, xy_coords, nz_list, dist_z_list,
+            random_state_seed=1337, noise_rate=1e-6,
+            efficiency=0.2) -> None:
+        """ make a simple detector
+
+        Construct a detector made up of lines.
+
+        Parameters
+        ----------
+        xy_coords: np.array
+            The xy coordinates of the lines
+        nz_list: np.array
+            Number of modules per line
+        dist_z_list: np.array
+            The distances between the modules for each line.
+            Equidistance is assumed per line
+        random_state_seed: int
+            The random state seed to use for the noise sampling
+        noise_rate: float
+            Baseline noise rate in 1/ns.
+            Will be multiplied to gamma(1, 0.25) distributed 
+            random rates per module.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        This will call self.to_f2k and create a detector file for future use
+        """
+        modules = []
+
+        for id_line, xy in enumerate(xy_coords):
+            modules += self.make_line(
+                xy[0], xy[1], nz_list[id_line],
+                dist_z_list[id_line],
+                id_line,
+                np.random.RandomState(random_state_seed),
+                baseline_noise_rate=noise_rate,
+                efficiency=efficiency
+            )
+        d = Detector(modules)
+        self.to_f2k(d, self._fname)
+
+    def make_line(
+            self, x, y, n_z, dist_z, line_id,
+            rng,
+            baseline_noise_rate=1e-6,
+            efficiency=0.2):
+        """
+        Make a line of detector modules.
+
+        The modules share the same (x, y) coordinate and are spaced along the z-direction.
+
+        Parameters:
+            x, y: float
+                (x, y) position of the line
+            n_z: int
+                Number of modules per line
+            dist_z: float
+                Spacing of the detector modules in z
+            rng: RandomState
+            baseline_noise_rate: float
+                Baseline noise rate in 1/ns. Will be multiplied to gamma(1, 0.25) distributed
+                random rates per module.
+            line_id: int
+                Identifier for this line
+        """
+        modules = []
+        for i, pos_z in enumerate(np.linspace(-dist_z * n_z / 2, dist_z * n_z / 2, n_z)):
+            pos = np.array([x, y, pos_z])
+            noise_rate = (
+                gamma.rvs(1, 0.25, random_state=rng) * baseline_noise_rate
+            )
+            mod = Module(
+                pos, key=(line_id, i), noise_rate=noise_rate, efficiency=efficiency
+            )
+            modules.append(mod)
+        return modules
