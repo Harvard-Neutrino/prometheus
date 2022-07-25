@@ -74,3 +74,32 @@ def get_injRadius(coords):
     cyl = get_cylinder(coords)
     injRad = padding + (np.sqrt(cyl[0]**2+(0.5*cyl[1])**2))
     return injRad
+
+def detector_from_dfile(fname):
+    pos = []
+    with open(fname) as dfile_in:
+        read_lines = dfile_in.readlines()
+        modules_i = read_lines.index("### Modules ###\n")
+        for line in read_lines[modules_i+1:]:
+            line = line.strip("\n").split("\t")
+            pos.append(
+                np.array([float(line[0]), float(line[1]),
+                float(line[2])]))
+            pos_out = np.vstack([a for a in pos])
+    return pos_out
+
+def make_dfile(fname, medium, n):
+    with open(fname, "w") as dfile:
+        dfile.write("### Metadata ###\n")
+        dfile.write('Medium:\tmedium\n')
+        dfile.write("DOM Radius:\t30\n")
+        dfile.write("### Modules ###\n")
+        string = 0
+        dom = 0
+        for x in range(n):
+            for y in range(n):
+                for z in range(n):
+                    line = f'{x}\t{y}\t{z}\t{string}\t{dom}\n'
+                    dfile.write(line)
+                    dom += 1 
+                string += 1; dom = 0
