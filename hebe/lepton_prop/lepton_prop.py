@@ -38,15 +38,13 @@ def energy_losses(
             r_inice
         )
     else:
-        from .new_proposal import new_proposal_losses
+        from .new_proposal import _new_proposal_losses
         return _new_proposal_losses(
             prop,
-            p_def,
-            energy,
-            soft_losses,
-            direction=direction,
-            position=position,
-            propagation_length=propagation_length
+            pdef,
+            particle,
+            padding,
+            r_inice
         )
 
 
@@ -90,6 +88,19 @@ class LP(object):
         """Set up a proposal propagator for version > 7"""
         print('----------------------------------------------------')
         print('Setting up proposal')
+        self.args = {}
+        print('Using proposal')
+        from .new_proposal import _make_medium, make_pdef
+        self.__pp_version = pp.__version__
+        print('The proposal version is ' + str(self.__pp_version))
+        # TODO Make so that lepton is tied to the LI situation / set by it
+        self.args['p_def'] = make_pdef(config['lepton propagator']['lepton'])
+        self.args['target'] = _make_medium(config['lepton propagator']['medium'])
+        self.args['ecut'] = config['lepton propagator']['ecut'][1]
+        self.args['vcut'] = config['lepton propagator']['vcut'][1]
+        self.args['soft_losses'] = (
+            config["lepton propagator"]['soft_losses']
+        )
         args = {
             "particle_def": self.args['p_def'],
             "target": self.args['target'],

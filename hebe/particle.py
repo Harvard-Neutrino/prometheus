@@ -5,7 +5,11 @@ from hebe.utils.translators import PDG_to_pstring
 
 class Particle(object):
 
-    def __init__(self, pdg_code, e, position, direction, event_id, parent=None):
+    def __init__(self,
+        pdg_code, e, position,
+        direction, event_id,
+        theta=0., phi=0.,
+        parent=None):
         if isinstance(position, Cartesian3D):
             if not isinstance(direction, Cartesian3D):
                 raise ValueError()
@@ -14,12 +18,16 @@ class Particle(object):
             self._pp_position = position
             self._direction = np.array([direction.x, direction.y, direction.z])
             self._pp_direction = direction
+            self._theta = theta
+            self._phi = phi
         else:
             self._e = e
             self._position = np.array(position)
             self._pp_position = Cartesian3D(*(m_to_cm*position))
             self._direction = np.array(direction)
             self._pp_direction = Cartesian3D(*direction)
+            self._theta = theta
+            self._phi = phi
         self._pdg_code = pdg_code
         self._parent = parent
         self._children = []

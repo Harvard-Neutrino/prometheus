@@ -184,7 +184,7 @@ def _new_proposal_losses(
     r_inice
 ):
     # TODO: Check if init state needs to be set
-    init_state = _init_pp_particle(particle, pdef)
+    init_state = _init_pp_particle(particle, p_def)
     propagation_length = np.linalg.norm(particle.position) + padding
     secondarys = prop.propagate(init_state, propagation_length * m_to_cm)
 
