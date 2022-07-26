@@ -67,7 +67,7 @@ class LP(object):
             if parse(self.__pp_version) > parse('7.0.0'):
                 print('Using new setup')
                 from .new_proposal import make_propagator, make_pdef
-                self._make_propagator = make_propagator
+                self._make_prop = make_propagator
                 self._make_pdef = make_pdef
             else:
                 print('Using a version before 7.0.0')

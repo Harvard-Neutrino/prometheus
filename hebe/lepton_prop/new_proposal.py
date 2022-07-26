@@ -51,6 +51,8 @@ def make_propagator(
     # TODO figure out how to get the rest of the options working
     do_continuous_randomization = kwargs["continuous_randomization"]
     # List have been passed for both energy cut settings
+    #TODO: Check what the hell this is
+    interpolate = True
     if hasattr(vcut, "__iter__") and hasattr(ecut, "__iter__"):
         utilities = [
             make_utility(
@@ -111,7 +113,7 @@ def make_propagator(
     ]
 
     prop = pp.Propagator(
-        particle_def,
+        pdef,
         list(zip(geometries, utilities, density_distrs))
     )
 
