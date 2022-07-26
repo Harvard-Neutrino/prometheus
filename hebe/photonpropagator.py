@@ -135,63 +135,6 @@ def _ppc_sim(
     return None, None
 
 
-def _olympus_sim(injection_event, det, key, pprop_func, proposal_prop):
-    """ Utilizes olympus to propagate light for the injected object
-
-    Parameters
-    ---------
-    injection_event : Dict
-        Event to be simulated
-    det : Detector
-        Detector object in which to simulate
-    key : PRNGKey
-    pprop_func : function
-        Function to calculate the photon signal
-    proposal_prop : function
-            Propoposal propagator
-
-    Returns
-    -------
-    res_event : 
-        
-    res_record : 
-        
-    """
-    event_dir = sph_to_cart_jnp(
-        injection_event["theta"],
-        injection_event["phi"]
-    )
-    injection_event["dir"] = event_dir
-    # Tracks
-    if injection_event['event id'] in config['particles'][
-            'track particles']:
-        res_event, res_record = (
-            generate_realistic_track(
-                det,
-                injection_event,
-                key=key,
-                pprop_func=pprop_func,
-                proposal_prop=proposal_prop
-            )
-        )
-    # Cascades
-    else:
-        res_event, res_record = generate_cascade(
-            det,
-            injection_event,
-            seed=config['runtime']['random state jax'],
-            converter_func=functools.partial(
-                make_realistic_cascade_source,
-                moliere_rand=True,
-                # TODO should this be an kwarg ?
-                resolution=0.2),
-            pprop_func=pprop_func
-        )
-        if config['run']['noise']:
-            res_event, _ = simulate_noise(det, res_event)
-    return res_event, res_record
-
-
 class PP(object):
     ''' interface class between the different photon propagators
 
@@ -209,6 +152,8 @@ class PP(object):
         self.__det = det
         if config['photon propagator']['name'] == 'olympus':
             self._local_conf = config['photon propagator']['olympus']
+            # Setting up proposal
+            self._prop = self.__lp._new_proposal_setup()
             self._olympus_setup()
             self._plotting = self._olympus_plot_event
             self._sim = self._olympus_sim
@@ -269,16 +214,28 @@ class PP(object):
             ValueError('Currently only file runs for olympus are supported!')
         print('Finished the photon generator')
 
-    def _olympus_sim(self, injection_event):
+    def _olympus_sim(self, particle):
         """ Utilizes olympus to propagate light for the injected object
         """
+        injection_event = {
+                    "time": 0.,
+                    "theta": particle._theta,
+                    "phi": particle._phi,
+                    # TODO: This needs to be removed once the coordinate
+                    # systems match!
+                    "pos": particle._position,
+                    "energy": particle._e,
+                    "particle_id": particle._pdg_code,
+                    'length': config['lepton propagator']['track length'],
+                    'event id': particle._event_id
+                }
         event_dir = sph_to_cart_jnp(
             injection_event["theta"],
             injection_event["phi"]
         )
         injection_event["dir"] = event_dir
         # Tracks
-        if injection_event['event id'] in config['particles'][
+        if injection_event['particle_id'] in config['particles'][
                 'track particles']:
             res_event, res_record = (
                 generate_realistic_track(
@@ -286,7 +243,7 @@ class PP(object):
                     injection_event,
                     key=config['runtime']['random state jax'],
                     pprop_func=self._gen_ph,
-                    proposal_prop=self.__lp.prop
+                    proposal_prop=self._prop
                 )
             )
         # Cascades

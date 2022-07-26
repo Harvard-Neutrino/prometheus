@@ -190,6 +190,7 @@ class HEBE(object):
         print('-------------------------------------------')
         print('Starting particle loop')
         start = time()
+        self._new_results = {}
         self._results = {}
         self._results_record = {}
         propped_primaries = []
@@ -198,6 +199,7 @@ class HEBE(object):
             print('Starting set')
             self._results[key] = []
             self._results_record[key] = []
+            self._new_results[key] = []
             for event in tqdm(self._final_states[key]):
                 # Making sure the event id is okay:
                 if event[1] in config['particles']['explicit']:
@@ -211,7 +213,14 @@ class HEBE(object):
                     np.cos(event[3][0])
                 ]
 
-                primary_particle = Particle(pdg_code, event[4], pos, direction, event_id)
+                primary_particle = Particle(
+                    pdg_code,
+                    event[4],
+                    pos,
+                    direction,
+                    event_id,
+                    theta=event[3][0],
+                    phi=event[3][1])
                 res_event, res_record = self._pp._sim(primary_particle)
                 propped_primaries.append(primary_particle)
                 self._new_results[key].append(primary_particle)

@@ -17,28 +17,25 @@ def main(args=None):
         print("Using default seed!")
     else:
         rset = int(args[1])
-    try:
-        print('CURRENT SET %d' % rset)
-        config["general"]["random state seed"] = rset
-        config["general"]["meta_name"] = 'meta_data_%d' % rset
-        config['general']['clean up'] = False
-        config['lepton injector']['simulation']['output name'] = "./output/custom_%d_output_LI.h5" % rset
-        config['photon propagator']['storage location'] = './output/custom_%d_' % rset
-        config['lepton injector']['simulation']['nevents'] = 100
-        config['lepton injector']['simulation']['minimal energy'] = 1e1
-        config['lepton injector']['simulation']['maximal energy'] = 1e2
-        config['lepton injector']['simulation']["injection radius"] = 150
-        config['lepton injector']['simulation']["endcap length"] = 200
-        config['lepton injector']['simulation']["cylinder radius"] = 150
-        config['lepton injector']['simulation']["cylinder height"] = 400
-        config['detector']['injection offset'] = [0., 0., 0]
-        config['photon propagator']['name'] = 'olympus'
-        config["detector"]['new detector'] = True
-        config["detector"]['detector specs file'] = '../hebe/data/custom.txt'
-        config["detector"]["file name"] = '../hebe/data/custom-f2k'
-        hebe = HEBE()
-    except:
-        print("Error in the simulation")
+    print('CURRENT SET %d' % rset)
+    config["general"]["random state seed"] = rset
+    config["general"]["meta_name"] = 'meta_data_%d' % rset
+    config['general']['clean up'] = False
+    config['lepton injector']['simulation']['output name'] = "./output/custom_%d_output_LI.h5" % rset
+    config['photon propagator']['storage location'] = './output/custom_%d_' % rset
+    config['lepton injector']['simulation']['nevents'] = 2
+    config['lepton injector']['simulation']['minimal energy'] = 1e1
+    config['lepton injector']['simulation']['maximal energy'] = 1e2
+    config['lepton injector']['simulation']["injection radius"] = 150
+    config['lepton injector']['simulation']["endcap length"] = 200
+    config['lepton injector']['simulation']["cylinder radius"] = 150
+    config['lepton injector']['simulation']["cylinder height"] = 400
+    config['detector']['injection offset'] = [0., 0., 0]
+    config['photon propagator']['name'] = 'olympus'
+    config["detector"]['new detector'] = True
+    config["detector"]['detector specs file'] = '../hebe/data/custom.txt'
+    config["detector"]["file name"] = '../hebe/data/custom-f2k'
+    hebe = HEBE()
 
     hebe.sim()
     del hebe
