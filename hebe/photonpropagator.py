@@ -127,15 +127,12 @@ def _ppc_sim(
 
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
         process.wait()
-        hits = _parse_ppc(ppc_file)
+        particle._hits = _parse_ppc(ppc_file)
         # Cleanup f2k_tmpfile
         # TODO maybe make this optional
         os.remove(ppc_file)
         os.remove(f2k_file)
-    print(repr(particle))
-    print(len(hits))
-    del particle
-    return hits, None
+    return None, None
 
 
 def _olympus_sim(injection_event, det, key, pprop_func, proposal_prop):

@@ -5,7 +5,7 @@ from hebe.utils.translators import PDG_to_pstring
 
 class Particle(object):
 
-    def __init__(self, pdg_code, e, position, direction, parent=None):
+    def __init__(self, pdg_code, e, position, direction, event_id, parent=None):
         if isinstance(position, Vector3D):
             if not isinstance(direction, Vector3D):
                 raise ValueError()
@@ -24,6 +24,8 @@ class Particle(object):
         self._parent = parent
         self._children = []
         self._losses = []
+        self._event_id = event_id
+        self._hits = []
         self._str = PDG_to_pstring[pdg_code]
 
     def __str__(self):
@@ -76,6 +78,14 @@ class Particle(object):
     @property
     def losses(self):
         return self._losses
+
+    @property
+    def hits(self):
+        return self._hits
+
+    @property
+    def event_id(self):
+        return self._event_id
 
     def add_loss(self, loss):
         self._losses.append(loss)
