@@ -20,6 +20,7 @@ _baseconfig = {
         'meta data file': True,  # Switch to store meta data file
         'meta name': 'meta_data',
         'clean up': False,  # Delete all intermediate and temporary files
+        'full output' : False
     },
     ###########################################################################
     # Scenario input
