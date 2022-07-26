@@ -9,15 +9,19 @@ import h5py
 import awkward as ak
 import pyarrow.parquet as pq
 import pyarrow 
+from .utils.f2k_utils import get_endcap,get_injRadius,get_cylinder,padding
 from .config import config
-from .detector_handler import DH
+from .detector import detector_from_f2k
+#from .detector_handler import DH
 from .photonpropagator import PP
 from .lepton_prop import LP
 from .lepton_injector import LepInj
 from .ppc_plotting import plot_event
+from .particle import Particle
 
 from tqdm import tqdm
 from time import time
+from warnings import warn
 import os
 import json
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
@@ -84,12 +88,25 @@ class HEBE(object):
         # Setting up the detector
         print('-------------------------------------------')
         print('Setting up the detector')
-        self._dh = DH()
-        if config['detector']['new detector']:
-            print('Building a new detector')
-            self._dh.make_detector_from_file()
-        self._det = self._dh.from_f2k()
+        #self._dh = DH()
+        #if config['detector']['new detector']:
+        #    print('Building a new detector')
+        #    self._dh.make_detector_from_file()
+        self._det = detector_from_f2k(config["detector"]["file name"])
         print('Finished the detector')
+        endcap = get_endcap(self._det.module_coords)
+        inj_radius = get_injRadius(self._det.module_coords)
+        cyl_radius = get_cylinder(self._det.module_coords)[0] + padding
+        cyl_height = get_cylinder(self._det.module_coords)[1] + padding
+        if not config["lepton injector"]["force injection params"]:
+            warn('Overwriting injection parameters with calculated values')
+            config["lepton injector"]["simulation"]["endcap length"] = endcap
+            config["lepton injector"]["simulation"]["injection radius"] = inj_radius
+            config["lepton injector"]["simulation"]["cylinder radius"] = cyl_radius
+            config["lepton injector"]["simulation"]["cylinder height"] = cyl_height
+        if not config["lepton propagator"]["force propagation params"]:
+            warn('Overwriting propagation parameters with calculated values')
+            config["lepton propagator"]["propogation padding"] = inj_radius
         # Setting up the lepton propagator
         print('-------------------------------------------')
         print('Setting up leptopn propagation')
@@ -128,16 +145,16 @@ class HEBE(object):
         # Loading LI data
         print('-------------------------------------------')
         start = time()
-        if not config["lepton injector"]["use existing injection"]:
+        if config["lepton injector"]["inject"]:
             print('Setting up and running LI')
             if config['lepton injector']['inject']:
                 print('Injecting')
                 self._LI = LepInj()
             else:
-                print('Not injection')
+                print('Not injecting')
             print('Finished LI, loading data')
         self._LI_raw = h5py.File(
-            config['lepton injector']['simulation']['output name']
+            config['lepton injector']['simulation']['output name'], "r"
         )
         self._final_states = {}
         for elem in config['run']['data sets']:
@@ -188,20 +205,29 @@ class HEBE(object):
                 pos = np.array(event[2])
                 # Introducing an injection offset caused by the different
                 # coordinate systems between LI and the t2k file.
-                pos = pos + np.array(config['detector']['injection offset'])
-                injection_event = {
-                    "time": 0.,
-                    "theta": event[3][0],
-                    "phi": event[3][1],
-                    # TODO: This needs to be removed once the coordinate
-                    # systems match!
-                    "pos": pos,
-                    "energy": event[4],
-                    "particle_id": event_id,
-                    'length': config['lepton propagator']['track length'],
-                    'event id': event_id
-                }
-                res_event, res_record = self._pp._sim(injection_event)
+                # TODO calculate the detector offset automatically
+                pos = pos
+                #pos = pos + np.array(config['detector']['injection offset'])
+                direction = [
+                    np.cos(event[3][1])*np.sin(event[3][0]),
+                    np.sin(event[3][1])*np.sin(event[3][0]),
+                    np.cos(event[3][0])
+                ]
+
+                primary_particle = Particle(event_id, event[4], pos, direction)
+                #injection_event = {
+                #    "time": 0.,
+                #    "theta": event[3][0],
+                #    "phi": event[3][1],
+                #    # TODO: This needs to be removed once the coordinate
+                #    # systems match!
+                #    "pos": pos,
+                #    "energy": event[4],
+                #    "particle_id": event_id,
+                #    'length': config['lepton propagator']['track length'],
+                #    'event id': event_id
+                #}
+                res_event, res_record = self._pp._sim(primary_particle)
                 self._results[key].append(res_event)
                 self._results_record[key].append(res_record)
             print('-------------------------------')
@@ -304,7 +330,6 @@ class HEBE(object):
         all_photon_dir_dic = {}
         print("Grabbing results")
         for key in self._results.keys():
-            print(key)
             all_ids = []
             all_times = []
             all_wavelength = []
@@ -557,8 +582,6 @@ class HEBE(object):
                 't': np.concatenate((all_hits_1, all_hits_2), axis=1),
             },
         })
-        print(meta_a.photons_1["sensor_id"])
-        print(meta_a.photons_1["t"])
         ak.to_parquet(
             meta_a,
             config['photon propagator']['storage location'] +
