@@ -142,6 +142,7 @@ def old_proposal_losses(
                 sec.energy,
                 sec.position,
                 sec.direction,
+                particle.event_id,
                 parent=particle
             )
             particle.add_child(child)
