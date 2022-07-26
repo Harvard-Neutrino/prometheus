@@ -53,7 +53,12 @@ def _make_medium(medium_string):
         medium_def = getattr(pp.medium, medium_string.capitalize())()
     return medium_def
 
-def _init_sector(start, end, ecut, vcut):
+def _init_sector(
+    start,
+    end,
+    ecut,
+    vcut
+):
     #Define a sector
     sec_def = pp.SectorDefinition()
     sec_def.geometry = pp.geometry.Sphere(pp.Vector3D(), end, start)
@@ -66,20 +71,22 @@ def make_propagator(
     pstr,
     **kwargs
 ):
+    # TODO I think this may be inefficient
     pdef = make_pdef(pstr)
     inner_r = [0, kwargs["r_detector"]]
     outer_r = [kwargs["r_detector"], kwargs["r_max"]]
     ecut = iter_or_rep(kwargs["ecut"])
     vcut = iter_or_rep(kwargs["vcut"])
     medium = _make_medium(kwargs["medium_str"])
-    # TODO What is this ?
     detector = pp.geometry.Sphere(
         pp.Vector3D(), kwargs["r_max"] * m_to_cm, 0.0
     )
     sec_defs = []
     for start, end, ecut, vcut in zip(inner_r, outer_r, ecut, vcut):
-        start = start * m_to_cm
-        end = end * m_to_cm
+        # unit conversion
+        start *= m_to_cm
+        end *= m_to_cm
+
         sec_def = _init_sector(start, end, ecut, vcut)
         sec_def.medium = medium
         sec_def.particle_location = pp.ParticleLocation.inside_detector

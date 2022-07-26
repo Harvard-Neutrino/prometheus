@@ -88,38 +88,17 @@ def _ppc_sim(
     else:
         command = f"{kwargs['ppc_exe']} {kwargs['device']} < {f2k_file} > {ppc_file}"
     if abs(int(particle)) in [12, 14, 16]: # It's a neutrino
-        pass
+        hits = []
     else: # It's something that deposits energy
         # TODO put this in config
         r_inice = det.outer_radius + 1000
         if abs(int(particle)) in [11, 13, 15]: # It's a charged lepton
             lp.energy_losses(particle)
-            # TODO do this recursively...
             for child in particle.children:
                 # TODO put this in config
                 if child.e > 1: # GeV
-                    if abs(int(child)) in [11, 13, 15]:
-                        lp.energy_losses(child)
-                    elif abs(int(child))==111: # It's a neutral pion
-                        # TODO handle this correctl by converting to photons after prop
-                        pass
-                    elif abs(int(child))==211: # It's a charged pion
-                        if np.linalg.norm(child.position) <= r_inice:
-                            loss = Loss(int(child), child.e, child.position)
-                            child.add_loss(loss)
-                    elif abs(int(child))==311: # It's a neutral kaon
-                        # TODO handle this correctly by converting to photons after prop
-                        pass
-                    elif int(child)==-2000001006 or int(child)==2212: # Hadrons
-                        if np.linalg.norm(child.position) <= r_inice:
-                            loss = Loss(int(child), child.e, child.position)
-                            child.add_loss(loss)
-            print(repr(particle))
-            if abs(int(particle))==15:
-                with open("./output/children.txt", "w+") as outfile:
-                    outfile.write(f"{str(particle)} {particle.e} {particle.position[0]} {particle.position[1]} {particle.position[2]}\n")
-                    for child in particle.children:
-                        outfile.write(f"{str(child)} {child.e} {child.position[0]} {child.position[1]} {child.position[2]}\n")
+                    _ppc_sim(child, det, lp, **kwargs)
+        # All of these we consider as point depositions
         elif abs(int(particle))==111: # It's a neutral pion
             # TODO handle this correctl by converting to photons after prop
             return [], None
@@ -149,11 +128,13 @@ def _ppc_sim(
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
         process.wait()
         hits = _parse_ppc(ppc_file)
-        del particle
         # Cleanup f2k_tmpfile
         # TODO maybe make this optional
         os.remove(ppc_file)
         os.remove(f2k_file)
+    print(repr(particle))
+    print(len(hits))
+    del particle
     return hits, None
 
 
