@@ -187,21 +187,15 @@ def _new_proposal_losses(
     init_state = _init_pp_particle(particle, p_def)
     propagation_length = np.linalg.norm(particle.position) + padding
     secondarys = prop.propagate(init_state, propagation_length * m_to_cm)
-
+    continuous_loss  = 0
     for loss in secondarys.stochastic_losses():
         loss_energy = loss.energy * MeV_to_GeV
-        pos = np.array([loss.position.x, loss.position.y, loss.position.z]) * cm_to_m
-        if loss_type_name == pp.particle.Interaction_Type.epair:
-            losses['epair'].append([log_sec_energy, pos])
-        elif loss_type_name == pp.particle.Interaction_Type.brems:
-            losses['brems'].append([log_sec_energy, pos])
-        elif loss_type_name == pp.particle.Interaction_Type.ioniz:
-            losses['ioniz'].append([log_sec_energy, pos])
-        elif loss_type_name == pp.particle.Interaction_Type.photonuclear:
-            losses['photo'].append([log_sec_energy, pos])
+        if loss.types==1000000008:
+            continuous_loss += loss_energy
         else:
-            pass
-
+            if np.linalg.norm(pos) <= r_inice:
+                pos = np.array([loss.position.x, loss.position.y, loss.position.z]) * cm_to_m
+                particle.add_loss(Loss(sec.type, sec_energy, pos))
     # TODO: Update this ugly fix
     cont_loss_sum = np.sum(secondarys.continuous_losses()) * MeV_to_GeV
     total_dist = secondarys.track_propagated_distances()[-1] * cm_to_m
@@ -210,23 +204,15 @@ def _new_proposal_losses(
     loss_dists = np.arange(0, total_dist, cont_resolution)
     # TODO: Remove this really ugly fix
     if len (loss_dists) == 0:
-        cont_loss_sum = 1. * GeV_to_MeV
+        cont_loss_sum = 1.* MeV_to_GeV
         total_dist = 1.1
         loss_dists = np.array([0., 1.])
     e_loss = cont_loss_sum / len(loss_dists)
-    losses['continuous'] = ([
-        [e_loss,
-         dist * particle.direction + particle.position]
-        for dist in loss_dists])
-    # TODO This should probably be an awkward array
-    losses['continuous'] = np.array(losses['continuous'], dtype='object')
-    losses['brems'] = np.array(losses['brems'], dtype='object')
-    losses['epair'] = np.array(losses['epair'], dtype='object')
-    losses['photo'] = np.array(losses['photo'], dtype='object')
-    losses['ioniz'] = np.array(losses['ioniz'], dtype='object')
+    for dist in loss_dists:
+        pos = dist * particle.direction + particle.position
+        particle.add_loss(Loss(1000000008, e_loss, pos))
     if soft_losses:
         total_loss = np.sum([len(losses[loss]) for loss in losses])
     else:
         total_loss = np.sum([len(losses[loss]) for loss in losses if loss != 'continuous'])
-    return losses, total_loss
-
+    return particle
