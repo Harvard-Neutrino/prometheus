@@ -273,7 +273,6 @@ class HEBE(object):
         initial_energy_1 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_1'][:]])
         initial_energy_2 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_2'][:]])
         events_idx = np.array(range(len(initial_types_1)))
-        print(initial_pos_1[:, 0])
         fill_dic['event_id'] = events_idx
         fill_dic['mc_truth'] = {
             'lepton_type': initial_types_1,
