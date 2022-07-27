@@ -8,7 +8,6 @@ import numpy as np
 import h5py
 import awkward as ak
 import pyarrow.parquet as pq
-import pyarrow 
 from .utils.f2k_utils import get_endcap,get_injRadius,get_cylinder,padding
 from .config import config
 from .detector import detector_from_f2k
@@ -293,7 +292,7 @@ class HEBE(object):
         }
 
     def _serialize_results_to_dict(
-        self, results, fill_dic,
+        self, results, record, fill_dic,
         particle="lepton"):
         # TODO: Optimize this. Currently this is extremely inefficient.
             # first set
@@ -319,6 +318,10 @@ class HEBE(object):
                 np.array(self._det._om_keys)[event]
                 for event in all_ids_1
             ], dtype=object)
+            # The losses
+            loss_counts = np.array([[
+                source.n_photons[0] for source in event.sources
+            ] for event in record], dtype=object)
             # This is as inefficient as possible
             fill_dic[particle] = {
                 'sensor_id': all_ids_1,
@@ -335,6 +338,16 @@ class HEBE(object):
                     event[:, 0] for event in sensor_string_id_1
                 ], dtype=object),
                 't': all_hits_1,
+                'loss_pos_x': np.array([[
+                    source.position[0] for source in event.sources
+                ] for event in record], dtype=object),
+                'loss_pos_y': np.array([[
+                    source.position[1] for source in event.sources
+                ] for event in record], dtype=object),
+                'loss_pos_z': np.array([[
+                    source.position[2] for source in event.sources
+                ] for event in record], dtype=object),
+                'loss_n_photons': loss_counts
             }
 
     def _construct_totals_from_dict(
@@ -402,27 +415,23 @@ class HEBE(object):
             sim_switch="olympus"
         ):
         """ Constructs a parquet file with metadata from the generated files.
-        Unlike the olympus version this uses the internal results.
+        Currently this still treats olympus and ppc output differently.
 
         Parameters
         ----------
-        LI_file: str
-            Location of the LI file
+        sim_switch: str
+            switch for olympus or ppc mode
 
         Notes
         -----
         It contains the fields: 
             ['event_id',
-            'initial_type',
-            'initial_position',
-            'initial_direction',
-            'initial_energy',
-            'photons']
+             'mc_truth'
+             'lepton',
+             'hadron',
+             'total]
         Load the file using the awkward method from_parquet
-        You can access them via the fields method from awkward arrays.
-        'photons' then contains 4 subsets: dom_ids_1, dom_ids_2, t_1, t_2.
-        The first two are the hit doms for the event, while the second two
-        record the time.
+        mc_truth, lepton, hadron and total in turn contain subfields.
         """
         # TODO: Unify this for olympus and PPC
         print("Generating output for a " + sim_switch + " simulation.")
@@ -443,6 +452,7 @@ class HEBE(object):
                 for i, primary in enumerate(starting_particles):
                     self._serialize_results_to_dict(
                         self._results['final_%d' % (i + 1)],
+                        self._results_record['final_%d' % (i + 1)],
                         tree, primary
                     )
                 self._construct_totals_from_dict(tree)
@@ -452,327 +462,6 @@ class HEBE(object):
         print("Converting to parquet")
         ak.to_parquet(
             tree,
-            config['photon propagator']['storage location'] +
-            config['general']['meta name'] + '.parquet'
-        )
-        print("Adding metadata")
-        # Adding meta data
-        table = pq.read_table(
-            config['photon propagator']['storage location'] +
-            config['general']['meta name'] + '.parquet')
-        config['runtime'] = None
-        custom_meta_data = json.dumps(config)
-        custom_meta_data_key = 'config_prometheus'
-        combined_meta = {
-            custom_meta_data_key.encode() : custom_meta_data.encode()
-        }
-        table = table.replace_schema_metadata(combined_meta)
-        pq.write_table(
-            table,
-            config['photon propagator']['storage location'] +
-            config['general']['meta name'] + '.parquet'
-        )
-        print("Finished new data file")
-
-    #def construct_meta_data_set_ppc(self, LI_file: str):
-    #    """ Constructs a parquet file with metadata from the generated files.
-    #    Unlike the olympus version this uses the internal results.
-
-    #    Parameters
-    #    ----------
-    #    LI_file: str
-    #        Location of the LI file
-
-    #    Notes
-    #    -----
-    #    It contains the fields: 
-    #        ['event_id',
-    #        'initial_type',
-    #        'initial_position',
-    #        'initial_direction',
-    #        'initial_energy',
-    #        'photons']
-    #    Load the file using the awkward method from_parquet
-    #    You can access them via the fields method from awkward arrays.
-    #    'photons' then contains 4 subsets: dom_ids_1, dom_ids_2, t_1, t_2.
-    #    The first two are the hit doms for the event, while the second two
-    #    record the time.
-    #    """
-    #    print("Loading LI file")
-    #    LI_file = h5py.File(LI_file)
-    #    # TODO: Currently the names are hardcoded. This should be changed
-    #    initial_types_1 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_1'][:]])
-    #    initial_types_2 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_2'][:]])
-    #    initial_pos_1 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_1'][:]])
-    #    initial_pos_2 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_2'][:]])
-    #    initial_dir_1 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_1'][:]])
-    #    initial_dir_2 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_2'][:]])
-    #    initial_energy_1 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_1'][:]])
-    #    initial_energy_2 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_2'][:]])
-    #    events_idx = np.array(range(len(initial_types_1)))
-    #    # TODO: Optimize this. Currently this is extremely inefficient.
-    #    # first set
-    #    all_ids_dic = {}
-    #    all_times_dic = {}
-    #    all_wavelength_dic = {}
-    #    all_dom_hit_points_dic = {}
-    #    all_photon_dir_dic = {}
-    #    print("Grabbing results")
-    #    for key in self._results.keys():
-    #        all_ids = []
-    #        all_times = []
-    #        all_wavelength = []
-    #        all_dom_hit_points = []
-    #        all_photon_dir = []
-    #        for event in self._results[key]:
-    #            dom_ids = []
-    #            times = []
-    #            wavelengths = []
-    #            dom_hit_point = []  # Zenith azimuth in radians
-    #            photon_dir = []  # Zenith azimuth in radians
-    #            if len(event) > 0:
-    #                for hit in event:
-    #                    dom_ids.append([hit[0],hit[1]])
-    #                    times.append(hit[2])
-    #                    wavelengths.append(hit[3])
-    #                    dom_hit_point.append([hit[4], hit[5]])
-    #                    photon_dir.append([[hit[6], hit[7]]])
-    #            # No hits
-    #            # TODO: Fix the need to add something to array
-    #            else:
-    #                dom_ids.append(-1)
-    #                times.append(-1)
-    #                wavelengths.append(-1)
-    #                dom_hit_point.append([-1, -1])
-    #                photon_dir.append([[-1, -1]])
-    #            all_ids.append(dom_ids)
-    #            all_times.append(times)
-    #            all_wavelength.append(wavelengths)
-    #            all_dom_hit_points.append(dom_hit_point)
-    #            all_photon_dir.append(photon_dir)
-    #        all_ids_dic[key] = all_ids
-    #        all_times_dic[key] = all_times
-    #        all_wavelength_dic[key] = all_wavelength
-    #        all_dom_hit_points_dic[key] = all_dom_hit_points
-    #        all_photon_dir_dic[key] = all_photon_dir
-    #    print("Combining simulaton sets")
-    #    # Combining
-    #    comb_type = np.stack((initial_types_1, initial_types_2), axis = 1)
-    #    comb_pos = np.stack((initial_pos_1, initial_pos_2), axis = 1)
-    #    comb_dir = np.stack((initial_dir_1, initial_dir_2), axis = 1)
-    #    comb_energy = np.stack((initial_energy_1, initial_energy_2), axis = 1)
-    #    # TODO: Remove hard coding
-    #    meta_a = ak.Array({
-    #        'event_id': events_idx,
-    #        'mc_truth': {
-    #            'type': comb_type,
-    #            'position': comb_pos,
-    #            'direction': comb_dir,
-    #            'energy': comb_energy,
-    #        },
-    #        'lepton': {
-    #            'sensor_id': all_ids_dic['final_1'],
-    #            't': all_times_dic['final_1'],
-    #            #'wave': all_wavelength_dic['final_1'],
-    #            #'sensor_hit_point': all_dom_hit_points_dic['final_1'],
-    #            #'photon_dir': all_photon_dir_dic['final_1'],
-    #        },
-    #        'hadron': {
-    #            'sensor_id': all_ids_dic['final_2'],
-    #            't': all_times_dic['final_2'],
-    #            #'wave': all_wavelength_dic['final_2'],
-    #            #'sensor_hit_point': all_dom_hit_points_dic['final_2'],
-    #            #'photon_dir': all_photon_dir_dic['final_2']
-    #        }
-    #    })
-    #    print("Converting to parquet")
-    #    ak.to_parquet(
-    #        meta_a,
-    #        config['photon propagator']['storage location'] +
-    #        config['general']['meta name'] + '.parquet'
-    #    )
-    #    print("Adding metadata")
-    #    # Adding meta data
-    #    table = pq.read_table(
-    #        config['photon propagator']['storage location'] +
-    #        config['general']['meta name'] + '.parquet')
-    #    config['runtime'] = None
-    #    custom_meta_data = json.dumps(config)
-    #    custom_meta_data_key = 'config_prometheus'
-    #    combined_meta = {
-    #        custom_meta_data_key.encode() : custom_meta_data.encode()
-    #    }
-    #    table = table.replace_schema_metadata(combined_meta)
-    #    pq.write_table(
-    #        table,
-    #        config['photon propagator']['storage location'] +
-    #        config['general']['meta name'] + '.parquet'
-    #    )
-    #    print("Finished new data file")
-
-    def construct_meta_data_set(self, LI_file: str, PP_files: str):
-        """ Constructs a parquet file with metadata from the generated files.
-
-        Parameters
-        ----------
-        LI_file: str
-            Location of the LI file
-        PP_files: list
-            List containing the PP output locations
-
-        Notes
-        -----
-        It contains the fields: 
-            ['event_id',
-            'initial_type',
-            'initial_position',
-            'initial_direction',
-            'initial_energy',
-            'photons']
-        Load the file using the awkward method from_parquet
-        You can access them via the fields method from awkward arrays.
-        'photons' then contains 4 subsets: dom_ids_1, dom_ids_2, t_1, t_2.
-        The first two are the hit doms for the event, while the second two
-        record the time.
-        """
-        LI_file = h5py.File(LI_file)
-        results1 = ak.from_parquet(
-            PP_files[0]
-        )
-        results2 = ak.from_parquet(
-            PP_files[1]
-        )
-        # TODO: Currently the names are hardcoded. This should be changed
-        initial_types_1 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_1'][:]])
-        initial_types_2 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_2'][:]])
-        initial_pos_1 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_1'][:]])
-        initial_pos_2 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_2'][:]])
-        initial_dir_1 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_1'][:]])
-        initial_dir_2 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_2'][:]])
-        initial_energy_1 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_1'][:]])
-        initial_energy_2 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_2'][:]])
-        events_idx = np.array(range(len(initial_types_1)))
-        # TODO: Optimize this. Currently this is extremely inefficient.
-        # first set
-        all_ids_1 = []
-        for event in results1:
-            dom_ids_1 = []
-            for id_dom, dom in enumerate(event):
-                if len(dom) > 0:
-                    dom_ids_1.append([id_dom] * len(dom))
-            dom_ids_1 = ak.flatten(ak.Array(dom_ids_1), axis=None)
-            all_ids_1.append(dom_ids_1)
-        all_ids_1 = ak.Array(all_ids_1)
-        all_hits_1 =  []
-        for event in results1:
-            all_hits_1.append(ak.flatten(event, axis=None))
-        all_hits_1 = ak.Array(all_hits_1)
-        # Second set
-        all_ids_2 = []
-        for event in results2:
-            dom_ids_2 = []
-            for id_dom, dom in enumerate(event):
-                if len(dom) > 0:
-                    dom_ids_2.append([id_dom] * len(dom))
-            dom_ids_2 = ak.flatten(ak.Array(dom_ids_2), axis=None)
-            all_ids_2.append(dom_ids_2)
-        all_ids_2 = ak.Array(all_ids_2)
-        all_hits_2 =  []
-        for event in results2:
-            all_hits_2.append(ak.flatten(event, axis=None))
-        all_hits_2 = ak.Array(all_hits_2)
-        # Combining
-        comb_type = np.stack((initial_types_1, initial_types_2), axis = 1)
-        comb_pos = np.stack((initial_pos_1, initial_pos_2), axis = 1)
-        comb_dir = np.stack((initial_dir_1, initial_dir_2), axis = 1)
-        comb_energy = np.stack((initial_energy_1, initial_energy_2), axis = 1)
-        # Positional sensor information
-        sensor_pos_1 = np.array([
-            self._det.module_coords[hits]
-            for hits in all_ids_1
-        ], dtype=object)
-        sensor_pos_2 = np.array([
-            self._det.module_coords[hits]
-            for hits in all_ids_2
-        ], dtype=object)
-        sensor_string_id_1 = np.array([
-            np.array(self._det._om_keys)[event]
-            for event in all_ids_1
-        ], dtype=object)
-        sensor_string_id_2 = np.array([
-            np.array(self._det._om_keys)[event]
-            for event in all_ids_2
-        ], dtype=object)
-        # Total
-        sensor_id_all = np.concatenate((all_ids_1, all_ids_2), axis=1)
-        sensor_pos_all = np.array([
-           self._det.module_coords[hits]
-            for hits in sensor_id_all
-        ], dtype=object)
-        sensor_string_id_all = np.array([
-            np.array(self._det._om_keys)[event]
-            for event in sensor_id_all
-        ], dtype=object)
-        # This is as inefficient as possible
-        meta_a = ak.Array({
-            'event_id': events_idx,
-            'mc_truth': {
-                'type': comb_type,
-                'position': comb_pos,
-                'direction': comb_dir,
-                'energy': comb_energy,
-            },
-            'lepton': {
-                'sensor_id': all_ids_1,
-                'sensor_pos_x': np.array([
-                    event[:, 0] for event in sensor_pos_1
-                ], dtype=object),
-                'sensor_pos_y': np.array([
-                    event[:, 1] for event in sensor_pos_1
-                ], dtype=object),
-                'sensor_pos_z': np.array([
-                    event[:, 2] for event in sensor_pos_1
-                ], dtype=object),
-                'sensor_string_id': np.array([
-                    event[:, 0] for event in sensor_string_id_1
-                ], dtype=object),
-                't': all_hits_1,
-            },
-            'hadron': {
-                'sensor_id': all_ids_2,
-                'sensor_pos_x': np.array([
-                    event[:, 0] for event in sensor_pos_2
-                ], dtype=object),
-                'sensor_pos_y': np.array([
-                    event[:, 1] for event in sensor_pos_2
-                ], dtype=object),
-                'sensor_pos_z': np.array([
-                    event[:, 2] for event in sensor_pos_2
-                ], dtype=object),
-                'sensor_string_id': np.array([
-                    event[:, 0] for event in sensor_string_id_2
-                ], dtype=object),
-                't': all_hits_2,
-            },
-            'total': {
-                'sensor_id': sensor_id_all,
-                'sensor_pos_x': np.array([
-                    event[:, 0] for event in sensor_pos_all
-                ], dtype=object),
-                'sensor_pos_y': np.array([
-                    event[:, 1] for event in sensor_pos_all
-                ], dtype=object),
-                'sensor_pos_z': np.array([
-                    event[:, 2] for event in sensor_pos_all
-                ], dtype=object),
-                'sensor_string_id': np.array([
-                    event[:, 0] for event in sensor_string_id_all
-                ], dtype=object),
-                't': np.concatenate((all_hits_1, all_hits_2), axis=1),
-            },
-        })
-        ak.to_parquet(
-            meta_a,
             config['photon propagator']['storage location'] +
             config['general']['meta name'] + '.parquet'
         )
