@@ -1,12 +1,13 @@
 # hebe_ui.py
 # David Kim
 
-from hebe import config
+from config import config
 import detector_dictionaries as dd
-import f2k_utils as fk
+import geo_utils as gu
+import warnings
 
 cpath = config['lepton injector']['simulation']
-ylist = ['yes','ye','y']; nlist = ['no','n']
+ylist = ['yes','y']; nlist = ['no','n']
 
 
 def injector_q():
@@ -37,51 +38,53 @@ def detector_q():
 Which detector do you want to use?
 - IceCube
 - ORCA
-- User supplied f2k file (UF)\nChoose icecube/orca/uf: '''
+- User supplied geo file (UF)\nChoose icecube/orca/uf: '''
     )
 
     if dname.lower() in dd.detectors:
         dpath = dd.detectors[dname.lower()]
-
         cpath['injection radius'] = dpath['injection radius']
         cpath['endcap length'] = dpath['endcap length']
         cpath['cylinder radius'] = dpath['cylinder radius']
         cpath['cylinder height'] = dpath['cylinder height']
         cpath['medium'] = dpath['medium']
-
         config['detector']['file name'] = dpath['file name']
         print(dname.lower()+' loaded')
-
     elif dname.lower() == 'uf':
         dfile_q()
-
-        print('\nReccomended selection volume:\n  Injection radius: '+str(dd.inj_radius)+' m')
-        print('  Endcap length: '+str(dd.endcap_len)+' m'+'\n  Cylinder radius: '+str(dd.cylRadius)+' m')
-        print('  Cylinder height: '+str(dd.cylHeight)+' m')
+        print(f'\nReccomended selection volume:\n\tInjection radius: {dd.inj_radius} m')
+        print(f'\tEndcap length: {dd.endcap_len} m\n\tCylinder radius: {dd.cylRadius} m')
+        print(f'\tCylinder height: {dd.cylHeight} m')
         useRec_q()
     else:
         print('invalid input')
         detector_q()
 
 def dfile_q():
-    try:
-        dfile = input('File: ') 
-               
-        # compute recc. selection vol
-        d_coords = fk.get_xyz(dfile)
-        d_cyl = fk.get_cylinder(d_coords)
-        dd.cylRadius = round(d_cyl[0]+fk.padding)
-        dd.cylHeight = round(d_cyl[1]+2*fk.padding)
-        dd.endcap_len = round(fk.get_endcap(d_coords))
-        dd.inj_radius = round(fk.get_injRadius(d_coords))
-        config['detector']['file name'] = dfile
-    except:
-        print('File not found')
-        dfile_q()
+
+    dfile = input('File: ')
+    is_ice = True
+    d_coords,keys,medium = gu.from_geo(dfile)
+    d_cyl = gu.get_cylinder(d_coords)
+    config['lepton propagator']['medium'] = medium
+    config['detector']['file name'] = dfile
+
+    if medium.lower() == "ice":
+        padding = gu.ice_padding
+    else:
+        padding = gu.water_padding
+        is_ice = False
+    dd.cylRadius = round(d_cyl[0]+padding)
+    dd.cylHeight = round(d_cyl[1]+2*padding)
+    dd.endcap_len = round(gu.get_endcap(d_coords, is_ice=is_ice))
+    dd.inj_radius = round(gu.get_injRadius(d_coords, is_ice=is_ice))
+
+    # except:
+    #     print('File not found')
+    #     dfile_q()
 
 def useRec_q():
     use_rec= input('Use reccomended selection volume? yes/no: ')
-    medium_q()
     
     if use_rec in ylist:
         cpath['injection radius'] = dd.inj_radius
@@ -89,6 +92,7 @@ def useRec_q():
         cpath['cylinder radius'] = dd.cylRadius
         cpath['cylinder height'] = dd.cylHeight
     elif use_rec in nlist:
+        warnings.warn("Changing selection volume may affect efficiency")
         cpath['injection radius'] = input('Injection radius [m]: ')
         cpath['endcap length'] = input('Endcap length [m]: ')
         cpath['cylinder radius'] = input('Cylinder radius [m]: ')
