@@ -244,31 +244,11 @@ class HEBE(object):
         self.injection()
         self.propagate()
         print('Dumping results')
-        if config['photon propagator']['name'] == 'olympus':
-            for key in self._results.keys():
-                try:
-                    ak.to_parquet(
-                        self._results[key],
-                        config['photon propagator']['storage location'] + key + '.parquet'
-                    )
-                except ValueError:
-                    print('No hits generated, skipping dump!')
-            if config['general']['meta data file']:
-                print('Storing metadata file')
-                self.construct_meta_data_set(
-                    config['lepton injector']['simulation']['output name'],
-                    [
-                        config['photon propagator']['storage location'] + key + '.parquet'
-                        for key in self._results.keys()
-                    ]
-                )
-                print('Finished meta data file')
-        else:
-            if config['general']['meta data file']:
-                print('Storing meta data')
-                self.construct_meta_data_set_ppc(
-                    config['lepton injector']['simulation']['output name']
-                )
+        self.construct_output(
+            sim_switch=config['photon propagator']['name']
+        )
+        # except ValueError:
+        #     print('No hits generated, skipping dump!')
         config["runtime"] = None
         print('Finished dump')
         if config["general"]["clean up"]:
@@ -280,6 +260,118 @@ class HEBE(object):
         print('Have a good day!')
         print('-------------------------------------------')
         print('-------------------------------------------')
+
+
+    def _serialize_injection_to_dict(self, LI_file, fill_dic):
+        # TODO: Currently the names are hardcoded. This should be changed
+        initial_types_1 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_1'][:]])
+        initial_types_2 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_2'][:]])
+        initial_pos_1 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_1'][:]])
+        initial_pos_2 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_2'][:]])
+        initial_dir_1 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_1'][:]])
+        initial_dir_2 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_2'][:]])
+        initial_energy_1 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_1'][:]])
+        initial_energy_2 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_2'][:]])
+        events_idx = np.array(range(len(initial_types_1)))
+        print(initial_pos_1[:, 0])
+        fill_dic['event_id'] = events_idx
+        fill_dic['mc_truth'] = {
+            'lepton_type': initial_types_1,
+            'hadron_type': initial_types_2,
+            'lepton_position_x': np.array(initial_pos_1[:, 0]),
+            'lepton_position_y': np.array(initial_pos_1[:, 1]),
+            'lepton_position_z': np.array(initial_pos_1[:, 2]),
+            'hadron_position_x': np.array(initial_pos_2[:, 0]),
+            'hadron_position_y': np.array(initial_pos_2[:, 1]),
+            'hadron_position_z': np.array(initial_pos_2[:, 2]),
+            'lepton_direction_theta': np.array(initial_dir_1[:, 0]),
+            'lepton_direction_phi': np.array(initial_dir_1[:, 1]),
+            'hadron_direction_theta': np.array(initial_dir_2[:, 0]),
+            'hadron_direction_phi': np.array(initial_dir_2[:, 1]),
+            'lepton_energy': initial_energy_1,
+            'hadron_energy': initial_energy_2,
+            'total_energy': initial_energy_1 + initial_energy_2
+        }
+
+    def _serialize_results_to_dict(
+        self, results, fill_dic,
+        particle="lepton"):
+        # TODO: Optimize this. Currently this is extremely inefficient.
+            # first set
+            all_ids_1 = []
+            for event in results:
+                dom_ids_1 = []
+                for id_dom, dom in enumerate(event):
+                    if len(dom) > 0:
+                        dom_ids_1.append([id_dom] * len(dom))
+                dom_ids_1 = ak.flatten(ak.Array(dom_ids_1), axis=None)
+                all_ids_1.append(dom_ids_1)
+            all_ids_1 = ak.Array(all_ids_1)
+            all_hits_1 =  []
+            for event in results:
+                all_hits_1.append(ak.flatten(event, axis=None))
+            all_hits_1 = ak.Array(all_hits_1)
+            # Positional sensor information
+            sensor_pos_1 = np.array([
+                self._det.module_coords[hits]
+                for hits in all_ids_1
+            ], dtype=object)
+            sensor_string_id_1 = np.array([
+                np.array(self._det._om_keys)[event]
+                for event in all_ids_1
+            ], dtype=object)
+            # This is as inefficient as possible
+            fill_dic[particle] = {
+                'sensor_id': all_ids_1,
+                'sensor_pos_x': np.array([
+                    event[:, 0] for event in sensor_pos_1
+                ], dtype=object),
+                'sensor_pos_y': np.array([
+                    event[:, 1] for event in sensor_pos_1
+                ], dtype=object),
+                'sensor_pos_z': np.array([
+                    event[:, 2] for event in sensor_pos_1
+                ], dtype=object),
+                'sensor_string_id': np.array([
+                    event[:, 0] for event in sensor_string_id_1
+                ], dtype=object),
+                't': all_hits_1,
+            }
+
+    def _construct_totals_from_dict(
+            self, fill_dic
+        ):
+        # TODO: Remove hardcoding
+        # Total
+        sensor_id_all = np.concatenate(
+            (fill_dic['lepton']['sensor_id'], fill_dic['hadron']['sensor_id']),
+            axis=1)
+        sensor_pos_all = np.array([
+        self._det.module_coords[hits]
+            for hits in sensor_id_all
+        ], dtype=object)
+        sensor_string_id_all = np.array([
+            np.array(self._det._om_keys)[event]
+            for event in sensor_id_all
+        ], dtype=object)
+        fill_dic['total'] = {
+            'sensor_id': sensor_id_all,
+            'sensor_pos_x': np.array([
+                event[:, 0] for event in sensor_pos_all
+            ], dtype=object),
+            'sensor_pos_y': np.array([
+                event[:, 1] for event in sensor_pos_all
+            ], dtype=object),
+            'sensor_pos_z': np.array([
+                event[:, 2] for event in sensor_pos_all
+            ], dtype=object),
+            'sensor_string_id': np.array([
+                event[:, 0] for event in sensor_string_id_all
+            ], dtype=object),
+            't': np.concatenate(
+                (fill_dic['lepton']['t'],
+                 fill_dic['hadron']['t']), axis=1),
+        }
 
 
     def _serialize_particle_to_dict(self, particle, parent_id, is_full):
@@ -306,7 +398,10 @@ class HEBE(object):
                     dict_["sensor_id"] = np.hstack((dict_["sensor_id"], [hit[1] for hit in child.hits]))
             return ak.Array(dict_)
 
-    def construct_meta_data_set_ppc(self, LI_file: str):
+    def construct_output(
+            self,
+            sim_switch="olympus"
+        ):
         """ Constructs a parquet file with metadata from the generated files.
         Unlike the olympus version this uses the internal results.
 
@@ -330,25 +425,31 @@ class HEBE(object):
         The first two are the hit doms for the event, while the second two
         record the time.
         """
-        print("Loading LI file")
+        # TODO: Unify this for olympus and PPC
+        print("Generating output for a " + sim_switch + " simulation.")
+        print("Generating the different particle fields...")
         tree = {}
-        for i, primary in enumerate(self._propped_primaries):
-            tree[f"primary_{i+1}"] = self._serialize_particle_to_dict(primary, 0, self._is_full)
-            if self._is_full:
-                for j, child in enumerate(primary.children):
-                    tree[f"child_{i+1}_{j+1}"] = self._serialize_particle_to_dict(child, i, self._is_full)
-        # TODO put in primary neutrino
-        #LI_file = h5py.File(LI_file)
-        ## TODO: Currently the names are hardcoded. This should be changed
-        #initial_types_1 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_1'][:]])
-        #initial_types_2 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_2'][:]])
-        #initial_pos_1 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_1'][:]])
-        #initial_pos_2 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_2'][:]])
-        #initial_dir_1 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_1'][:]])
-        #initial_dir_2 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_2'][:]])
-        #initial_energy_1 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_1'][:]])
-        #initial_energy_2 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_2'][:]])
-        #events_idx = np.array(range(len(initial_types_1)))
+        if ((sim_switch == "PPC") or (sim_switch == "PPC_CUDA")):
+            tree = {}
+            for i, primary in enumerate(self._propped_primaries):
+                tree[f"primary_{i+1}"] = self._serialize_particle_to_dict(primary, 0, self._is_full)
+                if self._is_full:
+                    for j, child in enumerate(primary.children):
+                        tree[f"child_{i+1}_{j+1}"] = self._serialize_particle_to_dict(child, i, self._is_full)
+        else:
+            self._serialize_injection_to_dict(self._LI_raw, tree)
+            # Looping over primaries, change hardcoding
+            try:
+                starting_particles = ['lepton', 'hadron']
+                for i, primary in enumerate(starting_particles):
+                    self._serialize_results_to_dict(
+                        self._results['final_%d' % (i + 1)],
+                        tree, primary
+                    )
+                self._construct_totals_from_dict(tree)
+            except:
+                warn("No hits generated!")
+            tree = ak.Array(tree)
         print("Converting to parquet")
         ak.to_parquet(
             tree,
