@@ -16,6 +16,8 @@ def injector_q():
     if use_li.lower() in ylist:
         injFile = input('File: ')
         config['lepton injector']['use existing injection'] = True
+    elif use_li == '':
+        load_default(config['lepton injector']['use existing injection'])
     elif use_li.lower() not in nlist:
         print('invalid input')
         injector_q()
@@ -25,6 +27,8 @@ def ranged_q():
 
     if inj_type in ylist:
         cpath['is ranged'] = True
+    elif inj_type == '':
+        load_default(cpath['is ranged'])
     elif inj_type not in nlist:
         print('invalid input')
         ranged_q()
@@ -56,32 +60,34 @@ Which detector do you want to use?
         print(f'\tEndcap length: {dd.endcap_len} m\n\tCylinder radius: {dd.cylRadius} m')
         print(f'\tCylinder height: {dd.cylHeight} m')
         useRec_q()
+    elif dname == '':
+        load_default(config['detector']['file name'])
     else:
         print('invalid input')
         detector_q()
 
 def dfile_q():
+    try:
+        dfile = input('File: ')
+        is_ice = True
+        d_coords,keys,medium = gu.from_geo(dfile)
+        d_cyl = gu.get_cylinder(d_coords)
+        config['lepton propagator']['medium'] = medium
+        config['detector']['file name'] = dfile
 
-    dfile = input('File: ')
-    is_ice = True
-    d_coords,keys,medium = gu.from_geo(dfile)
-    d_cyl = gu.get_cylinder(d_coords)
-    config['lepton propagator']['medium'] = medium
-    config['detector']['file name'] = dfile
+        if medium.lower() == "ice":
+            padding = gu.ice_padding
+        else:
+            padding = gu.water_padding
+            is_ice = False
+        dd.cylRadius = round(d_cyl[0]+padding)
+        dd.cylHeight = round(d_cyl[1]+2*padding)
+        dd.endcap_len = round(gu.get_endcap(d_coords, is_ice=is_ice))
+        dd.inj_radius = round(gu.get_injRadius(d_coords, is_ice=is_ice))
 
-    if medium.lower() == "ice":
-        padding = gu.ice_padding
-    else:
-        padding = gu.water_padding
-        is_ice = False
-    dd.cylRadius = round(d_cyl[0]+padding)
-    dd.cylHeight = round(d_cyl[1]+2*padding)
-    dd.endcap_len = round(gu.get_endcap(d_coords, is_ice=is_ice))
-    dd.inj_radius = round(gu.get_injRadius(d_coords, is_ice=is_ice))
-
-    # except:
-    #     print('File not found')
-    #     dfile_q()
+    except:
+        print('File not found')
+        dfile_q()
 
 def useRec_q():
     use_rec= input('Use reccomended selection volume? yes/no: ')
@@ -97,11 +103,11 @@ def useRec_q():
         cpath['endcap length'] = input('Endcap length [m]: ')
         cpath['cylinder radius'] = input('Cylinder radius [m]: ')
         cpath['cylinder height'] = input('Cylinder height [m]: ')
+    elif use_rec == '':
+        print('Loaded default values')
     else:
         print('invalid input')
         useRec_q()
-    
-    print('detector loaded')
 
 def medium_q():
     medium = input('Medium? ice/water: ')
@@ -117,6 +123,12 @@ def event_q():
     e_type = input('\nWhich event type? NuE/NuMu/NuTau/NuEBar/NuMuBar/NuTauBar: ')
     if e_type.lower() in ['nue','numu','nutau','nuebar','numubar','nutaubar']:
         state_key = e_type.lower()+'/'
+        interaction_q()
+    elif e_type == '':
+        key_list = list(dd.final_state.keys())
+        val_list = list(dd.final_state.values())
+        type_index = val_list.index([cpath['final state 1'], cpath['final state 2']])
+        print(f'Loaded default value {key_list[type_index]}')
     else:
         print('invalid input')
         event_q()
@@ -130,6 +142,11 @@ def interaction_q():
         cpath['final state 2'] = dd.final_state[state_key][1]
     elif i_type.lower() == 'gr' and state_key == 'nuebar/':
         gr_q()
+    elif i_type == '':
+        key_list = list(dd.final_state.keys())
+        val_list = list(dd.final_state.values())
+        type_index = val_list.index([cpath['final state 1'], cpath['final state 2']])
+        print(f'Loaded default value {key_list[type_index]}')
     else:
         print('invalid input')
         interaction_q()
@@ -146,27 +163,28 @@ def gr_q():
         gr_q()
 
 def misc_q():
-    n_events = input('\nNumber of events: ')
-    min_e = input('Minimal energy [GeV]: ')
-    max_e = input('Maximal energy [GeV]: ')
-    min_zen = input('Min zenith [deg]: ')
-    max_zen = input('Miax zenith [deg]: ')
-    power_law = input('Set power law: ')
+    set_misc('\nNumber of events: ', cpath['nevents'])
+    set_misc('Minimal energy [GeV]: ', cpath['minimal energy'])
+    set_misc('Maximal energy [GeV]: ', cpath['maximal energy'])
+    set_misc('Min zenith [deg]: ', cpath['minZenith'])
+    set_misc('Max zenith [deg]: ', cpath['maxZenith'])
+    set_misc('Set power law: ', cpath['power law'])
 
-    cpath['nevents'] = float(n_events)
-    cpath['minimal energy'] = float(min_e)
-    cpath['maximal energy'] = float(max_e)
-    cpath['minZenith'] = float(min_zen)
-    cpath['maxZenith'] = float(max_zen)
-    cpath['power law'] = float(power_law)
+def load_default(path):
+    print(f'Loaded defualt value {path}')
 
+def set_misc(input_str, path):
+    val = input(input_str)
+    if val == '':
+        load_default(path)
+    else:
+        path = float(val)
 def run():
     print('\n=== Prometheus Config ===')
     injector_q()
-    ranged_q()
     detector_q()
     event_q()
-    interaction_q()
+    ranged_q()
     misc_q()
     print('\ngenerating config file')
     dd.out_doc(config)

@@ -3,6 +3,7 @@
 
 import numpy as np
 import f2k_utils as fk
+
 ice_padding = 200
 water_padding = 30
 
@@ -24,7 +25,7 @@ def from_geo(fname):
             pos.append(
                 np.array([float(line[0]), float(line[1]),
                 float(line[2])]))
-            pos_out = np.vstack([a for a in pos])
+            pos_out = np.array(pos)
             keys.append((int(line[3]),int(line[4])))
     return pos_out, keys, medium
 
@@ -34,8 +35,6 @@ def geo_from_f2k(fname, out_path, medium = "ice", dom_radius = 30):
         geo_out.write(f'### Metadata ###\nMedium:\t{medium}\nDOM Radius:\t{dom_radius}\n### Modules ###\n')
         for pos, key in zip(positions,keys):
             geo_out.write(f'{pos[0]}\t{pos[1]}\t{pos[2]}\t{key[0]}\t{key[1]}\n')
-
-geo_from_f2k("../data/pone_triangle-f2k","../data/pone_triangle-geo", medium="water")
 
 def get_xyz(fname):
     # returns 3xn array
