@@ -15,7 +15,7 @@ from .detector import detector_from_f2k
 from .photonpropagator import PP
 from .lepton_prop import LP
 from .lepton_injector import LepInj
-from .ppc_plotting import plot_event
+from .prometheus_plotting import plot_event
 from .particle import Particle
 
 from tqdm import tqdm
@@ -262,6 +262,36 @@ class HEBE(object):
 
 
     def _serialize_injection_to_dict(self, LI_file, fill_dic):
+        self._LI_converter = {
+            tuple([12, 11,-2000001006]): 1,
+            tuple([14, 13,-2000001006]): 1,
+            tuple([16, 15,-2000001006]): 1,
+            tuple([12, 12,-2000001006]): 2,
+            tuple([14, 14,-2000001006]): 2,
+            tuple([16, 16,-2000001006]): 2,
+            tuple([-12, -11,-2000001006]): 1,
+            tuple([-14, -13,-2000001006]): 1,
+            tuple([-16, -15,-2000001006]): 1,
+            tuple([-12, -12,-2000001006]): 2,
+            tuple([-14, -14,-2000001006]): 2,
+            tuple([-16, -16,-2000001006]): 2,
+            tuple([-12, -2000001006,-2000001006]): 0,
+            tuple([-12, 11,-12]): 0,
+            tuple([-12, 13,-14]): 0,
+            tuple([-12, 15,-16]): 0
+        }
+        initial_props = np.array(LI_file[config['run']['group name']]['properties'])
+        interactions = np.array([[i[7], i[5], i[6]] for i in initial_props])
+        initial_type = np.array([i[7] for i in initial_props])
+        initial_zenith = np.array([i[1] for i in initial_props])
+        initial_azimuth = np.array([i[2] for i in initial_props])
+        bjorkenx = np.array([i[3] for i in initial_props])
+        bjorkeny = np.array([i[3] for i in initial_props])
+        injected_pos_x = np.array([i[8] for i in initial_props])
+        injected_pos_y = np.array([i[9] for i in initial_props])
+        injected_pos_z = np.array([i[10] for i in initial_props])
+        column_depth = np.array([i[11] for i in initial_props])
+        int_ids = np.array([self._LI_converter[tuple(i)] for i in interactions])
         # TODO: Currently the names are hardcoded. This should be changed
         initial_types_1 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_1'][:]])
         initial_types_2 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_2'][:]])
@@ -274,20 +304,30 @@ class HEBE(object):
         events_idx = np.array(range(len(initial_types_1)))
         fill_dic['event_id'] = events_idx
         fill_dic['mc_truth'] = {
-            'lepton_type': initial_types_1,
-            'hadron_type': initial_types_2,
-            'lepton_position_x': np.array(initial_pos_1[:, 0]),
-            'lepton_position_y': np.array(initial_pos_1[:, 1]),
-            'lepton_position_z': np.array(initial_pos_1[:, 2]),
-            'hadron_position_x': np.array(initial_pos_2[:, 0]),
-            'hadron_position_y': np.array(initial_pos_2[:, 1]),
-            'hadron_position_z': np.array(initial_pos_2[:, 2]),
-            'lepton_direction_theta': np.array(initial_dir_1[:, 0]),
-            'lepton_direction_phi': np.array(initial_dir_1[:, 1]),
-            'hadron_direction_theta': np.array(initial_dir_2[:, 0]),
-            'hadron_direction_phi': np.array(initial_dir_2[:, 1]),
-            'lepton_energy': initial_energy_1,
-            'hadron_energy': initial_energy_2,
+            'injection_type': initial_type,
+            'injection_interaction_type': int_ids,
+            'injection_zenith': initial_zenith,
+            'injection_azimuth': initial_azimuth,
+            'injection_bjorkenx': bjorkenx,
+            'injection_bjorkeny': bjorkeny,
+            'injection_position_x': injected_pos_x,
+            'injection_position_y': injected_pos_y,
+            'injection_position_z': injected_pos_z,
+            'injection_column_depth': column_depth,
+            'primary_lepton_1_type': initial_types_1,
+            'primary_hadron_1_type': initial_types_2,
+            'primary_lepton_1_position_x': np.array(initial_pos_1[:, 0]),
+            'primary_lepton_1_position_y': np.array(initial_pos_1[:, 1]),
+            'primary_lepton_1_position_z': np.array(initial_pos_1[:, 2]),
+            'primary_hadron_1_position_x': np.array(initial_pos_2[:, 0]),
+            'primary_hadron_1_position_y': np.array(initial_pos_2[:, 1]),
+            'primary_hadron_1_position_z': np.array(initial_pos_2[:, 2]),
+            'primary_lepton_1_direction_theta': np.array(initial_dir_1[:, 0]),
+            'primary_lepton_1_direction_phi': np.array(initial_dir_1[:, 1]),
+            'primary_hadron_1_direction_theta': np.array(initial_dir_2[:, 0]),
+            'primary_hadron_1_direction_phi': np.array(initial_dir_2[:, 1]),
+            'primary_lepton_1_energy': initial_energy_1,
+            'primary_hadron_1_energy': initial_energy_2,
             'total_energy': initial_energy_1 + initial_energy_2
         }
 
@@ -448,7 +488,7 @@ class HEBE(object):
             self._serialize_injection_to_dict(self._LI_raw, tree)
             # Looping over primaries, change hardcoding
             try:
-                starting_particles = ['lepton', 'hadron']
+                starting_particles = ['primary_lepton_1', 'primary_hadron_1']
                 for i, primary in enumerate(starting_particles):
                     self._serialize_results_to_dict(
                         self._results['final_%d' % (i + 1)],
@@ -484,7 +524,7 @@ class HEBE(object):
         )
         print("Finished new data file")
 
-    def ppc_event_plotting(self, event, **kwargs):
+    def plot(self, event, **kwargs):
         plot_event(event, self._det, **kwargs)
 
 
