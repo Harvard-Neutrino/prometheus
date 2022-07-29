@@ -155,7 +155,6 @@ class PP(object):
             # Setting up proposal
             self._prop = self.__lp._new_proposal_setup()
             self._olympus_setup()
-            self._plotting = self._olympus_plot_event
             self._sim = self._olympus_sim
         elif config['photon propagator']['name'] == 'PPC':
             # TODO add in event displays
@@ -261,111 +260,6 @@ class PP(object):
             if config['run']['noise']:
                 res_event, _ = simulate_noise(self._det, res_event)
         return res_event, res_record
-
-    def _olympus_plot_event(
-            self,
-            det,
-            hit_times,
-            record=None,
-            plot_tfirst=False,
-            plot_hull=False):
-        """ helper function to plot events
-        """
-        import plotly.graph_objects as go
-        if plot_tfirst:
-            plot_target = ak.fill_none(ak.firsts(hit_times, axis=1), np.nan)
-        else:
-            plot_target = np.log10(ak.count(hit_times, axis=1))
-
-        mask = (plot_target > 0) & (plot_target != np.nan)
-
-        traces = [
-            go.Scatter3d(
-                x=det.module_coords[mask, 0],
-                y=det.module_coords[mask, 1],
-                z=det.module_coords[mask, 2],
-                mode="markers",
-                marker=dict(
-                    size=5,
-                    color=plot_target[mask],  # set color to an array/list
-                    colorscale="Viridis",  # choose a colorscale
-                    opacity=0.8,
-                    showscale=True,
-                ),
-            ),
-            go.Scatter3d(
-                x=det.module_coords[~mask, 0],
-                y=det.module_coords[~mask, 1],
-                z=det.module_coords[~mask, 2],
-                mode="markers",
-                marker=dict(
-                    size=1,
-                    color="black",  # set color to an array/list
-                    colorscale="Viridis",  # choose a colorscale
-                    opacity=1.,
-                ),
-            ),
-        ]
-
-        if record is not None:
-            positions = []
-            sizes = []
-            for source in record.sources:
-                sizes.append(
-                    np.asscalar((np.log10(source.n_photons) / 2) ** 2))
-                positions.append(
-                    [source.position[0],
-                     source.position[1],
-                     source.position[2]]
-                )
-            positions = np.asarray(positions)
-            traces.append(
-                go.Scatter3d(
-                    x=positions[:, 0],
-                    y=positions[:, 1],
-                    z=positions[:, 2],
-                    mode="markers",
-                    marker=dict(
-                        size=sizes, color="black",
-                        opacity=0.5, line=dict(width=0)),
-                )
-            )
-        if plot_hull:
-            # Cylinder
-            radius = det.outer_cylinder[0]
-            height = det.outer_cylinder[1]
-            z = np.linspace(-height / 2, height / 2, 100)
-            theta = np.linspace(0, 2 * np.pi, 50)
-            theta_grid, z_grid = np.meshgrid(theta, z)
-            x_grid = radius * np.cos(theta_grid)
-            y_grid = radius * np.sin(theta_grid)
-
-            traces.append(
-                go.Surface(
-                    x=x_grid,
-                    y=y_grid,
-                    z=z_grid,
-                    colorscale=[[0, "blue"], [1, "blue"]],
-                    opacity=0.2,
-                )
-            )
-        fig = go.Figure(
-            data=traces,
-        )
-        fig.update_layout(
-            showlegend=False,
-            height=700,
-            width=1400,
-            coloraxis_showscale=True,
-            scene=dict(
-                xaxis=dict(range=config['plot']['xrange']),
-                yaxis=dict(range=config['plot']['yrange']),
-                zaxis=dict(range=config['plot']['zrange']),
-            ),
-        )
-        fig.update_coloraxes(colorbar_title=dict(text="log10(det. photons)"))
-        fig.show()
-        return fig
 
     def _c_medium_f(self, wl):
         """ Speed of light in medium for wl (nm)
