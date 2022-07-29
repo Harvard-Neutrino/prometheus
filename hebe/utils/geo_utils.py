@@ -1,8 +1,10 @@
-# Geo utils
-# David Kim
+# geo_utils.py
+# Authors: David Kim
+# Util functions for geo files
 
 import numpy as np
 import f2k_utils as fk
+from iter_or_rep import iter_or_rep
 
 ice_padding = 200
 water_padding = 30
@@ -29,7 +31,10 @@ def from_geo(fname):
             keys.append((int(line[3]),int(line[4])))
     return pos_out, keys, medium
 
+
 def geo_from_f2k(fname, out_path, medium = "ice", dom_radius = 30):
+    """Generates a detector geo file from an f2k
+    """
     positions, keys, sers = fk.from_f2k(fname)
     with open(out_path, "w") as geo_out:
         geo_out.write(f'### Metadata ###\nMedium:\t{medium}\nDOM Radius:\t{dom_radius}\n### Modules ###\n')

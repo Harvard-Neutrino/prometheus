@@ -1,5 +1,6 @@
-# f2k_utils
-# David Kim
+# f2k_utils.py
+# Authors: David Kim
+# Util functions for f2k files
 
 import numpy as np
 

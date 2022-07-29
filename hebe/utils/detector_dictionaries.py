@@ -1,15 +1,16 @@
 # detector_dictionaries.py
-# David Kim
+# Authors: David Kim
+# Values and dicts for hebe_ui
 
 cylRadius = 1200
 cylHeight = 1200
 endcap_len = 1200
 inj_radius = 1200
 
-# default vaules for detectors
+# Vaules for default detectors
 detectors = {
     'icecube': {
-        'file name': '../hebe/data/icecube-f2k',
+        'file name': '../data/icecube-f2k',
         'injection radius': 900,
         'endcap length': 900,
         'cylinder radius': 700,
@@ -17,8 +18,8 @@ detectors = {
         'medium': 'ice'
     },
 
-    'orca': {
-        'file name': '../hebe/data/pone_triangle-f2k',
+    'pone': {
+        'file name': '../data/pone_triangle-f2k',
         'injection radius': 651,
         'endcap length': 264,
         'cylinder radius': 208,
@@ -49,17 +50,5 @@ final_state = {
     'nuebar/tau':['TauMinus','NuTaubar']
 }
 
-# move this somewhere else
-def out_doc(cdict):
-    with open('config_settings.txt','w') as out:
-        for key in cdict:
-            out.write('\n'+key+': \n')
-            for param in cdict[key]:
-                if isinstance(cdict[key][param], dict):
-                    out.write('  '+param+': \n')
-                    for val in cdict[key][param]:
-                        out.write('    '+val+': '+str(cdict[key][param][val])+'\n')
-                else:
-                    out.write('  '+param+': '+str(cdict[key][param])+'\n')
     
 

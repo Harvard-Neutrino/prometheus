@@ -1,14 +1,15 @@
 # hebe_ui.py
-# David Kim
+# Authors: David Kim
+# User interface for Prometheus
 
 from config import config
 import detector_dictionaries as dd
 import geo_utils as gu
-import warnings
+from warnings import warn
 
 cpath = config['lepton injector']['simulation']
 ylist = ['yes','y']; nlist = ['no','n']
-
+state_key =''
 
 def injector_q():
     use_li = input("\nUse existing injection? yes/no: ")
@@ -22,27 +23,15 @@ def injector_q():
         print('invalid input')
         injector_q()
 
-def ranged_q():
-    inj_type = input('\nUse ranged injection (else volume injection)? yes/no: ')
-
-    if inj_type in ylist:
-        cpath['is ranged'] = True
-    elif inj_type == '':
-        load_default(cpath['is ranged'])
-    elif inj_type not in nlist:
-        print('invalid input')
-        ranged_q()
-
 def detector_q():
-    """
-    Sets detector file and calculates selection volume
+    """Sets detector file and calculates selection volume
     """
     dname = input(
     '''
 Which detector do you want to use?
 - IceCube
-- ORCA
-- User supplied geo file (UF)\nChoose icecube/orca/uf: '''
+- P-ONE
+- User supplied geo file (UF)\nChoose icecube/pone/uf: '''
     )
 
     if dname.lower() in dd.detectors:
@@ -85,7 +74,7 @@ def dfile_q():
         dd.endcap_len = round(gu.get_endcap(d_coords, is_ice=is_ice))
         dd.inj_radius = round(gu.get_injRadius(d_coords, is_ice=is_ice))
 
-    except:
+    except FileNotFoundError:
         print('File not found')
         dfile_q()
 
@@ -98,7 +87,7 @@ def useRec_q():
         cpath['cylinder radius'] = dd.cylRadius
         cpath['cylinder height'] = dd.cylHeight
     elif use_rec in nlist:
-        warnings.warn("Changing selection volume may affect efficiency")
+        warn("Changing selection volume may affect efficiency")
         cpath['injection radius'] = input('Injection radius [m]: ')
         cpath['endcap length'] = input('Endcap length [m]: ')
         cpath['cylinder radius'] = input('Cylinder radius [m]: ')
@@ -119,7 +108,6 @@ def medium_q():
 
 
 def event_q():
-    global state_key
     e_type = input('\nWhich event type? NuE/NuMu/NuTau/NuEBar/NuMuBar/NuTauBar: ')
     if e_type.lower() in ['nue','numu','nutau','nuebar','numubar','nutaubar']:
         state_key = e_type.lower()+'/'
@@ -134,7 +122,6 @@ def event_q():
         event_q()
 
 def interaction_q():
-    global state_key
     i_type = input('Which interaction type CC/NC/GR: ')
     if i_type.lower() in ['cc','nc']:
         state_key += i_type.lower()
@@ -151,8 +138,20 @@ def interaction_q():
         print('invalid input')
         interaction_q()
 
+def ranged_q():
+    inj_type = input('\nUse ranged injection (else volume injection)? yes/no: ')
+    if inj_type in ylist:
+        cpath['is ranged'] = True
+    elif inj_type == '':
+        load_default(cpath['is ranged'])
+    elif inj_type not in nlist:
+        print('invalid input')
+        ranged_q()
+    
+    if not cpath['is ranged'] and state_key == 'numu/cc':
+        warn('Ranged injection is reccomended for NuMu/CC')
+
 def gr_q():
-    global state_key
     gr_final = input('Final type? hadron/e/mu/tau: ')
     if gr_final.lower() in ['hardon','e','mu','tau']:
         state_key += gr_final.lower()
@@ -179,15 +178,17 @@ def set_misc(input_str, path):
         load_default(path)
     else:
         path = float(val)
+
 def run():
+    """Runs user interface"""
     print('\n=== Prometheus Config ===')
     injector_q()
     detector_q()
     event_q()
     ranged_q()
     misc_q()
-    print('\ngenerating config file')
-    dd.out_doc(config)
+    # print('\ngenerating config file')
+    # dd.out_doc(config)
     print('\nconfig set!\n')
 
 run()
