@@ -16,7 +16,7 @@ from jax import random
 
 from .utils import sources_to_model_input, sources_to_model_input_per_module
 
-
+@profile
 def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_medium):
     shape_config, shape_params = pickle.load(open(shape_model_path, "rb"))
     counts_config, counts_params = pickle.load(open(counts_model_path, "rb"))
