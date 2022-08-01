@@ -139,6 +139,7 @@ class HEBE(object):
         """
         return self._results_record
 
+    @profile
     def injection(self):
         """ Injects leptons according to the config file
         """
@@ -181,6 +182,7 @@ class HEBE(object):
         print('-------------------------------------------')
         print('-------------------------------------------')
 
+    @profile
     def propagate(self):
         """ Runs the light yield calculations
         """
@@ -283,6 +285,7 @@ class HEBE(object):
         initial_props = np.array(LI_file[config['run']['group name']]['properties'])
         interactions = np.array([[i[7], i[5], i[6]] for i in initial_props])
         initial_type = np.array([i[7] for i in initial_props])
+        initial_energy = np.array([i[0] for i in initial_props])
         initial_zenith = np.array([i[1] for i in initial_props])
         initial_azimuth = np.array([i[2] for i in initial_props])
         bjorkenx = np.array([i[3] for i in initial_props])
@@ -304,6 +307,7 @@ class HEBE(object):
         events_idx = np.array(range(len(initial_types_1)))
         fill_dic['event_id'] = events_idx
         fill_dic['mc_truth'] = {
+            'injection_energy': initial_energy,
             'injection_type': initial_type,
             'injection_interaction_type': int_ids,
             'injection_zenith': initial_zenith,
@@ -396,7 +400,9 @@ class HEBE(object):
         # TODO: Remove hardcoding
         # Total
         sensor_id_all = np.concatenate(
-            (fill_dic['lepton']['sensor_id'], fill_dic['hadron']['sensor_id']),
+            (
+                fill_dic['primary_lepton_1']['sensor_id'],
+                fill_dic['primary_hadron_1']['sensor_id']),
             axis=1)
         sensor_pos_all = np.array([
         self._det.module_coords[hits]
@@ -421,8 +427,8 @@ class HEBE(object):
                 event[:, 0] for event in sensor_string_id_all
             ], dtype=object),
             't': np.concatenate(
-                (fill_dic['lepton']['t'],
-                 fill_dic['hadron']['t']), axis=1),
+                (fill_dic['primary_lepton_1']['t'],
+                 fill_dic['primary_hadron_1']['t']), axis=1),
         }
 
 
@@ -487,8 +493,8 @@ class HEBE(object):
         else:
             self._serialize_injection_to_dict(self._LI_raw, tree)
             # Looping over primaries, change hardcoding
+            starting_particles = ['primary_lepton_1', 'primary_hadron_1']
             try:
-                starting_particles = ['primary_lepton_1', 'primary_hadron_1']
                 for i, primary in enumerate(starting_particles):
                     self._serialize_results_to_dict(
                         self._results['final_%d' % (i + 1)],

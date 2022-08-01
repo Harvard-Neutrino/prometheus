@@ -213,6 +213,7 @@ class PP(object):
             ValueError('Currently only file runs for olympus are supported!')
         print('Finished the photon generator')
 
+    @profile
     def _olympus_sim(self, particle):
         """ Utilizes olympus to propagate light for the injected object
         """
