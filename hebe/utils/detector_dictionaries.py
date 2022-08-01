@@ -2,15 +2,10 @@
 # Authors: David Kim
 # Values and dicts for hebe_ui
 
-cylRadius = 1200
-cylHeight = 1200
-endcap_len = 1200
-inj_radius = 1200
-
 # Vaules for default detectors
 detectors = {
     'icecube': {
-        'file name': '../data/icecube-f2k',
+        'file name': './data/icecube-f2k',
         'injection radius': 900,
         'endcap length': 900,
         'cylinder radius': 700,
@@ -19,7 +14,7 @@ detectors = {
     },
 
     'pone': {
-        'file name': '../data/pone_triangle-f2k',
+        'file name': './data/pone_triangle-f2k',
         'injection radius': 651,
         'endcap length': 264,
         'cylinder radius': 208,

@@ -46,6 +46,11 @@ _baseconfig = {
     ###########################################################################
     "detector": {
         'file name': './data/icecube-f2k',
+        # Padding for sphere where we do physics good
+        'padding' : 200, # m
+        'radius' : 900, # m
+        'r_max' : 1e18, # m
+        "medium" : "ice"
         #'injection offset': [0., 0., -2000.],
     },
     ###########################################################################
@@ -90,7 +95,7 @@ _baseconfig = {
             "cylinder radius":700, # m
             "cylinder height":1000, # m
         },
-        'use existing injection': False
+        'force injection params': False
     },
     ###########################################################################
     # Lepton propagator
@@ -101,15 +106,16 @@ _baseconfig = {
         'lepton': 'MuMinus',
         'medium': 'Water',
         # TODO I made these numbers up !!!!!!!!!!
-        'vcut': [1e-3, 1e-3],
-        'ecut': [-1.0, -1.0],  # MeV
+        'vcut': [1e-3, 1e-2],
+        'ecut': [100.0, 500.0],  # MeV
         'soft_losses': False,
         'propagation padding': 900,
         'interpolation': True,
         'lpm_effect' : True,
         'continuous_randomization' : True,
         'soft_losses' : True,
-        'scattering model' : "Moliere"
+        'scattering model' : "Moliere",
+        'force propagation params':False
 
     },
     ###########################################################################
@@ -135,7 +141,8 @@ _baseconfig = {
             'f2k_prefix':'',
             'ppctables':'../PPC_CUDA/',
             'ppc_exe':'../PPC_CUDA/ppc', # binary executable
-            'device':0, # GPU
+            'device':0, # GPU,
+            'supress_output': True,
         },
         'PPC': {
             'location': '../PPC/',
@@ -144,6 +151,7 @@ _baseconfig = {
             'ppctables': '../PPC/',
             'ppc_exe': '../PPC/ppc',  # binary executable
             'device': 0,  # CPU
+            'supress_output': True,
         },
     },
     ###########################################################################
@@ -161,12 +169,10 @@ class ConfigClass(dict):
     """ The configuration class. This is used
     by the package for all parameter settings. If something goes wrong
     its usually here.
-
     Parameters
     ----------
     config : dic
         The config dictionary
-
     Returns
     -------
     None
@@ -178,12 +184,10 @@ class ConfigClass(dict):
     # TODO: Update this
     def from_yaml(self, yaml_file: str) -> None:
         """ Update config with yaml file
-
         Parameters
         ----------
         yaml_file : str
             path to yaml file
-
         Returns
         -------
         None
@@ -194,12 +198,10 @@ class ConfigClass(dict):
     # TODO: Update this
     def from_dict(self, user_dict: Dict[Any, Any]) -> None:
         """ Creates a config from dictionary
-
         Parameters
         ----------
         user_dict : dic
             The user dictionary
-
         Returns
         -------
         None

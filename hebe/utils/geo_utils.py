@@ -3,13 +3,15 @@
 # Util functions for geo files
 
 import numpy as np
-import f2k_utils as fk
+from f2k_utils import from_f2k
 from iter_or_rep import iter_or_rep
 
 ice_padding = 200
 water_padding = 30
 
 def from_geo(fname):
+    """Returns positions, keys, and medium from detector geometry file
+    """
     pos = []; keys = []; meta_data = []
     with open(fname) as geo_in:
         read_lines = geo_in.readlines()
@@ -61,7 +63,15 @@ def get_cylinder(coords, epsilon = 5):
             np.ptp(coords[:,2:])
         )
     return out_cylinder
-    
+
+def get_volume(coords, is_ice = True):
+    out_cyl = get_cylinder(coords)
+    if is_ice:
+        padding = ice_padding
+    else:
+        padding = water_padding
+    return (out_cyl[0]+padding, out_cyl[1]+2*padding)
+
 def get_endcap(coords, is_ice = True):
     if is_ice:
         padding = ice_padding 
@@ -81,19 +91,3 @@ def get_injRadius(coords, is_ice = True):
     cyl = get_cylinder(coords)
     injRad = padding + (np.sqrt(cyl[0]**2+(0.5*cyl[1])**2))
     return injRad
-
-def make_line(fname, medium, n):
-    with open(fname, "w") as geo:
-        geo.write("### Metadata ###\n")
-        geo.write(f'Medium:\t{medium}\n')
-        geo.write("DOM Radius:\t30\n")
-        geo.write("### Modules ###\n")
-        string = 0
-        dom = 0
-        for x in range(n):
-            for y in range(n):
-                for z in range(n):
-                    line = f'{x}\t{y}\t{z}\t{string}\t{dom}\n'
-                    geo.write(line)
-                    dom += 1 
-                string += 1; dom = 0

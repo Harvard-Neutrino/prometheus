@@ -9,16 +9,19 @@ import h5py
 import awkward as ak
 import pyarrow.parquet as pq
 import pyarrow 
+from .utils.geo_utils import get_endcap,get_injRadius,get_cylinder
 from .config import config
-from .detector import detector_from_f2k
+from .detector import detector_from_geo
 #from .detector_handler import DH
 from .photonpropagator import PP
 from .lepton_prop import LP
 from .lepton_injector import LepInj
 from .ppc_plotting import plot_event
+from .particle import Particle
 
 from tqdm import tqdm
 from time import time
+from warnings import warn
 import os
 import json
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
@@ -86,8 +89,22 @@ class HEBE(object):
         print('-------------------------------------------')
         print('Setting up the detector')
         #self._dh = DH()
-        self._det = detector_from_f2k(config["detector"]["file name"])
+        self._det = detector_from_geo(config["detector"]["file name"])
         print('Finished the detector')
+        is_ice = config["lepton propagator"]["medium"].lower()=='ice'
+        endcap = get_endcap(self._det.module_coords, is_ice)
+        inj_radius = get_injRadius(self._det.module_coords, is_ice)
+        cyl_radius = get_volume(self._det.module_coords, is_ice)[0]
+        cyl_height = get_volume(self._det.module_coords, is_ice)[1]
+        if not config["lepton injector"]["force injection params"]:
+            warn('Overwriting injection parameters with calculated values')
+            config["lepton injector"]["simulation"]["endcap length"] = endcap
+            config["lepton injector"]["simulation"]["injection radius"] = inj_radius
+            config["lepton injector"]["simulation"]["cylinder radius"] = cyl_radius
+            config["lepton injector"]["simulation"]["cylinder height"] = cyl_height
+        if not config["lepton propagator"]["force propagation params"]:
+            warn('Overwriting propagation parameters with calculated values')
+            config["lepton propagator"]["propogation padding"] = inj_radius
         # Setting up the lepton propagator
         print('-------------------------------------------')
         print('Setting up leptopn propagation')
@@ -126,16 +143,16 @@ class HEBE(object):
         # Loading LI data
         print('-------------------------------------------')
         start = time()
-        if not config["lepton injector"]["use existing injection"]:
+        if config["lepton injector"]["inject"]:
             print('Setting up and running LI')
             if config['lepton injector']['inject']:
                 print('Injecting')
                 self._LI = LepInj()
             else:
-                print('Not injection')
+                print('Not injecting')
             print('Finished LI, loading data')
         self._LI_raw = h5py.File(
-            config['lepton injector']['simulation']['output name']
+            config['lepton injector']['simulation']['output name'], "r"
         )
         self._final_states = {}
         for elem in config['run']['data sets']:
@@ -186,20 +203,29 @@ class HEBE(object):
                 pos = np.array(event[2])
                 # Introducing an injection offset caused by the different
                 # coordinate systems between LI and the t2k file.
-                pos = pos + np.array(config['detector']['injection offset'])
-                injection_event = {
-                    "time": 0.,
-                    "theta": event[3][0],
-                    "phi": event[3][1],
-                    # TODO: This needs to be removed once the coordinate
-                    # systems match!
-                    "pos": pos,
-                    "energy": event[4],
-                    "particle_id": event_id,
-                    'length': config['lepton propagator']['track length'],
-                    'event id': event_id
-                }
-                res_event, res_record = self._pp._sim(injection_event)
+                # TODO calculate the detector offset automatically
+                pos = pos
+                #pos = pos + np.array(config['detector']['injection offset'])
+                direction = [
+                    np.cos(event[3][1])*np.sin(event[3][0]),
+                    np.sin(event[3][1])*np.sin(event[3][0]),
+                    np.cos(event[3][0])
+                ]
+
+                primary_particle = Particle(event_id, event[4], pos, direction)
+                #injection_event = {
+                #    "time": 0.,
+                #    "theta": event[3][0],
+                #    "phi": event[3][1],
+                #    # TODO: This needs to be removed once the coordinate
+                #    # systems match!
+                #    "pos": pos,
+                #    "energy": event[4],
+                #    "particle_id": event_id,
+                #    'length': config['lepton propagator']['track length'],
+                #    'event id': event_id
+                #}
+                res_event, res_record = self._pp._sim(primary_particle)
                 self._results[key].append(res_event)
                 self._results_record[key].append(res_record)
             print('-------------------------------')
@@ -260,12 +286,10 @@ class HEBE(object):
     def construct_meta_data_set_ppc(self, LI_file: str):
         """ Constructs a parquet file with metadata from the generated files.
         Unlike the olympus version this uses the internal results.
-
         Parameters
         ----------
         LI_file: str
             Location of the LI file
-
         Notes
         -----
         It contains the fields: 
@@ -313,7 +337,6 @@ class HEBE(object):
         all_dom_hit_points_dic = {}
         all_photon_dir_dic = {}
         for key in self._results.keys():
-            print(key)
             all_ids = []
             all_times = []
             all_wavelength = []
@@ -415,14 +438,12 @@ class HEBE(object):
 
     def construct_meta_data_set(self, LI_file: str, PP_files: str):
         """ Constructs a parquet file with metadata from the generated files.
-
         Parameters
         ----------
         LI_file: str
             Location of the LI file
         PP_files: list
             List containing the PP output locations
-
         Notes
         -----
         It contains the fields: 
@@ -539,7 +560,6 @@ class HEBE(object):
             self, det, event, record=None,
             plot_tfirst=False, plot_hull=False):
         """ utilizes olympus plotting to generate a plot
-
         Parameters
         ----------
         det : Detector
@@ -571,4 +591,3 @@ class HEBE(object):
                 )
             except FileNotFoundError:
                 continue
-
