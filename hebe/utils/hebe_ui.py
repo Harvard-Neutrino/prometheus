@@ -132,7 +132,7 @@ def interaction_q():
         print(f'Loaded default value \'{key_list[type_index]}\'')
     else:
         print('invalid input')
-        interaction_q()
+        gr_q()
 
 def gr_q():
     global state_key

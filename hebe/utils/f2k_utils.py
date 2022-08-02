@@ -24,6 +24,24 @@ def from_f2k(fname):
         pos_out = np.vstack([a for a in pos])
     return pos_out, keys, sers
 
+def clean_icecube(fname):
+    ''' Removes IceTop modules from icecube-f2k
+    '''
+    with open(fname,'r') as f2k_in:
+        line_list = f2k_in.readlines()
+    with open(fname,'w') as f2k_in:
+        count = 1
+        for line in line_list[:2]:
+            f2k_in.write(line)
+        for line in line_list[2:]:
+            if count >= 65:
+                count = 1
+            if count not in list(range(61,66)):
+                f2k_in.write(line)
+            count += 1
+
+#clean_icecube('../data/copy-f2k')
+
 def get_xyz(fname):
     # returns 3xn array
     det = from_f2k(fname)

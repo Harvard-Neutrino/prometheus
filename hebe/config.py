@@ -20,6 +20,7 @@ _baseconfig = {
         'meta data file': True,  # Switch to store meta data file
         'meta name': 'meta_data',
         'clean up': False,  # Delete all intermediate and temporary files
+        'full output' : False
     },
     ###########################################################################
     # Scenario input
@@ -45,13 +46,13 @@ _baseconfig = {
     # Detector
     ###########################################################################
     "detector": {
-        'file name': './data/icecube-f2k',
+        'new detector': False,  # Flag to generate a new detector file
+        'detector specs file': 'unnamed',  # Name of the file to use for build
         # Padding for sphere where we do physics good
         'padding' : 200, # m
         'radius' : 900, # m
         'r_max' : 1e18, # m
         "medium" : "ice"
-        #'injection offset': [0., 0., -2000.],
     },
     ###########################################################################
     # Paricles
@@ -106,7 +107,7 @@ _baseconfig = {
         'lepton': 'MuMinus',
         'medium': 'Water',
         # TODO I made these numbers up !!!!!!!!!!
-        'vcut': [1e-3, 1e-2],
+        'vcut': [1, 1],
         'ecut': [100.0, 500.0],  # MeV
         'soft_losses': False,
         'propagation padding': 900,

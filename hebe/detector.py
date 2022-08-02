@@ -5,8 +5,8 @@
 
 import numpy as np
 import awkward as ak
-from config import config
-from utils import iter_or_rep
+from .config import config
+from .utils import iter_or_rep
 
 class Module(object):
     """
