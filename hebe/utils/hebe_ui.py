@@ -200,5 +200,3 @@ Welcome to
     misc_q()
     print('\nconfig set!')
     print('-------------------------------------------')
-
-run()
