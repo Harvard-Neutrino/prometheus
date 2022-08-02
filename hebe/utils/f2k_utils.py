@@ -1,5 +1,6 @@
-# f2k_utils
-# David Kim
+# f2k_utils.py
+# Authors: David Kim
+# Util functions for f2k files
 
 import numpy as np
 
@@ -51,9 +52,9 @@ def offset(coords):
     xyz_avg = np.average(coords,0)
     return -1*xyz_avg
 
-def get_cylinder(coords):
+def get_cylinder(coords, epsilon = 5):
     # returns cylinder (radius, height) from 3xn array
-    if max(np.average(coords,0)) > 5:
+    if max(np.average(coords,0)) > epsilon:
         coords = coords+offset(coords)
     
     out_cylinder = (

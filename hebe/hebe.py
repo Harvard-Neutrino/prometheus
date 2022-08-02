@@ -8,14 +8,25 @@ import numpy as np
 import h5py
 import awkward as ak
 import pyarrow.parquet as pq
+<<<<<<< HEAD
+import pyarrow 
+from .utils.geo_utils import get_endcap,get_injRadius,get_cylinder
+from .config import config
+from .detector import detector_from_geo
+=======
 from .utils.f2k_utils import get_endcap,get_injRadius,get_cylinder,padding
 from .config import config
 from .detector import detector_from_f2k
+>>>>>>> a899f0f37a3cc79d4b008fcaf8cb292e08c214d0
 #from .detector_handler import DH
 from .photonpropagator import PP
 from .lepton_prop import LP
 from .lepton_injector import LepInj
+<<<<<<< HEAD
+from .ppc_plotting import plot_event
+=======
 from .prometheus_plotting import plot_event
+>>>>>>> a899f0f37a3cc79d4b008fcaf8cb292e08c214d0
 from .particle import Particle
 
 from tqdm import tqdm
@@ -89,15 +100,13 @@ class HEBE(object):
         print('-------------------------------------------')
         print('Setting up the detector')
         #self._dh = DH()
-        #if config['detector']['new detector']:
-        #    print('Building a new detector')
-        #    self._dh.make_detector_from_file()
-        self._det = detector_from_f2k(config["detector"]["file name"])
+        self._det = detector_from_geo(config["detector"]["detector specs file"])
         print('Finished the detector')
-        endcap = get_endcap(self._det.module_coords)
-        inj_radius = get_injRadius(self._det.module_coords)
-        cyl_radius = get_cylinder(self._det.module_coords)[0] + padding
-        cyl_height = get_cylinder(self._det.module_coords)[1] + padding
+        is_ice = config["lepton propagator"]["medium"].lower()=='ice'
+        endcap = get_endcap(self._det.module_coords, is_ice)
+        inj_radius = get_injRadius(self._det.module_coords, is_ice)
+        cyl_radius = get_volume(self._det.module_coords, is_ice)[0]
+        cyl_height = get_volume(self._det.module_coords, is_ice)[1]
         if not config["lepton injector"]["force injection params"]:
             warn('Overwriting injection parameters with calculated values')
             config["lepton injector"]["simulation"]["endcap length"] = endcap
@@ -536,7 +545,6 @@ class HEBE(object):
             self, det, event, record=None,
             plot_tfirst=False, plot_hull=False):
         """ utilizes olympus plotting to generate a plot
-
         Parameters
         ----------
         det : Detector
@@ -568,4 +576,3 @@ class HEBE(object):
                 )
             except FileNotFoundError:
                 continue
-
