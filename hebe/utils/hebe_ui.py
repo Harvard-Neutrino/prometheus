@@ -2,22 +2,25 @@
 # Authors: David Kim
 # User interface for Prometheus
 
-from config import config
-import detector_dictionaries as dd
-import geo_utils as gu
+from .config import config
+from .detector_dictionaries import detectors, final_states
+from .geo_utils import from_geo,get_volume,get_endcap,get_injRadius
 from warnings import warn
+from colorama import Fore, Style
 
 cpath = config['lepton injector']['simulation']
 ylist = ['yes','y']; nlist = ['no','n']
 
 def injector_q():
-    use_li = input("Use existing injection? (yes/no): ")
+    use_li = input("Use LeptonInjector? (yes/no): ")
 
     if use_li.lower() in ylist:
+        config['lepton injector']['inject'] = True
+    elif use_li.lower() in nlist:
         injFile = input('File: ')
-        config['lepton injector']['use existing injection'] = True
+        config['lepton injector']['inject'] = False
     elif use_li == '':
-        print(f'Loaded defualt value \'{config["lepton injector"]["use existing injection"]}\'')
+        print(f'Loaded defualt value \'{config["lepton injector"]["inject"]}\'')
     elif use_li.lower() not in nlist:
         print('invalid input')
         injector_q()
@@ -33,14 +36,15 @@ Which detector do you want to use?
 - User supplied geo file (UF)\n(icecube/pone/uf): '''
     )
 
-    if dname.lower() in dd.detectors:
-        dpath = dd.detectors[dname.lower()]
+    if dname.lower() in detectors:
+        dpath = detectors[dname.lower()]
         cpath['injection radius'] = dpath['injection radius']
         cpath['endcap length'] = dpath['endcap length']
         cpath['cylinder radius'] = dpath['cylinder radius']
         cpath['cylinder height'] = dpath['cylinder height']
         config['detector']['medium'] = dpath['medium']
-        config['detector']['file name'] = dpath['file name']
+        config['lepton propagator']['medium'] = dpath['medium']
+        config['detector']['detector specs file'] = dpath['detector specs file']
         print(dname.lower()+' loaded')
     elif dname.lower() == 'uf':
         dfile_q()
@@ -49,7 +53,7 @@ Which detector do you want to use?
         print(f'  Cylinder height: {cpath["cylinder height"]} m')
         useRec_q()
     elif dname == '':
-        print((f'Loaded default value \'{config["detector"]["file name"]}\''))
+        print((f'Loaded default value \'{config["detector"]["detector specs file"]}\''))
     else:
         print('invalid input')
         detector_q()
@@ -58,13 +62,14 @@ def dfile_q():
     try:
         dfile = input('File: ')
         print('Reading...')
-        d_coords,keys,medium = gu.from_geo(dfile)
-        d_cyl = gu.get_volume(d_coords)
+        d_coords,keys,medium = from_geo(dfile)
+        d_cyl = get_volume(d_coords)
         config['detector']['medium'] = medium
-        config['detector']['file name'] = dfile
+        config['lepton propagator']['medium'] = medium
+        config['detector']['detector specs file'] = dfile
         is_ice = medium.lower()=='ice'
-        cpath['injection radius'] = round(gu.get_injRadius(d_coords, is_ice))
-        cpath['endcap length'] = round(gu.get_endcap(d_coords, is_ice))
+        cpath['injection radius'] = round(get_injRadius(d_coords, is_ice))
+        cpath['endcap length'] = round(get_endcap(d_coords, is_ice))
         cpath['cylinder radius'] = round(d_cyl[0])
         cpath['cylinder height'] = round(d_cyl[1])
 
@@ -103,8 +108,8 @@ def event_q():
         state_key = e_type.lower()+'/'
         interaction_q()
     elif e_type == '':
-        key_list = list(dd.final_state.keys())
-        val_list = list(dd.final_state.values())
+        key_list = list(final_states.keys())
+        val_list = list(final_states.values())
         type_index = val_list.index([cpath['final state 1'], cpath['final state 2']])
         state_key = key_list[type_index]
         print(f'Loaded default value \'{key_list[type_index]}\'')
@@ -121,13 +126,13 @@ def interaction_q():
 
     if i_type.lower() in ['cc','nc']:
         state_key += i_type.lower()
-        cpath['final state 1'] = dd.final_state[state_key][0]
-        cpath['final state 2'] = dd.final_state[state_key][1]
+        cpath['final state 1'] = final_states[state_key][0]
+        cpath['final state 2'] = final_states[state_key][1]
     elif i_type.lower() == 'gr' and state_key == 'nuebar/':
         gr_q()
     elif i_type == '':
-        key_list = list(dd.final_state.keys())
-        val_list = list(dd.final_state.values())
+        key_list = list(final_states.keys())
+        val_list = list(final_states.values())
         type_index = val_list.index([cpath['final state 1'], cpath['final state 2']])
         print(f'Loaded default value \'{key_list[type_index]}\'')
     else:
@@ -137,14 +142,14 @@ def interaction_q():
 def gr_q():
     global state_key
     gr_final = input('Final type? (Hadron/E/Mu/Tau): ')
-    if gr_final.lower() in ['hardon','e','mu','tau']:
+    if gr_final.lower() in ['hadron','e','mu','tau']:
         state_key += gr_final.lower()
-        cpath['final state 1'] = dd.final_state[state_key][0]
-        cpath['final state 2'] = dd.final_state[state_key][1]
+        cpath['final state 1'] = final_states[state_key][0]
+        cpath['final state 2'] = final_states[state_key][1]
     elif gr_final == '':
         state_key += 'hadron'
-        cpath['final state 1'] = dd.final_state[state_key][0]
-        cpath['final state 2'] = dd.final_state[state_key][1]
+        cpath['final state 1'] = final_states[state_key][0]
+        cpath['final state 2'] = final_states[state_key][1]
         print('Loaded default value \'Hadron\'')
     else:
         print('invalid input')
@@ -181,16 +186,16 @@ def set_misc(input_str, path):
     else:
         path = float(val)
 
-def run():
+def run_ui():
     """Runs user interface"""
-    print("""
+    print(f"""
 ——————————————————————————————————————————————————————————
 Welcome to
- ____                           _   _                    
-|  _ \ _ __ ___  _ __ ___   ___| |_| |__   ___ _   _ ___ 
-| |_) | '__/ _ \| '_ ` _ \ / _ \ __| '_ \ / _ \ | | / __|
-|  __/| | | (_) | | | | | |  __/ |_| | | |  __/ |_| \__ \\
-|_|   |_|  \___/|_| |_| |_|\___|\__|_| |_|\___|\__,_|___/
+{Fore.RED} ____                           _   _                    
+{Fore.YELLOW}|  _ \ _ __ ___  _ __ ___   ___| |_| |__   ___ _   _ ___ 
+{Fore.GREEN}| |_) | '__/ _ \| '_ ` _ \ / _ \ __| '_ \ / _ \ | | / __|
+{Fore.BLUE}|  __/| | | (_) | | | | | |  __/ |_| | | |  __/ |_| \__ \\
+{Fore.MAGENTA}|_|   |_|  \___/|_| |_| |_|\___|\__|_| |_|\___|\__,_|___/{Style.RESET_ALL}
 ——————————————————————————————————————————————————————————
 """)
     injector_q()
@@ -200,3 +205,5 @@ Welcome to
     misc_q()
     print('\nconfig set!')
     print('-------------------------------------------')
+
+# run_ui()

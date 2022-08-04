@@ -24,7 +24,7 @@ detectors = {
 }
 
 # Table of event & interaction types to final states
-final_state = {
+final_states = {
     'nue/cc':['EMinus','Hadrons'],
     'numu/cc':['MuMinus','Hadrons'],
     'nutau/cc':['TauMinus','Hadrons'],

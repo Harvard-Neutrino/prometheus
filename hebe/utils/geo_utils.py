@@ -3,8 +3,8 @@
 # Util functions for geo files
 
 import numpy as np
-from f2k_utils import from_f2k
-from iter_or_rep import iter_or_rep
+from .f2k_utils import from_f2k
+from .iter_or_rep import iter_or_rep
 
 ice_padding = 200
 water_padding = 30
@@ -33,15 +33,17 @@ def from_geo(fname):
             keys.append((int(line[3]),int(line[4])))
     return pos_out, keys, medium
 
-
 def geo_from_f2k(fname, out_path, medium = "ice", dom_radius = 30):
     """Generates a detector geo file from an f2k
     """
-    positions, keys, sers = fk.from_f2k(fname)
+    positions, keys, sers = from_f2k(fname)
     with open(out_path, "w") as geo_out:
-        geo_out.write(f'### Metadata ###\nMedium:\t{medium}\nDOM Radius:\t{dom_radius}\n### Modules ###\n')
+        geo_out.write(f'### Metadata ###\nMedium:\t{medium}\nDOM Radius [cm]:\t{dom_radius}\n### Modules ###\n')
         for pos, key in zip(positions,keys):
             geo_out.write(f'{pos[0]}\t{pos[1]}\t{pos[2]}\t{key[0]}\t{key[1]}\n')
+
+geo_from_f2k("../data/deepcore-f2k","../data/deepcore-geo")
+geo_from_f2k("../data/upgrade-f2k","../data/upgrade-geo")
 
 def get_xyz(fname):
     # returns 3xn array

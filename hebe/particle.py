@@ -1,5 +1,9 @@
 import numpy as np
-from proposal import Cartesian3D
+import proposal as pp
+if int(pp.__version__.split('.')[0])>=7:
+    from proposal import Cartesian3D as pp_vector
+else:
+    from proposal import Vector3D as pp_vector
 from hebe.utils.units import m_to_cm, cm_to_m, GeV_to_MeV, MeV_to_GeV
 from hebe.utils.translators import PDG_to_pstring
 
@@ -10,8 +14,8 @@ class Particle(object):
         direction, event_id,
         theta=0., phi=0.,
         parent=None):
-        if isinstance(position, Cartesian3D):
-            if not isinstance(direction, Cartesian3D):
+        if isinstance(position, pp_vector):
+            if not isinstance(direction, pp_vector):
                 raise ValueError()
             self._e = e * MeV_to_GeV
             self._position = cm_to_m * np.array([position.x, position.y, position.z])
@@ -23,9 +27,9 @@ class Particle(object):
         else:
             self._e = e
             self._position = np.array(position)
-            self._pp_position = Cartesian3D(*(m_to_cm*position))
+            self._pp_position = pp_vector(*(m_to_cm*position))
             self._direction = np.array(direction)
-            self._pp_direction = Cartesian3D(*direction)
+            self._pp_direction = pp_vector(*direction)
             self._theta = theta
             self._phi = phi
         self._pdg_code = pdg_code
