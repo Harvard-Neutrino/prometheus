@@ -8,26 +8,17 @@ import numpy as np
 import h5py
 import awkward as ak
 import pyarrow.parquet as pq
-<<<<<<< HEAD
 import pyarrow 
-from .utils.geo_utils import get_endcap,get_injRadius,get_cylinder
+from .utils.geo_utils import get_endcap,get_injRadius,get_volume
 from .config import config
 from .detector import detector_from_geo
-=======
-from .utils.f2k_utils import get_endcap,get_injRadius,get_cylinder,padding
-from .config import config
-from .detector import detector_from_f2k
->>>>>>> a899f0f37a3cc79d4b008fcaf8cb292e08c214d0
 #from .detector_handler import DH
 from .photonpropagator import PP
 from .lepton_prop import LP
 from .lepton_injector import LepInj
-<<<<<<< HEAD
-from .ppc_plotting import plot_event
-=======
-from .prometheus_plotting import plot_event
->>>>>>> a899f0f37a3cc79d4b008fcaf8cb292e08c214d0
+# from .ppc_plotting import plot_event
 from .particle import Particle
+from .utils.hebe_ui import run_ui
 
 from tqdm import tqdm
 from time import time
