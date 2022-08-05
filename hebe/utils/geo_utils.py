@@ -42,9 +42,6 @@ def geo_from_f2k(fname, out_path, medium = "ice", dom_radius = 30):
         for pos, key in zip(positions,keys):
             geo_out.write(f'{pos[0]}\t{pos[1]}\t{pos[2]}\t{key[0]}\t{key[1]}\n')
 
-geo_from_f2k("../data/deepcore-f2k","../data/deepcore-geo")
-geo_from_f2k("../data/upgrade-f2k","../data/upgrade-geo")
-
 def get_xyz(fname):
     # returns 3xn array
     det = from_geo(fname)
