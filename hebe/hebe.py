@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # hebe.py
-# Authors: Christian Haack, Jeffrey Lazar, Stephan Meighen-Berger,
+# Copyright (C) 2022 Christian Haack, Jeffrey Lazar, Stephan Meighen-Berger,
 # Interface class to the package
 
 # imports

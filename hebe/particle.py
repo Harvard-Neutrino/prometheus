@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# particle.py
+# Copyright (C) 2022 Jeffrey Lazar
+# Storage class for particles
+
 import numpy as np
 from proposal import Cartesian3D
 from hebe.utils.units import m_to_cm, cm_to_m, GeV_to_MeV, MeV_to_GeV
