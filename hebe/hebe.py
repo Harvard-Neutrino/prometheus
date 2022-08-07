@@ -139,7 +139,7 @@ class HEBE(object):
         """
         return self._results_record
 
-    @profile
+    # @profile
     def injection(self):
         """ Injects leptons according to the config file
         """
@@ -182,7 +182,7 @@ class HEBE(object):
         print('-------------------------------------------')
         print('-------------------------------------------')
 
-    @profile
+    # @profile
     def propagate(self):
         """ Runs the light yield calculations
         """
