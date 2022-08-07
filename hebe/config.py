@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Name: config.py
-# Authors: Stephan Meighen-Berger
+# Copyright (C) 2022 Stephan Meighen-Berger
 # Config file for the pr_dformat package.
 
 from typing import Dict, Any
@@ -20,6 +20,7 @@ _baseconfig = {
         'meta data file': True,  # Switch to store meta data file
         'meta name': 'meta_data',
         'clean up': False,  # Delete all intermediate and temporary files
+        'full output' : False
     },
     ###########################################################################
     # Scenario input
@@ -45,8 +46,13 @@ _baseconfig = {
     # Detector
     ###########################################################################
     "detector": {
-        'file name': '../hebe/data/icecube-f2k',
-        'injection offset': [0., 0., -2000.],
+        'new detector': False,  # Flag to generate a new detector file
+        'detector specs file': 'unnamed',  # Name of the file to use for build
+        # Padding for sphere where we do physics good
+        'padding' : 200, # m
+        'radius' : 900, # m
+        'r_max' : 1e18, # m
+        "medium" : "ice"
     },
     ###########################################################################
     # Paricles
@@ -56,7 +62,7 @@ _baseconfig = {
         # Track particles
         'track particles': [13, -13],
         # Everything here will be treated explicitly
-        'explicit': [11, -11, 111, 211, 13, -13],
+        'explicit': [11, -11, 111, 211, 13, -13, 15, -15],
         # Everything else is replaced by
         'replacement': 2212,
     },
@@ -90,7 +96,7 @@ _baseconfig = {
             "cylinder radius":700, # m
             "cylinder height":1000, # m
         },
-        'use existing injection': False
+        'force injection params': False
     },
     ###########################################################################
     # Lepton propagator
@@ -100,11 +106,17 @@ _baseconfig = {
         'track length': 5000,  # maximum track length to model
         'lepton': 'MuMinus',
         'medium': 'Water',
-        'v_cut': 1,
-        'e_cut': 500,  # MeV
+        # TODO I made these numbers up !!!!!!!!!!
+        'vcut': [1, 1],
+        'ecut': [100.0, 500.0],  # MeV
         'soft_losses': False,
-        'propagation padding': 1000,
+        'propagation padding': 900,
         'interpolation': True,
+        'lpm_effect' : True,
+        'continuous_randomization' : True,
+        'soft_losses' : True,
+        'scattering model' : "Moliere",
+        'force propagation params':False
 
     },
     ###########################################################################
@@ -130,7 +142,8 @@ _baseconfig = {
             'f2k_prefix':'',
             'ppctables':'../PPC_CUDA/',
             'ppc_exe':'../PPC_CUDA/ppc', # binary executable
-            'device':0, # GPU
+            'device':0, # GPU,
+            'supress_output': True,
         },
         'PPC': {
             'location': '../PPC/',
@@ -139,6 +152,7 @@ _baseconfig = {
             'ppctables': '../PPC/',
             'ppc_exe': '../PPC/ppc',  # binary executable
             'device': 0,  # CPU
+            'supress_output': True,
         },
     },
     ###########################################################################
@@ -156,12 +170,10 @@ class ConfigClass(dict):
     """ The configuration class. This is used
     by the package for all parameter settings. If something goes wrong
     its usually here.
-
     Parameters
     ----------
     config : dic
         The config dictionary
-
     Returns
     -------
     None
@@ -173,12 +185,10 @@ class ConfigClass(dict):
     # TODO: Update this
     def from_yaml(self, yaml_file: str) -> None:
         """ Update config with yaml file
-
         Parameters
         ----------
         yaml_file : str
             path to yaml file
-
         Returns
         -------
         None
@@ -189,12 +199,10 @@ class ConfigClass(dict):
     # TODO: Update this
     def from_dict(self, user_dict: Dict[Any, Any]) -> None:
         """ Creates a config from dictionary
-
         Parameters
         ----------
         user_dict : dic
             The user dictionary
-
         Returns
         -------
         None

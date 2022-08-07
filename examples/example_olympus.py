@@ -8,6 +8,7 @@ from hebe import HEBE, config
 from jax.config import config as jconfig
 import gc
 import os
+import tracemalloc
 
 jconfig.update("jax_enable_x64", True)
 
@@ -17,27 +18,26 @@ def main(args=None):
         print("Using default seed!")
     else:
         rset = int(args[1])
-    try:
-        print('CURRENT SET %d' % rset)
-        config["general"]["random state seed"] = rset
-        config["general"]["meta_name"] = 'meta_data_%d' % rset
-        config['general']['clean up'] = False
-        config['lepton injector']['simulation']['output name'] = "./output/data_%d_output_LI.h5" % rset
-        config['photon propagator']['storage location'] = './output/rset_%d_' % rset
-        config['lepton injector']['simulation']['nevents'] = 10
-        config['lepton injector']['simulation']['minimal energy'] = 1e3
-        config['lepton injector']['simulation']['maximal energy'] = 1e4
-        config['lepton injector']['simulation']["injection radius"] = 150
-        config['lepton injector']['simulation']["endcap length"] = 150
-        config['lepton injector']['simulation']["cylinder radius"] = 150
-        config['lepton injector']['simulation']["cylinder height"] = 1000
-        config['detector']['injection offset'] = [0., 0., 0]
-        # config["detector"]["file name"] = '../hebe/data/icecube-f2k'
-        config['photon propagator']['name'] = 'olympus'
-        config["detector"]["file name"] = '../hebe/data/pone_triangle-f2k'
-        hebe = HEBE()
-    except:
-        print("Error in the simulation")
+    print('CURRENT SET %d' % rset)
+    config["general"]["random state seed"] = rset
+    config["general"]["meta_name"] = 'meta_data_%d' % rset
+    config['general']['clean up'] = True
+    config['lepton injector']['simulation']['output name'] = "./output/custom_%d_output_LI.h5" % rset
+    config['photon propagator']['storage location'] = './output/custom_%d_' % rset
+    config['lepton injector']['simulation']['nevents'] = 1
+    config['lepton injector']['simulation']['minimal energy'] = 40
+    config['lepton injector']['simulation']['maximal energy'] = 41
+    config['lepton injector']['simulation']["injection radius"] = 150
+    config['lepton injector']['simulation']["endcap length"] = 200
+    config['lepton injector']['simulation']["cylinder radius"] = 150
+    config['lepton injector']['simulation']["cylinder height"] = 400
+    config['lepton injector']['force injection params'] = True
+    config['detector']['injection offset'] = [0., 0., 0]
+    config['photon propagator']['name'] = 'olympus'
+    config["detector"]['new detector'] = False
+    config["detector"]['detector specs file'] = '../hebe/data/custom.txt'
+    config["detector"]["file name"] = '../hebe/data/custom-f2k'
+    hebe = HEBE()
 
     hebe.sim()
     del hebe
@@ -52,7 +52,10 @@ if __name__ == "__main__":
     print("--------------------------------------------------------------")
     print("--------------------------------------------------------------")
     print("Launching simulation")
+    tracemalloc.start()
     main(sys.argv)
+    print(tracemalloc.get_traced_memory())
+    tracemalloc.stop()
     print("Finished call")
     print("--------------------------------------------------------------")
     print("--------------------------------------------------------------")

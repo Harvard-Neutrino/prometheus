@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # photonpropagator.py
-# Authors: Jeffrey Lazar, Stephan Meighen-Berger
+# Copyright (C) 2022 Jeffrey Lazar, Stephan Meighen-Berger
 # Interface class to the different lepton injectors
 
 from .config import config
@@ -35,12 +35,7 @@ class LepInj(object):
         for id_name, names in enumerate([
                 self._spars['final state 1'], self._spars['final state 2']
                 ]):
-            if names in 'EMinus EPlus MuMinus TauMinus TauPlus'.split():
-                particles.append(getattr(LI.Particle.ParticleType, names))
-            elif names == 'Hadrons':
-                particles.append(LI.Particle.ParticleType.Hadrons)
-            else:
-                raise ValueError('Unrecognized particle type!')
+            particles.append(getattr(LI.Particle.ParticleType, names))
         
         print('Setting up the LI object')
         the_injector = LI.Injector(

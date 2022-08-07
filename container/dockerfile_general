@@ -1,0 +1,84 @@
+# syntax=docker/dockerfile:1
+FROM ubuntu:18.04 as base
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update && \
+    apt-get -y --no-install-recommends install \
+    build-essential \
+    gcc \
+    g++ \
+    git \
+    libssl-dev \
+    python3-dev \
+    ca-certificates \
+    wget libgsl-dev pkg-config libhdf5-serial-dev libboost-all-dev python-dev && \
+    rm -rf /var/lib/apt/lists/*
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.22.2/cmake-3.22.2.tar.gz --no-check-certificate && \
+    tar -zxvf cmake-3.22.2.tar.gz && \
+    cd cmake-3.22.2 && ./bootstrap && make -j4 && make install
+ENV PATH="/root/miniconda3/bin:${PATH}"
+ARG PATH="/root/miniconda3/bin:${PATH}"
+RUN cd /root &&\
+    wget \
+    https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh --no-check-certificate\
+    && mkdir /root/.conda \
+    && bash Miniconda3-latest-Linux-x86_64.sh -b \
+    && rm -f Miniconda3-latest-Linux-x86_64.sh
+RUN conda install pip
+RUN pip install --upgrade pip
+RUN pip install conan && \
+    conan profile new default --detect && conan profile update settings.compiler.libcxx=libstdc++11 default && \
+    mkdir /opt/PROPOSAL && cd /opt/PROPOSAL && \
+    git clone https://github.com/tudo-astroparticlephysics/PROPOSAL.git . && \
+    mkdir -p build && cd build && conan install .. -o with_python=True && \
+    conan build ..
+FROM base as base_tables
+COPY build_proposal_tables.py /opt/PROPOSAL/build_proposal_tables.py
+RUN PYTHONPATH=$PYTHONPATH:/opt/PROPOSAL/build/src/pyPROPOSAL python3 /opt/PROPOSAL/build_proposal_tables.py
+FROM base_tables as leptoninjector
+RUN conda install -c conda-forge photospline && \
+    mkdir /opt/LI && cd /opt/LI && \
+    git clone https://github.com/icecube/LeptonInjector.git && \
+    mv LeptonInjector source && mkdir build && mkdir install && \
+    cd build && cmake -DCMAKE_INSTALL_PREFIX=../install ../source && \
+    make -j4 && make install
+FROM leptoninjector as ppc
+RUN cd /opt && mkdir PPC && \
+    cd PPC && \
+    wget https://user-web.icecube.wisc.edu/~dima/work/WISC/ppc/bkp/gpu.tgz && \
+    tar -xzf gpu.tgz && mv gpu PPC && \
+    wget https://user-web.icecube.wisc.edu/~dima/work/WISC/ppc/bkp/dat.tgz && \
+    tar -xzf dat.tgz && \
+    cd PPC && \
+    mv ../dat/wham/rnd.txt . && \
+    mv ../dat/wham/geo-f2k . && \
+    mv ../dat/wham/icemodel.dat . && \
+    mv ../dat/wham/wv.dat . && \
+    mv ../dat/wham/as.dat . && \
+    mv ../dat/wham/cfg.txt . && \
+    mv ../dat/wham/icemodel.par . && \
+    # correcting some errors in the file
+    sed -i 's/if(flag) flag=/if(flag) flag=static_cast<bool>/g' ini.cxx && \
+    make cpu && cd /home 
+FROM ppc as hebe
+RUN cd /opt && \
+    git clone https://docker-burner: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@github.com/Harvard-Neutrino/hebe.git && \
+    cd hebe
+FROM hebe as pip_stuff
+RUN pip install --upgrade pip && \
+    pip install torch-geometric jupyterlab awkward numba seaborn tqdm ipywidgets aquirdturtle_collapsible_headings plotly && \
+    pip install matplotlib_inline Geometry3D && \
+    pip install flake8 h5py scipy distrax dm-haiku==0.0.5 && \
+    pip install optax && pip install -U jaxlib
+ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
+RUN pip install fennel_seed[jax]
+RUN conda install -c conda-forge pyarrow
+RUN echo "export PATH=/usr/local/lib/nodejs/node-v14.17.0-linux-x64/bin:${PATH}" >> /root/.bashrc && \
+    echo "export PYTHONPATH=${PYTHONPATH}:/opt/PROPOSAL/build/src/pyPROPOSAL:/usr/lib/nuSQuIDS/resources/python/bindings/:/workspaces/repos/hyperion:/workspaces/repos/olympus" >> /root/.bashrc && \
+    echo "export LD_LIBRARY_PATH=/usr/local/cuda-11/lib64/:${LD_LIBRARY_PATH}" >> /root/.bashrc && \
+    echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/LI/install/lib" >> /root/.bashrc && \
+    echo "export EARTH_PARAMS=/opt/LI/source/resources/earthparams/" >> /root/.bashrc && \
+    echo "export PPC=/opt/PPC/PPC/ppc" >> /root/.bashrc && \
+    echo "export PPC_CUDA=/opt/PPC/PPC_CUDA/ppc" >> /root/.bashrc && \
+    cd /bin && cp /root/.bashrc .bashrc && \
+    cd /opt/hebe
+ENTRYPOINT [ "/bin/bash" ]

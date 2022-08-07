@@ -143,7 +143,7 @@ def generate_cascades(
 
     return events, records
 
-
+# @profile
 def generate_muon_energy_losses(
     propagator,
     energy,
@@ -268,7 +268,7 @@ def generate_muon_energy_losses(
         total_dist,
     )
 
-
+# @profile
 def generate_realistic_track(
     det,
     event_data,
@@ -293,7 +293,6 @@ def generate_realistic_track(
 
     if proposal_prop is None:
         raise RuntimeError()
-
     key, k1, k2 = random.split(key, 3)
     (
         source_pos,
@@ -332,7 +331,6 @@ def generate_realistic_track(
         source_array_to_sources(source_pos, source_dir, source_time, source_photons),
         event_data,
     )
-
     propagation_result = pprop_func(
         det.module_coords,
         det.module_efficiencies,
@@ -368,7 +366,6 @@ def generate_realistic_tracks(
             cylinder_height, cylinder_radius, 1, rng
         ).squeeze()
         energy = np.power(10, rng.uniform(log_emin, log_emax, size=1))
-
         # determine the surface normal vectors given the samples position
         # surface normal always points out
 

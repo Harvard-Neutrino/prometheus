@@ -3,5 +3,7 @@
 # Don't ignore the attribute lists
 !icecube-f2k
 !pone_triangle-f2k
+!icecube-geo
+!pone_triangle-geo
 # Except this file
 !.gitignore
