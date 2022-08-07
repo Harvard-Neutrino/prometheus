@@ -2,10 +2,12 @@
 
 Authors:
 
-1. Carlos Argueelles Delgado
-2. Christian Haack
-3. Jeffrey Lazar
-4. Stephan Meighen-Berger
+1. Jeffrey Lazar
+2. Stephan Meighen-Berger
+3. Christian Haack
+4. David Kim
+5. Carlos Argueelles Delgado
+
 
 ## Table of contents
 
