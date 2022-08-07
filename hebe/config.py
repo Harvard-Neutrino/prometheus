@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Name: config.py
-# Authors: Stephan Meighen-Berger
+# Copyright (C) 2022 Stephan Meighen-Berger
 # Config file for the pr_dformat package.
 
 from typing import Dict, Any

@@ -143,7 +143,7 @@ def generate_cascades(
 
     return events, records
 
-
+# @profile
 def generate_muon_energy_losses(
     propagator,
     energy,
@@ -268,7 +268,7 @@ def generate_muon_energy_losses(
         total_dist,
     )
 
-
+# @profile
 def generate_realistic_track(
     det,
     event_data,

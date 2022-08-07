@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # photonpropagator.py
-# Authors: Christian Haack, Jeffrey Lazar, Stephan Meighen-Berger,
+# Copyright (C) 2022 Christian Haack, Jeffrey Lazar, Stephan Meighen-Berger,
 # Interface class to the different photon propagators
 
 # imports
@@ -213,6 +213,7 @@ class PP(object):
             ValueError('Currently only file runs for olympus are supported!')
         print('Finished the photon generator')
 
+    # @profile
     def _olympus_sim(self, particle):
         """ Utilizes olympus to propagate light for the injected object
         """

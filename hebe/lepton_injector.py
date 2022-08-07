@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # photonpropagator.py
-# Authors: Jeffrey Lazar, Stephan Meighen-Berger
+# Copyright (C) 2022 Jeffrey Lazar, Stephan Meighen-Berger
 # Interface class to the different lepton injectors
 
 from .config import config

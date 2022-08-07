@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # hebe.py
-# Authors: Christian Haack, Jeffrey Lazar, Stephan Meighen-Berger,
+# Copyright (C) 2022 Christian Haack, Jeffrey Lazar, Stephan Meighen-Berger,
 # Interface class to the package
 
 # imports
@@ -139,6 +139,7 @@ class HEBE(object):
         """
         return self._results_record
 
+    # @profile
     def injection(self):
         """ Injects leptons according to the config file
         """
@@ -181,6 +182,7 @@ class HEBE(object):
         print('-------------------------------------------')
         print('-------------------------------------------')
 
+    # @profile
     def propagate(self):
         """ Runs the light yield calculations
         """

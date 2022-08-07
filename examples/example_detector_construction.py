@@ -27,7 +27,7 @@ def radius(k, n, b):
 
 if __name__ == "__main__":
     # Generating strings
-    points = sunflower(150, alpha=0.2, geodesic=False) * 100.
+    points = sunflower(75, alpha=0.2, geodesic=False) * 100.
     # Generating modules per line
     # So inefficient
     nz_list = []

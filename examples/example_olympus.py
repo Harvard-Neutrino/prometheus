@@ -24,19 +24,19 @@ def main(args=None):
     config['general']['clean up'] = True
     config['lepton injector']['simulation']['output name'] = "./output/custom_%d_output_LI.h5" % rset
     config['photon propagator']['storage location'] = './output/custom_%d_' % rset
-    config['lepton injector']['simulation']['nevents'] = 100
-    config['lepton injector']['simulation']['minimal energy'] = 1e2
-    config['lepton injector']['simulation']['maximal energy'] = 1e3
+    config['lepton injector']['simulation']['nevents'] = 1
+    config['lepton injector']['simulation']['minimal energy'] = 40
+    config['lepton injector']['simulation']['maximal energy'] = 41
     config['lepton injector']['simulation']["injection radius"] = 150
     config['lepton injector']['simulation']["endcap length"] = 200
     config['lepton injector']['simulation']["cylinder radius"] = 150
     config['lepton injector']['simulation']["cylinder height"] = 400
-    config['lepton injector']['force injection params'] = False
+    config['lepton injector']['force injection params'] = True
     config['detector']['injection offset'] = [0., 0., 0]
     config['photon propagator']['name'] = 'olympus'
     config["detector"]['new detector'] = False
     config["detector"]['detector specs file'] = '../hebe/data/custom.txt'
-    config["detector"]["file name"] = '../hebe/data/icecube-f2k'
+    config["detector"]["file name"] = '../hebe/data/custom-f2k'
     hebe = HEBE()
 
     hebe.sim()
