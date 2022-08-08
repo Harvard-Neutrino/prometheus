@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # detector_handler.py
-# Authors: Christian Haack, Jeffrey Lazar, Stephan Meighen-Berger,
+# Copyright (C) 2022 Christian Haack, Jeffrey Lazar, Stephan Meighen-Berger,
 # Deals with detector stuff
 
 import numpy as np

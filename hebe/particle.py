@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# particle.py
+# Copyright (C) 2022 Jeffrey Lazar
+# Storage class for particles
+
 import numpy as np
 import proposal as pp
 if int(pp.__version__.split(".")[0]) >= 7:
