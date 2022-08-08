@@ -33,6 +33,8 @@ from olympus.event_generation.utils import sph_to_cart_jnp  # noqa: E402
 from hyperion.medium import medium_collections  # noqa: E402
 from hyperion.constants import Constants  # noqa: E402
 
+from memory_profiler import profile
+
 def _parse_ppc(ppc_f):
     res_result = [] # timing and module
     hits = []
@@ -49,6 +51,14 @@ def _parse_ppc(ppc_f):
                     float(l[5]), float(l[6]), float(l[7]), float(l[8]))
                 )
     return hits
+
+def _should_propagate(particle):
+    if len(particle.losses) > 0:
+        return True
+    for child in particle.children:
+        if len(child.losses) > 0:
+            return True
+    return False
 
 def _ppc_sim(
     particle,
@@ -117,21 +127,22 @@ def _ppc_sim(
             print(repr(particle))
             raise ValueError("Unrecognized particle")
         # Make array with energy loss information and write it into the output file
-        serialize_to_f2k(particle, f2k_file, det.offset)
-        det.to_f2k(
-            geo_tmpfile,
-            serial_nos=[m.serial_no for m in det.modules]
-        )
-        tenv = os.environ.copy()
-        tenv["PPCTABLESDIR"] = kwargs["ppctables"]
+        if _should_propagate(particle):
+            serialize_to_f2k(particle, f2k_file, det.offset)
+            det.to_f2k(
+                geo_tmpfile,
+                serial_nos=[m.serial_no for m in det.modules]
+            )
+            tenv = os.environ.copy()
+            tenv["PPCTABLESDIR"] = kwargs["ppctables"]
 
-        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
-        process.wait()
-        particle._hits = _parse_ppc(ppc_file)
-        # Cleanup f2k_tmpfile
-        # TODO maybe make this optional
-        os.remove(ppc_file)
-        os.remove(f2k_file)
+            process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
+            process.wait()
+            particle._hits = _parse_ppc(ppc_file)
+            # Cleanup f2k_tmpfile
+            # TODO maybe make this optional
+            os.remove(ppc_file)
+            os.remove(f2k_file)
     return None, None
 
 
