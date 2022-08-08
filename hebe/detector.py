@@ -8,6 +8,7 @@ import awkward as ak
 from .config import config
 from .utils import iter_or_rep
 
+
 class Module(object):
     """
     Detection module.
@@ -73,7 +74,7 @@ class Detector(object):
 
     def __add__(self, other):
         modules = np.hcat(self.modules, other.modules)
-        Detector(modules)
+        return Detector(modules)
 
     #def subdetectors(self, nmodules):
     #    start = 0
