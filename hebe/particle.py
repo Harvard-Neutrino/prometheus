@@ -5,7 +5,7 @@
 
 import numpy as np
 import proposal as pp
-if int(pp.__version__.split('.')[0])>=7:
+if int(pp.__version__.split(".")[0]) >= 7:
     from proposal import Cartesian3D as pp_vector
 else:
     from proposal import Vector3D as pp_vector
