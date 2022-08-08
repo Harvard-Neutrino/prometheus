@@ -2,7 +2,7 @@
 # Authors: David Kim
 # User interface for Prometheus
 
-from .config import config
+from ..config import config
 from .detector_dictionaries import detectors, final_states
 from .geo_utils import from_geo,get_volume,get_endcap,get_injRadius
 from warnings import warn
