@@ -12,7 +12,6 @@ from .utils import iter_or_rep
 class Module(object):
     """
     Detection module.
-
     Attributes:
         pos: np.ndarray
             Module position (x, y, z)
@@ -199,12 +198,57 @@ def detector_from_f2k(
     det = Detector(modules)
     return det
 
+def detector_from_geo(
+    fname,
+    efficiency=0.2,
+    noise_rate=1
+) -> Detector:
+    """
+    Create a Detector object from a geometry file
+    Parameters
+    __________
+        fname: str
+            geo-file where detector information is stored
+        noise_rate: float
+            Noise rate in 1/ns
+        efficiency: float
+            Module efficiency (0, 1]
+    Returns
+    _______
+        det: Detector
+    """
+    pos = []; keys = []
+    with open(fname) as geo_in:
+        read_lines = geo_in.readlines()
+        modules_i = read_lines.index("### Modules ###\n")   
+
+        for line in read_lines[modules_i+1:]:
+            line = line.strip("\n").split("\t")
+            pos.append(
+                np.array([float(line[0]), float(line[1]),
+                float(line[2])]))
+            pos_out = np.array(pos)
+            keys.append((int(line[3]),int(line[4])))
+
+    import string, random 
+    random.seed(config["general"]["random state seed"])
+    sers = ["0x"+"".join(random.choices(
+        string.ascii_lowercase + string.digits, k=12,
+    )) 
+            for _ in range(len(pos))
+            ]
+    efficiency, noise_rate = iter_or_rep(efficiency), iter_or_rep(noise_rate)
+    modules = [
+        Module(p, k, efficiency=e, noise_rate=nr, serial_no=ser) 
+            for p,k,e,nr,ser in zip(pos, keys, efficiency, noise_rate, sers
+        )]
+    det = Detector(modules)
+    return det
+
 def make_line(x, y, n_z, dist_z, rng, baseline_noise_rate, line_id, efficiency=0.2):
     """
     Make a line of detector modules.
-
     The modules share the same (x, y) coordinate and are spaced along the z-direction.
-
     Parameters:
         x, y: float
             (x, y) position of the line
@@ -237,10 +281,8 @@ def make_grid(
 ):
     """
     Build a square detector grid.
-
     Strings of detector modules are placed on a square grid.
     The noise rate for each module is randomöy sampled from a gamma distribution
-
     Paramaters:
       n_side
         Number of detector strings per side
@@ -268,10 +310,8 @@ def make_hex_grid(
 ):
     """
     Build a hex detector grid.
-
     Strings of detector modules are placed on a square grid.
     The noise rate for each module is randomöy sampled from a gamma distribution
-
     Paramaters:
       n_side
         Number of detector strings per side

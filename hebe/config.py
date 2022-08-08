@@ -48,7 +48,6 @@ _baseconfig = {
     "detector": {
         'new detector': False,  # Flag to generate a new detector file
         'detector specs file': 'unnamed',  # Name of the file to use for build
-        'file name': './data/icecube-f2k',
         # Padding for sphere where we do physics good
         'padding' : 200, # m
         'radius' : 900, # m
@@ -108,8 +107,8 @@ _baseconfig = {
         'lepton': 'MuMinus',
         'medium': 'Water',
         # TODO I made these numbers up !!!!!!!!!!
-        'vcut': [1e-3, 1.],
-        'ecut': [100.0, 500.0],  # MeV  why 2?
+        'vcut': [1, 1],
+        'ecut': [100.0, 500.0],  # MeV
         'soft_losses': False,
         'propagation padding': 900,
         'interpolation': True,
@@ -171,12 +170,10 @@ class ConfigClass(dict):
     """ The configuration class. This is used
     by the package for all parameter settings. If something goes wrong
     its usually here.
-
     Parameters
     ----------
     config : dic
         The config dictionary
-
     Returns
     -------
     None
@@ -188,12 +185,10 @@ class ConfigClass(dict):
     # TODO: Update this
     def from_yaml(self, yaml_file: str) -> None:
         """ Update config with yaml file
-
         Parameters
         ----------
         yaml_file : str
             path to yaml file
-
         Returns
         -------
         None
@@ -204,12 +199,10 @@ class ConfigClass(dict):
     # TODO: Update this
     def from_dict(self, user_dict: Dict[Any, Any]) -> None:
         """ Creates a config from dictionary
-
         Parameters
         ----------
         user_dict : dic
             The user dictionary
-
         Returns
         -------
         None

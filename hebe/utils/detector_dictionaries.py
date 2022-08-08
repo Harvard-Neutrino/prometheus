@@ -1,15 +1,11 @@
 # detector_dictionaries.py
-# David Kim
+# Authors: David Kim
+# Values and dicts for hebe_ui
 
-cylRadius = 900
-cylHeight = 900
-endcap_len = 700
-inj_radius = 1000
-
-# default vaules for detectors
+# Vaules for default detectors
 detectors = {
     'icecube': {
-        'file name': '../hebe/data/icecube-f2k',
+        'file name': './data/icecube-f2k',
         'injection radius': 900,
         'endcap length': 900,
         'cylinder radius': 700,
@@ -17,8 +13,8 @@ detectors = {
         'medium': 'ice'
     },
 
-    'orca': {
-        'file name': '../hebe/data/pone_triangle-f2k',
+    'pone': {
+        'file name': './data/pone_triangle-f2k',
         'injection radius': 651,
         'endcap length': 264,
         'cylinder radius': 208,
@@ -28,7 +24,7 @@ detectors = {
 }
 
 # Table of event & interaction types to final states
-final_state = {
+final_states = {
     'nue/cc':['EMinus','Hadrons'],
     'numu/cc':['MuMinus','Hadrons'],
     'nutau/cc':['TauMinus','Hadrons'],
@@ -49,17 +45,5 @@ final_state = {
     'nuebar/tau':['TauMinus','NuTaubar']
 }
 
-# move this somewhere else
-def out_doc(cdict):
-    with open('config_settings.txt','w') as out:
-        for key in cdict:
-            out.write('\n'+key+': \n')
-            for param in cdict[key]:
-                if isinstance(cdict[key][param], dict):
-                    out.write('  '+param+': \n')
-                    for val in cdict[key][param]:
-                        out.write('    '+val+': '+str(cdict[key][param][val])+'\n')
-                else:
-                    out.write('  '+param+': '+str(cdict[key][param])+'\n')
     
 
