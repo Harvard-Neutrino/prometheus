@@ -31,7 +31,7 @@ A python package to model any neutrino telescope by glueing together (and adding
 Please cite this [software](https://github.com/Harvard-Neutrino/hebe) using
 ```
 @software{hebe2022@github,
-  author = {Carlos Argueelles Delgado and Christian Haack and Jeffrey Lazar and Stephan Meighen-Berger},
+  author = {Jeffrey Lazar and Stephan Meighen-Berger and Christian Haack and David Kim and Carlos Argueelles Delgado},
   title = {{Hebe}: Neutrino Telescope Simulation Suite,
   url = {https://github.com/Harvard-Neutrino/hebe},
   version = {0.0.1},
