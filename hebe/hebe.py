@@ -441,9 +441,9 @@ class HEBE(object):
         tree["pdg_mc_code"] = [int(p) for p in particles]
         tree["energy"] = [p.e for p in particles]
         tree["event_id"] = [p.event_id for p in particles]
-        tree["sensor_pos_x"] = [p.position[0] for p in particles]
-        tree["sensor_pos_y"] = [p.position[1] for p in particles]
-        tree["sensor_pos_z"] = [p.position[2] for p in particles]
+        tree["position_x"] = [p.position[0] for p in particles]
+        tree["position_y"] = [p.position[1] for p in particles]
+        tree["position_z"] = [p.position[2] for p in particles]
         tree["direction_x"] = [p.direction[0] for p in particles]
         tree["direction_y"] = [p.direction[1] for p in particles]
         tree["direction_z"] = [p.direction[2] for p in particles]
@@ -460,6 +460,13 @@ class HEBE(object):
             [hit[2] for hit in p.hits] if len(p.hits) > 0 else [-1]
             for p in particles
         ]
+        xyz = [
+            [self._det[(hit[0], hit[1])] if len(p.hits) > 0 else [-1]
+            for p in particles
+        ]
+        tree["sensor_pos_x"] = [x[0] for x in xyz]
+        tree["sensor_pos_y"] = [x[1] for x in xyz]
+        tree["sensor_pos_z"] = [x[2] for x in xyz]
         if is_full:
             for i, particle in enumerate(particles):
                 for child in particle.children:
