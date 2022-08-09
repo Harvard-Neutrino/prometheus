@@ -2,12 +2,15 @@
 # __main__.py
 # Authors: Stephan Meighen-Berger
 
+from utils.hebe_ui import run_ui 
+
 def main():
     """ Gives some HEBE information
     """
-    print("Welcome to HEBE!")
-    print("Why are you here?")
-    print("No one should be seeing this! What the blazes have you done?")
+    # print("Welcome to HEBE!")
+    # print("Why are you here?")
+    # print("No one should be seeing this! What the blazes have you done?")
+    run_ui()
 
 if __name__ == "__main__":
     main()

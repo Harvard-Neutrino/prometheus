@@ -26,7 +26,7 @@ def injector_q():
         injector_q()
 
 def detector_q():
-    """Sets detector file and calculates selection volume
+    """Sets detector file, medium, and selection volume
     """
     dname = input(
     '''
@@ -92,15 +92,6 @@ def useRec_q():
         print('invalid input')
         useRec_q()
 
-def medium_q():
-    medium = input('Medium? (ice/water): ')
-    if medium.lower() in 'ice water':
-        cpath['medium'] = medium
-    else:
-        print('invalid input')
-        medium_q()
-
-
 def event_q():
     global state_key
     e_type = input('\nWhich event type? (NuE/NuMu/NuTau/NuEBar/NuMuBar/NuTauBar): ')
@@ -140,6 +131,7 @@ def interaction_q():
         gr_q()
 
 def gr_q():
+    """Additional question for glashow resonance"""
     global state_key
     gr_final = input('Final type? (Hadron/E/Mu/Tau): ')
     if gr_final.lower() in ['hadron','e','mu','tau']:
@@ -160,8 +152,10 @@ def ranged_q():
     inj_type = input('\nUse ranged injection? (yes/no): ')
     if inj_type in ylist:
         cpath['is ranged'] = True
+        config['run']['group name'] = 'RangedInjector0'
     elif inj_type in nlist:
         cpath['is ranged'] = False
+        config['run']['group name'] = 'VolumeInjector0'
     elif inj_type == '':
         print(f'Loaded defualt value \'{cpath["is ranged"]}\'')
     else:
@@ -205,5 +199,4 @@ Welcome to
     misc_q()
     print('\nconfig set!')
     print('-------------------------------------------')
-
-# run_ui()
+    return config

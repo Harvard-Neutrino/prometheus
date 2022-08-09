@@ -33,6 +33,43 @@ def from_geo(fname):
             keys.append((int(line[3]),int(line[4])))
     return pos_out, keys, medium
 
+def geo_from_coords(coords, out_path, tol = 0.5, medium = "ice", dom_radius = 30):
+    """
+    Generates a detector geometry file
+    Parameters
+    __________
+    
+        coords:
+            nx3 array of modules coordinates
+        out_path:
+            File path to write to
+        tol:
+            Tolerance for grouping DOMs in a string
+    """
+    coord_list = list(list(a) for a in coords)
+    coord_list.sort()
+    key = np.array(coord_list[0][:2])
+    string_num = 0
+    count = 0
+    # Group DOMs into strings
+    for coord in coord_list:
+        dist = np.linalg.norm(key - np.array(coord[:2]))
+        if dist < tol:
+            coord += [string_num, count]
+            count += 1
+        else:
+            string_num += 1
+            coord += [string_num, 0]
+            key = coord[:2]
+            count = 1
+            
+    with open(out_path, "w") as geo_out:
+        # Write metadata
+        geo_out.write(f'### Metadata ###\nMedium:\t{medium}\nDOM Radius [cm]:\t{dom_radius}\n### Modules ###')
+        # Write coords
+        for coord in coord_list:
+            geo_out.write(f'\n{coord[0]}\t{coord[1]}\t{coord[2]}\t{coord[3]}\t{coord[4]}')
+
 def geo_from_f2k(fname, out_path, medium = "ice", dom_radius = 30):
     """Generates a detector geo file from an f2k
     """
