@@ -232,11 +232,13 @@ def detector_from_geo(
 
     import string, random 
     random.seed(config["general"]["random state seed"])
+
     sers = ["0x"+"".join(random.choices(
-        string.ascii_lowercase + string.digits, k=12,
+        '0123456789abcdef', k=12
     )) 
             for _ in range(len(pos))
-            ]
+            ]    
+
     efficiency, noise_rate = iter_or_rep(efficiency), iter_or_rep(noise_rate)
     modules = [
         Module(p, k, efficiency=e, noise_rate=nr, serial_no=ser) 

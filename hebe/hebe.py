@@ -100,13 +100,15 @@ class HEBE(object):
         cyl_radius = get_volume(self._det.module_coords, is_ice)[0]
         cyl_height = get_volume(self._det.module_coords, is_ice)[1]
         if not config["lepton injector"]["force injection params"]:
-            warn('Overwriting injection parameters with calculated values')
+            print(
+                'WARNING: Overwriting injection parameters with calculated values.'
+            )
             config["lepton injector"]["simulation"]["endcap length"] = endcap
             config["lepton injector"]["simulation"]["injection radius"] = inj_radius
             config["lepton injector"]["simulation"]["cylinder radius"] = cyl_radius
             config["lepton injector"]["simulation"]["cylinder height"] = cyl_height
         if not config["lepton propagator"]["force propagation params"]:
-            warn('Overwriting propagation parameters with calculated values')
+            print('WARNING: Overwriting propagation parameters with calculated values')
             config["lepton propagator"]["propogation padding"] = inj_radius
         # Setting up the lepton propagator
         print('-------------------------------------------')
@@ -461,12 +463,12 @@ class HEBE(object):
             for p in particles
         ]
         xyz = [
-            [self._det[(hit[0], hit[1])] if len(p.hits) > 0 else [-1]
+            np.array([self._det[(hit[0], hit[1])].pos for hit in p.hits]) if len(p.hits) > 0 else np.array([[-1, -1, -1]])
             for p in particles
         ]
-        tree["sensor_pos_x"] = [x[0] for x in xyz]
-        tree["sensor_pos_y"] = [x[1] for x in xyz]
-        tree["sensor_pos_z"] = [x[2] for x in xyz]
+        tree["sensor_pos_x"] = [p[:,0] for p in xyz]       
+        tree["sensor_pos_y"] = [p[:,1] for p in xyz]
+        tree["sensor_pos_z"] = [p[:,2] for p in xyz]
         if is_full:
             for i, particle in enumerate(particles):
                 for child in particle.children:

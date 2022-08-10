@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # geo_utils.py
 # Authors: David Kim
 # Util functions for geo files
@@ -10,7 +11,7 @@ ice_padding = 200
 water_padding = 30
 
 def from_geo(fname):
-    """Returns positions, keys, and medium from detector geometry file
+    """ Returns positions, keys, and medium from detector geometry file
     """
     pos = []; keys = []; meta_data = []
     with open(fname) as geo_in:
@@ -71,7 +72,7 @@ def geo_from_coords(coords, out_path, tol = 0.5, medium = "ice", dom_radius = 30
             geo_out.write(f'\n{coord[0]}\t{coord[1]}\t{coord[2]}\t{coord[3]}\t{coord[4]}')
 
 def geo_from_f2k(fname, out_path, medium = "ice", dom_radius = 30):
-    """Generates a detector geo file from an f2k
+    """ Generates a detector geo file from an f2k
     """
     positions, keys, sers = from_f2k(fname)
     with open(out_path, "w") as geo_out:

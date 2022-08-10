@@ -1,11 +1,13 @@
+# -*- coding: utf-8 -*-
 # detector_dictionaries.py
 # Authors: David Kim
 # Values and dicts for hebe_ui
 
 # Vaules for default detectors
 detectors = {
-    'icecube': {
-        'file name': './data/icecube-f2k',
+    '1': {
+        'detector name': 'IceCube',
+        'file path': '../hebe/data/icecube-geo',
         'injection radius': 900,
         'endcap length': 900,
         'cylinder radius': 700,
@@ -13,11 +15,22 @@ detectors = {
         'medium': 'ice'
     },
 
-    'pone': {
-        'file name': './data/pone_triangle-f2k',
-        'injection radius': 651,
-        'endcap length': 264,
-        'cylinder radius': 208,
+    '2': {
+        'detector name': 'IceCube-Gen2',
+        'file path': '../hebe/data/icecube_gen2-geo',
+        'injection radius': 2100,
+        'endcap length': 1400,
+        'cylinder radius': 2000,
+        'cylinder height': 1700,
+        'medium': 'ice'
+    },
+
+    '3': {
+        'detector name': 'P-ONE',
+        'file path': '../hebe/data/pone_triangle-geo',
+        'injection radius': 650,
+        'endcap length': 300,
+        'cylinder radius': 200,
         'cylinder height': 1300,       
         'medium': 'water'
     }
@@ -41,8 +54,8 @@ final_states = {
     
     'nuebar/hadron':['Hadrons','Hadrons'],
     'nuebar/e':['EMinus','NuEBar'],
-    'nuebar/mu':['MuMinus','NuMubar'],
-    'nuebar/tau':['TauMinus','NuTaubar']
+    'nuebar/mu':['MuMinus','NuMuBar'],
+    'nuebar/tau':['TauMinus','NuTauBar']
 }
 
     
