@@ -66,10 +66,10 @@ def geo_from_coords(coords, out_path, tol = 0.5, medium = "ice", dom_radius = 30
             
     with open(out_path, "w") as geo_out:
         # Write metadata
-        geo_out.write(f'### Metadata ###\nMedium:\t{medium}\nDOM Radius [cm]:\t{dom_radius}\n### Modules ###')
+        geo_out.write(f'### Metadata ###\nMedium:\t{medium}\nDOM Radius [cm]:\t{dom_radius}\n### Modules ###\n')
         # Write coords
         for coord in coord_list:
-            geo_out.write(f'\n{coord[0]}\t{coord[1]}\t{coord[2]}\t{coord[3]}\t{coord[4]}')
+            geo_out.write(f'{coord[0]}\t{coord[1]}\t{coord[2]}\t{coord[3]}\t{coord[4]}\n')
 
 def geo_from_f2k(fname, out_path, medium = "ice", dom_radius = 30):
     """ Generates a detector geo file from an f2k

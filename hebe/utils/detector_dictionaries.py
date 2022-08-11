@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # detector_dictionaries.py
 # Authors: David Kim
-# Values and dicts for hebe_ui
+# Dicts for hebe_ui
 
 # Vaules for default detectors
 detectors = {
@@ -32,6 +32,16 @@ detectors = {
         'endcap length': 300,
         'cylinder radius': 200,
         'cylinder height': 1300,       
+        'medium': 'water'
+    },
+
+    '4': {
+        'detector name': 'GVD',
+        'file path': '../hebe/data/gvd-geo',
+        'injection radius': 500,
+        'endcap length': 300,
+        'cylinder radius': 300,
+        'cylinder height': 900,       
         'medium': 'water'
     }
 }
