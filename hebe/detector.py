@@ -63,9 +63,6 @@ class Detector(object):
         )
         self._n_modules = len(modules)
         self._om_keys = [om.key for om in self.modules]
-        print("============================")
-        print(self.outer_radius)
-        print("============================")
 
     def __getitem__(self, key):
         idx = self._om_keys.index(key)
