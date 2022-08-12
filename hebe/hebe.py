@@ -403,7 +403,11 @@ class HEBE(object):
         ):
         # TODO: Remove hardcoding
         # Total
-        sensor_id_all = np.concatenate(
+        print(type(fill_dic["primary_lepton_1"]["sensor_id"]))
+        print(fill_dic["primary_lepton_1"]["sensor_id"])
+        print(fill_dic["primary_hadron_1"]["sensor_id"])
+        #sensor_id_all = np.concatenate(
+        sensor_id_all = ak.concatenate(
             (
                 fill_dic['primary_lepton_1']['sensor_id'],
                 fill_dic['primary_hadron_1']['sensor_id']),
@@ -430,23 +434,22 @@ class HEBE(object):
             'sensor_string_id': np.array([
                 event[:, 0] for event in sensor_string_id_all
             ], dtype=object),
-            't': np.concatenate(
+            #'t': np.concatenate(
+            't': ak.concatenate(
                 (fill_dic['primary_lepton_1']['t'],
                  fill_dic['primary_hadron_1']['t']), axis=1),
         }
 
-    def _serialize_particle_to_dict(self, particles, parent_ids, is_full):
-        tree = {}
-        tree["pdg_mc_code"] = [int(p) for p in particles]
-        tree["energy"] = [p.e for p in particles]
-        tree["event_id"] = [p.event_id for p in particles]
-        tree["position_x"] = [p.position[0] for p in particles]
-        tree["position_y"] = [p.position[1] for p in particles]
-        tree["position_z"] = [p.position[2] for p in particles]
-        tree["direction_x"] = [p.direction[0] for p in particles]
-        tree["direction_y"] = [p.direction[1] for p in particles]
-        tree["direction_z"] = [p.direction[2] for p in particles]
-        #tree["parent"] = parent_ids
+    def _serialize_particle_to_dict(
+        self,
+        particles,
+        fill_dict,
+        is_full,
+        field_name="lepton"
+    ):
+
+        fill_dict[field_name] = {}
+        tree = fill_dict[field_name]
         tree["string_id"] = [
             [hit[0] for hit in p.hits] if len(p.hits) > 0 else [-1]
             for p in particles
@@ -456,7 +459,7 @@ class HEBE(object):
             for p in particles
         ]
         tree["t"] = [
-            [hit[2] for hit in p.hits] if len(p.hits) > 0 else [-1]
+            np.array([hit[2] for hit in p.hits]) if len(p.hits) > 0 else [-1]
             for p in particles
         ]
         # TODO do this for the children
@@ -485,7 +488,20 @@ class HEBE(object):
                     tree["t"][i] = np.hstack(
                         (tree["t"][i], [hit[2] for hit in child.hits])
                     )
-        return ak.Array(tree)
+                    xyz = [
+                        np.array([self._det[(hit[0], hit[1])].pos for hit in child.hits])
+                    ]
+                    tree["sensor_pos_x"] = np.hstack(
+                        (tree["sensor_pos_x"], [x[:,0] for x in xyz])
+                    )
+                    tree["sensor_pos_y"] = np.hstack(
+                        (tree["sensor_pos_y"], [x[:,1] for x in xyz])
+                    )
+                    tree["sensor_pos_z"] = np.hstack(
+                        (tree["sensor_pos_z"], [x[:,2] for x in xyz])
+                    )
+
+        #return ak.Array(tree)
 
     def construct_output(
             self,
@@ -515,37 +531,23 @@ class HEBE(object):
         print("Generating the different particle fields...")
         tree = {}
         if ((sim_switch == "PPC") or (sim_switch == "PPC_CUDA")):
+            self._serialize_injection_to_dict(self._LI_raw, tree)
             n = int(len(self._propped_primaries)/2)
             finals1 = self._propped_primaries[:n]
             finals2 = self._propped_primaries[n:]
-            # TODO actually do this....
-            for i, finals in enumerate([finals1, finals2]):
-                tree[f"final_{i+1}"] = (
-                    self._serialize_particle_to_dict(
-                        finals,
-                        None,
-                        False
-                    )
+            for finals in [finals1, finals2]:
+                if abs(int(finals[0])) in [11, 13, 15]:
+                    field_name = "primary_lepton_1"
+                else:
+                    field_name = "primary_hadron_1"
+                self._serialize_particle_to_dict(
+                    finals,
+                    tree,
+                    False,
+                    field_name=field_name
                 )
-            ## Looping over primaries, change hardcoding
-            #starting_particles = ['primary_lepton_1', 'primary_hadron_1']
-            #try:
-            #    for i, primary in enumerate(starting_particles):
-            #        self._serialize_results_to_dict(
-            #            self._results['final_%d' % (i + 1)],
-            #            self._results_record['final_%d' % (i + 1)],
-            #            tree, primary
-            #        )
-            #    self._construct_totals_from_dict(tree)
-            #except:
-            #    warn("No hits generated!")
-            #tree = ak.Array(tree)
-            #for i, primary in enumerate(self._propped_primaries):
-            #    tree = tree[f"primary_{i+1}"]
-            #    self._serialize_particle_to_dict(primary, tree, 0, self._is_full)
-            #    if self._is_full:
-            #        for j, child in enumerate(primary.children):
-            #            tree[f"child_{i+1}_{j+1}"] = self._serialize_particle_to_dict(child, i, self._is_full)
+            self._construct_totals_from_dict(tree)
+            tree = ak.Array(tree)
         else:
             self._serialize_injection_to_dict(self._LI_raw, tree)
             # Looping over primaries, change hardcoding
