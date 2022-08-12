@@ -405,10 +405,6 @@ class HEBE(object):
         ):
         # TODO: Remove hardcoding
         # Total
-        print(type(fill_dic["primary_lepton_1"]["sensor_id"]))
-        print(fill_dic["primary_lepton_1"]["sensor_id"])
-        print(fill_dic["primary_hadron_1"]["sensor_id"])
-        #sensor_id_all = np.concatenate(
         sensor_id_all = ak.concatenate(
             (
                 fill_dic['primary_lepton_1']['sensor_id'],
@@ -436,7 +432,6 @@ class HEBE(object):
             'sensor_string_id': np.array([
                 event[:, 0] for event in sensor_string_id_all
             ], dtype=object),
-            #'t': np.concatenate(
             't': ak.concatenate(
                 (fill_dic['primary_lepton_1']['t'],
                  fill_dic['primary_hadron_1']['t']), axis=1),
