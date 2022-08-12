@@ -125,7 +125,7 @@ def initialize_args():
         "--geo_file",
         dest="geo_file",
         type=str,
-        default="../hebe/data/icecube-f2k",
+        default="../hebe/data/icecube-geo",
         help="F2k file describing the geometry of the detector"
     )
     parser.add_argument(
@@ -170,7 +170,7 @@ def main(args):
         clepton = args.final_2
     else:
         raise ValueError("What's happening here")
-    config["detector"]["file name"] = args.geo_file
+    config["detector"]["detector specs file"] = args.geo_file
     config["detector"]["padding"] = args.padding
     config["general"]["random state seed"] = seed
     config["general"]["meta_name"] = 'meta_data_%d' % seed
@@ -206,7 +206,7 @@ def main(args):
         config['lepton injector']['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/lib64/"
         config['lepton injector']['xsec location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/LeptonInjector/resources/"
     config['lepton propagator']["lepton"] = clepton
-    config['photon propagator']['storage location'] = f'{args.output_prefix}/seed_{seed}_'
+    config['photon propagator']['storage location'] = f'{args.output_prefix}/{args.final_1}_{args.final_2}_seed_{seed}_'
     photo_prop = "PPC_CUDA"
     config['photon propagator']['name'] = photo_prop
     config['photon propagator'][photo_prop]['ppc_tmpfile'] = args.ppc_tmpfile.replace(".ppc", f"{seed}.ppc")
@@ -214,6 +214,7 @@ def main(args):
     config['photon propagator'][photo_prop]['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/"
     config['photon propagator'][photo_prop]['ppctables'] = "../PPC_CUDA/"
     config['photon propagator'][photo_prop]['ppc_exe'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/ppc"
+    #config['photon propagator'][photo_prop]['supress_output'] = False
     hebe = HEBE(userconfig=config)
     hebe.sim()
     if not args.no_plot:
