@@ -265,7 +265,7 @@ class HEBE(object):
         print('-------------------------------------------')
 
 
-    def _serialize_injection_to_dict(self, LI_file, fill_dic):
+    def _serialize_injection_to_dict(self, LI_file, fill_dict):
         self._LI_converter = {
             tuple([12, 11,-2000001006]): 1,
             tuple([14, 13,-2000001006]): 1,
@@ -307,8 +307,8 @@ class HEBE(object):
         initial_energy_1 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_1'][:]])
         initial_energy_2 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_2'][:]])
         events_idx = np.array(range(len(initial_types_1)))
-        fill_dic['event_id'] = events_idx
-        fill_dic['mc_truth'] = {
+        fill_dict['event_id'] = events_idx
+        fill_dict['mc_truth'] = {
             'injection_energy': initial_energy,
             'injection_type': initial_type,
             'injection_interaction_type': int_ids,
@@ -341,7 +341,7 @@ class HEBE(object):
         self,
         results,
         record,
-        fill_dic,
+        fill_dict,
         particle="lepton"
     ):
         # TODO: Optimize this. Currently this is extremely inefficient.
@@ -373,7 +373,7 @@ class HEBE(object):
                 source.n_photons[0] for source in event.sources
             ] for event in record], dtype=object)
             # This is as inefficient as possible
-            fill_dic[particle] = {
+            fill_dict[particle] = {
                 'sensor_id': all_ids_1,
                 'sensor_pos_x': np.array([
                     event[:, 0] for event in sensor_pos_1
@@ -401,40 +401,67 @@ class HEBE(object):
             }
 
     def _construct_totals_from_dict(
-            self, fill_dic
+            self, 
+            fill_dict
         ):
-        # TODO: Remove hardcoding
-        # Total
-        sensor_id_all = ak.concatenate(
-            (
-                fill_dic['primary_lepton_1']['sensor_id'],
-                fill_dic['primary_hadron_1']['sensor_id']),
-            axis=1)
-        sensor_pos_all = np.array([
-        self._det.module_coords[hits]
-            for hits in sensor_id_all
-        ], dtype=object)
-        sensor_string_id_all = np.array([
-            np.array(self._det._om_keys)[event]
-            for event in sensor_id_all
-        ], dtype=object)
-        fill_dic['total'] = {
+        particle_keys = [
+            k for k in fill_dict.keys()
+            if k not in "event_id mc_truth".split()
+        ]
+        sensor_id_all = np.array(
+            [np.array([], dtype=np.int64) for _ in range(len(fill_dict[particle_keys[0]]["sensor_id"]))]
+        )
+        t_all = np.array(
+            [np.array([]) for _ in range(len(fill_dict[particle_keys[0]]["t"]))]
+        )
+        for i, k in enumerate(particle_keys):
+            if i==0:
+                cur_t = fill_dict[k]["t"]
+                cur_sensor_id = fill_dict[k]["sensor_id"]
+            else:
+                cur_t = [
+                    x if np.all(x!=-1) else [] for x in fill_dict[k]["t"]
+                ]
+                cur_sensor_id = [
+                    x if np.all(x!=-1) else [] for x in fill_dict[k]["sensor_id"]
+                ]
+            t_all = ak.concatenate(
+                (t_all, cur_t),
+                axis=1
+            )
+            sensor_id_all = ak.concatenate(
+                (sensor_id_all, cur_sensor_id),
+                axis=1
+            )
+        sensor_pos_all = np.array(
+            [
+                self._det.module_coords[hits]
+                for hits in sensor_id_all
+            ],
+            dtype=object
+        )
+        sensor_string_id_all = np.array(
+            [
+                np.array(self._det._om_keys)[event]
+                for event in sensor_id_all
+            ],
+            dtype=object
+        )
+        fill_dict['total'] = {
             'sensor_id': sensor_id_all,
-            'sensor_pos_x': np.array([
+            'sensor_pos_x': ak.Array([
                 event[:, 0] for event in sensor_pos_all
-            ], dtype=object),
-            'sensor_pos_y': np.array([
+            ]),
+            'sensor_pos_y': ak.Array([
                 event[:, 1] for event in sensor_pos_all
-            ], dtype=object),
-            'sensor_pos_z': np.array([
+            ]),
+            'sensor_pos_z': ak.Array([
                 event[:, 2] for event in sensor_pos_all
-            ], dtype=object),
-            'sensor_string_id': np.array([
+            ]),
+            'sensor_string_id': ak.Array([
                 event[:, 0] for event in sensor_string_id_all
-            ], dtype=object),
-            't': ak.concatenate(
-                (fill_dic['primary_lepton_1']['t'],
-                 fill_dic['primary_hadron_1']['t']), axis=1),
+            ]),
+            't':t_all,
         }
 
     def _serialize_particle_to_dict(
@@ -448,20 +475,20 @@ class HEBE(object):
         fill_dict[field_name] = {}
         tree = fill_dict[field_name]
         tree["string_id"] = [
-            [hit[0] for hit in p.hits] if len(p.hits) > 0 else [-1]
+            [hit[0] for hit in p.hits] if len(p.hits) > 0 else np.array([-1])
             for p in particles
         ]
         tree["sensor_id"] = [
-            [hit[1] for hit in p.hits] if len(p.hits) > 0 else [-1]
+            [hit[1] for hit in p.hits] if len(p.hits) > 0 else np.array([-1])
             for p in particles
         ]
         tree["t"] = [
-            np.array([hit[2] for hit in p.hits]) if len(p.hits) > 0 else [-1]
+            np.array([hit[2] for hit in p.hits]) if len(p.hits) > 0 else np.array([-1])
             for p in particles
         ]
         # TODO do this for the children
         xyz = [
-            np.array([self._det[(hit[0], hit[1])].pos for hit in p.hits]) if len(p.hits) > 0 else np.array([[-1, -1, -1]])
+            np.array([self._det[(hit[0], hit[1])].pos for hit in p.hits]) if len(p.hits) > 0 else np.transpose([[-1], [-1],[-1]])
             for p in particles
         ]
 
