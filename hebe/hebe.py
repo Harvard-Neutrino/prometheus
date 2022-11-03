@@ -12,7 +12,6 @@ import pyarrow
 from .utils.geo_utils import get_endcap,get_injRadius,get_volume
 from .config import config
 from .detector import detector_from_geo
-#from .detector_handler import DH
 from .photonpropagator import PP
 from .lepton_prop import LP
 from .lepton_injector import LepInj
@@ -90,7 +89,6 @@ class HEBE(object):
         # Setting up the detector
         print('-------------------------------------------')
         print('Setting up the detector')
-        #self._dh = DH()
 
         self._det = detector_from_geo(config["detector"]["detector specs file"])
         print('Finished the detector')

@@ -14,7 +14,6 @@ import numpy as np
 from .utils import serialize_to_f2k, PDG_to_f2k
 from .lepton_prop import Loss
 
-#from .detector_handler import DH
 # sys.path.append(config['photon propagator']['location'])
 sys.path.append('../')
 
@@ -60,6 +59,7 @@ def _should_propagate(particle):
             return True
     return False
 
+#@profile
 def _ppc_sim(
     particle,
     det,
@@ -143,6 +143,28 @@ def _ppc_sim(
             # TODO maybe make this optional
             os.remove(ppc_file)
             os.remove(f2k_file)
+        #if _should_propagate(particle):
+        #    serialize_to_f2k(particle, f2k_file, det.offset)
+        #    sub_dets = det.subdetectors(16384)
+        #    print(sub_dets)
+        #    hits = []
+        #    for sub_det in sub_dets:
+        #        sub_det.to_f2k(
+        #            geo_tmpfile,
+        #            serial_nos=[m.serial_no for m in sub_det.modules]
+        #        )
+
+        #        tenv = os.environ.copy()
+        #        tenv["PPCTABLESDIR"] = kwargs["ppctables"]
+
+        #        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
+        #        process.wait()
+        #        hits = hits + _parse_ppc(ppc_file)
+        #        # Cleanup f2k_tmpfile
+        #        # TODO maybe make this optional
+        #        os.remove(ppc_file)
+        #    os.remove(f2k_file)
+        #    particle._hits = hits
     return None, None
 
 
