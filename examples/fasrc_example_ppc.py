@@ -221,14 +221,12 @@ def main(args):
         print('Plotting')
         import awkward as ak
         events = ak.from_parquet(f"{config['photon propagator']['storage location']}meta_data.parquet")
+        from hebe.my_prometheus_plotting import plot_event
         for idx, event in enumerate(events):
-            from hebe.prometheus_plotting import plot_event
             plot_event(
                 event,
                 hebe._det,
                 fig_name=f'./plots/{args.final_1}_{args.final_2}_{seed}_{idx}.pdf',
-                #show_track=False,
-                #show_dust_layer=True
             )
 
     del hebe
