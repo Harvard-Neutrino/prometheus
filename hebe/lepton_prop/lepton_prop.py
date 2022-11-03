@@ -132,42 +132,6 @@ class LP(object):
         print('----------------------------------------------------')
         return prop
 
-
-
-    #def _make_old_propdict(self, pstr, **kwargs):
-    #    """Set up a proposal propagator for version <= 6"""
-    #    print('----------------------------------------------------')
-    #    from .old_proposal import make_propagator
-    #    if pstr in "EMinus EPlus MuMinus MuPlus".split():
-    #        prop_dict = {pstr: make_propagator(pstr, **kwargs)}
-    #    else: # Taus can produce other leptons
-    #        if "Tau" not in pstr:
-    #            raise Exception("What is happening here ?????")
-    #        prop_dict = {pstr: make_propagator(pstr, **kwargs)}
-    #        pstr = "E" + pstr[3:]
-    #        prop_dict[pstr] = make_propagator(pstr, **kwargs)
-    #        pstr = "Mu" + pstr[1:]
-    #        prop_dict[pstr] = make_propagator(pstr, **kwargs)
-
-    #    return prop_dict
-
-    #def _make_old_pdefdict(self, pstr):
-    #    """Set up a proposal propagator for version <= 6"""
-    #    print('----------------------------------------------------')
-    #    from .old_proposal import make_pdef
-    #    if pstr in "EMinus EPlus MuMinus MuPlus".split():
-    #        pdef_dict = {pstr: make_pdef(pstr)}
-    #    else: # Taus can produce other leptons
-    #        if "Tau" not in pstr:
-    #            raise Exception("What is happening here ?????")
-    #        pdef_dict = {pstr: make_pdef(pstr)}
-    #        pstr = "E" + pstr[3:]
-    #        pdef_dict[pstr] = make_pdef(pstr)
-    #        pstr = "Mu" + pstr[1:]
-    #        pdef_dict[pstr] = make_pdef(pstr)
-
-    #    return pdef_dict
-
     def energy_losses(self, particle):
         pdef, prop = self[str(particle)]
         losses = energy_losses(
@@ -176,6 +140,6 @@ class LP(object):
             particle,
             self._kwargs["propagation padding"],
             # TODO get this out of here !!!!!!!!
-            1881.4563710308082+1000
+            self._kwargs["r_detector"]+1000
         )
         return losses
