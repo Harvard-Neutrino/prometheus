@@ -15,7 +15,6 @@ from .detector import detector_from_geo
 from .photonpropagator import PP
 from .lepton_prop import LP
 from .lepton_injector import LepInj
-# from .ppc_plotting import plot_event
 from .particle import Particle
 from .utils.hebe_ui import run_ui
 
@@ -386,7 +385,7 @@ class HEBE(object):
                 'sensor_pos_z': np.array([
                     event[:, 2] for event in sensor_pos_1
                 ], dtype=object),
-                'sensor_string_id': np.array([
+                'string_id': np.array([
                     event[:, 0] for event in sensor_string_id_1
                 ], dtype=object),
                 't': all_hits_1,
@@ -510,86 +509,11 @@ class HEBE(object):
             'sensor_pos_z': ak.Array([
                 event[:, 2] for event in sensor_pos_all
             ]),
-            'sensor_string_id': ak.Array([
+            'string_id': ak.Array([
                 event[:, 0] for event in sensor_string_id_all
             ]),
             't':t_all,
         }
-        ## These are the keys which refer to the physical particles
-        #particle_keys = [
-        #    k for k in fill_dict.keys()
-        #    if k not in "event_id mc_truth".split()
-        #]
-        ## A set of the all the fields that we should expect
-        #field_keys = set(fill_dict[particle_keys[0]].keys())
-        ## Check to make sure all the particles have matching fields
-        ## TODO should we just make this a warning and not to the 
-        ## offending field
-        #for key in particle_keys:
-        #    set_keys = set(fill_dict[key])
-        #    if not (
-        #        field_keys.issubset(set_keys) and\
-        #        set_keys.issubset(field_keys)
-        #    ):
-        #        raise ValueError("Particle keys are not compatible.")
-        #
-        #fill_dict["total"] = {}
-        #for field_k in field_keys:
-        #    nevents = len(fill_dict[particle_keys[0]][field_k])
-
-        #    # Make an empty array that we will start stacking on
-        #    total = np.array(
-        #        [np.array([])
-        #        for _ in range(nevents)]
-        #    )
-        #    # Iterate over all the particles, stacking on total each time
-        #    for i, k in enumerate(particle_keys):
-        #        # Don't need to do any special handling
-        #        if i==0:
-        #            current = np.array(fill_dict[k][field_k])
-        #        # If this isn't the first one, we need to filter out [-1] entries
-        #        # so that they don't crop up in the middle
-        #        else:
-        #            current = [
-        #                x if np.all(x!=-1) else [] for x in np.array(fill_dict[k][field_k])
-        #            ]
-        #        # Add the new stuff to the running total
-        #        total = ak.concatenate(
-        #            (total, current),
-        #            axis=1
-        #        )
-        #    # Throw it all in the dictionary :-)
-        #    fill_dict["total"][field_k] = total
-        #sensor_pos_all = np.array(
-        #    [
-        #        self._det.module_coords[hits]
-        #        for hits in sensor_id_all
-        #    ],
-        #    dtype=object
-        #)
-        #sensor_string_id_all = np.array(
-        #    [
-        #        np.array(self._det._om_keys)[event]
-        #        for event in sensor_id_all
-        #    ],
-        #    dtype=object
-        #)
-        #fill_dict['total'] = {
-        #    'sensor_id': sensor_id_all,
-        #    'sensor_pos_x': ak.Array([
-        #        event[:, 0] for event in sensor_pos_all
-        #    ]),
-        #    'sensor_pos_y': ak.Array([
-        #        event[:, 1] for event in sensor_pos_all
-        #    ]),
-        #    'sensor_pos_z': ak.Array([
-        #        event[:, 2] for event in sensor_pos_all
-        #    ]),
-        #    'sensor_string_id': ak.Array([
-        #        event[:, 0] for event in sensor_string_id_all
-        #    ]),
-        #    't':t_all,
-        #}
 
     def _serialize_particle_to_dict(
         self,
@@ -601,7 +525,7 @@ class HEBE(object):
 
         fill_dict[field_name] = {}
         tree = fill_dict[field_name]
-        tree["sensor_string_id"] = [
+        tree["string_id"] = [
             [hit[0] for hit in p.hits] if len(p.hits) > 0 else np.array([-1])
             for p in particles
         ]
@@ -635,7 +559,7 @@ class HEBE(object):
                     tree["string_id"][i] = np.hstack(
                         (tree["string_id"][i], [hit[0] for hit in child.hits])
                     )
-                    tree["sensor_string_id"][i] = np.hstack(
+                    tree["string_id"][i] = np.hstack(
                         (tree["sensor_id"][i], [hit[1] for hit in child.hits])
                     )
                     tree["t"][i] = np.hstack(
