@@ -12,7 +12,6 @@ from ..particle import Particle
 from ..utils import iter_or_rep
 from  ..utils.units import GeV_to_MeV, cm_to_m, m_to_cm, MeV_to_GeV
 
-
 def make_pdef(pstr):
     if pstr in 'MuMinus MuPlus EMinus EPlus TauMinus TauPlus'.split():
         pdef = getattr(pp.particle, f'{pstr}Def')()
@@ -114,7 +113,6 @@ def make_propagator(
     )
     return prop
     
-
 def old_proposal_losses(
     prop,
     pdef,

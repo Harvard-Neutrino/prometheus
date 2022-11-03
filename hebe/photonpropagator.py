@@ -32,8 +32,6 @@ from olympus.event_generation.utils import sph_to_cart_jnp  # noqa: E402
 from hyperion.medium import medium_collections  # noqa: E402
 from hyperion.constants import Constants  # noqa: E402
 
-from memory_profiler import profile
-
 def _parse_ppc(ppc_f):
     res_result = [] # timing and module
     hits = []
@@ -59,7 +57,6 @@ def _should_propagate(particle):
             return True
     return False
 
-#@profile
 def _ppc_sim(
     particle,
     det,
@@ -246,7 +243,6 @@ class PP(object):
             ValueError('Currently only file runs for olympus are supported!')
         print('Finished the photon generator')
 
-    # @profile
     def _olympus_sim(self, particle):
         """ Utilizes olympus to propagate light for the injected object
         """
