@@ -17,45 +17,70 @@ def is_empty(event):
         nhit += len(val[0])
     return not bool(nhit)
 
+def plot_brightest(
+    events,
+    det,
+    brightest_event=False,
+    figname='event_display.pdf',
+    save=True,
+    show=False,
+    channel='total',
+    # Optional things to display
+    show_doms=True,
+    show_lepton=True,
+    show_dust_layer=False,
+    # Display tuning
+    charge_mult=3,
+    cut=1.0,
+    loss_threshold=0.1,
+    cmap='jet_r',
+    tmethod='mean',
+    elevation_angle=0.0,
+    azi_angle=None
+):
+    for event in total[channel].sensor_pos_x:
+        hit_counts.append(len(event))
+    hit_counts = np.array(hit_counts)
+    event = events[np.argmax(hit_counts)]
+    print('The brightest event has the id %d' % event_id)
+    print('The energy of the lepton is %.1f' % event.mc_truth.lepton_energy)
+    plot_event(
+        event, det, brightest_event=brightest_event, figname=figname,
+        save=save, show=show, channel=channel, show_doms=show_doms,
+        show_lepton=show_lepton, show_dust_layer=show_dust_layer,
+        charge_mult=charge_mult, cut=cut, loss_threshold=loss_threshold,
+        cmap=cmap, tmethod=tmethod, elevation_angle=elevation_angle, azi_angle=azi_angle
+    )
+
 def plot_event(
-        parquet_set,
-        detector,
-        e_id=0,
-        brightest_event=False,
-        fig_name='event_display.pdf',
-        save=True,
-        show=False,
-        channel='lepton',
-        # Optional things to display
-        show_doms=True,
-        show_lepton=True,
-        show_dust_layer=False,
-        # Display tuning
-        charge_mult=3,
-        cut=1.0,
-        loss_threshold=0.1,
-        cmap='jet_r',
-        tmethod='mean',
-        elevation_angle=0.0,
-        azi_angle=None
-    ):
+    event,
+    detector,
+    brightest_event=False,
+    figname='event_display.pdf',
+    save=True,
+    show=False,
+    channel='total',
+    # Optional things to display
+    show_doms=True,
+    show_lepton=True,
+    show_dust_layer=False,
+    # Display tuning
+    charge_mult=3,
+    cut=1.0,
+    loss_threshold=0.1,
+    cmap='jet_r',
+    tmethod='mean',
+    elevation_angle=0.0,
+    azi_angle=None
+):
     # TODO: Add formatting check
-    if brightest_event:
-        for event in parquet_set[channel].sensor_pos_x:
-            hit_counts.append(len(event))
-        hit_counts = np.array(hit_counts)
-        event_id = np.argmax(hit_counts)
-        print('The brightest event has the id %d' % event_id)
-        print('The energy of the lepton is %.1f' % parquet_set.mc_truth.lepton_energy[event_id])
-    else:
-        event_id = e_id
     sensor_comb = np.array([
         [
-            parquet_set[channel].sensor_pos_x[event_id][i],
-            parquet_set[channel].sensor_pos_y[event_id][i],
-            parquet_set[channel].sensor_pos_z[event_id][i]
+            event[channel].sensor_pos_x[i],
+            event[channel].sensor_pos_y[i],
+            event[channel].sensor_pos_z[i]
         ]
-        for i in range(len(parquet_set[channel].sensor_pos_x[event_id]))
+        for i in range(len(event[channel].sensor_pos_x))
     ])
     fig = plt.figure(figsize=(10, 4))
     ax  = fig.add_subplot(111, projection='3d')
@@ -145,7 +170,7 @@ def plot_event(
     if azi_angle is None:
         azi_angle = np.degrees(event.mc_truth.direction[0][1]+np.pi/2)
     ax.view_init(elevation_angle, azi_angle)
-    plt.savefig(fig_name, bbox_inches='tight')
+    plt.savefig(figname, bbox_inches='tight')
 
     # Show the plot if interactive view was requested
     if show:

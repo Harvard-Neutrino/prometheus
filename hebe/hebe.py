@@ -282,7 +282,11 @@ class HEBE(object):
             tuple([-12, -2000001006,-2000001006]): 0,
             tuple([-12, 11,-12]): 0,
             tuple([-12, 13,-14]): 0,
-            tuple([-12, 15,-16]): 0
+            tuple([-12, 15,-16]): 0,
+            (14, 13, -13): 3, # dimuon
+            (14, -13, 13): 3,
+            (-14, -13, 13): 3,
+            (-14, 13, -13): 3,
         }
         initial_props = np.array(LI_file[config['run']['group name']]['properties'])
         interactions = np.array([[i[7], i[5], i[6]] for i in initial_props])
@@ -686,11 +690,15 @@ class HEBE(object):
             n = int(len(self._propped_primaries)/2)
             finals1 = self._propped_primaries[:n]
             finals2 = self._propped_primaries[n:]
+            lepton_idx = 1
+            hadron_idx = 1
             for finals in [finals1, finals2]:
                 if abs(int(finals[0])) in [11, 13, 15]:
-                    field_name = "primary_lepton_1"
+                    field_name = f"primary_lepton_{lepton_idx}"
+                    lepton_idx += 1
                 else:
-                    field_name = "primary_hadron_1"
+                    field_name = f"primary_hadron_{hadron_idx}"
+                    hadron_idx += 1
                 self._serialize_particle_to_dict(
                     finals,
                     tree,
