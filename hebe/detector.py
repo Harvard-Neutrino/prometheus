@@ -81,7 +81,6 @@ class Detector(object):
     #        start += nmodules
     #        end += nmodules
     #        slc = slice(start, end)
-    #        print(slc)
     #        subdet = Detector(self.modules[slc])
     #        subdetectors.append(subdet)
     #    return subdetectors
