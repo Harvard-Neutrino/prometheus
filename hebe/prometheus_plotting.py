@@ -38,12 +38,14 @@ def plot_brightest(
     elevation_angle=0.0,
     azi_angle=None
 ):
-    for event in total[channel].sensor_pos_x:
+    hit_counts = []
+    for event in events[channel].sensor_pos_x:
         hit_counts.append(len(event))
     hit_counts = np.array(hit_counts)
-    event = events[np.argmax(hit_counts)]
+    event_id = np.argmax(hit_counts)
+    event = events[event_id]
     print('The brightest event has the id %d' % event_id)
-    print('The energy of the lepton is %.1f' % event.mc_truth.lepton_energy)
+    print('The energy of the primary neutrino is %.1f' % event.mc_truth.injection_energy)
     plot_event(
         event, det, brightest_event=brightest_event, figname=figname,
         save=save, show=show, channel=channel, show_doms=show_doms,
@@ -74,30 +76,19 @@ def plot_event(
     azi_angle=None
 ):
     # TODO: Add formatting check
-    sensor_comb = np.array([
-        [
-            event[channel].sensor_pos_x[i],
-            event[channel].sensor_pos_y[i],
-            event[channel].sensor_pos_z[i]
-        ]
-        for i in range(len(event[channel].sensor_pos_x))
-    ])
     fig = plt.figure(figsize=(10, 4))
     ax  = fig.add_subplot(111, projection='3d')
-    if isinstance(event.photons_1.sensor_id[0], Number):
-        om_ids = (
-            [x for x in event.photons_1.sensor_id] +
-            [x for x in event.photons_2.sensor_id]
-        )
-    else:
-        om_ids = (
-                [tuple(x) for x in event.photons_1.sensor_id if x[0]!=-1] +
-                [tuple(x) for x in event.photons_2.sensor_id if x[0]!=-1]
-        )
-    times = np.array(
-        [x for x in event.photons_1.t if x!=-1] +
-        [x for x in event.photons_2.t if x!=-1]
-    )
+    #particle_fields = [field for field in event.fields if field not in "mc_truth event_id".split()]
+    #om_ids = []
+    #times = []
+    #for field in particle_fields:
+    try:
+        om_ids = [(int(x[0]), int(x[1])) for x in zip(getattr(event, channel).sensor_string_id, getattr(event, channel).sensor_id)]
+    except:
+        om_ids = [x for x in zip(getattr(event, channel).sensor_id, getattr(event, channel).string_id)]
+    times = np.array([x for x in getattr(event, channel).t if x != -1])
+    if len(times)==0:
+        return 
     tmin = np.min(times)
     deltat = np.max(times) - tmin
     if cut < 1:
@@ -168,7 +159,7 @@ def plot_event(
     
     # Rotate the axes and update
     if azi_angle is None:
-        azi_angle = np.degrees(event.mc_truth.direction[0][1]+np.pi/2)
+        azi_angle = np.degrees(event.mc_truth.injection_azimuth+np.pi/2)
     ax.view_init(elevation_angle, azi_angle)
     plt.savefig(figname, bbox_inches='tight')
 
