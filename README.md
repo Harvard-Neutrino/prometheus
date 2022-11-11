@@ -6,7 +6,7 @@ Authors:
 2. Stephan Meighen-Berger
 3. Christian Haack
 4. David Kim
-5. Carlos Argueelles Delgado
+5. Carlos Argüelles Delgado
 
 
 ## Table of contents
