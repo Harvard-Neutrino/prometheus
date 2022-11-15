@@ -1,4 +1,4 @@
-# Hebe
+# Prometheus
 
 Authors:
 
