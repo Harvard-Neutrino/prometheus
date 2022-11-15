@@ -85,7 +85,7 @@ def plot_event(
     try:
         om_ids = [(int(x[0]), int(x[1])) for x in zip(getattr(event, channel).sensor_string_id, getattr(event, channel).sensor_id)]
     except:
-        om_ids = [x for x in zip(getattr(event, channel).sensor_id, getattr(event, channel).string_id)]
+        om_ids = [(int(x[0]), int(x[1])) for x in zip(getattr(event, channel).string_id, getattr(event, channel).sensor_id)]
     times = np.array([x for x in getattr(event, channel).t if x != -1])
     if len(times)==0:
         return 
