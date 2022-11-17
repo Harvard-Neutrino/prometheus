@@ -5,11 +5,17 @@
 
 # imports
 import numpy as np
-import h5py
 import awkward as ak
-import pyarrow.parquet as pq
-import pyarrow 
-from .utils.geo_utils import get_endcap,get_injRadius,get_volume
+
+from tqdm import tqdm
+from time import time
+from warnings import warn
+import os
+import json
+
+from jax import random  # noqa: E402
+
+from .utils.geo_utils import get_endcap, get_injRadius, get_volume
 from .config import config
 from .detector import detector_from_geo
 from .photonpropagator import PP
@@ -18,15 +24,7 @@ from .lepton_injector import LepInj
 from .particle import Particle
 from .utils.hebe_ui import run_ui
 
-from tqdm import tqdm
-from time import time
-from warnings import warn
-import os
-import json
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
-
-from jax import random  # noqa: E402
-
 
 class HEBE(object):
     """
@@ -91,15 +89,18 @@ class HEBE(object):
 
         self._det = detector_from_geo(config["detector"]["detector specs file"])
         print('Finished the detector')
-        is_ice = config["lepton propagator"]["medium"].lower()=='ice'
+        is_ice = config["lepton propagator"]["medium"].lower() == 'ice'
         endcap = get_endcap(self._det.module_coords, is_ice)
         inj_radius = get_injRadius(self._det.module_coords, is_ice)
         cyl_radius = get_volume(self._det.module_coords, is_ice)[0]
         cyl_height = get_volume(self._det.module_coords, is_ice)[1]
         if not config["lepton injector"]["force injection params"]:
-            print(
+            warn(
                 'WARNING: Overwriting injection parameters with calculated values.'
             )
+            #print(
+            #    'WARNING: Overwriting injection parameters with calculated values.'
+            #)
             config["lepton injector"]["simulation"]["endcap length"] = endcap
             config["lepton injector"]["simulation"]["injection radius"] = inj_radius
             config["lepton injector"]["simulation"]["cylinder radius"] = cyl_radius
@@ -142,6 +143,7 @@ class HEBE(object):
     def injection(self):
         """ Injects leptons according to the config file
         """
+        import h5py
         # Loading LI data
         print('-------------------------------------------')
         start = time()
@@ -285,6 +287,7 @@ class HEBE(object):
             (-14, -13, 13): 3,
             (-14, 13, -13): 3,
         }
+
         initial_props = np.array(LI_file[config['run']['group name']]['properties'])
         interactions = np.array([[i[7], i[5], i[6]] for i in initial_props])
         initial_type = np.array([i[7] for i in initial_props])
@@ -653,6 +656,7 @@ class HEBE(object):
         )
         print("Adding metadata")
         # Adding meta data
+        import pyarrow.parquet as pq
         table = pq.read_table(
             config['photon propagator']['storage location'] +
             config['general']['meta name'] + '.parquet')
