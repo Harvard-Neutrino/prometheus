@@ -57,7 +57,6 @@ class Particle(object):
         s += f"e : {self._e}\n"
         s += f"position : {self._position}\n"
         s += f"direction : {self._direction}\n"
-        s += f"children : {self._children}"
         return s
 
     @property
