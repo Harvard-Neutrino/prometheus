@@ -5,11 +5,17 @@
 
 # imports
 import numpy as np
-import h5py
 import awkward as ak
-import pyarrow.parquet as pq
-import pyarrow 
-from .utils.geo_utils import get_endcap,get_injRadius,get_volume
+
+from tqdm import tqdm
+from time import time
+from warnings import warn
+import os
+import json
+
+from jax import random  # noqa: E402
+
+from .utils.geo_utils import get_endcap, get_injRadius, get_volume
 from .config import config
 from .detector import detector_from_geo
 from .photonpropagator import PP
@@ -18,15 +24,44 @@ from .lepton_injector import LepInj
 from .particle import Particle
 from .utils.hebe_ui import run_ui
 
-from tqdm import tqdm
-from time import time
-from warnings import warn
-import os
-import json
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
 
-from jax import random  # noqa: E402
+class MultipleInjectionError(Exception):
+    """Raised when multiple types of injection events are found"""
+    def __init__(self):
+        self.message = "Multiple type of injection found. Can only do one at a time"
+        super().__init__(self.message)
 
+class UnknownSimulationError(Exception):
+    """Raised when simulation name is not know"""
+    def __init__(self, simname):
+        self.message = f"Simulation name {simname} is not recognized. Only PPC and olympus"
+        super().__init__(self.message)
+
+class IncompaticleFieldsError(Exception):
+    """Raised when two awkward.Array cannot be combined because fields don't match"""
+    def __init__(self, fields1, fields2):
+        self.message = f"Fields must fully overlap to combine. The fields were {fields1} and {fields2}"
+        super().__int__(self.message)
+
+def join_awkward_arrays(arr1, arr2, fields=None):
+    # Infer fields from arrs if not passed
+    if fields is None:
+        if not (
+            set(arr1.fields).issubset(set(arr2.fields)) and
+            set(arr2.fields).issubset(set(arr1.fields))
+        ):
+            raise IncompaticleFieldsError(arr1.fields, arr2.fields)
+        else:
+            fields = arr1.fields
+
+    arr = ak.Array(
+        {
+            k: [np.hstack([x, y]) for x, y in zip(getattr(arr1, k), getattr(arr2, k))]
+        for k in fields}
+    )
+
+    return arr
 
 class HEBE(object):
     """
@@ -91,13 +126,13 @@ class HEBE(object):
 
         self._det = detector_from_geo(config["detector"]["detector specs file"])
         print('Finished the detector')
-        is_ice = config["lepton propagator"]["medium"].lower()=='ice'
+        is_ice = config["lepton propagator"]["medium"].lower() == 'ice'
         endcap = get_endcap(self._det.module_coords, is_ice)
         inj_radius = get_injRadius(self._det.module_coords, is_ice)
         cyl_radius = get_volume(self._det.module_coords, is_ice)[0]
         cyl_height = get_volume(self._det.module_coords, is_ice)[1]
         if not config["lepton injector"]["force injection params"]:
-            print(
+            warn(
                 'WARNING: Overwriting injection parameters with calculated values.'
             )
             config["lepton injector"]["simulation"]["endcap length"] = endcap
@@ -142,6 +177,7 @@ class HEBE(object):
     def injection(self):
         """ Injects leptons according to the config file
         """
+        import h5py
         # Loading LI data
         print('-------------------------------------------')
         start = time()
@@ -262,81 +298,98 @@ class HEBE(object):
         print('-------------------------------------------')
 
 
-    def _serialize_injection_to_dict(self, LI_file, fill_dict):
-        self._LI_converter = {
-            tuple([12, 11,-2000001006]): 1,
-            tuple([14, 13,-2000001006]): 1,
-            tuple([16, 15,-2000001006]): 1,
-            tuple([12, 12,-2000001006]): 2,
-            tuple([14, 14,-2000001006]): 2,
-            tuple([16, 16,-2000001006]): 2,
-            tuple([-12, -11,-2000001006]): 1,
-            tuple([-14, -13,-2000001006]): 1,
-            tuple([-16, -15,-2000001006]): 1,
-            tuple([-12, -12,-2000001006]): 2,
-            tuple([-14, -14,-2000001006]): 2,
-            tuple([-16, -16,-2000001006]): 2,
-            tuple([-12, -2000001006,-2000001006]): 0,
-            tuple([-12, 11,-12]): 0,
-            tuple([-12, 13,-14]): 0,
-            tuple([-12, 15,-16]): 0,
-            (14, 13, -13): 3, # dimuon
+    def _serialize_injection_to_awkward(self, LI_file):
+        LI_converter = {
+            # Charged current
+            (12, -2000001006, 11): 1,
+            (14, -2000001006, 13): 1,
+            (16, -2000001006, 15): 1,
+            (12, 11, -2000001006): 1,
+            (14, 13, -2000001006): 1,
+            (16, 15, -2000001006): 1,
+            (-12, -2000001006, -11): 1,
+            (-14, -2000001006, -13): 1,
+            (-16, -2000001006, -15): 1,
+            (-12, -11, -2000001006): 1,
+            (-14, -13, -2000001006): 1,
+            (-16, -15, -2000001006): 1,
+            # Neutral current
+            (12, 12, -2000001006): 2,
+            (14, 14, -2000001006): 2,
+            (16, 16,-2000001006): 2,
+            (12, -2000001006, 12): 2,
+            (14, -2000001006, 14): 2,
+            (16,-2000001006, 16): 2,
+            (-12, -12,-2000001006): 2,
+            (-14, -14,-2000001006): 2,
+            (-16, -16,-2000001006): 2,
+            (-12,-2000001006, -12): 2,
+            (-14,-2000001006, -14): 2,
+            (-16,-2000001006, -16): 2,
+            # Glashow
+            (-12, -2000001006, -2000001006): 0,
+            (-12,-12, 11): 0,
+            (-12,-14, 13): 0,
+            (-12,-16, 15): 0,
+            (-12, 11,-12): 0,
+            (-12, 13,-14): 0,
+            (-12, 15,-16): 0,
+            # Dimuon
+            (14, 13, -13): 3,
             (14, -13, 13): 3,
             (-14, -13, 13): 3,
             (-14, 13, -13): 3,
         }
-        initial_props = np.array(LI_file[config['run']['group name']]['properties'])
-        interactions = np.array([[i[7], i[5], i[6]] for i in initial_props])
-        initial_type = np.array([i[7] for i in initial_props])
-        initial_energy = np.array([i[0] for i in initial_props])
-        initial_zenith = np.array([i[1] for i in initial_props])
-        initial_azimuth = np.array([i[2] for i in initial_props])
-        bjorkenx = np.array([i[3] for i in initial_props])
-        bjorkeny = np.array([i[3] for i in initial_props])
-        injected_pos_x = np.array([i[8] for i in initial_props])
-        injected_pos_y = np.array([i[9] for i in initial_props])
-        injected_pos_z = np.array([i[10] for i in initial_props])
-        column_depth = np.array([i[11] for i in initial_props])
-        int_ids = np.array([self._LI_converter[tuple(i)] for i in interactions])
-        # TODO: Currently the names are hardcoded. This should be changed
-        initial_types_1 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_1'][:]])
-        initial_types_2 = np.array([i[1] for i in LI_file[config['run']['group name']]['final_2'][:]])
-        initial_pos_1 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_1'][:]])
-        initial_pos_2 = np.array([i[2] for i in LI_file[config['run']['group name']]['final_2'][:]])
-        initial_dir_1 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_1'][:]])
-        initial_dir_2 = np.array([i[3] for i in LI_file[config['run']['group name']]['final_2'][:]])
-        initial_energy_1 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_1'][:]])
-        initial_energy_2 = np.array([i[4] for i in LI_file[config['run']['group name']]['final_2'][:]])
-        events_idx = np.array(range(len(initial_types_1)))
-        fill_dict['event_id'] = events_idx
-        fill_dict['mc_truth'] = {
-            'injection_energy': initial_energy,
-            'injection_type': initial_type,
-            'injection_interaction_type': int_ids,
-            'injection_zenith': initial_zenith,
-            'injection_azimuth': initial_azimuth,
-            'injection_bjorkenx': bjorkenx,
-            'injection_bjorkeny': bjorkeny,
-            'injection_position_x': injected_pos_x,
-            'injection_position_y': injected_pos_y,
-            'injection_position_z': injected_pos_z,
-            'injection_column_depth': column_depth,
-            'primary_lepton_1_type': initial_types_1,
-            'primary_hadron_1_type': initial_types_2,
-            'primary_lepton_1_position_x': np.array(initial_pos_1[:, 0]),
-            'primary_lepton_1_position_y': np.array(initial_pos_1[:, 1]),
-            'primary_lepton_1_position_z': np.array(initial_pos_1[:, 2]),
-            'primary_hadron_1_position_x': np.array(initial_pos_2[:, 0]),
-            'primary_hadron_1_position_y': np.array(initial_pos_2[:, 1]),
-            'primary_hadron_1_position_z': np.array(initial_pos_2[:, 2]),
-            'primary_lepton_1_direction_theta': np.array(initial_dir_1[:, 0]),
-            'primary_lepton_1_direction_phi': np.array(initial_dir_1[:, 1]),
-            'primary_hadron_1_direction_theta': np.array(initial_dir_2[:, 0]),
-            'primary_hadron_1_direction_phi': np.array(initial_dir_2[:, 1]),
-            'primary_lepton_1_energy': initial_energy_1,
-            'primary_hadron_1_energy': initial_energy_2,
-            'total_energy': initial_energy_1 + initial_energy_2
-        }
+
+        injection = LI_file[config["run"]["group name"]]
+        lepton_pdgs = [-16, -15, -14, -13, -12, -11, 11, 12, 13, 14, 15, 16]
+
+        if (
+            np.all(injection["final_1"]["ParticleType"]==injection["final_1"]["ParticleType"][0]) and
+            np.all(injection["final_2"]["ParticleType"]==injection["final_2"]["ParticleType"][0])
+        ):
+            if injection["final_1"]["ParticleType"][0] in lepton_pdgs:
+                lepton_key = "final_1"
+                hadron_key = "final_2"
+            else:
+                lepton_key = "final_2"
+                hadron_key = "final_1"
+        else:
+            raise MultipleInjectionError()
+
+        injection_functions = [
+            ('injection_energy', lambda inj: inj["properties"]["totalEnergy"]),
+            ('injection_type', lambda inj: inj["properties"]["initialType"]),
+            ('injection_interaction_type', lambda inj: [
+                LI_converter[tuple(t)] for t in inj["properties"][:][["initialType", "finalType1", "finalType2"]]
+            ]),
+            ('injection_zenith', lambda inj: inj["properties"]["zenith"]),
+            ('injection_azimuth', lambda inj: inj["properties"]["azimuth"]),
+            ('injection_bjorkenx', lambda inj: inj["properties"]["finalStateX"]),
+            ('injection_bjorkeny', lambda inj: inj["properties"]["finalStateY"]),
+            ('injection_position_x', lambda inj: inj["properties"]["x"]),
+            ('injection_position_y', lambda inj: inj["properties"]["y"]),
+            ('injection_position_z', lambda inj: inj["properties"]["z"]),
+            ('injection_column_depth', lambda inj: inj["properties"]["totalColumnDepth"]),
+            ('primary_lepton_1_type', lambda inj: inj[lepton_key]["ParticleType"]),
+            ('primary_lepton_1_position_x', lambda inj: np.copy(inj[lepton_key]["Position"][:, 0])),
+            ('primary_lepton_1_position_y', lambda inj: np.copy(inj[lepton_key]["Position"][:, 1])),
+            ('primary_lepton_1_position_z', lambda inj: np.copy(inj[lepton_key]["Position"][:, 2])),
+            ('primary_lepton_1_direction_theta', lambda inj: np.copy(inj[lepton_key]["Direction"][:, 0])),
+            ('primary_lepton_1_direction_phi', lambda inj: np.copy(inj[lepton_key]["Direction"][:, 1])),
+            ('primary_lepton_1_energy', lambda inj: inj[lepton_key]["Energy"]),
+            ('primary_hadron_1_type', lambda inj: inj[hadron_key]["ParticleType"]),
+            ('primary_hadron_1_position_x', lambda inj: np.copy(inj[hadron_key]["Position"][:, 0])),
+            ('primary_hadron_1_position_y', lambda inj: np.copy(inj[hadron_key]["Position"][:, 1])),
+            ('primary_hadron_1_position_z', lambda inj: np.copy(inj[hadron_key]["Position"][:, 2])),
+            ('primary_hadron_1_direction_theta', lambda inj: np.copy(inj[hadron_key]["Direction"][:, 0])),
+            ('primary_hadron_1_direction_phi', lambda inj: np.copy(inj[hadron_key]["Direction"][:, 1])),
+            ('primary_hadron_1_energy', lambda inj: inj[hadron_key]["Energy"]),
+            ('total_energy', lambda inj: inj[hadron_key]["Energy"] + inj[lepton_key]["Energy"]),
+        ]
+
+        a = ak.Array({fname:f(injection) for fname, f in injection_functions})
+        return a
 
     def _serialize_results_to_dict(
         self,
@@ -401,58 +454,65 @@ class HEBE(object):
                 'loss_n_photons': loss_counts
             }
 
-    def _construct_totals_from_dict_ppc(
-            self, 
-            fill_dict
+    def _totals_from_awkward_arr(
+            self,
+            arr
         ):
 
         # These are the keys which refer to the physical particles
-        particle_keys = [
-            k for k in fill_dict.keys()
-            if k not in "event_id mc_truth".split()
+        particle_fields = [
+            field for field in arr.fields
+            if field not in "event_id mc_truth".split()
         ]
-        # A set of the all the fields that we should expect
-        field_keys = set(fill_dict[particle_keys[0]].keys())
-        # Check to make sure all the particles have matching fields
-        # TODO should we just make this a warning and not to the 
-        # offending field
-        for key in particle_keys:
-            set_keys = set(fill_dict[key])
-            if not (
-                field_keys.issubset(set_keys) and\
-                set_keys.issubset(field_keys)
-            ):
-                raise ValueError("Particle keys are not compatible.")
-        
-        fill_dict["total"] = {}
-        for field_k in field_keys:
-            nevents = len(fill_dict[particle_keys[0]][field_k])
 
-            # Make an empty array that we will start stacking on
-            total = np.array(
-                [np.array([]) for _ in range(nevents)]
-            )
-            # Iterate over all the particles, stacking on total each time
-            for i, k in enumerate(particle_keys):
-                # Don't need to do any special handling
-                if i==0:
-                    current = fill_dict[k][field_k]
-                # If this isn't the first one, we need to filter out [-1] entries
-                # so that they don't crop up in the middle
-                else:
-                    current = [
-                        x if np.all(x!=-1) else [] for x in fill_dict[k][field_k]
-                    ]
-                # Add the new stuff to the running total
-                total = ak.concatenate(
-                    (total, current),
-                    axis=1
-                )
-            # Throw it all in the dictionary :-)
-            fill_dict["total"][field_k] = total
+        # Return `None` if no particles made light
+        if len(particle_fields)==0:
+            return None
+
+        outarr = getattr(arr, particle_fields[0])
+        for field in particle_fields[1:]:
+            outarr = join_awkward_arrays(outarr, getattr(arr, field))
+        return outarr
+
+        # Check to make sure all the particles have matching fields
+        # offending field
+        #for key in particle_keys:
+        #    set_keys = set(fill_dict[key])
+        #    if not (
+        #        field_keys.issubset(set_keys) and\
+        #        set_keys.issubset(field_keys)
+        #    ):
+        #        raise ValueError("Particle keys are not compatible.")
+        #
+        #fill_dict["total"] = {}
+        #for field_k in field_keys:
+        #    nevents = len(fill_dict[particle_keys[0]][field_k])
+
+        #    # Make an empty array that we will start stacking on
+        #    total = np.array(
+        #        [np.array([]) for _ in range(nevents)]
+        #    )
+        #    # Iterate over all the particles, stacking on total each time
+        #    for i, k in enumerate(particle_keys):
+        #        # Don't need to do any special handling
+        #        if i==0:
+        #            current = fill_dict[k][field_k]
+        #        # If this isn't the first one, we need to filter out [-1] entries
+        #        # so that they don't crop up in the middle
+        #        else:
+        #            current = [
+        #                x if np.all(x!=-1) else [] for x in fill_dict[k][field_k]
+        #            ]
+        #        # Add the new stuff to the running total
+        #        total = ak.concatenate(
+        #            (total, current),
+        #            axis=1
+        #        )
+        #    # Throw it all in the dictionary :-)
+        #    fill_dict["total"][field_k] = total
 
     def _construct_totals_from_dict(
-            self, 
+            self,
             fill_dict
         ):
         particle_keys = [
@@ -515,70 +575,33 @@ class HEBE(object):
             't':t_all,
         }
 
-    def _serialize_particle_to_dict(
+    def _serialize_particle_to_awkward(
         self,
         particles,
-        fill_dict,
-        is_full,
-        field_name="lepton"
     ):
 
-        fill_dict[field_name] = {}
-        tree = fill_dict[field_name]
-        tree["string_id"] = [
-            [hit[0] for hit in p.hits] if len(p.hits) > 0 else np.array([-1])
-            for p in particles
-        ]
-        tree["sensor_id"] = [
-            [hit[1] for hit in p.hits] if len(p.hits) > 0 else np.array([-1])
-            for p in particles
-        ]
-        tree["t"] = [
-            np.array([hit[2] for hit in p.hits]) if len(p.hits) > 0 else np.array([-1])
-            for p in particles
-        ]
-        # TODO do this for the children
-        xyz = [
-            np.array([self._det[(hit[0], hit[1])].pos for hit in p.hits]) if len(p.hits) > 0 else np.transpose([[-1], [-1],[-1]])
-            for p in particles
+        # Only create array if any particles made light
+        create_arr = False
+        for p in particles:
+            if len(p.hits) > 0:
+                create_arr = True
+                break
+        if not create_arr:
+            return None
+
+        hit_functions = [
+            ("string_id", lambda particles: [[h[0] for h in p.hits] for p in particles]),
+            ("sensor_id", lambda particles: [[h[1] for h in p.hits] for p in particles]),
+            ("t", lambda particles: [[h[2] for h in p.hits] for p in particles]),
+            ("sensor_pos_x", lambda particles: [[self._det[(h[0], h[1])].pos[0] for h in p.hits] for p in particles]),
+            ("sensor_pos_y", lambda particles: [[self._det[(h[0], h[1])].pos[1] for h in p.hits] for p in particles]),
+            ("sensor_pos_z", lambda particles: [[self._det[(h[0], h[1])].pos[2] for h in p.hits] for p in particles]),
         ]
 
-        tree["sensor_pos_x"] = [
-            x[:,0] for x in xyz
-        ]
-        tree["sensor_pos_y"] = [
-            x[:,1] for x in xyz
-        ]
-        tree["sensor_pos_z"] = [
-            x[:,2] for x in xyz
-        ]
+        outarr = ak.Array({k:f(particles) for k, f in hit_functions})
 
-        if is_full:
-            for i, particle in enumerate(particles):
-                for child in particle.children:
-                    tree["string_id"][i] = np.hstack(
-                        (tree["string_id"][i], [hit[0] for hit in child.hits])
-                    )
-                    tree["string_id"][i] = np.hstack(
-                        (tree["sensor_id"][i], [hit[1] for hit in child.hits])
-                    )
-                    tree["t"][i] = np.hstack(
-                        (tree["t"][i], [hit[2] for hit in child.hits])
-                    )
-                    xyz = [
-                        np.array([self._det[(hit[0], hit[1])].pos for hit in child.hits])
-                    ]
-                    tree["sensor_pos_x"] = np.hstack(
-                        (tree["sensor_pos_x"], [x[:,0] for x in xyz])
-                    )
-                    tree["sensor_pos_y"] = np.hstack(
-                        (tree["sensor_pos_y"], [x[:,1] for x in xyz])
-                    )
-                    tree["sensor_pos_z"] = np.hstack(
-                        (tree["sensor_pos_z"], [x[:,2] for x in xyz])
-                    )
+        return outarr
 
-        #return ak.Array(tree)
 
     def construct_output(
             self,
@@ -586,15 +609,13 @@ class HEBE(object):
         ):
         """ Constructs a parquet file with metadata from the generated files.
         Currently this still treats olympus and ppc output differently.
-
         Parameters
         ----------
         sim_switch: str
             switch for olympus or ppc mode
-
         Notes
         -----
-        It contains the fields: 
+        It contains the fields:
             ['event_id',
              'mc_truth'
              'lepton',
@@ -606,30 +627,44 @@ class HEBE(object):
         # TODO: Unify this for olympus and PPC
         print("Generating output for a " + sim_switch + " simulation.")
         print("Generating the different particle fields...")
-        tree = {}
-        if ((sim_switch == "PPC") or (sim_switch == "PPC_CUDA")):
-            self._serialize_injection_to_dict(self._LI_raw, tree)
-            n = int(len(self._propped_primaries)/2)
-            finals1 = self._propped_primaries[:n]
-            finals2 = self._propped_primaries[n:]
+        sdsd = 0
+        outarr = ak.Array({})
+        sdsd = 1
+        if "ppc" in sim_switch.lower():
+            outarr = ak.with_field(
+                outarr,
+                self._serialize_injection_to_awkward(self._LI_raw),
+                where="mc_truth"
+            )
             lepton_idx = 1
             hadron_idx = 1
-            for finals in [finals1, finals2]:
+            n = int(len(self._propped_primaries) / 2)
+            finals_1 = self._propped_primaries[:n]
+            finals_2 = self._propped_primaries[n:]
+            for finals in [finals_1, finals_2]:
                 if abs(int(finals[0])) in [11, 13, 15]:
                     field_name = f"primary_lepton_{lepton_idx}"
                     lepton_idx += 1
                 else:
                     field_name = f"primary_hadron_{hadron_idx}"
                     hadron_idx += 1
-                self._serialize_particle_to_dict(
-                    finals,
-                    tree,
-                    False,
-                    field_name=field_name
+                test_arr = self._serialize_particle_to_awkward(finals)
+                # We only add this to the array if anything made light
+                if test_arr is not None:
+                    outarr = ak.with_field(
+                        outarr,
+                        test_arr,
+                        where=field_name
+                    )
+            test_arr = self._totals_from_awkward_arr(outarr)
+            if test_arr is not None:
+                outarr = ak.with_field(
+                    outarr,
+                    test_arr,
+                    where="total"
                 )
-            self._construct_totals_from_dict_ppc(tree)
-            tree = ak.Array(tree)
-        else:
+            tree = outarr
+        elif sim_switch=="olympus":
             self._serialize_injection_to_dict(self._LI_raw, tree)
             # Looping over primaries, change hardcoding
             starting_particles = ['primary_lepton_1', 'primary_hadron_1']
@@ -645,6 +680,8 @@ class HEBE(object):
             except:
                 warn("No hits generated!")
             tree = ak.Array(tree)
+        else:
+            raise UnknownSimulationError(sim_switch)
         print("Converting to parquet")
         ak.to_parquet(
             tree,
@@ -653,6 +690,7 @@ class HEBE(object):
         )
         print("Adding metadata")
         # Adding meta data
+        import pyarrow.parquet as pq
         table = pq.read_table(
             config['photon propagator']['storage location'] +
             config['general']['meta name'] + '.parquet')
