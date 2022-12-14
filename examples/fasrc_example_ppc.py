@@ -192,7 +192,9 @@ def main(args):
         config['lepton injector']['simulation']['output name'] = args.injection
         config['run']['group name'] = 'RangedInjector0'
     else:
-        config['lepton injector']['simulation']['output name'] = f"{args.output_prefix}/data_{seed}_output_LI.h5"
+        config['lepton injector']['simulation']['output name'] = (
+            f"{args.output_prefix}/{args.final_1}_{args.final_2}_{seed}_output_LI.h5"
+        )
         config['lepton injector']['simulation']['nevents'] = nevent
         config['lepton injector']['simulation']['final state 1'] = args.final_1
         config['lepton injector']['simulation']['final state 2'] = args.final_2
@@ -203,6 +205,9 @@ def main(args):
         config['lepton injector']['simulation']["cylinder radius"] = args.cylinder_radius
         config['lepton injector']['simulation']["cylinder height"] = args.cylinder_height
         config['lepton injector']['simulation']["power law"] = args.gamma
+        config['lepton injector']['simulation']["lic name"] = (
+            f"{args.output_prefix}/{args.final_1}_{args.final_2}_{seed}_LI_config.lic"
+        )
         config['lepton injector']['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/lib64/"
         config['lepton injector']['xsec location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/LeptonInjector/resources/"
     config['lepton propagator']["lepton"] = clepton
