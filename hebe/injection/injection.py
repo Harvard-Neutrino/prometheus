@@ -3,21 +3,144 @@
 # Copyright (C) 2022 Jeffrey Lazar, Stephan Meighen-Berger
 # Interface class to the different lepton injectors
 
+from abc import ABC, abstractmethod
+
 from .config import config
-from math import pi
+import numpy as np
 import os
 import sys
-sys.path.append(config['lepton injector']['location'])
-try:
-    import LeptonInjector as LI
-except ImportError:
-    raise ImportError('Leptoninjector not found!')
+#sys.path.append(config['lepton injector']['location'])
+#try:
+#    import LeptonInjector as LI
+#except ImportError:
+#    raise ImportError('LeptonInjector not found!')
 
 
-class LepInj(object):
-    """ Interface class for the lepton injector module
-    """
-    def __init__(self):
+
+class Injection(ABC):
+
+    @property
+    @abstractmethod
+    def injection_energy(self):
+        pass
+
+    @property
+    @abstractmethod
+    def injection_type(self):
+        pass
+
+    @property
+    @abstractmethod
+    def injection_interaction_type(self):
+        pass
+
+    @property
+    @abstractmethod
+    def injection_zenith(self):
+        pass
+
+    @property
+    @abstractmethod
+    def injection_azimuth(self):
+        pass
+
+    @property
+    @abstractmethod
+    def injection_bjorkenx(self):
+        pass
+
+    @property
+    @abstractmethod
+    def injection_bjorkeny(self):
+        pass
+
+    @property
+    @abstractmethod
+    def injection_position_x(self):
+        pass
+
+    @property
+    @abstractmethod
+    def injection_position_y(self):
+        pass
+
+    @property
+    @abstractmethod
+    def injection_position_z(self):
+        pass
+
+    @property
+    @abstractmethod
+    def injection_column_depth(self):
+        pass
+
+    @property
+    @abstractmethod
+    def primary_lepton_1_type(self):
+        pass
+
+    @property
+    @abstractmethod
+    def primary_lepton_1_position_x(self):
+        pass
+
+    @property
+    @abstractmethod
+    def primary_lepton_1_position_y(self):
+        pass
+
+    @property
+    @abstractmethod
+    def primary_lepton_1_position_z(self):
+        pass
+
+    @property
+    @abstractmethod
+    def primary_lepton_1_direction_theta(self):
+        pass
+
+    @property
+    @abstractmethod
+    def primary_lepton_1_direction_phi(self):
+        pass
+
+    @property
+    @abstractmethod
+    def primary_lepton_1_type(self):
+        pass
+
+    @property
+    @abstractmethod
+    def primary_hadron_1_position_x(self):
+        pass
+
+    @property
+    @abstractmethod
+    def primary_hadron_1_position_y(self):
+        pass
+
+    @property
+    @abstractmethod
+    def primary_hadron_1_position_z(self):
+        pass
+
+    @property
+    @abstractmethod
+    def primary_hadron_1_direction_theta(self):
+        pass
+
+    @property
+    @abstractmethod
+    def primary_hadron_1_direction_phi(self):
+        pass
+
+    @abstract_method
+    def serialize_to_awkward(self):
+        pass
+
+class LeptonInjectorInjection(Injection):
+
+    def __init__(self, injection_file):
         print('Setting up the LI')
         print('Fetching parameters and setting paths')
         self._loc_config = config['lepton injector']
@@ -48,10 +171,10 @@ class LepInj(object):
         minE = self._spars['minimal energy']     # [GeV]
         maxE = self._spars['maximal energy']    # [GeV]
         gamma = self._spars['power law']
-        minZenith = self._spars['minZenith'] * deg
-        maxZenith = self._spars['maxZenith'] * deg
-        minAzimuth = self._spars['minAzimuth'] * deg
-        maxAzimuth = self._spars['maxAzimuth'] * deg
+        minZenith = np.radians(self._spars['minZenith'])
+        maxZenith = np.radians(self._spars['maxZenith'])
+        minAzimuth = np.radians(self._spars['minAzimuth'])
+        maxAzimuth = np.radians(self._spars['maxAzimuth'])
         injectRad = self._spars["injection radius"]
         endcapLength = self._spars["endcap length"]
         cylRad = self._spars["cylinder radius"]
@@ -80,10 +203,6 @@ class LepInj(object):
             path_to + ' With the model ' + self._spars['earth model']
         )
         print(self._spars['earth model'], self._spars['earth model location'])
-        # controller.SetEarthModel(
-        #     self._spars['earth model'],
-        #     self._spars['earth model location']
-        # )
         controller.SetEarthModel(self._spars['earth model'], path_to)
         print("Setting the seed")
         controller.setSeed(config["general"]["random state seed"])
