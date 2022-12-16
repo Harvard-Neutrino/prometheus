@@ -27,6 +27,7 @@ _baseconfig = {
     ###########################################################################
     "run": {
         # Defines some run parameters
+        'nevents': 10,
         'group name': 'VolumeInjector0',
         # The different data sets. The boolean denotes the final state sets
         'data sets': [
@@ -69,34 +70,50 @@ _baseconfig = {
     ###########################################################################
     # Lepton injector
     ###########################################################################
-    'lepton injector': {
-        'inject': True,
-        'location': '/opt/LI/install/lib/python3.9/site-packages',
-        'xsec location': '/opt/LI/source/resources/',
-        'simulation': {
-            'nevents': 10,
-            'diff xsec': "/test_xs.fits",
-            'total xsec': "/test_xs_total.fits",
-            'is ranged': False,
-            'final state 1': 'MuMinus',
-            'final state 2': 'Hadrons',
-            'minimal energy': 1e3,  # GeV
-            'maximal energy': 1e6,
-            'power law': 2.,
-            'minZenith': 80.,  # deg
-            'maxZenith': 180.,
-            'minAzimuth': 0.,
-            'maxAzimuth': 360.,
-            'earth model location': "earthparams/",
-            'earth model': "Planet",
-            'output name': "./data_output.h5",
-            "lic name": "./config.lic",
-            "injection radius":900, # m
-            "endcap length":900, # m
-            "cylinder radius":700, # m
-            "cylinder height":1000, # m
+    'injection': {
+        'name': 'LeptonInjector',
+        'LeptonInjector': {
+            'inject': True,
+            'paths':{
+                'install location': '/opt/LI/install/lib/python3.9/site-packages',
+                'xsec location': '/opt/LI/source/resources/',
+                'diff xsec': "/test_xs.fits",
+                'total xsec': "/test_xs_total.fits",
+                'output name': "./data_output.h5",
+                "lic name": "./config.lic",
+                'earth model location': "earthparams/",
+            },
+            'simulation': {
+                'is ranged': False,
+                'final state 1': 'MuMinus',
+                'final state 2': 'Hadrons',
+                'minimal energy': 1e3, # GeV
+                'maximal energy': 1e6, # GeV
+                'power law': 1.0,
+                'min zenith': 80.0, # degree
+                'max zenith': 180.0, # degree
+                'min azimuth': 0.0, # degree
+                'max azimuth': 360.0, # degree
+                'earth model': "Planet",
+                "injection radius": 900, # m
+                "endcap length": 900, # m
+                "cylinder radius": 700, # m
+                "cylinder height": 1000, # m
+                'force injection params': False
+            },
         },
-        'force injection params': False
+        'Prometheus':{
+            'inject': False,
+            'paths': {
+                'output name': "./data_output.parquet"
+            },
+            'simulation': {}
+        },
+        'GENIE':{
+            'inject': False,
+            'paths': {},
+            'simulation': {}
+        }
     },
     ###########################################################################
     # Lepton propagator
@@ -140,7 +157,7 @@ _baseconfig = {
             'f2k_tmpfile':'.event_losses.f2k.tmp',
             'ppc_prefix':'',
             'f2k_prefix':'',
-            'ppctables':'../PPC_CUDA/',
+            'ppctables':'../PPC_tables/ic_accept_all/',
             'ppc_exe':'../PPC_CUDA/ppc', # binary executable
             'device':0, # GPU,
             'supress_output': True,
@@ -149,7 +166,9 @@ _baseconfig = {
             'location': '../PPC/',
             'ppc_tmpfile': '.event_hits.ppc.tmp',
             'f2k_tmpfile': '.event_losses.f2k.tmp',
-            'ppctables': '../PPC/',
+            'ppc_prefix':'',
+            'f2k_prefix':'',
+            'ppctables':'../PPC_tables/ic_accept_all/',
             'ppc_exe': '../PPC/ppc',  # binary executable
             'device': 0,  # CPU
             'supress_output': True,
