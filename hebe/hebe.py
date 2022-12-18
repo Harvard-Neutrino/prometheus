@@ -15,22 +15,16 @@ import json
 
 from jax import random  # noqa: E402
 
-from .utils.geo_utils import get_endcap, get_injRadius, get_volume
+from .utils.geo_utils import get_endcap, get_injection_radius, get_volume
 from .config import config
 from .detector import detector_from_geo
 from .photonpropagator import PP
 from .lepton_prop import LP
-from .lepton_injector import LepInj
+from .injection import injection_dict
 from .particle import Particle
 from .utils.hebe_ui import run_ui
 
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
-
-class MultipleInjectionError(Exception):
-    """Raised when multiple types of injection events are found"""
-    def __init__(self):
-        self.message = "Multiple type of injection found. Can only do one at a time"
-        super().__init__(self.message)
 
 class UnknownSimulationError(Exception):
     """Raised when simulation name is not know"""
@@ -66,7 +60,7 @@ def join_awkward_arrays(arr1, arr2, fields=None):
 class HEBE(object):
     """
     class: HEBE
-    Interace between LI and Olympus
+    Interace between injection and Olympus
     Parameters
     ----------
     config : dic
@@ -126,25 +120,8 @@ class HEBE(object):
 
         self._det = detector_from_geo(config["detector"]["detector specs file"])
         print('Finished the detector')
-        is_ice = config["lepton propagator"]["medium"].lower() == 'ice'
-        endcap = get_endcap(self._det.module_coords, is_ice)
-        inj_radius = get_injRadius(self._det.module_coords, is_ice)
-        cyl_radius = get_volume(self._det.module_coords, is_ice)[0]
-        cyl_height = get_volume(self._det.module_coords, is_ice)[1]
-        if not config["lepton injector"]["force injection params"]:
-            warn(
-                'WARNING: Overwriting injection parameters with calculated values.'
-            )
-            config["lepton injector"]["simulation"]["endcap length"] = endcap
-            config["lepton injector"]["simulation"]["injection radius"] = inj_radius
-            config["lepton injector"]["simulation"]["cylinder radius"] = cyl_radius
-            config["lepton injector"]["simulation"]["cylinder height"] = cyl_height
-        if not config["lepton propagator"]["force propagation params"]:
-            print('WARNING: Overwriting propagation parameters with calculated values')
-            config["lepton propagator"]["propogation padding"] = inj_radius
-        # Setting up the lepton propagator
         print('-------------------------------------------')
-        print('Setting up leptopn propagation')
+        print('Setting up lepton propagation')
         self._lp = LP()
         print('Finished the lepton propagator')
         # Photon propagation
@@ -178,37 +155,37 @@ class HEBE(object):
         """ Injects leptons according to the config file
         """
         import h5py
-        # Loading LI data
+        # Loading injection data
         print('-------------------------------------------')
         start = time()
-        if config["lepton injector"]["inject"]:
-            print('Setting up and running LI')
-            if config['lepton injector']['inject']:
-                print('Injecting')
-                self._LI = LepInj()
-            else:
-                print('Not injecting')
-            print('Finished LI, loading data')
-        self._LI_raw = h5py.File(
-            config['lepton injector']['simulation']['output name'], "r"
+        injection_config = config["injection"][config["injection"]["name"]]
+        self._injection = injection_dict[config["injection"]["name"]](
+            injection_config['paths']['output name']
         )
-        self._final_states = {}
-        for elem in config['run']['data sets']:
-            if elem[0]:
-                self._final_states[elem[1]] = (
-                    self._LI_raw[config['run']['group name']][elem[1]]
+        print('Setting up and running injection')
+        if injection_config['inject']:
+            injection_config["simulation"]["random state seed"] = config["general"]["random state seed"]
+            if not injection_config["simulation"]["force injection params"]:
+                warn(
+                    'WARNING: Overwriting injection parameters with calculated values.'
                 )
+                is_ice = config["lepton propagator"]["medium"].lower() == 'ice'
+                endcap = get_endcap(self._det.module_coords, is_ice)
+                inj_radius = get_injection_radius(self._det.module_coords, is_ice)
+                cyl_radius, cyl_height = get_volume(self._det.module_coords, is_ice)
+                injection_config["simulation"]["endcap length"] = endcap
+                injection_config["simulation"]["injection radius"] = inj_radius
+                injection_config["simulation"]["cylinder radius"] = cyl_radius
+                injection_config["simulation"]["cylinder height"] = cyl_height
+            print('Injecting')
+            self._injection.inject(injection_config)
+        else:
+            print('Not injecting')
+        self._injection.load_data()
+        print('Finished injection, loading data')
         print('Finished loading')
         # Creating data set
         print('Creating the data set for further propagation')
-        if config['run']['subset']['switch']:
-            print('Creating subset')
-            for key in self._final_states.keys():
-                self._final_states[key] = self._final_states[key][
-                    0:config['run']['subset']['counts']
-                ]
-        else:
-            print('Using the full data set')
         print('Finished the data set')
         end = time()
         print(
@@ -229,33 +206,48 @@ class HEBE(object):
         self._results = {}
         self._results_record = {}
         propped_primaries = []
-        for event_id, key in enumerate(self._final_states.keys()):
+        if config["run"]["subset"]["switch"]:
+            nevents = config["run"]["subset"]["counts"]
+        else:
+            nevents = len(self._injection)
+        #for event_id, key in enumerate(self._final_states.keys()):
+        for key in ["primary_lepton_1", "primary_hadron_1"]:
             print('-------------------------------')
             print('Starting set')
             self._results[key] = []
             self._results_record[key] = []
             self._new_results[key] = []
-            for event in tqdm(self._final_states[key]):
+            # TODO load the injection into an event structure
+            for event_idx in tqdm(range(nevents)):
+            #for event in tqdm(self._final_states[key]):
                 # Making sure the event id is okay:
-                if event[1] in config['particles']['explicit']:
-                    pdg_code = event[1]
-                else:
+                pdg_code = getattr(self._injection, f"{key}_type")[event_idx]
+                # TODO what is the point of this ??????
+                if not pdg_code in config['particles']['explicit']:
                     pdg_code = config['particles']['replacement']
-                pos = np.array(event[2])
+                pos = np.array([
+                    getattr(self._injection, f"{key}_position_x")[event_idx],
+                    getattr(self._injection, f"{key}_position_y")[event_idx],
+                    getattr(self._injection, f"{key}_position_x")[event_idx],
+                ])
+                zen = getattr(self._injection, f"{key}_direction_theta")[event_idx]
+                azi = getattr(self._injection, f"{key}_direction_phi")[event_idx]
                 direction = [
-                    np.cos(event[3][1])*np.sin(event[3][0]),
-                    np.sin(event[3][1])*np.sin(event[3][0]),
-                    np.cos(event[3][0])
+                    np.cos(azi)*np.sin(zen),
+                    np.sin(azi)*np.sin(zen),
+                    np.cos(zen)
                 ]
 
                 primary_particle = Particle(
                     pdg_code,
-                    event[4],
+                    getattr(self._injection, f"{key}_energy")[event_idx],
                     pos,
                     direction,
-                    event_id,
-                    theta=event[3][0],
-                    phi=event[3][1])
+                    #event_id,
+                    # TODO why the fuck is there two reps of direction ?
+                    theta=zen,
+                    phi=azi
+                )
                 res_event, res_record = self._pp._sim(primary_particle)
                 propped_primaries.append(primary_particle)
                 self._new_results[key].append(primary_particle)
@@ -283,8 +275,6 @@ class HEBE(object):
         self.construct_output(
             sim_switch=config['photon propagator']['name']
         )
-        # except ValueError:
-        #     print('No hits generated, skipping dump!')
         config["runtime"] = None
         print('Finished dump')
         if config["general"]["clean up"]:
@@ -296,100 +286,6 @@ class HEBE(object):
         print('Have a good day!')
         print('-------------------------------------------')
         print('-------------------------------------------')
-
-
-    def _serialize_injection_to_awkward(self, LI_file):
-        LI_converter = {
-            # Charged current
-            (12, -2000001006, 11): 1,
-            (14, -2000001006, 13): 1,
-            (16, -2000001006, 15): 1,
-            (12, 11, -2000001006): 1,
-            (14, 13, -2000001006): 1,
-            (16, 15, -2000001006): 1,
-            (-12, -2000001006, -11): 1,
-            (-14, -2000001006, -13): 1,
-            (-16, -2000001006, -15): 1,
-            (-12, -11, -2000001006): 1,
-            (-14, -13, -2000001006): 1,
-            (-16, -15, -2000001006): 1,
-            # Neutral current
-            (12, 12, -2000001006): 2,
-            (14, 14, -2000001006): 2,
-            (16, 16,-2000001006): 2,
-            (12, -2000001006, 12): 2,
-            (14, -2000001006, 14): 2,
-            (16,-2000001006, 16): 2,
-            (-12, -12,-2000001006): 2,
-            (-14, -14,-2000001006): 2,
-            (-16, -16,-2000001006): 2,
-            (-12,-2000001006, -12): 2,
-            (-14,-2000001006, -14): 2,
-            (-16,-2000001006, -16): 2,
-            # Glashow
-            (-12, -2000001006, -2000001006): 0,
-            (-12,-12, 11): 0,
-            (-12,-14, 13): 0,
-            (-12,-16, 15): 0,
-            (-12, 11,-12): 0,
-            (-12, 13,-14): 0,
-            (-12, 15,-16): 0,
-            # Dimuon
-            (14, 13, -13): 3,
-            (14, -13, 13): 3,
-            (-14, -13, 13): 3,
-            (-14, 13, -13): 3,
-        }
-
-        injection = LI_file[config["run"]["group name"]]
-        lepton_pdgs = [-16, -15, -14, -13, -12, -11, 11, 12, 13, 14, 15, 16]
-
-        if (
-            np.all(injection["final_1"]["ParticleType"]==injection["final_1"]["ParticleType"][0]) and
-            np.all(injection["final_2"]["ParticleType"]==injection["final_2"]["ParticleType"][0])
-        ):
-            if injection["final_1"]["ParticleType"][0] in lepton_pdgs:
-                lepton_key = "final_1"
-                hadron_key = "final_2"
-            else:
-                lepton_key = "final_2"
-                hadron_key = "final_1"
-        else:
-            raise MultipleInjectionError()
-
-        injection_functions = [
-            ('injection_energy', lambda inj: inj["properties"]["totalEnergy"]),
-            ('injection_type', lambda inj: inj["properties"]["initialType"]),
-            ('injection_interaction_type', lambda inj: [
-                LI_converter[tuple(t)] for t in inj["properties"][:][["initialType", "finalType1", "finalType2"]]
-            ]),
-            ('injection_zenith', lambda inj: inj["properties"]["zenith"]),
-            ('injection_azimuth', lambda inj: inj["properties"]["azimuth"]),
-            ('injection_bjorkenx', lambda inj: inj["properties"]["finalStateX"]),
-            ('injection_bjorkeny', lambda inj: inj["properties"]["finalStateY"]),
-            ('injection_position_x', lambda inj: inj["properties"]["x"]),
-            ('injection_position_y', lambda inj: inj["properties"]["y"]),
-            ('injection_position_z', lambda inj: inj["properties"]["z"]),
-            ('injection_column_depth', lambda inj: inj["properties"]["totalColumnDepth"]),
-            ('primary_lepton_1_type', lambda inj: inj[lepton_key]["ParticleType"]),
-            ('primary_lepton_1_position_x', lambda inj: np.copy(inj[lepton_key]["Position"][:, 0])),
-            ('primary_lepton_1_position_y', lambda inj: np.copy(inj[lepton_key]["Position"][:, 1])),
-            ('primary_lepton_1_position_z', lambda inj: np.copy(inj[lepton_key]["Position"][:, 2])),
-            ('primary_lepton_1_direction_theta', lambda inj: np.copy(inj[lepton_key]["Direction"][:, 0])),
-            ('primary_lepton_1_direction_phi', lambda inj: np.copy(inj[lepton_key]["Direction"][:, 1])),
-            ('primary_lepton_1_energy', lambda inj: inj[lepton_key]["Energy"]),
-            ('primary_hadron_1_type', lambda inj: inj[hadron_key]["ParticleType"]),
-            ('primary_hadron_1_position_x', lambda inj: np.copy(inj[hadron_key]["Position"][:, 0])),
-            ('primary_hadron_1_position_y', lambda inj: np.copy(inj[hadron_key]["Position"][:, 1])),
-            ('primary_hadron_1_position_z', lambda inj: np.copy(inj[hadron_key]["Position"][:, 2])),
-            ('primary_hadron_1_direction_theta', lambda inj: np.copy(inj[hadron_key]["Direction"][:, 0])),
-            ('primary_hadron_1_direction_phi', lambda inj: np.copy(inj[hadron_key]["Direction"][:, 1])),
-            ('primary_hadron_1_energy', lambda inj: inj[hadron_key]["Energy"]),
-            ('total_energy', lambda inj: inj[hadron_key]["Energy"] + inj[lepton_key]["Energy"]),
-        ]
-
-        a = ak.Array({fname:f(injection) for fname, f in injection_functions})
-        return a
 
     def _serialize_results_to_dict(
         self,
@@ -474,43 +370,6 @@ class HEBE(object):
             outarr = join_awkward_arrays(outarr, getattr(arr, field))
         return outarr
 
-        # Check to make sure all the particles have matching fields
-        # offending field
-        #for key in particle_keys:
-        #    set_keys = set(fill_dict[key])
-        #    if not (
-        #        field_keys.issubset(set_keys) and\
-        #        set_keys.issubset(field_keys)
-        #    ):
-        #        raise ValueError("Particle keys are not compatible.")
-        #
-        #fill_dict["total"] = {}
-        #for field_k in field_keys:
-        #    nevents = len(fill_dict[particle_keys[0]][field_k])
-
-        #    # Make an empty array that we will start stacking on
-        #    total = np.array(
-        #        [np.array([]) for _ in range(nevents)]
-        #    )
-        #    # Iterate over all the particles, stacking on total each time
-        #    for i, k in enumerate(particle_keys):
-        #        # Don't need to do any special handling
-        #        if i==0:
-        #            current = fill_dict[k][field_k]
-        #        # If this isn't the first one, we need to filter out [-1] entries
-        #        # so that they don't crop up in the middle
-        #        else:
-        #            current = [
-        #                x if np.all(x!=-1) else [] for x in fill_dict[k][field_k]
-        #            ]
-        #        # Add the new stuff to the running total
-        #        total = ak.concatenate(
-        #            (total, current),
-        #            axis=1
-        #        )
-        #    # Throw it all in the dictionary :-)
-        #    fill_dict["total"][field_k] = total
-
     def _construct_totals_from_dict(
             self,
             fill_dict
@@ -575,34 +434,6 @@ class HEBE(object):
             't':t_all,
         }
 
-    def _serialize_particle_to_awkward(
-        self,
-        particles,
-    ):
-
-        # Only create array if any particles made light
-        create_arr = False
-        for p in particles:
-            if len(p.hits) > 0:
-                create_arr = True
-                break
-        if not create_arr:
-            return None
-
-        hit_functions = [
-            ("string_id", lambda particles: [[h[0] for h in p.hits] for p in particles]),
-            ("sensor_id", lambda particles: [[h[1] for h in p.hits] for p in particles]),
-            ("t", lambda particles: [[h[2] for h in p.hits] for p in particles]),
-            ("sensor_pos_x", lambda particles: [[self._det[(h[0], h[1])].pos[0] for h in p.hits] for p in particles]),
-            ("sensor_pos_y", lambda particles: [[self._det[(h[0], h[1])].pos[1] for h in p.hits] for p in particles]),
-            ("sensor_pos_z", lambda particles: [[self._det[(h[0], h[1])].pos[2] for h in p.hits] for p in particles]),
-        ]
-
-        outarr = ak.Array({k:f(particles) for k, f in hit_functions})
-
-        return outarr
-
-
     def construct_output(
             self,
             sim_switch="olympus"
@@ -633,7 +464,7 @@ class HEBE(object):
         if "ppc" in sim_switch.lower():
             outarr = ak.with_field(
                 outarr,
-                self._serialize_injection_to_awkward(self._LI_raw),
+                self._injection.serialize_to_awkward(),
                 where="mc_truth"
             )
             lepton_idx = 1
@@ -665,7 +496,7 @@ class HEBE(object):
                 )
             tree = outarr
         elif sim_switch=="olympus":
-            self._serialize_injection_to_dict(self._LI_raw, tree)
+            self._serialize_injection_to_dict(self._injection_raw, tree)
             # Looping over primaries, change hardcoding
             starting_particles = ['primary_lepton_1', 'primary_hadron_1']
             try:
@@ -711,7 +542,6 @@ class HEBE(object):
     def plot(self, event, **kwargs):
         plot_event(event, self._det, **kwargs)
 
-
     def event_plotting(
             self, det, event, record=None,
             plot_tfirst=False, plot_hull=False):
@@ -738,7 +568,7 @@ class HEBE(object):
         """ Remove temporary and intermediate files.
         """
         print("Removing intermediate data files.")
-        os.remove(config['lepton injector']['simulation']['output name'])
+        os.remove(config['injection']['simulation']['output name'])
         os.remove('./config.lic')
         for key in self._results.keys():
             try:

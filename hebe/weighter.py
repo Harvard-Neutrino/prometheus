@@ -1,7 +1,8 @@
 import awkward as ak
+import h5py as h5
 import LeptonWeighter as LW
 
-from abs import ABC, abstractmethod
+from abc import abstractmethod
 
 class CrossSectionFilesNotFoundError(Exception):
 
@@ -21,6 +22,13 @@ def xs_files_exist(xs_dir):
         isfile(f"{xs_dir}/dsdxdy-numubar-N-nc-HERAPDF15NLO_EIG_central.fits")
     )
 
+DEFAULT_XS = {
+    "nu_cc_xs": "dsdxdy-numu-N-cc-HERAPDF15NLO_EIG_central.fits",
+    "nubar_cc_xs": "dsdxdy-numubar-N-cc-HERAPDF15NLO_EIG_central.fits",
+    "nu_nc_xs": "dsdxdy-numu-N-nc-HERAPDF15NLO_EIG_central.fits",
+    "nubar_nc_xs": "dsdxdy-numubar-N-nc-HERAPDF15NLO_EIG_central.fits"
+}
+
 class Weighter:
 
     """
@@ -34,19 +42,33 @@ class Weighter:
     nevents: (1) Events generated to rescale weight by. Helpful if you have non-uniform
              events per file. 
     """
-    if not xs_files_exist(xs_dir):
-        raise CrossSectionFilesNotFoundError(xs_dir)
-    self._xs_dir = xs_dir
-    self._lic_file = lic_file
-    self._nevents = nevents
-    self._generators = LW.MakeGeneratorsFromLICFile(lic_file)
-    self._xs = LW.CrossSectionFromSpline(
-        f"{xs_dir}/dsdxdy-numu-N-cc-HERAPDF15NLO_EIG_central.fits",
-        f"{xs_dir}/dsdxdy-numubar-N-cc-HERAPDF15NLO_EIG_central.fits",
-        f"{xs_dir}/dsdxdy-numu-N-nc-HERAPDF15NLO_EIG_central.fits",
-        f"{xs_dir}/dsdxdy-numubar-N-nc-HERAPDF15NLO_EIG_central.fits"
-    )
-    self._weighter = LW.Weighter(self._xs, self._generators)
+    def __init__(
+        self, 
+        xs_dir, 
+        lic_file,
+        nevents=1,
+        **kwargs
+        ):
+        #if not xs_files_exist(xs_dir):
+        #    raise CrossSectionFilesNotFoundError(xs_dir)
+        self._xs_dir = xs_dir
+        self._lic_file = lic_file
+        self._nevents = nevents
+
+        for k, v in DEFAULT_XS.items():
+            if k not in kwargs.keys():
+                kwargs[k] = v
+        print(f"{xs_dir}/{kwargs['nubar_nc_xs']}",)
+            
+        self._xs = LW.CrossSectionFromSpline(
+            f"{xs_dir}/{kwargs['nu_cc_xs']}",
+            f"{xs_dir}/{kwargs['nubar_cc_xs']}",
+            f"{xs_dir}/{kwargs['nu_nc_xs']}",
+            f"{xs_dir}/{kwargs['nubar_nc_xs']}",
+        )
+
+        self._generators = LW.MakeGeneratorsFromLICFile(lic_file)
+        self._weighter = LW.Weighter(self._xs, self._generators)
 
     @property
     def xs_dir(self) -> str:
@@ -111,7 +133,7 @@ class ParquetWeighter(Weighter):
 
 class H5Weighter(Weighter):
 
-    def __init__(self, xs_dir: str, lic_file: str, nevents: int=1):
+    def __init__(self, xs_dir: str, lic_file: str, nevents: int=1, **kwargs):
         """
         Class for weighting h5 events with LeptonWeighter
 
@@ -123,7 +145,7 @@ class H5Weighter(Weighter):
         nevents: (1) Events generated to rescale weight by. Helpful if you have non-uniform
                  events per file. 
         """
-        super().__init__(xs_dir, lic_file, nevents=nevents)
+        super().__init__(xs_dir, lic_file, nevents=nevents, **kwargs)
 
     def get_event_oneweight(self, event_properties:h5.Dataset) -> float:
         """
