@@ -5,7 +5,11 @@
 
 from hebe.config import config
 from hebe.utils.detector_dictionaries import detectors, final_states
-from hebe.utils.geo_utils import from_geo,get_volume,get_endcap,get_injRadius
+from hebe.utils.geo_utils import (
+    from_geo,get_volume,
+    get_endcap,
+    get_injection_radius
+)
 from os.path import exists
 from colorama import Fore, Style
 
