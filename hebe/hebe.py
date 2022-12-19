@@ -22,7 +22,7 @@ from .photonpropagator import PP
 from .lepton_prop import LP
 from .injection import injection_dict
 from .particle import Particle
-from .utils.hebe_ui import run_ui
+#from .utils.hebe_ui import run_ui
 
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
 
@@ -32,30 +32,6 @@ class UnknownSimulationError(Exception):
         self.message = f"Simulation name {simname} is not recognized. Only PPC and olympus"
         super().__init__(self.message)
 
-class IncompaticleFieldsError(Exception):
-    """Raised when two awkward.Array cannot be combined because fields don't match"""
-    def __init__(self, fields1, fields2):
-        self.message = f"Fields must fully overlap to combine. The fields were {fields1} and {fields2}"
-        super().__int__(self.message)
-
-def join_awkward_arrays(arr1, arr2, fields=None):
-    # Infer fields from arrs if not passed
-    if fields is None:
-        if not (
-            set(arr1.fields).issubset(set(arr2.fields)) and
-            set(arr2.fields).issubset(set(arr1.fields))
-        ):
-            raise IncompaticleFieldsError(arr1.fields, arr2.fields)
-        else:
-            fields = arr1.fields
-
-    arr = ak.Array(
-        {
-            k: [np.hstack([x, y]) for x, y in zip(getattr(arr1, k), getattr(arr2, k))]
-        for k in fields}
-    )
-
-    return arr
 
 class HEBE(object):
     """
@@ -151,7 +127,7 @@ class HEBE(object):
         """
         return self._results_record
 
-    def injection(self):
+    def inject(self):
         """ Injects leptons according to the config file
         """
         import h5py
@@ -269,12 +245,10 @@ class HEBE(object):
     def sim(self):
         """ Utility function to run all steps of the simulation
         """
-        self.injection()
+        self.inject()
         self.propagate()
         print('Dumping results')
-        self.construct_output(
-            sim_switch=config['photon propagator']['name']
-        )
+        self.construct_output()
         config["runtime"] = None
         print('Finished dump')
         if config["general"]["clean up"]:
@@ -287,207 +261,42 @@ class HEBE(object):
         print('-------------------------------------------')
         print('-------------------------------------------')
 
-    def _serialize_results_to_dict(
-        self,
-        results,
-        record,
-        fill_dict,
-        particle="lepton"
-    ):
-        # TODO: Optimize this. Currently this is extremely inefficient.
-            # first set
-            all_ids_1 = []
-            for event in results:
-                dom_ids_1 = []
-                for id_dom, dom in enumerate(event):
-                    if len(dom) > 0:
-                        dom_ids_1.append([id_dom] * len(dom))
-                dom_ids_1 = ak.flatten(ak.Array(dom_ids_1), axis=None)
-                all_ids_1.append(dom_ids_1)
-            all_ids_1 = ak.Array(all_ids_1)
-            all_hits_1 =  []
-            for event in results:
-                all_hits_1.append(ak.flatten(event, axis=None))
-            all_hits_1 = ak.Array(all_hits_1)
-            # Positional sensor information
-            sensor_pos_1 = np.array([
-                self._det.module_coords[hits]
-                for hits in all_ids_1
-            ], dtype=object)
-            sensor_string_id_1 = np.array([
-                np.array(self._det._om_keys)[event]
-                for event in all_ids_1
-            ], dtype=object)
-            # The losses
-            loss_counts = np.array([[
-                source.n_photons[0] for source in event.sources
-            ] for event in record], dtype=object)
-            # This is as inefficient as possible
-            fill_dict[particle] = {
-                'sensor_id': all_ids_1,
-                'sensor_pos_x': np.array([
-                    event[:, 0] for event in sensor_pos_1
-                ], dtype=object),
-                'sensor_pos_y': np.array([
-                    event[:, 1] for event in sensor_pos_1
-                ], dtype=object),
-                'sensor_pos_z': np.array([
-                    event[:, 2] for event in sensor_pos_1
-                ], dtype=object),
-                'string_id': np.array([
-                    event[:, 0] for event in sensor_string_id_1
-                ], dtype=object),
-                't': all_hits_1,
-                'loss_pos_x': np.array([[
-                    source.position[0] for source in event.sources
-                ] for event in record], dtype=object),
-                'loss_pos_y': np.array([[
-                    source.position[1] for source in event.sources
-                ] for event in record], dtype=object),
-                'loss_pos_z': np.array([[
-                    source.position[2] for source in event.sources
-                ] for event in record], dtype=object),
-                'loss_n_photons': loss_counts
-            }
-
-    def _totals_from_awkward_arr(
-            self,
-            arr
-        ):
-
-        # These are the keys which refer to the physical particles
-        particle_fields = [
-            field for field in arr.fields
-            if field not in "event_id mc_truth".split()
-        ]
-
-        # Return `None` if no particles made light
-        if len(particle_fields)==0:
-            return None
-
-        outarr = getattr(arr, particle_fields[0])
-        for field in particle_fields[1:]:
-            outarr = join_awkward_arrays(outarr, getattr(arr, field))
-        return outarr
-
-    def _construct_totals_from_dict(
-            self,
-            fill_dict
-        ):
-        particle_keys = [
-            k for k in fill_dict.keys()
-            if k not in "event_id mc_truth".split()
-        ]
-        sensor_id_all = np.array(
-            [np.array([], dtype=np.int64) for _ in range(len(fill_dict[particle_keys[0]]["sensor_id"]))]
-        )
-        t_all = np.array(
-            [np.array([]) for _ in range(len(fill_dict[particle_keys[0]]["t"]))]
-        )
-        for i, k in enumerate(particle_keys):
-            if i==0:
-                cur_t = fill_dict[k]["t"]
-                cur_sensor_id = fill_dict[k]["sensor_id"]
-            else:
-                cur_t = [
-                    x if np.all(x!=-1) else [] for x in fill_dict[k]["t"]
-                ]
-                cur_sensor_id = [
-                    x if np.all(x!=-1) else [] for x in fill_dict[k]["sensor_id"]
-                ]
-            t_all = ak.concatenate(
-                (t_all, cur_t),
-                axis=1
-            )
-            sensor_id_all = ak.concatenate(
-                (sensor_id_all, cur_sensor_id),
-                axis=1
-            )
-        sensor_pos_all = np.array(
-            [
-                self._det.module_coords[hits]
-                for hits in sensor_id_all
-            ],
-            dtype=object
-        )
-        sensor_string_id_all = np.array(
-            [
-                np.array(self._det._om_keys)[event]
-                for event in sensor_id_all
-            ],
-            dtype=object
-        )
-        fill_dict['total'] = {
-            'sensor_id': sensor_id_all,
-            'sensor_pos_x': ak.Array([
-                event[:, 0] for event in sensor_pos_all
-            ]),
-            'sensor_pos_y': ak.Array([
-                event[:, 1] for event in sensor_pos_all
-            ]),
-            'sensor_pos_z': ak.Array([
-                event[:, 2] for event in sensor_pos_all
-            ]),
-            'string_id': ak.Array([
-                event[:, 0] for event in sensor_string_id_all
-            ]),
-            't':t_all,
-        }
-
     def construct_output(
-            self,
-            sim_switch="olympus"
-        ):
+        self,
+    ):
         """ Constructs a parquet file with metadata from the generated files.
         Currently this still treats olympus and ppc output differently.
         Parameters
         ----------
-        sim_switch: str
-            switch for olympus or ppc mode
-        Notes
-        -----
-        It contains the fields:
-            ['event_id',
-             'mc_truth'
-             'lepton',
-             'hadron',
-             'total]
-        Load the file using the awkward method from_parquet
-        mc_truth, lepton, hadron and total in turn contain subfields.
         """
+        sim_switch = config["photon propagator"]["name"]
         # TODO: Unify this for olympus and PPC
         print("Generating output for a " + sim_switch + " simulation.")
         print("Generating the different particle fields...")
-        sdsd = 0
-        outarr = ak.Array({})
-        sdsd = 1
         if "ppc" in sim_switch.lower():
+            from hebe.utils import (
+                totals_from_awkward_arr,
+                serialize_particles_to_awkward
+            )
+            outarr = ak.Array({})
+            # Save the injection
             outarr = ak.with_field(
                 outarr,
                 self._injection.serialize_to_awkward(),
                 where="mc_truth"
             )
-            lepton_idx = 1
-            hadron_idx = 1
             n = int(len(self._propped_primaries) / 2)
             finals_1 = self._propped_primaries[:n]
             finals_2 = self._propped_primaries[n:]
-            for finals in [finals_1, finals_2]:
-                if abs(int(finals[0])) in [11, 13, 15]:
-                    field_name = f"primary_lepton_{lepton_idx}"
-                    lepton_idx += 1
-                else:
-                    field_name = f"primary_hadron_{hadron_idx}"
-                    hadron_idx += 1
-                test_arr = self._serialize_particle_to_awkward(finals)
+            for idx, finals in enumerate([finals_1, finals_2]):
+                field_name = f"primary_particle_{idx+1}"
+                test_arr = serialize_particles_to_awkward(self._det, finals)
                 # We only add this to the array if anything made light
-                if test_arr is not None:
-                    outarr = ak.with_field(
-                        outarr,
-                        test_arr,
-                        where=field_name
-                    )
-            test_arr = self._totals_from_awkward_arr(outarr)
+                if test_arr is None:
+                    continue
+                outarr = ak.with_field(outarr, test_arr, where=field_name)
+            # Construct the totals
+            test_arr = totals_from_awkward_arr(outarr)
             if test_arr is not None:
                 outarr = ak.with_field(
                     outarr,
@@ -496,18 +305,19 @@ class HEBE(object):
                 )
             tree = outarr
         elif sim_switch=="olympus":
-            self._serialize_injection_to_dict(self._injection_raw, tree)
+            tree["mc_truth"] = self._injection.serialize_to_dict()
             # Looping over primaries, change hardcoding
             starting_particles = ['primary_lepton_1', 'primary_hadron_1']
             try:
                 for i, primary in enumerate(starting_particles):
-                    self._serialize_results_to_dict(
+                    serialize_results_to_dict(
+                        self._det,
                         self._results['final_%d' % (i + 1)],
                         self._results_record['final_%d' % (i + 1)],
                         tree,
                         primary
                     )
-                self._construct_totals_from_dict(tree)
+                construct_totals_from_dict(self._det, tree)
             except:
                 warn("No hits generated!")
             tree = ak.Array(tree)
@@ -543,8 +353,9 @@ class HEBE(object):
         plot_event(event, self._det, **kwargs)
 
     def event_plotting(
-            self, det, event, record=None,
-            plot_tfirst=False, plot_hull=False):
+        self, det, event, record=None,
+        plot_tfirst=False, plot_hull=False
+    ):
         """ utilizes olympus plotting to generate a plot
         Parameters
         ----------
