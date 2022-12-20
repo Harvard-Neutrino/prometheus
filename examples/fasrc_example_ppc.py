@@ -186,7 +186,7 @@ def main(args):
     else:
         print("Doing volume injection")
         config['run']['group name'] = 'VolumeInjector0'
-        config['injection']['simulation']['is ranged'] = False
+        config['injection']["LeptonInjector"]['simulation']['is ranged'] = False
     if args.injection:
         config["injection"]["LeptonInjector"]["inject"] = False
         config['injection']["LeptonInjector"]['simulation']['output name'] = args.injection
