@@ -18,8 +18,8 @@ from jax import random  # noqa: E402
 from .utils.geo_utils import get_endcap, get_injection_radius, get_volume
 from .config import config
 from .detector import detector_from_geo
-from .photonpropagator import PP
-from .lepton_prop import LP
+from .photon_propagation import PP
+from .lepton_propagation import LP
 from .injection import injection_dict
 from .particle import Particle
 #from .utils.hebe_ui import run_ui
@@ -31,7 +31,6 @@ class UnknownSimulationError(Exception):
     def __init__(self, simname):
         self.message = f"Simulation name {simname} is not recognized. Only PPC and olympus"
         super().__init__(self.message)
-
 
 class HEBE(object):
     """
@@ -68,11 +67,11 @@ class HEBE(object):
         # Dumping config file
         # Has to happend before the random state is thrown in
         config["runtime"] = None
-        print('-------------------------------------------')
-        print('Dumping config file')
-        with open(config['general']['config location'], 'w') as f:
+        print("-------------------------------------------")
+        print("Dumping config file")
+        with open(config["general"]["config location"], "w") as f:
             json.dump(config, f, indent=2)
-        print('Finished dump')
+        print("Finished dump")
         # Create RandomState
         self._is_full = config["general"]["full output"]
         if config["general"]["random state seed"] is None:
@@ -89,31 +88,31 @@ class HEBE(object):
             "random state": rstate,
             "random state jax": rstate_jax,
         }
-        print('-------------------------------------------')
+        print("-------------------------------------------")
         # Setting up the detector
-        print('-------------------------------------------')
-        print('Setting up the detector')
+        print("-------------------------------------------")
+        print("Setting up the detector")
 
         self._det = detector_from_geo(config["detector"]["detector specs file"])
-        print('Finished the detector')
-        print('-------------------------------------------')
-        print('Setting up lepton propagation')
+        print("Finished the detector")
+        print("-------------------------------------------")
+        print("Setting up lepton propagation")
         self._lp = LP()
-        print('Finished the lepton propagator')
+        print("Finished the lepton propagator")
         # Photon propagation
-        print('-------------------------------------------')
+        print("-------------------------------------------")
         # Setting up the photon propagation
-        print('-------------------------------------------')
-        print('Setting up photon propagation')
+        print("-------------------------------------------")
+        print("Setting up photon propagation")
         self._pp = PP(self._lp, self._det)
-        print('Finished the photon propagator')
+        print("Finished the photon propagator")
         # Photon propagation
-        print('-------------------------------------------')
+        print("-------------------------------------------")
         end = time()
         print(
-            'Setup and preliminary ' +
-            'simulations took %f seconds' % (end - start))
-        print('-------------------------------------------')
+            "Setup and preliminary " +
+            "simulations took %f seconds" % (end - start))
+        print("-------------------------------------------")
 
     @property
     def results(self):
@@ -132,20 +131,20 @@ class HEBE(object):
         """
         import h5py
         # Loading injection data
-        print('-------------------------------------------')
+        print("-------------------------------------------")
         start = time()
         injection_config = config["injection"][config["injection"]["name"]]
         self._injection = injection_dict[config["injection"]["name"]](
-            injection_config['paths']['output name']
+            injection_config["paths"]["output name"]
         )
-        print('Setting up and running injection')
-        if injection_config['inject']:
+        print("Setting up and running injection")
+        if injection_config["inject"]:
             injection_config["simulation"]["random state seed"] = config["general"]["random state seed"]
             if not injection_config["simulation"]["force injection params"]:
                 warn(
-                    'WARNING: Overwriting injection parameters with calculated values.'
+                    "WARNING: Overwriting injection parameters with calculated values."
                 )
-                is_ice = config["lepton propagator"]["medium"].lower() == 'ice'
+                is_ice = config["lepton propagator"]["medium"].lower() == "ice"
                 endcap = get_endcap(self._det.module_coords, is_ice)
                 inj_radius = get_injection_radius(self._det.module_coords, is_ice)
                 cyl_radius, cyl_height = get_volume(self._det.module_coords, is_ice)
@@ -153,30 +152,30 @@ class HEBE(object):
                 injection_config["simulation"]["injection radius"] = inj_radius
                 injection_config["simulation"]["cylinder radius"] = cyl_radius
                 injection_config["simulation"]["cylinder height"] = cyl_height
-            print('Injecting')
+            print("Injecting")
             self._injection.inject(injection_config)
         else:
-            print('Not injecting')
+            print("Not injecting")
         self._injection.load_data()
-        print('Finished injection, loading data')
-        print('Finished loading')
+        print("Finished injection, loading data")
+        print("Finished loading")
         # Creating data set
-        print('Creating the data set for further propagation')
-        print('Finished the data set')
+        print("Creating the data set for further propagation")
+        print("Finished the data set")
         end = time()
         print(
-            'Injection ' +
-            'simulations took %f seconds' % (end - start))
-        print('-------------------------------------------')
-        print('-------------------------------------------')
+            "Injection " +
+            "simulations took %f seconds" % (end - start))
+        print("-------------------------------------------")
+        print("-------------------------------------------")
 
     def propagate(self):
         """ Runs the light yield calculations
         """
-        print('-------------------------------------------')
+        print("-------------------------------------------")
         # Simulation loop
-        print('-------------------------------------------')
-        print('Starting particle loop')
+        print("-------------------------------------------")
+        print("Starting particle loop")
         start = time()
         self._new_results = {}
         self._results = {}
@@ -188,8 +187,8 @@ class HEBE(object):
             nevents = len(self._injection)
         #for event_id, key in enumerate(self._final_states.keys()):
         for key in ["primary_lepton_1", "primary_hadron_1"]:
-            print('-------------------------------')
-            print('Starting set')
+            print("-------------------------------")
+            print("Starting set")
             self._results[key] = []
             self._results_record[key] = []
             self._new_results[key] = []
@@ -199,8 +198,8 @@ class HEBE(object):
                 # Making sure the event id is okay:
                 pdg_code = getattr(self._injection, f"{key}_type")[event_idx]
                 # TODO what is the point of this ??????
-                if not pdg_code in config['particles']['explicit']:
-                    pdg_code = config['particles']['replacement']
+                if not pdg_code in config["particles"]["explicit"]:
+                    pdg_code = config["particles"]["replacement"]
                 pos = np.array([
                     getattr(self._injection, f"{key}_position_x")[event_idx],
                     getattr(self._injection, f"{key}_position_y")[event_idx],
@@ -229,37 +228,37 @@ class HEBE(object):
                 self._new_results[key].append(primary_particle)
                 self._results[key].append(res_event)
                 self._results_record[key].append(res_record)
-            print('-------------------------------')
+            print("-------------------------------")
         self._propped_primaries = propped_primaries
-        print('Finished particle loop')
-        print('-------------------------------------------')
+        print("Finished particle loop")
+        print("-------------------------------------------")
         end = time()
         print(
-            'The simulation ' +
-            'took %f seconds' % (end - start))
-        print('-------------------------------------------')
-        print('-------------------------------------------')
-        print('Results are stored in self.results')
-        print('-------------------------------------------')
+            "The simulation " +
+            "took %f seconds" % (end - start))
+        print("-------------------------------------------")
+        print("-------------------------------------------")
+        print("Results are stored in self.results")
+        print("-------------------------------------------")
 
     def sim(self):
         """ Utility function to run all steps of the simulation
         """
         self.inject()
         self.propagate()
-        print('Dumping results')
+        print("Dumping results")
         self.construct_output()
         config["runtime"] = None
-        print('Finished dump')
+        print("Finished dump")
         if config["general"]["clean up"]:
-            print('-------------------------------------------')
-            print('-------------------------------------------')
+            print("-------------------------------------------")
+            print("-------------------------------------------")
             self._clean_up()
             print("Finished cleaning")
 
-        print('Have a good day!')
-        print('-------------------------------------------')
-        print('-------------------------------------------')
+        print("Have a good day!")
+        print("-------------------------------------------")
+        print("-------------------------------------------")
 
     def construct_output(
         self,
@@ -271,7 +270,7 @@ class HEBE(object):
         """
         sim_switch = config["photon propagator"]["name"]
         # TODO: Unify this for olympus and PPC
-        print("Generating output for a " + sim_switch + " simulation.")
+        print(f"Generating output for a {sim_switch} simulation.")
         print("Generating the different particle fields...")
         if "ppc" in sim_switch.lower():
             from hebe.utils import (
@@ -304,16 +303,16 @@ class HEBE(object):
                     where="total"
                 )
             tree = outarr
-        elif sim_switch=="olympus":
+        elif sim_switch == "olympus":
             tree["mc_truth"] = self._injection.serialize_to_dict()
             # Looping over primaries, change hardcoding
-            starting_particles = ['primary_lepton_1', 'primary_hadron_1']
+            starting_particles = ["primary_lepton_1", "primary_hadron_1"]
             try:
                 for i, primary in enumerate(starting_particles):
                     serialize_results_to_dict(
                         self._det,
-                        self._results['final_%d' % (i + 1)],
-                        self._results_record['final_%d' % (i + 1)],
+                        self._results["final_%d" % (i + 1)],
+                        self._results_record["final_%d" % (i + 1)],
                         tree,
                         primary
                     )
@@ -326,26 +325,24 @@ class HEBE(object):
         print("Converting to parquet")
         ak.to_parquet(
             tree,
-            config['photon propagator']['storage location'] +
-            config['general']['meta name'] + '.parquet'
+            f"{config['photon propagator']['storage location']}{config['general']['meta name']}.parquet"
         )
         print("Adding metadata")
         # Adding meta data
         import pyarrow.parquet as pq
         table = pq.read_table(
-            config['photon propagator']['storage location'] +
-            config['general']['meta name'] + '.parquet')
-        config['runtime'] = None
+            config["photon propagator"]["storage location"] +
+            config["general"]["meta name"] + ".parquet")
+        config["runtime"] = None
         custom_meta_data = json.dumps(config)
-        custom_meta_data_key = 'config_prometheus'
+        custom_meta_data_key = "config_prometheus"
         combined_meta = {
             custom_meta_data_key.encode() : custom_meta_data.encode()
         }
         table = table.replace_schema_metadata(combined_meta)
         pq.write_table(
             table,
-            config['photon propagator']['storage location'] +
-            config['general']['meta name'] + '.parquet'
+            f"{config['photon propagator']['storage location']}{config['general']['meta name']}.parquet"
         )
         print("Finished new data file")
 
@@ -379,12 +376,12 @@ class HEBE(object):
         """ Remove temporary and intermediate files.
         """
         print("Removing intermediate data files.")
-        os.remove(config['injection']['simulation']['output name'])
-        os.remove('./config.lic')
+        os.remove(config["injection"]["simulation"]["output name"])
+        os.remove("./config.lic")
         for key in self._results.keys():
             try:
                 os.remove(
-                    config['photon propagator']['storage location'] + key + '.parquet'
+                    config["photon propagator"]["storage location"] + key + ".parquet"
                 )
             except FileNotFoundError:
                 continue
