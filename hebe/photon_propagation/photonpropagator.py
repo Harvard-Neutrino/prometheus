@@ -5,17 +5,19 @@
 
 # imports
 import functools
-from .config import config
-from hebe.lepton_prop import LP
 import sys
 import json
-import awkward as ak
 import numpy as np
-from .utils import serialize_to_f2k, PDG_to_f2k
-from .lepton_prop import Loss
 
+from ..config import config
+from ..lepton_propagation import LP
+from ..utils import serialize_to_f2k, PDG_to_f2k
+from ..lepton_propagation import Loss
+from .hit import Hit
+
+# TODO this is bad :-(
 # sys.path.append(config['photon propagator']['location'])
-sys.path.append('../')
+sys.path.append('../../')
 
 # TODO should these be moved inside the set up function
 from olympus.event_generation.photon_propagation.norm_flow_photons import (  # noqa
@@ -43,10 +45,11 @@ def _parse_ppc(ppc_f):
                 dom zenith, dom azimuth, photon theta, photon azimuth)
                 (N, n, ns, nm, radian, radian, radian, radian)
                 '''
-                hits.append(
-                    (int(l[1]), int(l[2]), float(l[3]), float(l[4]),
-                    float(l[5]), float(l[6]), float(l[7]), float(l[8]))
+                hit = Hit(
+                    int(l[1]), int(l[2]), float(l[3]), float(l[4]),
+                    float(l[5]), float(l[6]), float(l[7]), float(l[8])
                 )
+                hits.append(hit)
     return hits
 
 def _should_propagate(particle):
