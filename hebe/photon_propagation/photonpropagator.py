@@ -15,25 +15,6 @@ from ..utils import serialize_to_f2k, PDG_to_f2k
 from ..lepton_propagation import Loss
 from .hit import Hit
 
-# TODO this is bad :-(
-# sys.path.append(config['photon propagator']['location'])
-sys.path.append('../../')
-
-# TODO should these be moved inside the set up function
-from olympus.event_generation.photon_propagation.norm_flow_photons import (  # noqa
-    make_generate_norm_flow_photons
-)
-from olympus.event_generation.event_generation import (  # noqa: E402
-    generate_cascade,
-    generate_realistic_track,
-    simulate_noise,
-)
-from olympus.event_generation.lightyield import make_realistic_cascade_source # noqa
-from olympus.event_generation.utils import sph_to_cart_jnp  # noqa: E402
-
-from hyperion.medium import medium_collections  # noqa: E402
-from hyperion.constants import Constants  # noqa: E402
-
 def _parse_ppc(ppc_f):
     res_result = [] # timing and module
     hits = []
@@ -143,28 +124,6 @@ def _ppc_sim(
             # TODO maybe make this optional
             os.remove(ppc_file)
             os.remove(f2k_file)
-        #if _should_propagate(particle):
-        #    serialize_to_f2k(particle, f2k_file, det.offset)
-        #    sub_dets = det.subdetectors(16384)
-        #    print(sub_dets)
-        #    hits = []
-        #    for sub_det in sub_dets:
-        #        sub_det.to_f2k(
-        #            geo_tmpfile,
-        #            serial_nos=[m.serial_no for m in sub_det.modules]
-        #        )
-
-        #        tenv = os.environ.copy()
-        #        tenv["PPCTABLESDIR"] = kwargs["ppctables"]
-
-        #        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
-        #        process.wait()
-        #        hits = hits + _parse_ppc(ppc_file)
-        #        # Cleanup f2k_tmpfile
-        #        # TODO maybe make this optional
-        #        os.remove(ppc_file)
-        #    os.remove(f2k_file)
-        #    particle._hits = hits
     return None, None
 
 
@@ -184,6 +143,24 @@ class PP(object):
         self.__lp = lp
         self.__det = det
         if config['photon propagator']['name'] == 'olympus':
+            # TODO this is bad :-(
+            # sys.path.append(config['photon propagator']['location'])
+            sys.path.append('../../')
+            
+            # TODO should these be moved inside the set up function
+            from olympus.event_generation.photon_propagation.norm_flow_photons import (  # noqa
+                make_generate_norm_flow_photons
+            )
+            from olympus.event_generation.event_generation import (  # noqa: E402
+                generate_cascade,
+                generate_realistic_track,
+                simulate_noise,
+            )
+            from olympus.event_generation.lightyield import make_realistic_cascade_source # noqa
+            from olympus.event_generation.utils import sph_to_cart_jnp  # noqa: E402
+            
+            from hyperion.medium import medium_collections  # noqa: E402
+            from hyperion.constants import Constants  # noqa: E402
             self._local_conf = config['photon propagator']['olympus']
             # Setting up proposal
             self._prop = self.__lp._new_proposal_setup()
@@ -201,8 +178,6 @@ class PP(object):
                 config["photon propagator"]["PPC"]
             )
         elif config['photon propagator']['name'] == 'PPC_CUDA':
-            self.__lp = lp
-            self.__det = det
             # TODO add in event displays
             #self._plotting = plot_event
             self._sim = lambda particle: _ppc_sim(
