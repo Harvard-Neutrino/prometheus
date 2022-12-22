@@ -164,12 +164,10 @@ def main(args):
     print('CURRENT SET %d' % seed)
     if args.final_1 in chared_leptons:
         clepton = args.final_1
-        nclepton = args.final_2
     elif args.final_2 in chared_leptons:
-        nclepton = args.final_1
         clepton = args.final_2
     else:
-        raise ValueError("What's happening here")
+        clepton = None
     config["detector"]["detector specs file"] = args.geo_file
     config["detector"]["padding"] = args.padding
     config["general"]["random state seed"] = seed
@@ -189,7 +187,7 @@ def main(args):
         config['injection']["LeptonInjector"]['simulation']['is ranged'] = False
     if args.injection:
         config["injection"]["LeptonInjector"]["inject"] = False
-        config['injection']["LeptonInjector"]['simulation']['output name'] = args.injection
+        config['injection']["LeptonInjector"]['paths']['output name'] = args.injection
         config['run']['group name'] = 'RangedInjector0'
     else:
         config['injection']["LeptonInjector"]['simulation']['nevents'] = nevent
