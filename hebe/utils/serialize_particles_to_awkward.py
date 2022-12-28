@@ -11,11 +11,11 @@ def serialize_particles_to_awkward(
         return None
 
     xyz = [
-        np.array([det[(h.string_id, h.om_id)].pos for h in p.hits]) for p in particles
+        np.transpose(np.array([det[(h.string_id, h.om_id)].pos for h in p.hits])) for p in particles
     ]
     outdict = {}
     for idx, var in enumerate("x y z".split()):
-        outdict[f"sensor_pos_{var}"] = [x[:, idx] for x in xyz]
+        outdict[f"sensor_pos_{var}"] = [x[idx] if x.shape[0] > 0 else np.array([]) for x in xyz]
 
     hit_functions = [
         ("string_id", lambda particles: [[h.string_id for h in p.hits] for p in particles]),
