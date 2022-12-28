@@ -119,10 +119,10 @@ def get_endcap(coords, is_ice = True):
     cyl = get_cylinder(coords)
     r = cyl[0]; z = cyl[1]
     theta = (np.pi/2)-2*np.arctan(2*r/z)
-    endcap_len = padding + np.cos(theta)*(get_injRadius(coords)-padding)
+    endcap_len = padding + np.cos(theta)*(get_injection_radius(coords)-padding)
     return endcap_len
 
-def get_injRadius(coords, is_ice = True):
+def get_injection_radius(coords, is_ice = True):
     if is_ice:
         padding = ice_padding 
     else:

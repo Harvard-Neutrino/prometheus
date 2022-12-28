@@ -4,12 +4,16 @@
 # Interface class to the different photon propagators
 
 # imports
+import functools
+import sys
+import json
 import numpy as np
 
-from .config import config
-from hebe.lepton_prop import LP
-from .utils import serialize_to_f2k, PDG_to_f2k
-from .lepton_prop import Loss
+from ..config import config
+from ..lepton_propagation import LP
+from ..utils import serialize_to_f2k, PDG_to_f2k
+from ..lepton_propagation import Loss
+from .hit import Hit
 
 def _parse_ppc(ppc_f):
     res_result = [] # timing and module
@@ -22,10 +26,11 @@ def _parse_ppc(ppc_f):
                 dom zenith, dom azimuth, photon theta, photon azimuth)
                 (N, n, ns, nm, radian, radian, radian, radian)
                 '''
-                hits.append(
-                    (int(l[1]), int(l[2]), float(l[3]), float(l[4]),
-                    float(l[5]), float(l[6]), float(l[7]), float(l[8]))
+                hit = Hit(
+                    int(l[1]), int(l[2]), float(l[3]), float(l[4]),
+                    float(l[5]), float(l[6]), float(l[7]), float(l[8])
                 )
+                hits.append(hit)
     return hits
 
 def _should_propagate(particle):
@@ -119,28 +124,6 @@ def _ppc_sim(
             # TODO maybe make this optional
             os.remove(ppc_file)
             os.remove(f2k_file)
-        #if _should_propagate(particle):
-        #    serialize_to_f2k(particle, f2k_file, det.offset)
-        #    sub_dets = det.subdetectors(16384)
-        #    print(sub_dets)
-        #    hits = []
-        #    for sub_det in sub_dets:
-        #        sub_det.to_f2k(
-        #            geo_tmpfile,
-        #            serial_nos=[m.serial_no for m in sub_det.modules]
-        #        )
-
-        #        tenv = os.environ.copy()
-        #        tenv["PPCTABLESDIR"] = kwargs["ppctables"]
-
-        #        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
-        #        process.wait()
-        #        hits = hits + _parse_ppc(ppc_file)
-        #        # Cleanup f2k_tmpfile
-        #        # TODO maybe make this optional
-        #        os.remove(ppc_file)
-        #    os.remove(f2k_file)
-        #    particle._hits = hits
     return None, None
 
 
@@ -196,8 +179,6 @@ class PP(object):
                 config["photon propagator"]["PPC"]
             )
         elif config['photon propagator']['name'] == 'PPC_CUDA':
-            self.__lp = lp
-            self.__det = det
             # TODO add in event displays
             #self._plotting = plot_event
             self._sim = lambda particle: _ppc_sim(
@@ -214,6 +195,17 @@ class PP(object):
         print('--------------------------------------------')
 
     def _olympus_setup(self):
+        # TODO I feel like we should move things out to a different file to avoid this importing mess
+        # TODO this is bad :-(
+        # sys.path.append(config['photon propagator']['location'])
+        sys.path.append('../../')
+        
+        # TODO should these be moved inside the set up function
+        from olympus.event_generation.photon_propagation.norm_flow_photons import (  # noqa
+            make_generate_norm_flow_photons
+        )
+        
+        from hyperion.medium import medium_collections  # noqa: E402
         ''' Sets up olympus.
         '''
         print('Using olympus')
@@ -245,18 +237,23 @@ class PP(object):
     def _olympus_sim(self, particle):
         """ Utilizes olympus to propagate light for the injected object
         """
+        from olympus.event_generation.lightyield import make_realistic_cascade_source # noqa
+        from olympus.event_generation.utils import sph_to_cart_jnp  # noqa: E402
+        from olympus.event_generation.event_generation import (  # noqa: E402
+            generate_cascade,
+            generate_realistic_track,
+            simulate_noise,
+        )
         injection_event = {
-                    "time": 0.,
-                    "theta": particle._theta,
-                    "phi": particle._phi,
-                    # TODO: This needs to be removed once the coordinate
-                    # systems match!
-                    "pos": particle._position,
-                    "energy": particle._e,
-                    "particle_id": particle._pdg_code,
-                    'length': config['lepton propagator']['track length'],
-                    'event id': particle._event_id
-                }
+            "time": 0.,
+            "theta": particle._theta,
+            "phi": particle._phi,
+            "pos": particle._position,
+            "energy": particle._e,
+            "particle_id": particle._pdg_code,
+            'length': config['lepton propagator']['track length'],
+            #'event id': particle._event_id
+        }
         event_dir = sph_to_cart_jnp(
             injection_event["theta"],
             injection_event["phi"]
@@ -294,4 +291,5 @@ class PP(object):
     def _c_medium_f(self, wl):
         """ Speed of light in medium for wl (nm)
         """
+        from hyperion.constants import Constants  # noqa: E402
         return Constants.BaseConstants.c_vac / self._ref_ix_f(wl)
