@@ -1,4 +1,5 @@
 import numpy as np
+import awkward as ak
 
 def construct_totals_from_dict(
         det,
