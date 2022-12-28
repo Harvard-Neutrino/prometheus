@@ -250,85 +250,85 @@ class LeptonInjectorInjection(Injection):
         return self._injection["properties"]["totalColumnDepth"]
 
     @property
-    def primary_lepton_1_type(self):
+    def primary_particle_1_type(self):
         if not self._data_loaded:
             raise DataNotLoadedError()
         return self._injection[self._lepton_key]["ParticleType"]
 
     @property
-    def primary_lepton_1_energy(self):
+    def primary_particle_1_energy(self):
         if not self._data_loaded:
             raise DataNotLoadedError()
         return self._injection[self._lepton_key]["Energy"]
 
     @property
-    def primary_lepton_1_position_x(self):
+    def primary_particle_1_position_x(self):
         if not self._data_loaded:
             raise DataNotLoadedError()
         return self._injection[self._lepton_key]["Position"][:, 0]
 
     @property
-    def primary_lepton_1_position_y(self):
+    def primary_particle_1_position_y(self):
         if not self._data_loaded:
             raise DataNotLoadedError()
         return self._injection[self._lepton_key]["Position"][:, 1]
 
     @property
-    def primary_lepton_1_position_z(self):
+    def primary_particle_1_position_z(self):
         if not self._data_loaded:
             raise DataNotLoadedError()
         return self._injection[self._lepton_key]["Position"][:, 2]
 
     @property
-    def primary_lepton_1_direction_theta(self):
+    def primary_particle_1_direction_theta(self):
         if not self._data_loaded:
             raise DataNotLoadedError()
         return self._injection[self._lepton_key]["Direction"][:, 0]
 
     @property
-    def primary_lepton_1_direction_phi(self):
+    def primary_particle_1_direction_phi(self):
         if not self._data_loaded:
             raise DataNotLoadedError()
         return self._injection[self._lepton_key]["Direction"][:, 1]
 
     @property
-    def primary_hadron_1_type(self):
+    def primary_particle_2_type(self):
         if not self._data_loaded:
             raise DataNotLoadedError()
         return self._injection[self._hadron_key]["ParticleType"]
 
     @property
-    def primary_hadron_1_energy(self):
+    def primary_particle_2_energy(self):
         if not self._data_loaded:
             raise DataNotLoadedError()
         return self._injection[self._hadron_key]["Energy"]
 
     @property
-    def primary_hadron_1_position_x(self):
+    def primary_particle_2_position_x(self):
         if not self._data_loaded:
             raise DataNotLoadedError()
         return self._injection[self._hadron_key]["Position"][:, 0]
 
     @property
-    def primary_hadron_1_position_y(self):
+    def primary_particle_2_position_y(self):
         if not self._data_loaded:
             raise DataNotLoadedError()
         return self._injection[self._hadron_key]["Position"][:, 1]
 
     @property
-    def primary_hadron_1_position_z(self):
+    def primary_particle_2_position_z(self):
         if not self._data_loaded:
             raise DataNotLoadedError()
         return self._injection[self._hadron_key]["Position"][:, 2]
 
     @property
-    def primary_hadron_1_direction_theta(self):
+    def primary_particle_2_direction_theta(self):
         if not self._data_loaded:
             raise DataNotLoadedError()
         return self._injection[self._hadron_key]["Direction"][:, 0]
 
     @property
-    def primary_hadron_1_direction_phi(self):
+    def primary_particle_2_direction_phi(self):
         if not self._data_loaded:
             raise DataNotLoadedError()
         return self._injection[self._hadron_key]["Direction"][:, 1]
@@ -353,20 +353,20 @@ class LeptonInjectorInjection(Injection):
             'injection_position_y',
             'injection_position_z',
             'injection_column_depth',
-            'primary_lepton_1_type',
-            'primary_lepton_1_position_x',
-            'primary_lepton_1_position_y',
-            'primary_lepton_1_position_z',
-            'primary_lepton_1_direction_theta',
-            'primary_lepton_1_direction_phi',
-            'primary_lepton_1_energy',
-            'primary_hadron_1_type',
-            'primary_hadron_1_position_x',
-            'primary_hadron_1_position_y',
-            'primary_hadron_1_position_z',
-            'primary_hadron_1_direction_theta',
-            'primary_hadron_1_direction_phi',
-            'primary_hadron_1_energy',
+            'primary_particle_1_type',
+            'primary_particle_1_position_x',
+            'primary_particle_1_position_y',
+            'primary_particle_1_position_z',
+            'primary_particle_1_direction_theta',
+            'primary_particle_1_direction_phi',
+            'primary_particle_1_energy',
+            'primary_particle_2_type',
+            'primary_particle_2_position_x',
+            'primary_particle_2_position_y',
+            'primary_particle_2_position_z',
+            'primary_particle_2_direction_theta',
+            'primary_particle_2_direction_phi',
+            'primary_particle_2_energy',
             'total_energy',
         ]
     
@@ -374,16 +374,16 @@ class LeptonInjectorInjection(Injection):
         # non-contiguous portions of the array, i.e.
         # we are slicing on the first index
         copy_fields = [
-            'primary_lepton_1_position_x',
-            'primary_lepton_1_position_y',
-            'primary_lepton_1_position_z',
-            'primary_lepton_1_direction_theta',
-            'primary_lepton_1_direction_phi',
-            'primary_hadron_1_position_x',
-            'primary_hadron_1_position_y',
-            'primary_hadron_1_position_z',
-            'primary_hadron_1_direction_theta',
-            'primary_hadron_1_direction_phi',
+            'primary_particle_1_position_x',
+            'primary_particle_1_position_y',
+            'primary_particle_1_position_z',
+            'primary_particle_1_direction_theta',
+            'primary_particle_1_direction_phi',
+            'primary_particle_2_position_x',
+            'primary_particle_2_position_y',
+            'primary_particle_2_position_z',
+            'primary_particle_2_direction_theta',
+            'primary_particle_2_direction_phi',
         ]
         # Sorry this is nasty :-(
         dict_ = {

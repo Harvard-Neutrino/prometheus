@@ -64,72 +64,72 @@ class Injection(ABC):
 
     @property
     @abstractmethod
-    def primary_lepton_1_type(self):
+    def primary_particle_1_type(self):
         pass
 
     @property
     @abstractmethod
-    def primary_lepton_1_energy(self):
+    def primary_particle_1_energy(self):
         pass
 
     @property
     @abstractmethod
-    def primary_lepton_1_position_x(self):
+    def primary_particle_1_position_x(self):
         pass
 
     @property
     @abstractmethod
-    def primary_lepton_1_position_y(self):
+    def primary_particle_1_position_y(self):
         pass
 
     @property
     @abstractmethod
-    def primary_lepton_1_position_z(self):
+    def primary_particle_1_position_z(self):
         pass
 
     @property
     @abstractmethod
-    def primary_lepton_1_direction_theta(self):
+    def primary_particle_1_direction_theta(self):
         pass
 
     @property
     @abstractmethod
-    def primary_lepton_1_direction_phi(self):
+    def primary_particle_1_direction_phi(self):
         pass
 
     @property
     @abstractmethod
-    def primary_hadron_1_type(self):
+    def primary_particle_2_type(self):
         pass
     
     @property
     @abstractmethod
-    def primary_hadron_1_energy(self):
+    def primary_particle_2_energy(self):
         pass
 
     @property
     @abstractmethod
-    def primary_hadron_1_position_x(self):
+    def primary_particle_2_position_x(self):
         pass
 
     @property
     @abstractmethod
-    def primary_hadron_1_position_y(self):
+    def primary_particle_2_position_y(self):
         pass
 
     @property
     @abstractmethod
-    def primary_hadron_1_position_z(self):
+    def primary_particle_2_position_z(self):
         pass
 
     @property
     @abstractmethod
-    def primary_hadron_1_direction_theta(self):
+    def primary_particle_2_direction_theta(self):
         pass
 
     @property
     @abstractmethod
-    def primary_hadron_1_direction_phi(self):
+    def primary_particle_2_direction_phi(self):
         pass
 
     @property
