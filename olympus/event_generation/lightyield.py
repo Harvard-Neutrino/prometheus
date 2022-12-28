@@ -36,6 +36,9 @@ def fennel_total_light_yield(energy, particle_id, wavelength_range):
         wavelength_range: tuple
     """
 
+    # Patch to fix LI Hadrons treatment
+    if particle_id==-2000001006:
+        particle_id = 2212
     funcs = fennel_instance.auto_yields(energy, particle_id, function=True)
     counts_func = funcs[0]
 
@@ -59,6 +62,9 @@ def fennel_frac_long_light_yield(energy, particle_id, resolution=0.2):
         resolution: float
             Step length in m for evaluating the longitudinal distribution
     """
+    # Patch to fix LI Hadrons treatment
+    if particle_id==-2000001006:
+        particle_id = 2212
     funcs = fennel_instance.auto_yields(energy, particle_id, function=True)
     long_func = funcs[4]
     int_grid = jnp.arange(1e-3, 25, resolution)
@@ -106,6 +112,9 @@ def make_pointlike_cascade_source(
         List[PhotonSource]
 
     """
+    # Patch to fix LI Hadrons treatment
+    if particle_id==-2000001006:
+        particle_id = 2212
     source_nphotons = jnp.asarray(
         [fennel_total_light_yield(energy, particle_id, wavelength_range)]
     )[np.newaxis, :]
@@ -157,6 +166,9 @@ def make_realistic_cascade_source(
         wavelength_range: tuple
             Wavelength interval (nm)
     """
+    # Patch to fix LI Hadrons treatment
+    if particle_id==-2000001006:
+        particle_id = 2212
     n_photons_total = fennel_total_light_yield(energy, particle_id, wavelength_range)
     frac_yields, grid = fennel_frac_long_light_yield(energy, particle_id, resolution)
 
