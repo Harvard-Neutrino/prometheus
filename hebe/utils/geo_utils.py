@@ -7,6 +7,8 @@ import numpy as np
 from .f2k_utils import from_f2k
 from .iter_or_rep import iter_or_rep
 
+# Padding in meters.
+# The absorption length in ice is much shorter so padding is bigger
 ice_padding = 200
 water_padding = 30
 

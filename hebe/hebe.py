@@ -15,14 +15,14 @@ import json
 
 from jax import random  # noqa: E402
 
-from .utils.geo_utils import get_endcap, get_injection_radius, get_volume
+from .utils.geo_utils import get_endcap, get_injRadius, get_volume
 from .config import config
 from .detector import detector_from_geo
-from .photon_propagation import PP
-from .lepton_propagation import LP
-from .injection import injection_dict
+from .photonpropagator import PP
+from .lepton_prop import LP
+from .lepton_injector import LepInj
 from .particle import Particle
-#from .utils.hebe_ui import run_ui
+from .utils.hebe_ui import run_ui
 
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
 
@@ -131,8 +131,8 @@ class HEBE(object):
         """ Injects leptons according to the config file
         """
         import h5py
-        # Loading injection data
-        print("-------------------------------------------")
+        # Loading LI data
+        print('-------------------------------------------')
         start = time()
         injection_config = config["injection"][config["injection"]["name"]]
         self._injection = injection_dict[config["injection"]["name"]](

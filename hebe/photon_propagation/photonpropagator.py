@@ -143,6 +143,25 @@ class PP(object):
         self.__lp = lp
         self.__det = det
         if config['photon propagator']['name'] == 'olympus':
+            import sys
+            # Import olympus specifics
+            # TODO should we have this relative import stuff here ??
+            sys.path.append('../')
+            
+            from olympus.event_generation.photon_propagation.norm_flow_photons import (  # noqa
+                make_generate_norm_flow_photons
+            )
+            from olympus.event_generation.event_generation import (  # noqa: E402
+                generate_cascade,
+                generate_realistic_track,
+                simulate_noise,
+            )
+            from olympus.event_generation.lightyield import make_realistic_cascade_source # noqa
+            from olympus.event_generation.utils import sph_to_cart_jnp  # noqa: E402
+            
+            from hyperion.medium import medium_collections  # noqa: E402
+            from hyperion.constants import Constants  # noqa: E402
+
             self._local_conf = config['photon propagator']['olympus']
             # Setting up proposal
             self._prop = self.__lp._new_proposal_setup()
@@ -194,6 +213,7 @@ class PP(object):
         self._pprop_path = (
             self._local_conf['location'] + self._local_conf['photon model']
         )
+        import json
         self._pprop_config = json.load(open(
             self._pprop_path))['photon_propagation']
         # The medium
@@ -253,11 +273,12 @@ class PP(object):
             )
         # Cascades
         else:
+            import functools
             res_event, res_record = generate_cascade(
                 self.__det,
                 injection_event,
-                seed=config['runtime']['random state jax'],
-                converter_func=functools.partial(
+                seed = config['runtime']['random state jax'],
+                converter_func = functools.partial(
                     make_realistic_cascade_source,
                     moliere_rand=True,
                     resolution=0.2),
