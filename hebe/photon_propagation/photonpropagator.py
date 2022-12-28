@@ -143,24 +143,6 @@ class PP(object):
         self.__lp = lp
         self.__det = det
         if config['photon propagator']['name'] == 'olympus':
-            # TODO this is bad :-(
-            # sys.path.append(config['photon propagator']['location'])
-            sys.path.append('../../')
-            
-            # TODO should these be moved inside the set up function
-            from olympus.event_generation.photon_propagation.norm_flow_photons import (  # noqa
-                make_generate_norm_flow_photons
-            )
-            from olympus.event_generation.event_generation import (  # noqa: E402
-                generate_cascade,
-                generate_realistic_track,
-                simulate_noise,
-            )
-            from olympus.event_generation.lightyield import make_realistic_cascade_source # noqa
-            from olympus.event_generation.utils import sph_to_cart_jnp  # noqa: E402
-            
-            from hyperion.medium import medium_collections  # noqa: E402
-            from hyperion.constants import Constants  # noqa: E402
             self._local_conf = config['photon propagator']['olympus']
             # Setting up proposal
             self._prop = self.__lp._new_proposal_setup()
@@ -194,6 +176,17 @@ class PP(object):
         print('--------------------------------------------')
 
     def _olympus_setup(self):
+        # TODO I feel like we should move things out to a different file to avoid this importing mess
+        # TODO this is bad :-(
+        # sys.path.append(config['photon propagator']['location'])
+        sys.path.append('../../')
+        
+        # TODO should these be moved inside the set up function
+        from olympus.event_generation.photon_propagation.norm_flow_photons import (  # noqa
+            make_generate_norm_flow_photons
+        )
+        
+        from hyperion.medium import medium_collections  # noqa: E402
         ''' Sets up olympus.
         '''
         print('Using olympus')
@@ -224,18 +217,23 @@ class PP(object):
     def _olympus_sim(self, particle):
         """ Utilizes olympus to propagate light for the injected object
         """
+        from olympus.event_generation.lightyield import make_realistic_cascade_source # noqa
+        from olympus.event_generation.utils import sph_to_cart_jnp  # noqa: E402
+        from olympus.event_generation.event_generation import (  # noqa: E402
+            generate_cascade,
+            generate_realistic_track,
+            simulate_noise,
+        )
         injection_event = {
-                    "time": 0.,
-                    "theta": particle._theta,
-                    "phi": particle._phi,
-                    # TODO: This needs to be removed once the coordinate
-                    # systems match!
-                    "pos": particle._position,
-                    "energy": particle._e,
-                    "particle_id": particle._pdg_code,
-                    'length': config['lepton propagator']['track length'],
-                    'event id': particle._event_id
-                }
+            "time": 0.,
+            "theta": particle._theta,
+            "phi": particle._phi,
+            "pos": particle._position,
+            "energy": particle._e,
+            "particle_id": particle._pdg_code,
+            'length': config['lepton propagator']['track length'],
+            #'event id': particle._event_id
+        }
         event_dir = sph_to_cart_jnp(
             injection_event["theta"],
             injection_event["phi"]
@@ -272,4 +270,5 @@ class PP(object):
     def _c_medium_f(self, wl):
         """ Speed of light in medium for wl (nm)
         """
+        from hyperion.constants import Constants  # noqa: E402
         return Constants.BaseConstants.c_vac / self._ref_ix_f(wl)
