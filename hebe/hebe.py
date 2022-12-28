@@ -5,11 +5,11 @@
 
 # imports
 import numpy as np
+from warnings import warn
 import awkward as ak
 
 from tqdm import tqdm
 from time import time
-from warnings import warn
 import os
 import json
 
@@ -84,6 +84,7 @@ class HEBE(object):
             rstate_jax = random.PRNGKey(
                 config["general"]["random state seed"]
             )
+        # TODO this feels like it shouldn't be in the config
         config["runtime"] = {
             "random state": rstate,
             "random state jax": rstate_jax,
@@ -185,8 +186,7 @@ class HEBE(object):
             nevents = config["run"]["subset"]["counts"]
         else:
             nevents = len(self._injection)
-        #for event_id, key in enumerate(self._final_states.keys()):
-        for key in ["primary_lepton_1", "primary_hadron_1"]:
+        for key in ["primary_particle_1", "primary_particle_2"]:
             print("-------------------------------")
             print("Starting set")
             self._results[key] = []
@@ -197,9 +197,6 @@ class HEBE(object):
             #for event in tqdm(self._final_states[key]):
                 # Making sure the event id is okay:
                 pdg_code = getattr(self._injection, f"{key}_type")[event_idx]
-                # TODO what is the point of this ??????
-                if not pdg_code in config["particles"]["explicit"]:
-                    pdg_code = config["particles"]["replacement"]
                 pos = np.array([
                     getattr(self._injection, f"{key}_position_x")[event_idx],
                     getattr(self._injection, f"{key}_position_y")[event_idx],
@@ -272,18 +269,16 @@ class HEBE(object):
         # TODO: Unify this for olympus and PPC
         print(f"Generating output for a {sim_switch} simulation.")
         print("Generating the different particle fields...")
+        outarr = ak.Array({})
+        # Save the injection
+        outarr = ak.with_field(
+            outarr,
+            self._injection.serialize_to_awkward(),
+            where="mc_truth"
+        )
+        from hebe.utils import totals_from_awkward_arr
         if "ppc" in sim_switch.lower():
-            from hebe.utils import (
-                totals_from_awkward_arr,
-                serialize_particles_to_awkward
-            )
-            outarr = ak.Array({})
-            # Save the injection
-            outarr = ak.with_field(
-                outarr,
-                self._injection.serialize_to_awkward(),
-                where="mc_truth"
-            )
+            from hebe.utils import serialize_particles_to_awkward
             n = int(len(self._propped_primaries) / 2)
             finals_1 = self._propped_primaries[:n]
             finals_2 = self._propped_primaries[n:]
@@ -294,37 +289,33 @@ class HEBE(object):
                 if test_arr is None:
                     continue
                 outarr = ak.with_field(outarr, test_arr, where=field_name)
-            # Construct the totals
-            test_arr = totals_from_awkward_arr(outarr)
-            if test_arr is not None:
-                outarr = ak.with_field(
-                    outarr,
-                    test_arr,
-                    where="total"
-                )
-            tree = outarr
         elif sim_switch == "olympus":
-            tree["mc_truth"] = self._injection.serialize_to_dict()
+            from .utils import (
+                serialize_results_to_dict,
+            )
             # Looping over primaries, change hardcoding
-            starting_particles = ["primary_lepton_1", "primary_hadron_1"]
-            try:
-                for i, primary in enumerate(starting_particles):
-                    serialize_results_to_dict(
-                        self._det,
-                        self._results["final_%d" % (i + 1)],
-                        self._results_record["final_%d" % (i + 1)],
-                        tree,
-                        primary
-                    )
-                construct_totals_from_dict(self._det, tree)
-            except:
-                warn("No hits generated!")
-            tree = ak.Array(tree)
+            starting_particles = ["primary_particle_1", "primary_particle_2"]
+            for primary in starting_particles:
+                test_arr = serialize_results_to_dict(
+                    self._det,
+                    self._results[primary],
+                    self._results_record[primary],
+                )
+                if test_arr is None:
+                    continue
+                outarr = ak.with_field(outarr, test_arr, where=primary)
         else:
             raise UnknownSimulationError(sim_switch)
+        test_arr = totals_from_awkward_arr(outarr)
+        if test_arr is not None:
+            outarr = ak.with_field(
+                outarr,
+                test_arr,
+                where="total"
+            )
         print("Converting to parquet")
         ak.to_parquet(
-            tree,
+            outarr,
             f"{config['photon propagator']['storage location']}{config['general']['meta name']}.parquet"
         )
         print("Adding metadata")
@@ -376,8 +367,11 @@ class HEBE(object):
         """ Remove temporary and intermediate files.
         """
         print("Removing intermediate data files.")
-        os.remove(config["injection"]["simulation"]["output name"])
-        os.remove("./config.lic")
+        injector_name = config["injection"]["name"]
+        #os.remove(
+        #    config["injection"][injector_name]["paths"]["output name"]
+        #)
+        #os.remove("./config.lic")
         for key in self._results.keys():
             try:
                 os.remove(
