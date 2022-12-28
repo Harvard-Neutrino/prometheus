@@ -5,17 +5,19 @@ def serialize_results_to_dict(
     det,
     results,
     record,
-    fill_dict,
-    particle="lepton"
 ):
     # TODO: Optimize this. Currently this is extremely inefficient.
         # first set
         all_ids_1 = []
+        if not any([len(event) > 0 for event in results]):
+            return
+        xx = 0
         for event in results:
+            xx += 1
             dom_ids_1 = []
-            for id_dom, dom in enumerate(event):
+            for dom_idx, dom in enumerate(event):
                 if len(dom) > 0:
-                    dom_ids_1.append([id_dom] * len(dom))
+                    dom_ids_1.append([dom_idx] * len(dom))
             dom_ids_1 = ak.flatten(ak.Array(dom_ids_1), axis=None)
             all_ids_1.append(dom_ids_1)
         all_ids_1 = ak.Array(all_ids_1)
@@ -37,7 +39,7 @@ def serialize_results_to_dict(
             source.n_photons[0] for source in event.sources
         ] for event in record], dtype=object)
         # This is as inefficient as possible
-        fill_dict[particle] = {
+        d = {
             'sensor_id': all_ids_1,
             'sensor_pos_x': np.array([
                 event[:, 0] for event in sensor_pos_1
@@ -63,4 +65,4 @@ def serialize_results_to_dict(
             ] for event in record], dtype=object),
             'loss_n_photons': loss_counts
         }
-
+        return ak.Array(d)
