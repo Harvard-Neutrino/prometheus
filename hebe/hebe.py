@@ -15,14 +15,13 @@ import json
 
 from jax import random  # noqa: E402
 
-from .utils.geo_utils import get_endcap, get_injRadius, get_volume
+from .utils.geo_utils import get_endcap, get_injection_radius, get_volume
 from .config import config
 from .detector import detector_from_geo
-from .photonpropagator import PP
-from .lepton_prop import LP
-from .lepton_injector import LepInj
+from .photon_propagation import PP
+from .lepton_propagation import LP
+from .injection import injection_dict
 from .particle import Particle
-from .utils.hebe_ui import run_ui
 
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
 
