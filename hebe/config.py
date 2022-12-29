@@ -120,19 +120,20 @@ _baseconfig = {
     ###########################################################################
     'lepton propagator': {
         'name': 'proposal',
-        'track length': 5000,  # maximum track length to model
+        'track length': 5000, # () maximum track length to model
         'lepton': 'MuMinus',
         'medium': 'Water',
         # TODO I made these numbers up !!!!!!!!!!
         'vcut': [1, 1],
-        'ecut': [100.0, 500.0],  # MeV
+        # TODO convert these to GeV
+        'ecut': [100.0, 500.0], # MeV
         'soft_losses': False,
         'propagation padding': 900,
         'interpolation': True,
-        'lpm_effect' : True,
-        'continuous_randomization' : True,
-        'soft_losses' : True,
-        'scattering model' : "Moliere",
+        'lpm_effect': True,
+        'continuous_randomization': True,
+        'soft_losses': True,
+        'scattering model': "Moliere",
         'force propagation params':False
 
     },
