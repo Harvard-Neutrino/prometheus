@@ -153,7 +153,10 @@ class HEBE(object):
                 injection_config["simulation"]["cylinder radius"] = cyl_radius
                 injection_config["simulation"]["cylinder height"] = cyl_height
             print("Injecting")
-            self._injection.inject(injection_config)
+            self._injection.inject(
+                injection_config,
+                detector_offset=self._det.offset
+            )
         else:
             print("Not injecting")
         self._injection.load_data()
@@ -199,7 +202,7 @@ class HEBE(object):
                 pos = np.array([
                     getattr(self._injection, f"{key}_position_x")[event_idx],
                     getattr(self._injection, f"{key}_position_y")[event_idx],
-                    getattr(self._injection, f"{key}_position_x")[event_idx],
+                    getattr(self._injection, f"{key}_position_z")[event_idx],
                 ])
                 zen = getattr(self._injection, f"{key}_direction_theta")[event_idx]
                 azi = getattr(self._injection, f"{key}_direction_phi")[event_idx]
@@ -214,7 +217,6 @@ class HEBE(object):
                     getattr(self._injection, f"{key}_energy")[event_idx],
                     pos,
                     direction,
-                    #event_id,
                     # TODO why the fuck is there two reps of direction ?
                     theta=zen,
                     phi=azi
