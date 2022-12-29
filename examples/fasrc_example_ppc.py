@@ -115,13 +115,6 @@ def initialize_args():
     )
     # I/O
     parser.add_argument(
-        "--no_plot",
-        dest="no_plot",
-        action="store_true",
-        default=False,
-        help="Don't make plots"
-    )
-    parser.add_argument(
         "--geo_file",
         dest="geo_file",
         type=str,
@@ -218,18 +211,6 @@ def main(args):
     #config['photon propagator'][photo_prop]['supress_output'] = False
     hebe = HEBE(userconfig=config)
     hebe.sim()
-    if not args.no_plot:
-        print('Plotting')
-        import awkward as ak
-        events = ak.from_parquet(f"{config['photon propagator']['storage location']}meta_data.parquet")
-        from hebe.my_prometheus_plotting import plot_event
-        for idx, event in enumerate(events):
-            plot_event(
-                event,
-                hebe._det,
-                fig_name=f'./plots/{args.final_1}_{args.final_2}_{seed}_{idx}.pdf',
-            )
-
     del hebe
 
 if __name__ == "__main__":
