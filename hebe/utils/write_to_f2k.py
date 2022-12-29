@@ -2,32 +2,29 @@ import numpy as np
 from .convert_loss_name import convert_loss_name
 from .units import SpeedOfLight, s_to_ns
 
-def serialize_particle(particle, output_f2k, offset):
-    offpos = particle.position + offset
-    offpos[2] += 1948.07
+PPC_MAGIC_Z = 1948.07
+
+def serialize_particle(particle, output_f2k):
+    offpos = particle.position
     theta = np.arccos(particle.direction[2])
     phi = np.arctan2(particle.direction[1], particle.direction[0])
     output_f2k.write(
-        f'MC E {particle.e} x {offpos[0]} y {offpos[1]} z {offpos[2]} theta {theta} phi {phi}\n'
+        f'MC E {particle.e} x {offpos[0]} y {offpos[1]} z {offpos[2] + PPC_MAGIC_Z} theta {theta} phi {phi}\n'
     )
 
-def serialize_loss(loss, parent, output_f2k, offset):
+def serialize_loss(loss, parent, output_f2k):
     d = np.linalg.norm(loss.position - parent.position)
-    offpos = loss.position + offset
-    offpos[2] += 1948.07
+    offpos = loss.position
     theta = np.arccos(parent.direction[2])
     phi = np.arctan2(parent.direction[1], parent.direction[0])
     c = SpeedOfLight
     c /= s_to_ns
     dt = d / c
-    line = f'TR 0 {0} {str(loss)} {offpos[0]} {offpos[1]} {offpos[2]} {theta} {phi} 0 {loss.e} {dt} \n'
-    #line = f'TR 0 {loss.int_type} {str(loss)} {offpos[0]} {offpos[1]} {offpos[2]} {theta} {phi} 0 {loss.e} {dt} \n'
+    line = f'TR 0 {0} {str(loss)} {offpos[0]} {offpos[1]} {offpos[2] + PPC_MAGIC_Z} {theta} {phi} 0 {loss.e} {dt} \n'
     output_f2k.write(line)
 
-
-
 # Create an f2k file from given events
-def serialize_to_f2k(particle, fname, det_offset):
+def serialize_to_f2k(particle, fname):
     '''
         output_f2k: file name where the data will be written to
         This format output can be passed to PPC to propagate the photons.
@@ -52,12 +49,12 @@ def serialize_to_f2k(particle, fname, det_offset):
     '''
     index = 0
     with open(fname, "w") as output_f2k:
-        output_f2k.write(f'EM {index} 1 {det_offset[2]} 0 0 0 \n')
-        serialize_particle(particle, output_f2k, det_offset)
+        output_f2k.write(f'EM {index} 1 0 0 0 0 \n')
+        serialize_particle(particle, output_f2k)
         for loss in particle.losses:
-            serialize_loss(loss, particle, output_f2k, det_offset)
+            serialize_loss(loss, particle, output_f2k)
         for child in particle.children:
-            serialize_particle(child, output_f2k, det_offset)
+            serialize_particle(child, output_f2k)
             for loss in child.losses:
-                serialize_loss(loss, child, output_f2k, det_offset)
+                serialize_loss(loss, child, output_f2k)
         output_f2k.write('EE\n')

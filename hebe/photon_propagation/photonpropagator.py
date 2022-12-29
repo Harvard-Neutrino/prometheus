@@ -48,29 +48,8 @@ def _ppc_sim(
     **kwargs
 ):
     """
-    Utilizes PPC to propagate light for the injected object
 
-    Parameters
-    ---------
-    event : Dict
-        Event to be simulated
-    det : Detector
-        Detector object in which to simulate
-    pprop_func : function
-        Function to calculate the photon signal
-    proposal_prop : function
-            Propoposal propagator
-
-    Returns
-    -------
-    res_event : 
-        
-    res_record : 
-        
     """
-    import os
-    import subprocess
-    # This file path is hardcoded into PPC. Don't change
     geo_tmpfile = f'{kwargs["ppctables"]}/geo-f2k'
     ppc_file = f"{kwargs['ppc_tmpfile']}_{str(particle)}"
     f2k_file = f"{kwargs['f2k_tmpfile']}_{str(particle)}"
@@ -84,7 +63,7 @@ def _ppc_sim(
         # TODO put this in config
         r_inice = det.outer_radius + 1000
         if abs(int(particle)) in [11, 13, 15]: # It's a charged lepton
-            lp.energy_losses(particle)
+            lp.energy_losses(particle, det.offset)
             for child in particle.children:
                 # TODO put this in config
                 if child.e > 1: # GeV
@@ -107,9 +86,10 @@ def _ppc_sim(
         else:
             print(repr(particle))
             raise ValueError("Unrecognized particle")
-        # Make array with energy loss information and write it into the output file
         if _should_propagate(particle):
-            serialize_to_f2k(particle, f2k_file, det.offset)
+            import os
+            import subprocess
+            serialize_to_f2k(particle, f2k_file)
             det.to_f2k(
                 geo_tmpfile,
                 serial_nos=[m.serial_no for m in det.modules]
@@ -246,13 +226,12 @@ class PP(object):
         )
         injection_event = {
             "time": 0.,
-            "theta": particle._theta,
-            "phi": particle._phi,
-            "pos": particle._position,
-            "energy": particle._e,
-            "particle_id": particle._pdg_code,
+            "theta": particle.theta,
+            "phi": particle.phi,
+            "pos": particle.position,
+            "energy": particle.e,
+            "particle_id": particle.pdg_code,
             'length': config['lepton propagator']['track length'],
-            #'event id': particle._event_id
         }
         event_dir = sph_to_cart_jnp(
             injection_event["theta"],

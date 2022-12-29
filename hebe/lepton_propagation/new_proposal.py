@@ -181,7 +181,8 @@ def _new_proposal_losses(
     p_def, 
     particle,
     padding,
-    r_inice
+    r_inice,
+    detector_center
 ):
     # TODO: Check if init state needs to be set
     init_state = _init_pp_particle(particle, p_def)
@@ -193,7 +194,7 @@ def _new_proposal_losses(
         if loss.types==1000000008:
             continuous_loss += loss_energy
         else:
-            if np.linalg.norm(pos) <= r_inice:
+            if np.linalg.norm(pos - detector_center) <= r_inice:
                 pos = np.array([loss.position.x, loss.position.y, loss.position.z]) * cm_to_m
                 particle.add_loss(Loss(sec.type, sec_energy, pos))
     # TODO: Update this ugly fix

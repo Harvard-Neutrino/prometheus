@@ -53,30 +53,65 @@ INTERACTION_CONVERTER = {
 
 LEPTON_PDGS = [-16, -15, -14, -13, -12, -11, 11, 12, 13, 14, 15, 16]
 
-def make_new_injection(path_dict, injection_specs):
+def apply_detector_offset(
+    injection_file: str,
+    detector_offset: np.ndarray
+) -> None:
+    """translates the injection to a detector-centered coordinate system
+
+    params
+    ______
+    injection_file: File where the untranslated injection is saved
+    detector_offset: Center of the detector
+    """
+    with h5.File(injection_file, "r+") as h5f:
+        injection = h5f[list(h5f.keys())[0]]
+        for key in "final_1 final_2 initial".split():
+            injection[key]["Position"] = injection[key]["Position"] + detector_offset
+        injection["properties"]["x"] = injection["properties"]["x"] + detector_offset[0]
+        injection["properties"]["y"] = injection["properties"]["y"] + detector_offset[1]
+        injection["properties"]["z"] = injection["properties"]["z"] + detector_offset[2]
+
+def make_new_injection(
+    path_dict: dict,
+    injection_specs: dict,
+    detector_offset: np.ndarray
+) -> None:
+    """Creates a new lepton injector simulation
+
+    params
+    ______
+    path_dict: dictionary specifying relevant paths for the simulation
+    injection_specs: dictionary specifying the injection parameters like
+        energy, direction, etc.
+    detector_offset: the physical position of the center of the detector. The
+        injection is always centered around the origin, so we need to translate
+        it to the center of the detector
+    """
     import os
     try:
         import LeptonInjector as LI
     except ImportError:
-        raise ImportError('LeptonInjector not found!')
-    print('Setting up the LI')
-    print('Fetching parameters and setting paths')
+        raise ImportError("LeptonInjector not found!")
+    print("Setting up the LI")
+    print("Fetching parameters and setting paths")
     xs_folder = os.path.join(
         os.path.dirname(__file__),
         path_dict["xsec location"]
     )
-    print('Setting the simulation parameters for the LI')
-    n_events = injection_specs['nevents']
+    print("Setting the simulation parameters for the LI")
+    n_events = injection_specs["nevents"]
     diff_xs = f"{path_dict['xsec location']}/{path_dict['diff xsec']}"
     total_xs = f"{path_dict['xsec location']}/{path_dict['total xsec']}"
-    is_ranged = injection_specs['is ranged']
+    is_ranged = injection_specs["is ranged"]
     particles = []
     for id_name, names in enumerate([
-        injection_specs['final state 1'], injection_specs['final state 2']
+        injection_specs["final state 1"],
+        injection_specs["final state 2"]
     ]):
         particles.append(getattr(LI.Particle.ParticleType, names))
     
-    print('Setting up the LI object')
+    print("Setting up the LI object")
     the_injector = LI.Injector(
         injection_specs["nevents"],
         particles[0],
@@ -85,21 +120,21 @@ def make_new_injection(path_dict, injection_specs):
         total_xs,
         is_ranged
     )
-    print('Setting injection parameters')
+    print("Setting injection parameters")
 
     # define some defaults
-    min_E = injection_specs['minimal energy']     # [GeV]
-    max_E = injection_specs['maximal energy']    # [GeV]
-    gamma = injection_specs['power law']
-    min_zenith = np.radians(injection_specs['min zenith'])
-    max_zenith = np.radians(injection_specs['max zenith'])
-    min_azimuth = np.radians(injection_specs['min azimuth'])
-    max_azimuth = np.radians(injection_specs['max azimuth'])
+    min_E = injection_specs["minimal energy"]
+    max_E = injection_specs["maximal energy"]
+    gamma = injection_specs["power law"]
+    min_zenith = np.radians(injection_specs["min zenith"])
+    max_zenith = np.radians(injection_specs["max zenith"])
+    min_azimuth = np.radians(injection_specs["min azimuth"])
+    max_azimuth = np.radians(injection_specs["max azimuth"])
     injectRad = injection_specs["injection radius"]
     endcap_length = injection_specs["endcap length"]
     cyinder_radius = injection_specs["cylinder radius"]
     cyinder_height = injection_specs["cylinder height"]
-    print('Building the injection handler')
+    print("Building the injection handler")
     # construct the controller
     if is_ranged:
         controller = LI.Controller(
@@ -112,26 +147,26 @@ def make_new_injection(path_dict, injection_specs):
             max_azimuth, min_zenith, max_zenith,
             injectRad, endcap_length, cyinder_radius, cyinder_height
         )
-    print('Defining the earth model')
+    print("Defining the earth model")
     path_to = os.path.join(
         os.path.dirname(__file__),
-        xs_folder, path_dict['earth model location']
+        xs_folder, path_dict["earth model location"]
     )
     print(
-        'Earth model location to use: ' +
-        path_to + ' With the model ' + injection_specs['earth model']
+        f"Earth model location to use: {path_to} with the model {injection_specs['earth model']}"
     )
-    print(injection_specs['earth model'], path_dict['earth model location'])
-    controller.SetEarthModel(injection_specs['earth model'], path_to)
+    print(injection_specs["earth model"], path_dict["earth model location"])
+    controller.SetEarthModel(injection_specs["earth model"], path_to)
     print("Setting the seed")
     controller.setSeed(injection_specs["random state seed"])
-    print('Defining the output location')
-    print(path_dict['output name'])
-    controller.NameOutfile(path_dict['output name'])
-    controller.NameLicFile(path_dict['lic name'])
+    print("Defining the output location")
+    controller.NameOutfile(path_dict["output name"])
+    controller.NameLicFile(path_dict["lic name"])
 
     # run the simulation
     controller.Execute()
+    # Translate injection to detector coordinate system
+    apply_detector_offset(path_dict["output name"], detector_offset)
 
 class LeptonInjectorInjection(Injection):
 
@@ -342,61 +377,77 @@ class LeptonInjectorInjection(Injection):
 
     def serialize_to_dict(self):
         all_fields = [
-            'injection_energy',
-            'injection_type',
-            'injection_interaction_type',
-            'injection_zenith',
-            'injection_azimuth',
-            'injection_bjorkenx',
-            'injection_bjorkeny',
-            'injection_position_x',
-            'injection_position_y',
-            'injection_position_z',
-            'injection_column_depth',
-            'primary_particle_1_type',
-            'primary_particle_1_position_x',
-            'primary_particle_1_position_y',
-            'primary_particle_1_position_z',
-            'primary_particle_1_direction_theta',
-            'primary_particle_1_direction_phi',
-            'primary_particle_1_energy',
-            'primary_particle_2_type',
-            'primary_particle_2_position_x',
-            'primary_particle_2_position_y',
-            'primary_particle_2_position_z',
-            'primary_particle_2_direction_theta',
-            'primary_particle_2_direction_phi',
-            'primary_particle_2_energy',
-            'total_energy',
+            "injection_energy",
+            "injection_type",
+            "injection_interaction_type",
+            "injection_zenith",
+            "injection_azimuth",
+            "injection_bjorkenx",
+            "injection_bjorkeny",
+            "injection_position_x",
+            "injection_position_y",
+            "injection_position_z",
+            "injection_column_depth",
+            "primary_particle_1_type",
+            "primary_particle_1_position_x",
+            "primary_particle_1_position_y",
+            "primary_particle_1_position_z",
+            "primary_particle_1_direction_theta",
+            "primary_particle_1_direction_phi",
+            "primary_particle_1_energy",
+            "primary_particle_2_type",
+            "primary_particle_2_position_x",
+            "primary_particle_2_position_y",
+            "primary_particle_2_position_z",
+            "primary_particle_2_direction_theta",
+            "primary_particle_2_direction_phi",
+            "primary_particle_2_energy",
+            "total_energy",
         ]
     
         # We need to copy these since they are taken from
         # non-contiguous portions of the array, i.e.
         # we are slicing on the first index
         copy_fields = [
-            'primary_particle_1_position_x',
-            'primary_particle_1_position_y',
-            'primary_particle_1_position_z',
-            'primary_particle_1_direction_theta',
-            'primary_particle_1_direction_phi',
-            'primary_particle_2_position_x',
-            'primary_particle_2_position_y',
-            'primary_particle_2_position_z',
-            'primary_particle_2_direction_theta',
-            'primary_particle_2_direction_phi',
+            "primary_particle_1_position_x",
+            "primary_particle_1_position_y",
+            "primary_particle_1_position_z",
+            "primary_particle_1_direction_theta",
+            "primary_particle_1_direction_phi",
+            "primary_particle_2_position_x",
+            "primary_particle_2_position_y",
+            "primary_particle_2_position_z",
+            "primary_particle_2_direction_theta",
+            "primary_particle_2_direction_phi",
         ]
         # Sorry this is nasty :-(
-        dict_ = {
+        d= {
             field:(np.copy(getattr(self, field)) if field in copy_fields else getattr(self, field)) 
             for field in all_fields
         }
-        return dict_
+        return d
 
     def serialize_to_awkward(self):
         return ak.Array(self.serialize_to_dict())
 
-    def inject(self, injection_config):
+    def inject(
+        self,
+        injection_config: dict,
+        detector_offset: np.ndarray = np.zeros(3)
+    ) -> None:
+        """Creates a new injection set
+
+        params
+        ______
+        injection_config: a config dictionary specifying the simulation parameters
+            and paths for the simulation
+        detector_offset: the physical position of the center of the detector. The
+            injection is always centered around the origin, so we need to translate
+            it to the center of the detector
+        """
+        print(type(injection_config))
         make_new_injection(
             injection_config["paths"],
-            injection_config["simulation"]
+            injection_config["simulation"],
+            detector_offset
         )

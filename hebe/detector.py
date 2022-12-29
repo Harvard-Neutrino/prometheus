@@ -38,18 +38,13 @@ class Module(object):
         )
 
 class Detector(object):
-    """ Interface for detector methods
+    """Interface for detector methods
     """
     def __init__(self, modules):
         """Initialize detector."""
-        #self.modules = modules
-        #self.module_coords = np.vstack([m.pos for m in self.modules])
-        # We need to move all our modules to a coordinate system
-        # Where (0,0,0) is the center of the detector
+        self._modules = modules
         self._offset = np.mean(np.array([m.pos for m in modules]), axis=0)
-        self.modules = [Module(m.pos-self._offset, m.key,
-            noise_rate=m.noise_rate, efficiency=m.efficiency, serial_no=m.serial_no) 
-        for m in modules]
+        print(self._offset)
         self.module_coords = np.vstack([m.pos for m in self.modules])
         self.module_coords_ak = ak.Array(self.module_coords)
         self.module_efficiencies = np.asarray([m.efficiency for m in self.modules])
@@ -84,6 +79,10 @@ class Detector(object):
     #        subdet = Detector(self.modules[slc])
     #        subdetectors.append(subdet)
     #    return subdetectors
+
+    @property
+    def modules(self):
+        return self._modules
 
     @property
     def n_modules(self):
@@ -142,7 +141,7 @@ class Detector(object):
             keys = [m.key for m in self.modules]
         with open(geo_file, "w") as f2k_out:
             for mac_id, serial_no, pos, key in zip(
-                mac_ids, serial_nos, self.module_coords+self._offset, keys
+                mac_ids, serial_nos, self.module_coords, keys
             ):
                 line = f"{mac_id}\t{serial_no}\t{pos[0]}\t{pos[1]}\t{pos[2]}"
                 if hasattr(key, "__iter__"):

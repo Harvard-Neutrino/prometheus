@@ -4,9 +4,8 @@
 # Interface class to the different lepton propagators
 
 import numpy as np
-from hebe.config import config
+from ..config import config
 from packaging.version import parse
-from hebe.particle import Particle
 
 try:
     import proposal as pp
@@ -18,15 +17,10 @@ def energy_losses(
     pdef,
     particle,
     padding,
-    r_inice
+    r_inice,
+    detector_center
 ):
     '''
-    p_energies: particle energy array in units of GeV
-    mcp_def: PROPOSAL mCP definition
-    direction: (vx,vy,vz)
-    propagation_length: cm
-    prop : use a pregenerated propagator object if provided.
-    Else will make one on the fly.
     '''
     if int(pp.__version__.split('.')[0]) < 7:
         from .old_proposal import old_proposal_losses
@@ -35,7 +29,8 @@ def energy_losses(
             pdef,
             particle,
             padding,
-            r_inice
+            r_inice,
+            detector_center
         )
     else:
         from .new_proposal import _new_proposal_losses
@@ -44,7 +39,8 @@ def energy_losses(
             pdef,
             particle,
             padding,
-            r_inice
+            r_inice,
+            detector_center
         )
 
 
@@ -132,7 +128,7 @@ class LP(object):
         print('----------------------------------------------------')
         return prop
 
-    def energy_losses(self, particle):
+    def energy_losses(self, particle, detector_center):
         pdef, prop = self[str(particle)]
         losses = energy_losses(
             prop,
@@ -140,6 +136,7 @@ class LP(object):
             particle,
             self._kwargs["propagation padding"],
             # TODO get this out of here !!!!!!!!
-            self._kwargs["r_detector"]+1000
+            self._kwargs["r_detector"]+1000,
+            detector_center
         )
         return losses

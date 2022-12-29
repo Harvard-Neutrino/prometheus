@@ -13,12 +13,9 @@ from ..utils import iter_or_rep
 from  ..utils.units import GeV_to_MeV, cm_to_m, m_to_cm, MeV_to_GeV
 
 def make_pdef(pstr):
-    if pstr in 'MuMinus MuPlus EMinus EPlus TauMinus TauPlus'.split():
-        pdef = getattr(pp.particle, f'{pstr}Def')()
-    else:
-        raise ValueError(
-            f"Particle string {pstr} not recognized"
-        )
+    if pstr not in 'MuMinus MuPlus EMinus EPlus TauMinus TauPlus'.split():
+        raise ValueError(f"Particle string {pstr} not recognized")
+    pdef = getattr(pp.particle, f'{pstr}Def')()
     return pdef
 
 def _init_dynamic_data(particle, pdef):
@@ -114,12 +111,31 @@ def make_propagator(
     return prop
     
 def old_proposal_losses(
-    prop,
-    pdef,
-    particle,
-    padding,
-    r_inice
-):
+    prop: pp.Propagator,
+    pdef: pp.particle.ParticleDef,
+    particle: Particle,
+    # TODO move padding to config
+    padding: float,
+    # TODO should this be something that we do when serializing ?
+    # I think the last three args of this function are just shit that make this
+    # dumb thing work
+    r_inice: float,
+    detector_center: np.ndarray
+) -> Particle:
+    """Propagates charged lepton using PROPOSAL version <= 6
+
+    params
+    ______
+    prop: PROPOSAL propagator object for the charged lepton to be propagated
+    pdef: PROPOSAL particle definition for the charged lepton
+    particle: Prometheus particle object to be propagated
+    padding: Distance to propagate the charged lepton beyond its distance from the
+        center of the detector
+    r_inice: Distance from the center of the edge detector where losses should be
+        recorded. This should be a few scattering lengths for accuracy, but not too
+        much more because then you will propagate light which never makes it
+    detector_center: Center of the detector in meters
+    """
     particle_dd = _init_dynamic_data(particle, pdef)
     propagation_length = np.linalg.norm(particle.position) + padding
     secondarys = prop.propagate(
@@ -132,7 +148,7 @@ def old_proposal_losses(
         # This should work with just the position but that requires some testing
         pos = np.array([sec.position.x, sec.position.y, sec.position.z]) * cm_to_m
         if sec.type > 1000000000: # This is an energy loss
-            if np.linalg.norm(pos) <= r_inice:
+            if np.linalg.norm(pos - detector_center) <= r_inice:
                 particle.add_loss(Loss(sec.type, sec_energy, pos))
         else: # This is a particle. Might need to propagate
             child = Particle(
