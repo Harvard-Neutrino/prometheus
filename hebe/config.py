@@ -29,14 +29,6 @@ _baseconfig = {
     "run": {
         # Defines some run parameters
         'nevents': 10,
-        'group name': 'VolumeInjector0',
-        # The different data sets. The boolean denotes the final state sets
-        'data sets': [
-            (False, 'initial'),
-            (False, 'properties'),
-            (True, 'final_1'),
-            (True, 'final_2')
-        ],
         # If a subset should be used:
         'subset': {
             'switch': False,
