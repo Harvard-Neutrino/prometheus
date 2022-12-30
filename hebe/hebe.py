@@ -257,16 +257,8 @@ class HEBE(object):
             json.dump(config, f, indent=2)
         print("Finished dump")
         # Create RandomState
-        if config["general"]["random state seed"] is None:
-            rstate = np.random.RandomState()
-            rstate_jax = random.PRNGKey(1)
-        else:
-            rstate = np.random.RandomState(
-                config["general"]["random state seed"]
-            )
-            rstate_jax = random.PRNGKey(
-                config["general"]["random state seed"]
-            )
+        rstate = np.random.RandomState(config["general"]["random state seed"])
+        rstate_jax = random.PRNGKey(config["general"]["random state seed"])
         # TODO this feels like it shouldn't be in the config
         config["runtime"] = {
             "random state": rstate,
