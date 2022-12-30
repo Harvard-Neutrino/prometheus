@@ -22,9 +22,8 @@ from .config import config
 from .detector import Detector
 from .particle import Particle
 from .photon_propagation import PP
-#from .lepton_propagation import LP
-from .lepton_propagation import lp_dict
-from .injection import injection_dict
+from .lepton_propagation import LP_DICT
+from .injection import INJECTION_DICT
 
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
 
@@ -73,32 +72,6 @@ class HEBE(object):
         #if detector is None and config["detector"]["specs file"] is None:
         #    raise ValueError()
         ## Dumping config file
-        ## Has to happend before the random state is thrown in
-        #config["runtime"] = None
-        #print("-------------------------------------------")
-        #print("Dumping config file")
-        ## TODO Shouldn't the sump happen at simulation time ?
-        ## Someone could change the config values if 
-        #with open(config["general"]["config location"], "w") as f:
-        #    json.dump(config, f, indent=2)
-        #print("Finished dump")
-        ## Create RandomState
-        #self._is_full = config["general"]["full output"]
-        #if config["general"]["random state seed"] is None:
-        #    rstate = np.random.RandomState()
-        #    rstate_jax = random.PRNGKey(1)
-        #else:
-        #    rstate = np.random.RandomState(
-        #        config["general"]["random state seed"]
-        #    )
-        #    rstate_jax = random.PRNGKey(
-        #        config["general"]["random state seed"]
-        #    )
-        ## TODO this feels like it shouldn't be in the config
-        #config["runtime"] = {
-        #    "random state": rstate,
-        #    "random state jax": rstate_jax,
-        #}
         #print("-------------------------------------------")
         ## Setting up the detector
         #print("-------------------------------------------")
@@ -154,12 +127,12 @@ class HEBE(object):
         print(config)
         # Configure the injection
         injection_config = config["injection"][config["injection"]["name"]]
-        self._injection = injection_dict[config["injection"]["name"]](
+        self._injection = INJECTION_DICT[config["injection"]["name"]](
             injection_config["paths"]["output name"]
         )
         # Configure the lepton propagator
         lp_config = config["lepton propagator"][config["lepton propagator"]["name"]]
-        self._lepton_propagator = lp_dict[config["lepton propagator"]["name"]](
+        self._lepton_propagator = LP_DICT[config["lepton propagator"]["name"]](
             lp_config
         )
         self._pp = PP(self._lepton_propagator, self.detector)
@@ -183,30 +156,12 @@ class HEBE(object):
     def inject(self):
         """ Injects leptons according to the config file
         """
-        import h5py
         # Loading LI data
         print('-------------------------------------------')
         start = time()
         injection_config = config["injection"][config["injection"]["name"]]
-        #self._injection = injection_dict[config["injection"]["name"]](
-        #    injection_config["paths"]["output name"]
-        #)
-        print("Setting up and running injection")
         if injection_config["inject"]:
             injection_config["simulation"]["random state seed"] = config["general"]["random state seed"]
-            #if not injection_config["simulation"]["force injection params"]:
-            #    warn(
-            #        "WARNING: Overwriting injection parameters with calculated values."
-            #    )
-            #    is_ice = config["lepton propagator"]["medium"].lower() == "ice"
-            #    endcap = get_endcap(self._det.module_coords, is_ice)
-            #    inj_radius = get_injection_radius(self._det.module_coords, is_ice)
-            #    cyl_radius, cyl_height = get_volume(self._det.module_coords, is_ice)
-            #    injection_config["simulation"]["endcap length"] = endcap
-            #    injection_config["simulation"]["injection radius"] = inj_radius
-            #    injection_config["simulation"]["cylinder radius"] = cyl_radius
-            #    injection_config["simulation"]["cylinder height"] = cyl_height
-            #print("Injecting")
             self._injection.inject(
                 injection_config,
                 detector_offset=self.detector.offset
@@ -224,6 +179,7 @@ class HEBE(object):
         print("-------------------------------------------")
         print("-------------------------------------------")
 
+    # TODO this is psycho
     def propagate(self):
         """Runs the light yield calculations
         """
@@ -292,8 +248,30 @@ class HEBE(object):
         print("-------------------------------------------")
 
     def sim(self):
-        """ Utility function to run all steps of the simulation
-        """
+        """Utility function to run all steps of the simulation"""
+        # Has to happen before the random state is thrown in
+        config["runtime"] = None
+        print("-------------------------------------------")
+        print("Dumping config file")
+        with open(config["general"]["config location"], "w") as f:
+            json.dump(config, f, indent=2)
+        print("Finished dump")
+        # Create RandomState
+        if config["general"]["random state seed"] is None:
+            rstate = np.random.RandomState()
+            rstate_jax = random.PRNGKey(1)
+        else:
+            rstate = np.random.RandomState(
+                config["general"]["random state seed"]
+            )
+            rstate_jax = random.PRNGKey(
+                config["general"]["random state seed"]
+            )
+        # TODO this feels like it shouldn't be in the config
+        config["runtime"] = {
+            "random state": rstate,
+            "random state jax": rstate_jax,
+        }
         self.inject()
         self.propagate()
         print("Dumping results")
@@ -310,9 +288,7 @@ class HEBE(object):
         print("-------------------------------------------")
         print("-------------------------------------------")
 
-    def construct_output(
-        self,
-    ):
+    def construct_output(self):
         """ Constructs a parquet file with metadata from the generated files.
         Currently this still treats olympus and ppc output differently.
         Parameters
