@@ -161,19 +161,19 @@ def main(args):
         clepton = args.final_2
     else:
         clepton = None
-    config["detector"]["detector specs file"] = args.geo_file
+    config["detector"]["specs file"] = args.geo_file
     config["detector"]["padding"] = args.padding
     config["general"]["random state seed"] = seed
     config["general"]["meta_name"] = 'meta_data_%d' % seed
     if clepton in ranged_leptons:
-        if not args.force_volume:
-            print("Doing ranged injection")
-            config['run']['group name'] = 'RangedInjector0'
-            config['injection']["LeptonInjector"]['simulation']['is ranged'] = True
-        else:
+        if args.force_volume:
             print("Doing volume injection")
             config['run']['group name'] = 'VolumeInjector0'
             config['injection']["LeptonInjector"]['simulation']['is ranged'] = False
+        else:
+            print("Doing ranged injection")
+            config['run']['group name'] = 'RangedInjector0'
+            config['injection']["LeptonInjector"]['simulation']['is ranged'] = True
     else:
         print("Doing volume injection")
         config['run']['group name'] = 'VolumeInjector0'
@@ -188,10 +188,10 @@ def main(args):
         config['injection']["LeptonInjector"]['simulation']['final state 2'] = args.final_2
         config['injection']["LeptonInjector"]['simulation']['minimal energy'] = args.emin
         config['injection']["LeptonInjector"]['simulation']['maximal energy'] = args.emax
-        config['injection']["LeptonInjector"]['simulation']["injection radius"] = args.injection_radius
-        config['injection']["LeptonInjector"]['simulation']["endcap length"] = args.endcap_length
-        config['injection']["LeptonInjector"]['simulation']["cylinder radius"] = args.cylinder_radius
-        config['injection']["LeptonInjector"]['simulation']["cylinder height"] = args.cylinder_height
+        #config['injection']["LeptonInjector"]['simulation']["injection radius"] = args.injection_radius
+        #config['injection']["LeptonInjector"]['simulation']["endcap length"] = args.endcap_length
+        #config['injection']["LeptonInjector"]['simulation']["cylinder radius"] = args.cylinder_radius
+        #config['injection']["LeptonInjector"]['simulation']["cylinder height"] = args.cylinder_height
         config['injection']["LeptonInjector"]['simulation']["power law"] = args.gamma
         config['injection']["LeptonInjector"]['paths']['output name'] = f"{args.output_prefix}/data_{seed}_output_LI.h5"
         config['injection']["LeptonInjector"]["paths"]['install location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/lib64/"
@@ -199,16 +199,17 @@ def main(args):
         config['injection']["LeptonInjector"]['paths']["lic name"] = (
             f"{args.output_prefix}/{args.final_1}_{args.final_2}_{seed}_LI_config.lic"
         )
-    config['lepton propagator']["lepton"] = clepton
-    config['photon propagator']['storage location'] = f'{args.output_prefix}/{args.final_1}_{args.final_2}_seed_{seed}_'
+    #config['lepton propagator']["lepton"] = clepton
+    config["lepton propagator"]['name'] = "old proposal"
+    config['general']['storage location'] = f'{args.output_prefix}/{args.final_1}_{args.final_2}_seed_{seed}_'
     photo_prop = "PPC_CUDA"
     config['photon propagator']['name'] = photo_prop
-    config['photon propagator'][photo_prop]['ppc_tmpfile'] = args.ppc_tmpfile.replace(".ppc", f"{seed}.ppc")
-    config['photon propagator'][photo_prop]['f2k_tmpfile'] = args.f2k_tmpfile.replace(".f2k", f"{seed}.f2k")
-    config['photon propagator'][photo_prop]['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/"
-    config['photon propagator'][photo_prop]['ppctables'] = "../PPC_CUDA/"
-    config['photon propagator'][photo_prop]['ppc_exe'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/ppc"
-    #config['photon propagator'][photo_prop]['supress_output'] = False
+    config['photon propagator'][photo_prop]["paths"]['ppc_tmpfile'] = args.ppc_tmpfile.replace(".ppc", f"{seed}.ppc")
+    config['photon propagator'][photo_prop]["paths"]['f2k_tmpfile'] = args.f2k_tmpfile.replace(".f2k", f"{seed}.f2k")
+    config['photon propagator'][photo_prop]["paths"]['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/"
+    config['photon propagator'][photo_prop]["paths"]['ppctables'] = "../PPC_CUDA/"
+    config['photon propagator'][photo_prop]["paths"]['ppc_exe'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/ppc"
+    #config['photon propagator'][photo_prop]["simulation"]['supress_output'] = False
     hebe = HEBE(userconfig=config)
     hebe.sim()
     del hebe
