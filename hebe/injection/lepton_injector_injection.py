@@ -445,7 +445,6 @@ class LeptonInjectorInjection(Injection):
             injection is always centered around the origin, so we need to translate
             it to the center of the detector
         """
-        print(type(injection_config))
         make_new_injection(
             injection_config["paths"],
             injection_config["simulation"],
