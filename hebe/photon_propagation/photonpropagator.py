@@ -9,11 +9,13 @@ import sys
 import json
 import numpy as np
 
+from .hit import Hit
 from ..config import config
-from ..lepton_propagation import LP
+from ..particle import Particle
+from ..detector import Detector
+from ..lepton_propagation import LeptonPropagator
 from ..utils import serialize_to_f2k, PDG_to_f2k
 from ..lepton_propagation import Loss
-from .hit import Hit
 
 def _parse_ppc(ppc_f):
     res_result = [] # timing and module
@@ -42,68 +44,68 @@ def _should_propagate(particle):
     return False
 
 def _ppc_sim(
-    particle,
-    det,
-    lp,
-    **kwargs
+    particle: Particle,
+    det: Detector,
+    lp: LeptonPropagator,
+    ppc_config: dict
 ):
     """
-
     """
-    geo_tmpfile = f'{kwargs["ppctables"]}/geo-f2k'
-    ppc_file = f"{kwargs['ppc_tmpfile']}_{str(particle)}"
-    f2k_file = f"{kwargs['f2k_tmpfile']}_{str(particle)}"
-    if kwargs["supress_output"]:
-        command = f"{kwargs['ppc_exe']} {kwargs['device']} < {f2k_file} > {ppc_file} 2>/dev/null"
-    else:
-        command = f"{kwargs['ppc_exe']} {kwargs['device']} < {f2k_file} > {ppc_file}"
+    geo_tmpfile = f"{ppc_config['paths']['ppctables']}/geo-f2k"
+    ppc_file = f"{ppc_config['paths']['ppc_tmpfile']}_{str(particle)}"
+    f2k_file = f"{ppc_config['paths']['f2k_tmpfile']}_{str(particle)}"
+    command = f"{ppc_config['paths']['ppc_exe']} {ppc_config['simulation']['device']} < {f2k_file} > {ppc_file}"
+    if ppc_config["simulation"]["supress_output"]:
+        command += " 2>/dev/null"
+    # TODO This could all be factored out into a LP step
     if abs(int(particle)) in [12, 14, 16]: # It's a neutrino
-        hits = []
-    else: # It's something that deposits energy
-        # TODO put this in config
-        r_inice = det.outer_radius + 1000
-        if abs(int(particle)) in [11, 13, 15]: # It's a charged lepton
-            lp.energy_losses(particle, det.offset)
-            for child in particle.children:
-                # TODO put this in config
-                if child.e > 1: # GeV
-                    _ppc_sim(child, det, lp, **kwargs)
-        # All of these we consider as point depositions
-        elif abs(int(particle))==111: # It's a neutral pion
-            # TODO handle this correctl by converting to photons after prop
-            return [], None
-        elif abs(int(particle))==211: # It's a charged pion
-            if np.linalg.norm(particle.position) <= r_inice:
-                loss = Loss(int(particle), particle.e, particle.position)
-                particle.add_loss(loss)
-        elif abs(int(particle))==311: # It's a neutral kaon
-            # TODO handle this correctl by converting to photons after prop
-            return [], None
-        elif int(particle)==-2000001006 or int(particle)==2212: # Hadrons
-            if np.linalg.norm(particle.position) <= r_inice:
-                loss = Loss(int(particle), particle.e, particle.position)
-                particle.add_loss(loss)
-        else:
-            print(repr(particle))
-            raise ValueError("Unrecognized particle")
-        if _should_propagate(particle):
-            import os
-            import subprocess
-            serialize_to_f2k(particle, f2k_file)
-            det.to_f2k(
-                geo_tmpfile,
-                serial_nos=[m.serial_no for m in det.modules]
-            )
-            tenv = os.environ.copy()
-            tenv["PPCTABLESDIR"] = kwargs["ppctables"]
+        return [], None
+    # TODO put this in config
+    r_inice = det.outer_radius + 1000
+    if abs(int(particle)) in [11, 13, 15]: # It's a charged lepton
+        lp.energy_losses(particle, det)
+        for child in particle.children:
+            # TODO put this in config
+            if child.e > 1: # GeV
+                _ppc_sim(child, det, lp, ppc_config)
+    # All of these we consider as point depositions
+    elif abs(int(particle))==111: # It's a neutral pion
+        # TODO handle this correctl by converting to photons after prop
+        return [], None
+    elif abs(int(particle))==211: # It's a charged pion
+        if np.linalg.norm(particle.position) <= r_inice:
+            loss = Loss(int(particle), particle.e, particle.position)
+            particle.add_loss(loss)
+    elif abs(int(particle))==311: # It's a neutral kaon
+        # TODO handle this correctl by converting to photons after prop
+        return [], None
+    elif int(particle)==-2000001006 or int(particle)==2212: # Hadrons
+        if np.linalg.norm(particle.position) <= r_inice:
+            loss = Loss(int(particle), particle.e, particle.position)
+            particle.add_loss(loss)
+    else:
+        print(repr(particle))
+        raise ValueError("Unrecognized particle")
 
-            process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
-            process.wait()
-            particle._hits = _parse_ppc(ppc_file)
-            # Cleanup f2k_tmpfile
-            # TODO maybe make this optional
-            os.remove(ppc_file)
-            os.remove(f2k_file)
+    if not _should_propagate(particle):
+        return [], None
+    import os
+    import subprocess
+    serialize_to_f2k(particle, f2k_file)
+    det.to_f2k(
+        geo_tmpfile,
+        serial_nos=[m.serial_no for m in det.modules]
+    )
+    tenv = os.environ.copy()
+    tenv["PPCTABLESDIR"] = ppc_config["paths"]["ppctables"]
+
+    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
+    process.wait()
+    particle._hits = _parse_ppc(ppc_file)
+    # Cleanup f2k_tmpfile
+    # TODO maybe make this optional
+    #os.remove(ppc_file)
+    #os.remove(f2k_file)
     return None, None
 
 
@@ -112,12 +114,12 @@ class PP(object):
 
     Parameters
     ----------
-    lp : LP object
+    lp : LeptonPropagator object
         A lepton propagation instance
     det : dictionary
         A detector dictionary
     '''
-    def __init__(self, lp: LP, det):
+    def __init__(self, lp: LeptonPropagator, det: Detector):
         print('--------------------------------------------')
         print('Constructing the photon propagator')
         self.__lp = lp
@@ -165,7 +167,7 @@ class PP(object):
                     particle, 
                     self.__det,
                     self.__lp, 
-                    **config["photon propagator"]["PPC_CUDA"]
+                    config["photon propagator"]["PPC_CUDA"]
             )
             
         else:
