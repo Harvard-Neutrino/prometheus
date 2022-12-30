@@ -1,5 +1,6 @@
 from .lepton_injector_injection import LeptonInjectorInjection
+from .particle_from_injection import particle_from_injection
 
-injection_dict = {
+INJECTION_DICT = {
     "LeptonInjector": LeptonInjectorInjection
 }
