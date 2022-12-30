@@ -76,9 +76,10 @@ class HEBE(object):
         self._detector = detector
 
         # Make config internall consistent
-        config = config_mims(config, self.detector)
+        config_mims(config, self.detector)
         # Remove unused fields from config
-        config = clean_config(config)
+        clean_config(config)
+        print(config)
         # Configure the injection
         injection_config = config["injection"][config["injection"]["name"]]
         self._injection = INJECTION_DICT[config["injection"]["name"]](
@@ -99,20 +100,21 @@ class HEBE(object):
         return self._detector
 
     @property
+    def injection(self):
+        return self._injection
+
+    @property
     def results(self):
-        """Returns the results from the simulation
-        """
+        """Returns the results from the simulation"""
         return self._results
 
     @property
     def results_record(self):
-        """Returns the record results from the simulation
-        """
+        """Returns the record results from the simulation"""
         return self._results_record
 
     def inject(self):
-        """Injects leptons according to the config file
-        """
+        """Injects leptons according to the config file"""
         print('-------------------------------------------')
         start = time()
         injection_config = config["injection"][config["injection"]["name"]]
@@ -171,11 +173,10 @@ class HEBE(object):
                 self._results_record[key].append(res_record)
             print("-------------------------------")
         self._propped_primaries = propped_primaries
+        end = time()
         print("Finished particle loop")
         print("-------------------------------------------")
-        end = time()
-        print(
-            f"The simulation took {end - start} seconds"
+        print(f"The simulation took {end - start} seconds")
         print("-------------------------------------------")
         print("-------------------------------------------")
         print("Results are stored in self.results")
@@ -221,7 +222,7 @@ class HEBE(object):
         ----------
         """
         sim_switch = config["photon propagator"]["name"]
-        if not ("ppc" in sim_switch.lower or sim_switch.lower()=="olympus")
+        if not ("ppc" in sim_switch.lower() or sim_switch.lower()=="olympus"):
             raise UnknownSimulationError(sim_switch)
 
         # TODO: Unify this for olympus and PPC
