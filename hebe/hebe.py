@@ -7,6 +7,7 @@
 import numpy as np
 from warnings import warn
 import awkward as ak
+from typing import Union
 
 from tqdm import tqdm
 from time import time
@@ -16,12 +17,14 @@ import json
 from jax import random  # noqa: E402
 
 from .utils.geo_utils import get_endcap, get_injection_radius, get_volume
+from .utils import config_mims, clean_config
 from .config import config
-from .detector import detector_from_geo
-from .photon_propagation import PP
-from .lepton_propagation import LP
-from .injection import injection_dict
+from .detector import Detector
 from .particle import Particle
+from .photon_propagation import PP
+#from .lepton_propagation import LP
+from .lepton_propagation import lp_dict
+from .injection import injection_dict
 
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
 
@@ -43,76 +46,127 @@ class HEBE(object):
     -------
     None
     """
-    def __init__(self, userconfig=None):
+    def __init__(
+        self,
+        userconfig: Union[None, dict, str]=None,
+        detector: Union[None, Detector]=None
+    ) -> None:
         """
         function: __init__
         Initializes the class HEBE.
         Here all run parameters are set.
-        Parameters
-        ----------
-        config : dic
-            Configuration dictionary for the simulation
-        Returns
-        -------
-        None
+
+        params
+        ------
+        userconfig: Configuration settings. This can either be a dictionary, a path to a
+            YAML file, or None. If None, the default settings will be used
+        detector: The detector to be used. If None is provided, the detector will be built
+            from the geo file in userconfig
         """
         # Inputs
-        start = time()
+        #start = time()
         if userconfig is not None:
             if isinstance(userconfig, dict):
                 config.from_dict(userconfig)
             else:
                 config.from_yaml(userconfig)
-        # Dumping config file
-        # Has to happend before the random state is thrown in
-        config["runtime"] = None
-        print("-------------------------------------------")
-        print("Dumping config file")
-        with open(config["general"]["config location"], "w") as f:
-            json.dump(config, f, indent=2)
-        print("Finished dump")
-        # Create RandomState
-        self._is_full = config["general"]["full output"]
-        if config["general"]["random state seed"] is None:
-            rstate = np.random.RandomState()
-            rstate_jax = random.PRNGKey(1)
-        else:
-            rstate = np.random.RandomState(
-                config["general"]["random state seed"]
-            )
-            rstate_jax = random.PRNGKey(
-                config["general"]["random state seed"]
-            )
-        # TODO this feels like it shouldn't be in the config
-        config["runtime"] = {
-            "random state": rstate,
-            "random state jax": rstate_jax,
-        }
-        print("-------------------------------------------")
-        # Setting up the detector
-        print("-------------------------------------------")
-        print("Setting up the detector")
+        #if detector is None and config["detector"]["specs file"] is None:
+        #    raise ValueError()
+        ## Dumping config file
+        ## Has to happend before the random state is thrown in
+        #config["runtime"] = None
+        #print("-------------------------------------------")
+        #print("Dumping config file")
+        ## TODO Shouldn't the sump happen at simulation time ?
+        ## Someone could change the config values if 
+        #with open(config["general"]["config location"], "w") as f:
+        #    json.dump(config, f, indent=2)
+        #print("Finished dump")
+        ## Create RandomState
+        #self._is_full = config["general"]["full output"]
+        #if config["general"]["random state seed"] is None:
+        #    rstate = np.random.RandomState()
+        #    rstate_jax = random.PRNGKey(1)
+        #else:
+        #    rstate = np.random.RandomState(
+        #        config["general"]["random state seed"]
+        #    )
+        #    rstate_jax = random.PRNGKey(
+        #        config["general"]["random state seed"]
+        #    )
+        ## TODO this feels like it shouldn't be in the config
+        #config["runtime"] = {
+        #    "random state": rstate,
+        #    "random state jax": rstate_jax,
+        #}
+        #print("-------------------------------------------")
+        ## Setting up the detector
+        #print("-------------------------------------------")
+        #print("Setting up the detector")
 
-        self._det = detector_from_geo(config["detector"]["detector specs file"])
-        print("Finished the detector")
-        print("-------------------------------------------")
-        print("Setting up lepton propagation")
-        self._lp = LP()
-        print("Finished the lepton propagator")
-        # Photon propagation
-        print("-------------------------------------------")
-        # Setting up the photon propagation
-        print("-------------------------------------------")
-        print("Setting up photon propagation")
-        self._pp = PP(self._lp, self._det)
-        print("Finished the photon propagator")
-        # Photon propagation
-        print("-------------------------------------------")
-        end = time()
-        print(
-            "Setup and preliminary " +
-            "simulations took %f seconds" % (end - start))
-        print("-------------------------------------------")
+        #self._det = detector_from_geo(config["detector"]["detector specs file"])
+        #print("Finished the detector")
+        #print("-------------------------------------------")
+        #print("Setting up lepton propagation")
+        #self._lp = LP()
+        #print("Finished the lepton propagator")
+        ## Photon propagation
+        #print("-------------------------------------------")
+        ## Setting up the photon propagation
+        #print("-------------------------------------------")
+        #print("Setting up photon propagation")
+        #self._pp = PP(self._lp, self._det)
+        #print("Finished the photon propagator")
+        ## Photon propagation
+        #print("-------------------------------------------")
+        #end = time()
+        #print(
+        #    "Setup and preliminary " +
+        #    "simulations took %f seconds" % (end - start))
+        #print("-------------------------------------------")
+        self.__jeff_init__(config=config, detector=detector)
+
+    def __jeff_init__(
+        self,
+        config: dict,
+        detector: Union[None, Detector]=None
+    ) -> None:
+
+        #if userconfig is not None:
+        #    if isinstance(userconfig, dict):
+        #        config.from_dict(userconfig)
+        #    else:
+        #        config.from_yaml(userconfig)
+
+        # Configure the detector
+        print("Setting up the detector")
+        if detector is None and config["detector"]["specs file"] is None:
+            raise ValueError("Must provide a detector or a path to geo file")
+        if detector is None:
+            print(f"Building detector from {config['detector']['specs file']}")
+            from .detector import detector_from_geo
+            detector = detector_from_geo(config["detector"]["specs file"])
+        self._detector = detector
+        # Make config internall consistent
+        config = config_mims(config, self.detector)
+        # Remove unused fields from config
+        config = clean_config(config)
+        print(config)
+        # Configure the injection
+        injection_config = config["injection"][config["injection"]["name"]]
+        self._injection = injection_dict[config["injection"]["name"]](
+            injection_config["paths"]["output name"]
+        )
+        # Configure the lepton propagator
+        lp_config = config["lepton propagator"][config["lepton propagator"]["name"]]
+        self._lepton_propagator = lp_dict[config["lepton propagator"]["name"]](
+            lp_config
+        )
+        self._pp = PP(self._lepton_propagator, self.detector)
+
+    @property
+    def detector(self):
+        return self._detector
 
     @property
     def results(self):
@@ -134,28 +188,28 @@ class HEBE(object):
         print('-------------------------------------------')
         start = time()
         injection_config = config["injection"][config["injection"]["name"]]
-        self._injection = injection_dict[config["injection"]["name"]](
-            injection_config["paths"]["output name"]
-        )
+        #self._injection = injection_dict[config["injection"]["name"]](
+        #    injection_config["paths"]["output name"]
+        #)
         print("Setting up and running injection")
         if injection_config["inject"]:
             injection_config["simulation"]["random state seed"] = config["general"]["random state seed"]
-            if not injection_config["simulation"]["force injection params"]:
-                warn(
-                    "WARNING: Overwriting injection parameters with calculated values."
-                )
-                is_ice = config["lepton propagator"]["medium"].lower() == "ice"
-                endcap = get_endcap(self._det.module_coords, is_ice)
-                inj_radius = get_injection_radius(self._det.module_coords, is_ice)
-                cyl_radius, cyl_height = get_volume(self._det.module_coords, is_ice)
-                injection_config["simulation"]["endcap length"] = endcap
-                injection_config["simulation"]["injection radius"] = inj_radius
-                injection_config["simulation"]["cylinder radius"] = cyl_radius
-                injection_config["simulation"]["cylinder height"] = cyl_height
-            print("Injecting")
+            #if not injection_config["simulation"]["force injection params"]:
+            #    warn(
+            #        "WARNING: Overwriting injection parameters with calculated values."
+            #    )
+            #    is_ice = config["lepton propagator"]["medium"].lower() == "ice"
+            #    endcap = get_endcap(self._det.module_coords, is_ice)
+            #    inj_radius = get_injection_radius(self._det.module_coords, is_ice)
+            #    cyl_radius, cyl_height = get_volume(self._det.module_coords, is_ice)
+            #    injection_config["simulation"]["endcap length"] = endcap
+            #    injection_config["simulation"]["injection radius"] = inj_radius
+            #    injection_config["simulation"]["cylinder radius"] = cyl_radius
+            #    injection_config["simulation"]["cylinder height"] = cyl_height
+            #print("Injecting")
             self._injection.inject(
                 injection_config,
-                detector_offset=self._det.offset
+                detector_offset=self.detector.offset
             )
         else:
             print("Not injecting")
@@ -166,14 +220,12 @@ class HEBE(object):
         print("Creating the data set for further propagation")
         print("Finished the data set")
         end = time()
-        print(
-            "Injection " +
-            "simulations took %f seconds" % (end - start))
+        print(f"Injection simulations took {end-start} seconds")
         print("-------------------------------------------")
         print("-------------------------------------------")
 
     def propagate(self):
-        """ Runs the light yield calculations
+        """Runs the light yield calculations
         """
         print("-------------------------------------------")
         # Simulation loop
@@ -285,7 +337,7 @@ class HEBE(object):
             finals_2 = self._propped_primaries[n:]
             for idx, finals in enumerate([finals_1, finals_2]):
                 field_name = f"primary_particle_{idx+1}"
-                test_arr = serialize_particles_to_awkward(self._det, finals)
+                test_arr = serialize_particles_to_awkward(self.detector, finals)
                 # We only add this to the array if anything made light
                 if test_arr is None:
                     continue
@@ -298,7 +350,7 @@ class HEBE(object):
             starting_particles = ["primary_particle_1", "primary_particle_2"]
             for primary in starting_particles:
                 test_arr = serialize_results_to_dict(
-                    self._det,
+                    self.detector,
                     self._results[primary],
                     self._results_record[primary],
                 )
@@ -317,13 +369,13 @@ class HEBE(object):
         print("Converting to parquet")
         ak.to_parquet(
             outarr,
-            f"{config['photon propagator']['storage location']}{config['general']['meta name']}.parquet"
+            f"{config['general']['storage location']}{config['general']['meta name']}.parquet"
         )
         print("Adding metadata")
         # Adding meta data
         import pyarrow.parquet as pq
         table = pq.read_table(
-            config["photon propagator"]["storage location"] +
+            config["general"]["storage location"] +
             config["general"]["meta name"] + ".parquet")
         config["runtime"] = None
         custom_meta_data = json.dumps(config)
@@ -334,7 +386,7 @@ class HEBE(object):
         table = table.replace_schema_metadata(combined_meta)
         pq.write_table(
             table,
-            f"{config['photon propagator']['storage location']}{config['general']['meta name']}.parquet"
+            f"{config['general']['storage location']}{config['general']['meta name']}.parquet"
         )
         print("Finished new data file")
 
