@@ -20,6 +20,7 @@ _baseconfig = {
         'meta data file': True,  # Switch to store meta data file
         'meta name': 'meta_data',
         'clean up': False,  # Delete all intermediate and temporary files
+        'storage location': './output/',
         'full output' : False
     },
     ###########################################################################
@@ -47,17 +48,15 @@ _baseconfig = {
     # Detector
     ###########################################################################
     "detector": {
-        'new detector': False,  # Flag to generate a new detector file
-        'detector specs file': 'unnamed',  # Name of the file to use for build
+        #'new detector file': False,  # Flag to generate a new detector file
+        'specs file': None,  # Name of the file to use for build
         # Padding for sphere where we do physics good
-        'padding' : 200, # m
-        'radius' : 900, # m
-        'r_max' : 1e18, # m
-        "medium" : "ice"
+        #'padding' : 200, # m
     },
     ###########################################################################
     # Paricles
     ###########################################################################
+    # TODO what do we use these for ???????? Can we move them to photon_prop
     'particles':
     {
         # Track particles
@@ -68,7 +67,7 @@ _baseconfig = {
         'replacement': 2212,
     },
     ###########################################################################
-    # Lepton injector
+    # Injection
     ###########################################################################
     'injection': {
         'name': 'LeptonInjector',
@@ -95,11 +94,11 @@ _baseconfig = {
                 'min azimuth': 0.0, # degree
                 'max azimuth': 360.0, # degree
                 'earth model': "Planet",
-                "injection radius": 900, # m
-                "endcap length": 900, # m
-                "cylinder radius": 700, # m
-                "cylinder height": 1000, # m
-                'force injection params': False
+                # The following None params will be set internally unless specified
+                "injection radius": None, # m
+                "endcap length": None, # m
+                "cylinder radius": None, # m
+                "cylinder height": None, # m
             },
         },
         'Prometheus':{
@@ -119,30 +118,61 @@ _baseconfig = {
     # Lepton propagator
     ###########################################################################
     'lepton propagator': {
-        'name': 'proposal',
-        'track length': 5000, # () maximum track length to model
-        'lepton': 'MuMinus',
-        'medium': 'Water',
-        # TODO I made these numbers up !!!!!!!!!!
-        'vcut': [1, 1],
-        # TODO convert these to GeV
-        'ecut': [100.0, 500.0], # MeV
-        'soft_losses': False,
-        'propagation padding': 900,
-        'interpolation': True,
-        'lpm_effect': True,
-        'continuous_randomization': True,
-        'soft_losses': True,
-        'scattering model': "Moliere",
-        'force propagation params':False
-
+        'name': 'new proposal',
+        # PROPOSAL with versions >= 7
+        "new proposal":{
+            "paths":{
+                "tables path": "~/.local/share/PROPOSAL/tables"
+            },
+            "simulation":{
+                'track length': 5000,
+                'lepton': 'MuMinus',
+                'vcut': [1, 1],
+                'ecut': [0.1, 0.5], # GeV
+                'soft losses': False,
+                'propagation padding': 900,
+                'interpolation': True,
+                'lpm effect': True,
+                'continuous randomization': True,
+                'soft losses': True,
+                'scattering model': "Moliere",
+                #'force propagation params':False,
+                'maximum radius': 1e18, # m
+                # all none elements will be set off detector config settings
+                'inner radius': None,
+                'medium': None,
+            },
+        },
+        # PROPOSAL with versions <= 6
+        "old proposal":{
+            "paths":{
+                "tables path": "~/.local/share/PROPOSAL/tables"
+            },
+            "simulation":{
+                'track length': 5000,
+                'lepton': 'MuMinus',
+                'vcut': [1, 1],
+                'ecut': [0.1, 0.5], # GeV
+                'soft losses': False,
+                'propagation padding': 900,
+                'interpolation': True,
+                'lpm effect': True,
+                'continuous randomization': True,
+                'soft losses': True,
+                'scattering model': "Moliere",
+                'force propagation params': False,
+                'maximum radius' : 1e18, # m
+                # all none elements will be set off detector config settings
+                'inner radius': None,
+                'medium': None,
+            }
+        }
     },
     ###########################################################################
     # Photon propagator
     ###########################################################################
     'photon propagator': {
         'name': 'olympus',
-        'storage location': './output/',
         'olympus': {
             'location': '../',
             'files': True,
@@ -153,31 +183,41 @@ _baseconfig = {
             'wavelength': 700,  # in nm
         },
         'PPC_CUDA':{
-            'location':'../PPC_CUDA/',
-            'ppc_tmpfile':'.event_hits.ppc.tmp',
-            'f2k_tmpfile':'.event_losses.f2k.tmp',
-            'ppc_prefix':'',
-            'f2k_prefix':'',
-            'ppctables':'../PPC_tables/ic_accept_all/',
-            'ppc_exe':'../PPC_CUDA/ppc', # binary executable
-            'device':0, # GPU,
-            'supress_output': True,
+            "paths":{
+                'location':'../PPC_CUDA/',
+                'ppc_tmpfile':'.event_hits.ppc.tmp',
+                'f2k_tmpfile':'.event_losses.f2k.tmp',
+                'ppc_prefix':'',
+                'f2k_prefix':'',
+                'ppctables':'../PPC_tables/ic_accept_all/',
+                'ppc_exe':'../PPC_CUDA/ppc', # binary executable
+            },
+            "simulation": {
+                'device':0, # GPU,
+                'supress_output': True,
+            }
         },
         'PPC': {
-            'location': '../PPC/',
-            'ppc_tmpfile': '.event_hits.ppc.tmp',
-            'f2k_tmpfile': '.event_losses.f2k.tmp',
-            'ppc_prefix':'',
-            'f2k_prefix':'',
-            'ppctables':'../PPC_tables/ic_accept_all/',
-            'ppc_exe': '../PPC/ppc',  # binary executable
-            'device': 0,  # CPU
-            'supress_output': True,
+            "paths": {
+                'location': '../PPC/',
+                'ppc_tmpfile': '.event_hits.ppc.tmp',
+                'f2k_tmpfile': '.event_losses.f2k.tmp',
+                'ppc_prefix':'',
+                'f2k_prefix':'',
+                'ppctables':'../PPC_tables/ic_accept_all/',
+                'ppc_exe': '../PPC/ppc',  # binary executable
+            },
+            "simulation": {
+                'device': 0,  # CPU
+                'supress_output': True
+            }
         },
     },
     ###########################################################################
     # Plot
     ###########################################################################
+    # TODO do we wanna keep plotting as an option internally ? I kind think we should
+    # totally factor it out
     'plot': {
         'xrange': [-1500, 1500],
         'yrange': [-1500, 1500],
