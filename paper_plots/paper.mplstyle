@@ -1,0 +1,31 @@
+figure.figsize   : 7.5, 5   # figure size in inches
+savefig.dpi      : 600      # figure dots per inch
+savefig.bbox     : tight
+font.size: 20
+font.family: serif
+font.serif: Computer Modern, Latin Modern Roman, Bitstream Vera Serif
+text.usetex: True
+axes.prop_cycle: cycler('color', ['29A2C6','FF6D31','73B66B','9467BD','FFCB18', 'EF597B'])
+#axes.grid: True
+#axes.grid.which: both
+image.cmap    : plasma
+lines.linewidth: 2
+patch.linewidth: 2
+xtick.labelsize: 20
+ytick.labelsize: 20
+xtick.direction: in
+ytick.direction: in
+xtick.major.pad: 7
+ytick.major.pad: 7
+xtick.minor.visible: True   # visibility of minor ticks on x-axis
+ytick.minor.visible: True   # visibility of minor ticks on y-axis
+xtick.major.size: 8      # major tick size in points
+xtick.minor.size: 4      # minor tick size in points
+ytick.major.size: 8      # major tick size in points
+ytick.minor.size: 4      # minor tick size in points
+xtick.major.width: 1.3
+xtick.minor.width: 1.3
+ytick.major.width: 1.3
+ytick.minor.width: 1.3
+legend.frameon: True
+legend.fontsize: 24
