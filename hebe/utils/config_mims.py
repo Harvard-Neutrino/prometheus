@@ -1,6 +1,6 @@
 from .geo_utils import get_endcap, get_injection_radius, get_volume
 
-def config_mims(config: dict, detector) -> dict:
+def config_mims(config: dict, detector) -> None:
     """Sets parameters of config so that they are consistent
     
     params
@@ -9,17 +9,12 @@ def config_mims(config: dict, detector) -> dict:
     detector: Detector being used for the simulation. A lot of 
         the simulation parameters can be set off the geometry of 
         the detector.
-
-    returns
-    _______
-    config: Dictionary with consistent values
     """
     # Set up injection stuff
     injection_config = config["injection"][config["injection"]["name"]]
     if injection_config["inject"]:
         injection_config["simulation"]["random state seed"] = config["general"]["random state seed"]
-        is_ice = detector.medium.name != "ICE"
-        #is_ice = detector.medium.name == "ICE"
+        is_ice = detector.medium.name == "ICE"
         if injection_config["simulation"]["endcap length"] is None:
             endcap = get_endcap(detector.module_coords, is_ice)
             injection_config["simulation"]["endcap length"] = endcap
@@ -44,4 +39,3 @@ def config_mims(config: dict, detector) -> dict:
             detector.outer_radius + lepton_prop_config["simulation"]["propagation padding"]
         )
     return config
-

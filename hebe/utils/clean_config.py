@@ -1,5 +1,5 @@
 
-def clean_config(config: dict) -> dict:
+def clean_config(config: dict) -> None:
     """Removes extraneous fields from the config file
 
     params
@@ -15,4 +15,3 @@ def clean_config(config: dict) -> dict:
         keys = [key for key in config[x].keys() if key not in ["name", config[x]["name"]]]
         for key in keys:
             del config[x][key]
-    return config
