@@ -48,7 +48,7 @@ class LP(object):
     ''' Interface class to the different lepton propagators
     '''
     def __init__(self):
-        if config['lepton propagator']['name'] == 'proposal':
+        if 'proposal' in config['lepton propagator']['name']:
             self._prop_dict = {}
             self._pdef_dict = {}
             print('Using proposal')
