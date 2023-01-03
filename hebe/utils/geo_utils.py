@@ -9,8 +9,8 @@ from .iter_or_rep import iter_or_rep
 
 # Padding in meters.
 # The absorption length in ice is much shorter so padding is bigger
-ice_padding = 200
-water_padding = 30
+ICE_PADDING = 200
+WATER_PADDING = 30
 
 def from_geo(fname):
     """ Returns positions, keys, and medium from detector geometry file
@@ -103,30 +103,30 @@ def get_cylinder(coords, epsilon = 5):
         )
     return out_cylinder
 
-def get_volume(coords, is_ice = True):
+def get_volume(coords, is_ice):
     out_cyl = get_cylinder(coords)
     if is_ice:
-        padding = ice_padding
+        padding = ICE_PADDING
     else:
-        padding = water_padding
+        padding = WATER_PADDING
     return (out_cyl[0]+padding, out_cyl[1]+2*padding)
 
-def get_endcap(coords, is_ice = True):
+def get_endcap(coords, is_ice):
     if is_ice:
-        padding = ice_padding 
+        padding = ICE_PADDING 
     else:
-        padding = water_padding
+        padding = WATER_PADDING
     cyl = get_cylinder(coords)
     r = cyl[0]; z = cyl[1]
     theta = (np.pi/2)-2*np.arctan(2*r/z)
-    endcap_len = padding + np.cos(theta)*(get_injection_radius(coords)-padding)
+    endcap_len = padding + np.cos(theta)*(get_injection_radius(coords, is_ice=is_ice)-padding)
     return endcap_len
 
-def get_injection_radius(coords, is_ice = True):
+def get_injection_radius(coords, is_ice):
     if is_ice:
-        padding = ice_padding 
+        padding = ICE_PADDING 
     else:
-        padding = water_padding
+        padding = WATER_PADDING
     cyl = get_cylinder(coords)
     injRad = padding + (np.sqrt(cyl[0]**2+(0.5*cyl[1])**2))
     return injRad
