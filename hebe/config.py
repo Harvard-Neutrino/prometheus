@@ -149,7 +149,7 @@ _baseconfig = {
         'name': 'olympus',
         'olympus': {
             "paths": {
-                'location': '../',
+                'location': '../resources/',
                 'photon model': 'pone_config.json',
                 'flow': "photon_arrival_time_nflow_params.pickle",
                 'counts': "photon_arrival_time_counts_params.pickle",
