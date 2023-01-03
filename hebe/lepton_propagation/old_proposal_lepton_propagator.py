@@ -51,17 +51,18 @@ def init_dynamic_data(
     return particle_dd
 
 def make_medium(medium_string: str) -> pp.medium.Medium:
-    '''
-    Builds a proposal medium
+    """
+    Makes a proposal medium
 
-    Parameters
-    ----------
-    medium_string: String which defines the medium in which proposal should propagate
+    params
+    ------
+    medium_string: String which defines the medium in which
+        proposal should propagate
 
-    Returns
+    returns
     -------
     medium_def: Medium in which the propagation should take place
-    '''
+    """
     print('This assumes a homogeneous medium!')
     if medium_string.lower() not in 'water ice'.split():
         raise ValueError(f"Medium {medium_string} not supported at this time.")
@@ -95,7 +96,7 @@ def init_sector(
         start * m_to_cm
     )
     sec_def.cut_settings.ecut = ecut * GeV_to_MeV
-    sec_def.cut_settings.vcut = vcut * GeV_to_MeV
+    sec_def.cut_settings.vcut = vcut
     # What should the default behavior of this be ?
     return sec_def
 
