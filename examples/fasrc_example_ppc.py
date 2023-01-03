@@ -154,17 +154,18 @@ def initialize_args():
 def main(args):
     nevent = args.n
     seed = args.seed
+
     print('CURRENT SET %d' % seed)
+    config["detector"]["specs file"] = args.geo_file
+    config["detector"]["padding"] = args.padding
+    config["general"]["random state seed"] = seed
+    config["general"]["meta_name"] = 'meta_data_%d' % seed
     if args.final_1 in chared_leptons:
         clepton = args.final_1
     elif args.final_2 in chared_leptons:
         clepton = args.final_2
     else:
         clepton = None
-    config["detector"]["specs file"] = args.geo_file
-    config["detector"]["padding"] = args.padding
-    config["general"]["random state seed"] = seed
-    config["general"]["meta_name"] = 'meta_data_%d' % seed
     if clepton in ranged_leptons:
         if args.force_volume:
             print("Doing volume injection")
@@ -183,15 +184,11 @@ def main(args):
         config['injection']["LeptonInjector"]['paths']['output name'] = args.injection
         config['run']['group name'] = 'RangedInjector0'
     else:
-        config['injection']["LeptonInjector"]['simulation']['nevents'] = nevent
+        config['run']["nevents"] = nevent
         config['injection']["LeptonInjector"]['simulation']['final state 1'] = args.final_1
         config['injection']["LeptonInjector"]['simulation']['final state 2'] = args.final_2
         config['injection']["LeptonInjector"]['simulation']['minimal energy'] = args.emin
         config['injection']["LeptonInjector"]['simulation']['maximal energy'] = args.emax
-        #config['injection']["LeptonInjector"]['simulation']["injection radius"] = args.injection_radius
-        #config['injection']["LeptonInjector"]['simulation']["endcap length"] = args.endcap_length
-        #config['injection']["LeptonInjector"]['simulation']["cylinder radius"] = args.cylinder_radius
-        #config['injection']["LeptonInjector"]['simulation']["cylinder height"] = args.cylinder_height
         config['injection']["LeptonInjector"]['simulation']["power law"] = args.gamma
         config['injection']["LeptonInjector"]['paths']['output name'] = f"{args.output_prefix}/data_{seed}_output_LI.h5"
         config['injection']["LeptonInjector"]["paths"]['install location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/lib64/"
@@ -199,7 +196,6 @@ def main(args):
         config['injection']["LeptonInjector"]['paths']["lic name"] = (
             f"{args.output_prefix}/{args.final_1}_{args.final_2}_{seed}_LI_config.lic"
         )
-    #config['lepton propagator']["lepton"] = clepton
     config["lepton propagator"]['name'] = "old proposal"
     config['general']['storage location'] = f'{args.output_prefix}/{args.final_1}_{args.final_2}_seed_{seed}_'
     photo_prop = "PPC_CUDA"
@@ -209,7 +205,7 @@ def main(args):
     config['photon propagator'][photo_prop]["paths"]['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/"
     config['photon propagator'][photo_prop]["paths"]['ppctables'] = "../PPC_CUDA/"
     config['photon propagator'][photo_prop]["paths"]['ppc_exe'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/ppc"
-    #config['photon propagator'][photo_prop]["simulation"]['supress_output'] = False
+    config['photon propagator'][photo_prop]["simulation"]['supress_output'] = False
     hebe = HEBE(userconfig=config)
     hebe.sim()
     del hebe
