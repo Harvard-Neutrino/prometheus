@@ -13,6 +13,7 @@ def config_mims(config: dict, detector) -> None:
     # Set up injection stuff
     injection_config = config["injection"][config["injection"]["name"]]
     if injection_config["inject"]:
+        injection_config["simulation"]["nevents"] = config["run"]["nevents"]
         injection_config["simulation"]["random state seed"] = config["general"]["random state seed"]
         is_ice = detector.medium.name == "ICE"
         if injection_config["simulation"]["endcap length"] is None:
@@ -38,4 +39,3 @@ def config_mims(config: dict, detector) -> None:
        lepton_prop_config["simulation"]["inner radius"] = (
             detector.outer_radius + lepton_prop_config["simulation"]["propagation padding"]
         )
-    return config
