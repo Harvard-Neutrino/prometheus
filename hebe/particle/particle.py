@@ -20,7 +20,6 @@ class Particle(object):
         e,
         position,
         direction,
-        #event_id,
         theta=0.,
         phi=0.,
         parent=None
@@ -79,6 +78,14 @@ class Particle(object):
     @property
     def direction(self):
         return self._direction
+
+    @property
+    def theta(self):
+        return self._theta
+
+    @property
+    def phi(self):
+        return self._phi
 
     @property
     def children(self):
