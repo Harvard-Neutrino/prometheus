@@ -40,25 +40,8 @@ _baseconfig = {
     # Detector
     ###########################################################################
     "detector": {
-        #'new detector file': False,  # Flag to generate a new detector file
         'specs file': None,  # Name of the file to use for build
-        # Padding for sphere where we do physics good
-        #'padding' : 200, # m
     },
-    ###########################################################################
-    # Paricles
-    ###########################################################################
-    # TODO what do we use these for ???????? Can we move them to photon_prop
-    'particles':
-    {
-        # Track particles
-        'track particles': [13, -13],
-        # Everything here will be treated explicitly
-        'explicit': [11, -11, 111, 211, 13, -13, 15, -15],
-        # Everything else is replaced by
-        'replacement': 2212,
-    },
-    ###########################################################################
     # Injection
     ###########################################################################
     'injection': {
@@ -118,9 +101,10 @@ _baseconfig = {
             },
             "simulation":{
                 'track length': 5000,
-                'lepton': 'MuMinus',
+                # TODO figure out why this breaks for 1e-2
                 'vcut': [1, 1],
-                'ecut': [0.1, 0.5], # GeV
+                #'vcut': [1e-2, 1e-2],
+                'ecut': [0.5, 0.5], # GeV
                 'soft losses': False,
                 'propagation padding': 900,
                 'interpolation': True,
@@ -128,7 +112,6 @@ _baseconfig = {
                 'continuous randomization': True,
                 'soft losses': True,
                 'scattering model': "Moliere",
-                #'force propagation params':False,
                 'maximum radius': 1e18, # m
                 # all none elements will be set off detector config settings
                 'inner radius': None,
@@ -142,7 +125,6 @@ _baseconfig = {
             },
             "simulation":{
                 'track length': 5000,
-                'lepton': 'MuMinus',
                 'vcut': [1, 1],
                 'ecut': [0.1, 0.5], # GeV
                 'soft losses': False,
@@ -166,13 +148,23 @@ _baseconfig = {
     'photon propagator': {
         'name': 'olympus',
         'olympus': {
-            'location': '../',
-            'files': True,
-            # The photon propagation model parameters:
-            'photon model': 'pone_config.json',
-            'flow': "photon_arrival_time_nflow_params.pickle",
-            'counts': "photon_arrival_time_counts_params.pickle",
-            'wavelength': 700,  # in nm
+            "paths": {
+                'location': '../',
+                'photon model': 'pone_config.json',
+                'flow': "photon_arrival_time_nflow_params.pickle",
+                'counts': "photon_arrival_time_counts_params.pickle",
+            },
+            "simulation": {
+                'files': True,
+                # The photon propagation model parameters:
+                'wavelength': 700,  # in nm
+            },
+            'particles':
+            {
+                'track particles': [13, -13],
+                'explicit': [11, -11, 111, 211, 13, -13, 15, -15],
+                'replacement': 2212,
+            },
         },
         'PPC_CUDA':{
             "paths":{
