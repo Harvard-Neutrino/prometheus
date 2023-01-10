@@ -30,10 +30,10 @@ class Detector(object):
         self.module_noise_rates = np.asarray([m.noise_rate for m in self.modules])
         
         # TODO replace this with the functions David writes
-        self._outer_radius = np.linalg.norm(self.module_coords, axis=1).max()
+        self._outer_radius = np.linalg.norm(self.module_coords-self.offset, axis=1).max()
         self._outer_cylinder = (
-            np.linalg.norm(self.module_coords[:, :2], axis=1).max(),
-            2 * np.abs(self.module_coords[:, 2].max()),
+                np.linalg.norm(self.module_coords[:, :2] - self.offset[:2].transpose(), axis=1).max(),
+            self.module_coords[:, 2].max() - self.module_coords[:, 2].min(),
         )
         self._n_modules = len(modules)
         self._om_keys = [om.key for om in self.modules]
