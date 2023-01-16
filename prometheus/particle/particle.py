@@ -9,8 +9,8 @@ if int(pp.__version__.split(".")[0]) >= 7:
     from proposal import Cartesian3D as pp_vector
 else:
     from proposal import Vector3D as pp_vector
-from hebe.utils.units import m_to_cm, cm_to_m, GeV_to_MeV, MeV_to_GeV
-from hebe.utils.translators import PDG_to_pstring
+from ..utils.units import m_to_cm, cm_to_m, GeV_to_MeV, MeV_to_GeV
+from ..utils.translators import PDG_to_pstring
 
 class Particle(object):
 
