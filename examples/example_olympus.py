@@ -9,6 +9,9 @@ from jax.config import config as jconfig
 import gc
 import os
 import tracemalloc
+import warnings
+# Ignore some jax warnings (for now)
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 jconfig.update("jax_enable_x64", True)
 
@@ -29,6 +32,7 @@ def main(args=None):
     config['injection']["LeptonInjector"]['simulation']['nevents'] = 10
     config['injection']["LeptonInjector"]['simulation']['minimal energy'] = 1e4
     config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e5
+    config['photon propagator']['olympus']['simulation']['splitter'] = 1000
     config['detector']['injection offset'] = [0., 0., 0]
     config['photon propagator']['name'] = 'olympus'
     config["detector"]["specs file"] = '../hebe/data/pone_triangle-geo'

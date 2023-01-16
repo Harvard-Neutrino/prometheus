@@ -89,7 +89,9 @@ def make_new_injection(
         it to the center of the detector
     """
     import os
+    import sys
     try:
+        sys.path.append(path_dict['install location'])
         import LeptonInjector as LI
     except ImportError:
         raise ImportError("LeptonInjector not found!")

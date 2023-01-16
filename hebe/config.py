@@ -158,6 +158,7 @@ _baseconfig = {
                 'files': True,
                 # The photon propagation model parameters:
                 'wavelength': 700,  # in nm
+                'splitter': 3000,  # Module chunks to work on at once (higher = faster but more memory)
             },
             'particles':
             {
