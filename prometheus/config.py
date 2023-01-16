@@ -156,7 +156,6 @@ _baseconfig = {
             },
             "simulation": {
                 'files': True,
-                # The photon propagation model parameters:
                 'wavelength': 700,  # in nm
             },
             'particles':
