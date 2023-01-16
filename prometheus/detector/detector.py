@@ -11,6 +11,18 @@ from .module import Module
 from .medium import Medium
 from ..config import config
 
+class IncompatibleSerialNumbersError(Exception):
+    """Raised when serial numbers length doesn't match number of DOMs"""
+    def __init__(self):
+        self.message = "Serial numbers incompatible with modules"
+        super().__init__(self.message)
+
+class IncompatibleMACIDsError(Exception):
+    """Raised when MAC IDs length doesn't match number of DOMs"""
+    def __init__(self):
+        self.message = "MAC IDs incompatible with modules"
+        super().__init__(self.message)
+
 class Detector(object):
     """Interface for detector methods
     """
@@ -82,21 +94,32 @@ class Detector(object):
         ______
         geo_file: file name of where to write it
         serial_nos: serial numbers for the optical modules. These MUST be in hexadecimal
-            format, but there exact value does not matter
-        mac_ids: MAC (I don't think this is actually what this is called) IDs for the DOMs
+            format, but there exact value does not matter. If nothing is provided, these
+            values will be randomly generated
+        mac_ids: MAC (I don't think this is actually what this is called) IDs for the DOMs.
+            By default these will be randomly generated. This is prbably what you want
+            to do.
+
+        raises
+        ______
+
         """
         if serial_nos and len(serial_nos)!=len(self.modules):
-            raise ValueError("serial numbers incompatible with modules")
+            raise IncompatibleSerialNumbersError()
+
         if mac_ids and len(mac_ids)!=len(self.modules):
-            raise ValueError("mac id list incompatible with modules")
+            raise IncompatibleMACIDsError()
+
         # Make serial numbers place holders
         if not serial_nos:
             from .utils import random_serial
             serial_nos = [random_serial() for _ in range(self.n_modules)]
+
         # Make MAC ID place holders
         if not mac_ids:
             from .utils import random_mac
             mac_ids = [random_mac() for _ in range(self.n_modules)]
+
         keys = [m.key for m in self.modules]
         iterable = zip(mac_ids, serial_nos, self.module_coords, keys)
         with open(geo_file, "w") as f2k_out:
