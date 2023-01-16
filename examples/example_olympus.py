@@ -4,7 +4,7 @@
 # imports
 import sys
 sys.path.append('../')
-from hebe import HEBE, config
+from prometheus import Prometheus, config
 from jax.config import config as jconfig
 import gc
 import os
@@ -31,11 +31,11 @@ def main(args=None):
     config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e5
     config['detector']['injection offset'] = [0., 0., 0]
     config['photon propagator']['name'] = 'olympus'
-    config["detector"]["specs file"] = '../hebe/data/pone_triangle-geo'
-    hebe = HEBE()
+    config["detector"]["specs file"] = '../prometheus/data/pone_triangle-geo'
+    prometheus = Prometheus()
 
-    hebe.sim()
-    del hebe
+    prometheus.sim()
+    del prometheus
     gc.collect()
     # Getting all memory using os.popen()
     total_memory, used_memory, _ = map(

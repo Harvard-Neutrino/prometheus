@@ -3,7 +3,7 @@
 # imports
 import sys
 sys.path.append('../')
-from hebe import HEBE, config
+from prometheus import Prometheus, config
 from jax.config import config as jconfig
 
 jconfig.update("jax_enable_x64", True)
@@ -118,7 +118,7 @@ def initialize_args():
         "--geo_file",
         dest="geo_file",
         type=str,
-        default="../hebe/data/icecube-geo",
+        default="../prometheus/data/icecube-geo",
         help="F2k file describing the geometry of the detector"
     )
     parser.add_argument(
@@ -205,10 +205,10 @@ def main(args):
     config['photon propagator'][photo_prop]["paths"]['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/"
     config['photon propagator'][photo_prop]["paths"]['ppctables'] = "../PPC_CUDA/"
     config['photon propagator'][photo_prop]["paths"]['ppc_exe'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/ppc"
-    config['photon propagator'][photo_prop]["simulation"]['supress_output'] = False
-    hebe = HEBE(userconfig=config)
-    hebe.sim()
-    del hebe
+    #config['photon propagator'][photo_prop]["simulation"]['supress_output'] = False
+    prometheus = Prometheus(userconfig=config)
+    prometheus.sim()
+    del prometheus
 
 if __name__ == "__main__":
     args = initialize_args()

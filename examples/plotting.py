@@ -4,14 +4,14 @@
 
 import sys
 sys.path.append('../')
-from hebe import HEBE, config
+from prometheus import Prometheus, config
 
 def main():
-    config["detector"]['detector specs file'] = '../hebe/data/custom.txt'
-    config["detector"]["file name"] = '../hebe/data/custom-f2k'
-    hebe = HEBE()
+    config["detector"]['detector specs file'] = '../prometheus/data/custom.txt'
+    config["detector"]["file name"] = '../prometheus/data/custom-f2k'
+    prometheus = Prometheus()
     data = ak.from_parquet('./output/custom_1337_meta_data.parquet')
-    hebe.plot(
+    prometheus.plot(
         data,
         e_id=0,
         brightest_event=True,

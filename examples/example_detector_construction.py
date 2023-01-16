@@ -42,4 +42,4 @@ if __name__ == "__main__":
         nz_list,
         dist_z_list
     ])
-    np.savetxt('../hebe/data/custom.txt', detector_specs)
+    np.savetxt('../prometheus/data/custom.txt', detector_specs)
