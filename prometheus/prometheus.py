@@ -16,7 +16,6 @@ from jax import random  # noqa: E402
 from .utils import config_mims, clean_config, totals_from_awkward_arr
 from .config import config
 from .detector import Detector
-from .particle import Particle
 from .photon_propagation import photon_propagator
 from .injection import INJECTION_DICT, particle_from_injection
 
@@ -28,34 +27,31 @@ class UnknownSimulationError(Exception):
         self.message = f"Simulation name {simname} is not recognized. Only PPC and olympus"
         super().__init__(self.message)
 
+class CannotLoadDetectorError(Exception):
+    """Raised when detector not provided and cannot be determined from config"""
+    def __init__(self):
+        self.message = f"No Detector provided and no geo file path given in config"
+        super().__init__(self.message)
+
 class Prometheus(object):
-    """
-    class: HEBE
-    Interace between injection and Olympus
-    Parameters
-    ----------
-    config : dic
-        Configuration dictionary for the simulation
-    Returns
-    -------
-    None
-    """
+    """Class for unifying injection, energy loss calculation, and photon propagation"""
     def __init__(
         self,
         userconfig: Union[None, dict, str]=None,
         detector: Union[None, Detector]=None
     ) -> None:
-        """
-        function: __init__
-        Initializes the class HEBE.
-        Here all run parameters are set.
+        """Initializes the Prometheus class
 
         params
-        ------
-        userconfig: Configuration settings. This can either be a dictionary, a path to a
-            YAML file, or None. If None, the default settings will be used
-        detector: The detector to be used. If None is provided, the detector will be built
-            from the geo file in userconfig
+        ______
+        userconfig: Configuration dictionary or path to yaml file which specifies configuration
+        detector: Detector to be used or path to geo file to load detector file. If this is left
+            out, the path from the `userconfig["detector"]["specs file"]` be loaded
+
+        raises
+        ______
+        CannotLoadDetectorError: When no detector provided and no geo file path provided in config
+
         """
         start = time()
         if userconfig is not None:
@@ -66,7 +62,7 @@ class Prometheus(object):
 
         # Set up the detector
         if detector is None and config["detector"]["specs file"] is None:
-            raise ValueError("Must provide a detector or a path to geo file")
+            raise CannotLoadDetectorError()
 
         if detector is None:
             print(f"Building detector from {config['detector']['specs file']}")
@@ -126,7 +122,7 @@ class Prometheus(object):
         return self._results_record
 
     def inject(self):
-        """Injects leptons according to the config file"""
+        """Determines initial neutrino and final particle states according to config"""
         print('-------------------------------------------')
         start = time()
         injection_config = config["injection"][config["injection"]["name"]]
@@ -152,8 +148,7 @@ class Prometheus(object):
     # TODO this is psycho.
     # We should factor out generating losses and photon prop
     def propagate(self):
-        """Runs the light yield calculations
-        """
+        """Calculates energy losses, generates photon yields, and propagates photons"""
         print("-------------------------------------------")
         print("-------------------------------------------")
         print("Starting particle loop")
@@ -195,7 +190,8 @@ class Prometheus(object):
         print("-------------------------------------------")
 
     def sim(self):
-        """Utility function to run all steps of the simulation"""
+        """Performs injection of precipitating interaction, calculates energy losses,
+        calculates photon yield, propagates photons, and save resultign photons"""
         # Has to happen before the random state is thrown in
         if "runtime" in config["photon propagator"].keys():
             config["photon propagator"]["runtime"] = None
@@ -230,11 +226,8 @@ class Prometheus(object):
         print("-------------------------------------------")
 
     def construct_output(self):
-        """ Constructs a parquet file with metadata from the generated files.
-        Currently this still treats olympus and ppc output differently.
-        Parameters
-        ----------
-        """
+        """Constructs a parquet file with metadata from the generated files.
+        Currently this still treats olympus and ppc output differently."""
         sim_switch = config["photon propagator"]["name"]
         if not ("ppc" in sim_switch.lower() or sim_switch.lower()=="olympus"):
             raise UnknownSimulationError(sim_switch)
@@ -324,12 +317,12 @@ class Prometheus(object):
             plot_tfirst=plot_tfirst, plot_hull=plot_hull)
 
     def __del__(self):
-        """ What to do when the Prometheus instance is deleted
+        """What to do when the Prometheus instance is deleted
         """
         print("I am melting.... AHHHHHH!!!!")
 
     def _clean_up(self):
-        """ Remove temporary and intermediate files.
+        """Remove temporary and intermediate files.
         """
         print("Removing intermediate data files.")
         injector_name = config["injection"]["name"]
