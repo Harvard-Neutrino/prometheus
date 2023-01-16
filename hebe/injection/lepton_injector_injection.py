@@ -89,10 +89,16 @@ def make_new_injection(
         it to the center of the detector
     """
     import os
-    import sys
+    print('Importing LeptonInjector')
     try:
-        sys.path.append(path_dict['install location'])
-        import LeptonInjector as LI
+        try:
+            print('Trying default pythonpath')
+            import LeptonInjector as LI
+        except ImportError:
+            import sys
+            print('Trying custom path set in confuig')
+            sys.path.append(path_dict['install location'])
+            import LeptonInjector as LI
     except ImportError:
         raise ImportError("LeptonInjector not found!")
     print("Setting up the LI")
