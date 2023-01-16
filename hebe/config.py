@@ -173,6 +173,7 @@ _baseconfig = {
             'flow': "photon_arrival_time_nflow_params.pickle",
             'counts': "photon_arrival_time_counts_params.pickle",
             'wavelength': 700,  # in nm
+            'splitter': 3000,  # Module chunks to work on at once (higher = faster but more memory)
         },
         'PPC_CUDA':{
             "paths":{

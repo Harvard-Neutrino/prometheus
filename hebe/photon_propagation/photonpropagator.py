@@ -249,7 +249,8 @@ class PP(object):
                     injection_event,
                     key=config['runtime']['random state jax'],
                     pprop_func=self._gen_ph,
-                    proposal_prop=self._prop
+                    proposal_prop=self._prop,
+                    splitter=config['photon propagator']['olympus']['splitter']
                 )
             )
         # Cascades
@@ -263,7 +264,8 @@ class PP(object):
                     make_realistic_cascade_source,
                     moliere_rand=True,
                     resolution=0.2),
-                pprop_func=self._gen_ph
+                pprop_func=self._gen_ph,
+                splitter=config['photon propagator']['olympus']['splitter']
             )
             if config['run']['noise']:
                 res_event, _ = simulate_noise(self._det, res_event)

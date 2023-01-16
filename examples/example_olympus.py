@@ -32,6 +32,7 @@ def main(args=None):
     config['injection']["LeptonInjector"]['simulation']["cylinder radius"] = 150
     config['injection']["LeptonInjector"]['simulation']["cylinder height"] = 400
     config['injection']["LeptonInjector"]['force injection params'] = True
+    config['photon propagator']['olympus']['splitter'] = 1000
     config['detector']['injection offset'] = [0., 0., 0]
     config['photon propagator']['name'] = 'olympus'
     config["detector"]["detector specs file"] = '../hebe/data/pone_triangle-geo'
