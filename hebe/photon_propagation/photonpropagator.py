@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8 -*-
 # photonpropagator.py
 # Copyright (C) 2022 Christian Haack, Jeffrey Lazar, Stephan Meighen-Berger,
 # Interface class to the different photon propagators
@@ -10,7 +10,7 @@ import json
 import numpy as np
 
 from .hit import Hit
-from ..config import config
+#from ..config import config
 from ..particle import Particle
 from ..detector import Detector
 from ..lepton_propagation import LeptonPropagator
@@ -122,38 +122,34 @@ class PP(object):
     def __init__(self, lp: LeptonPropagator, det: Detector):
         print('--------------------------------------------')
         print('Constructing the photon propagator')
-        self.__lp = lp
-        self.__det = det
-        if config['photon propagator']['name'] == 'olympus':
-            import sys
-            # Import olympus specifics
-            # TODO should we have this relative import stuff here ??
-            sys.path.append('../')
-            
-            from olympus.event_generation.photon_propagation.norm_flow_photons import (  # noqa
-                make_generate_norm_flow_photons
-            )
-            from olympus.event_generation.event_generation import (  # noqa: E402
-                generate_cascade,
-                generate_realistic_track,
-                simulate_noise,
-            )
-            from olympus.event_generation.lightyield import make_realistic_cascade_source # noqa
-            from olympus.event_generation.utils import sph_to_cart_jnp  # noqa: E402
-            
-            from hyperion.medium import medium_collections  # noqa: E402
-            from hyperion.constants import Constants  # noqa: E402
+#        self.__lp = lp
+#        self.__det = det
+        #if config['photon propagator']['name'] == 'olympus':
+#            import sys
+#            # Import olympus specifics
+#            # TODO should we have this relative import stuff here ??
+#            sys.path.append('../')
+#            
+#            from olympus.event_generation.photon_propagation.norm_flow_photons import (  # noqa
+#                make_generate_norm_flow_photons
+#            )
+#            from olympus.event_generation.event_generation import (  # noqa: E402
+#                generate_cascade,
+#                generate_realistic_track,
+#                simulate_noise,
+#            )
+#            from olympus.event_generation.lightyield import make_realistic_cascade_source # noqa
+#            from olympus.event_generation.utils import sph_to_cart_jnp  # noqa: E402
+#            
+#            from hyperion.medium import medium_collections  # noqa: E402
+#            from hyperion.constants import Constants  # noqa: E402
 
-            self._local_conf = config['photon propagator']['olympus']
-            # Setting up proposal
-            self._prop = self.__lp._new_proposal_setup()
-            self._olympus_setup()
-            self._sim = self._olympus_sim
+#            self._local_conf = config['photon propagator']['olympus']
+#            # Setting up proposal
+#            #self._prop = self.__lp._new_proposal_setup()
+#            self._olympus_setup()
+#            self._sim = self._olympus_sim
         elif config['photon propagator']['name'] == 'PPC':
-            # TODO add in event displays
-            # self._plotting = plot_event
-            # TODO make a function for propagating photons
-            # TODO move plotting to a HEBE object
             self._sim = lambda particle: _ppc_sim(
                 particle,
                 self.__det,
@@ -161,13 +157,11 @@ class PP(object):
                 config["photon propagator"]["PPC"]
             )
         elif config['photon propagator']['name'] == 'PPC_CUDA':
-            # TODO add in event displays
-            #self._plotting = plot_event
             self._sim = lambda particle: _ppc_sim(
-                    particle, 
-                    self.__det,
-                    self.__lp, 
-                    config["photon propagator"]["PPC_CUDA"]
+                particle, 
+                self.__det,
+                self.__lp, 
+                config["photon propagator"]["PPC_CUDA"]
             )
             
         else:
@@ -176,103 +170,106 @@ class PP(object):
             )
         print('--------------------------------------------')
 
-    def _olympus_setup(self):
-        # TODO I feel like we should move things out to a different file to avoid this importing mess
-        # TODO this is bad :-(
-        # sys.path.append(config['photon propagator']['location'])
-        sys.path.append('../../')
-        
-        # TODO should these be moved inside the set up function
-        from olympus.event_generation.photon_propagation.norm_flow_photons import (  # noqa
-            make_generate_norm_flow_photons
-        )
-        
-        from hyperion.medium import medium_collections  # noqa: E402
-        ''' Sets up olympus.
-        '''
-        print('Using olympus')
-        print('Setting up the medium')
-        self._pprop_path = (
-            self._local_conf['location'] + self._local_conf['photon model']
-        )
-        import json
-        self._pprop_config = json.load(open(
-            self._pprop_path))['photon_propagation']
-        # The medium
-        self._ref_ix_f, self._sca_a_f, self._sca_l_f = medium_collections[
-            self._pprop_config['medium']
-        ]
-        print('Finished the medium')
-        print('-------------------------------------------------------')
-        print('Setting up the photon generator')
-        if self._local_conf['files']:
-            self._gen_ph = make_generate_norm_flow_photons(
-                self._local_conf['location'] + self._local_conf['flow'],
-                self._local_conf['location'] + self._local_conf['counts'],
-                c_medium=self._c_medium_f(
-                    self._local_conf['wavelength']) / 1E9
-            )
-        else:
-            ValueError('Currently only file runs for olympus are supported!')
-        print('Finished the photon generator')
+#    def _olympus_setup(self):
+#        # TODO I feel like we should move things out to a different file to avoid this importing mess
+#        # TODO this is bad :-(
+#        # sys.path.append(config['photon propagator']['location'])
+#        sys.path.append('../../')
+#        
+#        # TODO should these be moved inside the set up function
+#        from olympus.event_generation.photon_propagation.norm_flow_photons import (  # noqa
+#            make_generate_norm_flow_photons
+#        )
+#        
+#        from hyperion.medium import medium_collections  # noqa: E402
+#        ''' Sets up olympus.
+#        '''
+#        print('Using olympus')
+#        print('Setting up the medium')
+#        self._pprop_path = (
+#            self._local_conf['location'] + self._local_conf['photon model']
+#        )
+#        import json
+#        self._pprop_config = json.load(open(
+#            self._pprop_path))['photon_propagation']
+#        # The medium
+#        self._ref_ix_f, self._sca_a_f, self._sca_l_f = medium_collections[
+#            self._pprop_config['medium']
+#        ]
+#        print('Finished the medium')
+#        print('-------------------------------------------------------')
+#        print('Setting up the photon generator')
+#        if self._local_conf['files']:
+#            self._gen_ph = make_generate_norm_flow_photons(
+#                self._local_conf['location'] + self._local_conf['flow'],
+#                self._local_conf['location'] + self._local_conf['counts'],
+#                c_medium=self._c_medium_f(
+#                    self._local_conf['wavelength']) / 1E9
+#            )
+#        else:
+#            ValueError('Currently only file runs for olympus are supported!')
+#        print('Finished the photon generator')
 
-    def _olympus_sim(self, particle):
-        """ Utilizes olympus to propagate light for the injected object
-        """
-        from olympus.event_generation.lightyield import make_realistic_cascade_source # noqa
-        from olympus.event_generation.utils import sph_to_cart_jnp  # noqa: E402
-        from olympus.event_generation.event_generation import (  # noqa: E402
-            generate_cascade,
-            generate_realistic_track,
-            simulate_noise,
-        )
-        injection_event = {
-            "time": 0.,
-            "theta": particle.theta,
-            "phi": particle.phi,
-            "pos": particle.position,
-            "energy": particle.e,
-            "particle_id": particle.pdg_code,
-            'length': config['lepton propagator']['track length'],
-        }
-        event_dir = sph_to_cart_jnp(
-            injection_event["theta"],
-            injection_event["phi"]
-        )
-        injection_event["dir"] = event_dir
-        # Tracks
-        if injection_event['particle_id'] in config['particles'][
-                'track particles']:
-            res_event, res_record = (
-                generate_realistic_track(
-                    self.__det,
-                    injection_event,
-                    key=config['runtime']['random state jax'],
-                    pprop_func=self._gen_ph,
-                    proposal_prop=self._prop,
-                    splitter=config['photon propagator']['olympus']['splitter']
-                )
-            )
-        # Cascades
-        else:
-            import functools
-            res_event, res_record = generate_cascade(
-                self.__det,
-                injection_event,
-                seed = config['runtime']['random state jax'],
-                converter_func = functools.partial(
-                    make_realistic_cascade_source,
-                    moliere_rand=True,
-                    resolution=0.2),
-                pprop_func=self._gen_ph,
-                splitter=config['photon propagator']['olympus']['splitter']
-            )
-            if config['run']['noise']:
-                res_event, _ = simulate_noise(self._det, res_event)
-        return res_event, res_record
-
-    def _c_medium_f(self, wl):
-        """ Speed of light in medium for wl (nm)
-        """
-        from hyperion.constants import Constants  # noqa: E402
-        return Constants.BaseConstants.c_vac / self._ref_ix_f(wl)
+#    def _olympus_sim(self, particle):
+#        """ Utilizes olympus to propagate light for the injected object
+#        """
+#        from olympus.event_generation.lightyield import make_realistic_cascade_source # noqa
+#        from olympus.event_generation.utils import sph_to_cart_jnp  # noqa: E402
+#        from olympus.event_generation.event_generation import (  # noqa: E402
+#            generate_cascade,
+#            generate_realistic_track,
+#            simulate_noise,
+#        )
+#        prop_distance = (
+#            np.linalg.norm(particle.position - self.__det.offset) 
+#            + config["lepton propagator"]["new proposal"]["simulation"]["propagation padding"]
+#        )
+#        injection_event = {
+#            "time": 0.,
+#            "theta": particle.theta,
+#            "phi": particle.phi,
+#            "pos": particle.position,
+#            "energy": particle.e,
+#            "particle_id": particle.pdg_code,
+#            'length': prop_distance,
+#            #'length': config['lepton propagator']['track length'],
+#        }
+#        event_dir = sph_to_cart_jnp(
+#            injection_event["theta"],
+#            injection_event["phi"]
+#        )
+#        injection_event["dir"] = event_dir
+#        # Tracks
+#        if injection_event['particle_id'] in config['particles'][
+#                'track particles']:
+#            res_event, res_record = (
+#                generate_realistic_track(
+#                    self.__det,
+#                    injection_event,
+#                    key=config['runtime']['random state jax'],
+#                    pprop_func=self._gen_ph,
+#                    proposal_prop=self._prop
+#                )
+#            )
+#        # Cascades
+#        else:
+#            import functools
+#            res_event, res_record = generate_cascade(
+#                self.__det,
+#                injection_event,
+#                seed = config['runtime']['random state jax'],
+#                converter_func = functools.partial(
+#                    make_realistic_cascade_source,
+#                    moliere_rand=True,
+#                    resolution=0.2),
+#                pprop_func=self._gen_ph
+#            )
+#            if config['run']['noise']:
+#                res_event, _ = simulate_noise(self._det, res_event)
+#        return res_event, res_record
+#
+#    def _c_medium_f(self, wl):
+#        """ Speed of light in medium for wl (nm)
+#        """
+#        from hyperion.constants import Constants  # noqa: E402
+#        return Constants.BaseConstants.c_vac / self._ref_ix_f(wl)

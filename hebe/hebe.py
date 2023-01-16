@@ -17,8 +17,7 @@ from .utils import config_mims, clean_config, totals_from_awkward_arr
 from .config import config
 from .detector import Detector
 from .particle import Particle
-from .photon_propagation import PP
-from .lepton_propagation import LP_DICT
+from .photon_propagation import photon_propagator
 from .injection import INJECTION_DICT, particle_from_injection
 
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
@@ -65,6 +64,7 @@ class HEBE(object):
             else:
                 config.from_yaml(userconfig)
 
+        # Set up the detector
         if detector is None and config["detector"]["specs file"] is None:
             raise ValueError("Must provide a detector or a path to geo file")
 
@@ -72,14 +72,25 @@ class HEBE(object):
             print(f"Building detector from {config['detector']['specs file']}")
             from .detector import detector_from_geo
             detector = detector_from_geo(config["detector"]["specs file"])
-
+        
         self._detector = detector
 
-        # Make config internall consistent
+        # Infer which config to use from the PROPOSAL version
+        # We need to check the version prior to import, otherwise
+        # the type hinting will throw an error
+        import proposal as pp
+        if int(pp.__version__.split(".")[0]) <= 6:
+            from .lepton_propagation import OldProposalLeptonPropagator as LP
+            config["lepton propagator"]["name"] = "old proposal"
+        else:
+            from .lepton_propagation import NewProposalLeptonPropagator as LP
+            config["lepton propagator"]["name"] = "new proposal"
+        config["lepton propagator"]["version"] = pp.__version__
+
+        # Make config internally consistent
         config_mims(config, self.detector)
         # Remove unused fields from config
         clean_config(config)
-        print(config)
         # Configure the injection
         injection_config = config["injection"][config["injection"]["name"]]
         self._injection = INJECTION_DICT[config["injection"]["name"]](
@@ -87,10 +98,11 @@ class HEBE(object):
         )
         # Configure the lepton propagator
         lp_config = config["lepton propagator"][config["lepton propagator"]["name"]]
-        self._lepton_propagator = LP_DICT[config["lepton propagator"]["name"]](
-            lp_config
-        )
-        self._pp = PP(self._lepton_propagator, self.detector)
+        self._lepton_propagator = LP(lp_config)
+        # Configure the photon propagator
+        pp_config = config["photon propagator"][config["photon propagator"]["name"]]
+        photon_propagator_class = photon_propagator(config["photon propagator"]["name"])
+        self._pp = photon_propagator_class(self._lepton_propagator, self.detector, pp_config)
         end = time()
         print(f"Setup and preliminary simulations took {end - start} seconds")
         print("-------------------------------------------")
@@ -166,7 +178,7 @@ class HEBE(object):
                     key,
                     event_idx
                 )
-                res_event, res_record = self._pp._sim(primary_particle)
+                res_event, res_record = self._pp.propagate(primary_particle)
                 propped_primaries.append(primary_particle)
                 self._new_results[key].append(primary_particle)
                 self._results[key].append(res_event)
@@ -185,20 +197,22 @@ class HEBE(object):
     def sim(self):
         """Utility function to run all steps of the simulation"""
         # Has to happen before the random state is thrown in
-        config["runtime"] = None
+        if "runtime" in config["photon propagator"].keys():
+            config["photon propagator"]["runtime"] = None
         print("-------------------------------------------")
         print("Dumping config file")
         with open(config["general"]["config location"], "w") as f:
             json.dump(config, f, indent=2)
         print("Finished dump")
-        # Create RandomState
-        rstate = np.random.RandomState(config["general"]["random state seed"])
-        rstate_jax = random.PRNGKey(config["general"]["random state seed"])
-        # TODO this feels like it shouldn't be in the config
-        config["runtime"] = {
-            "random state": rstate,
-            "random state jax": rstate_jax,
-        }
+        # add random state stuff to this olympus dict. Seems bizarre but w.e.
+        if config["photon propagator"]["name"].lower()=="olympus":
+            rstate = np.random.RandomState(config["general"]["random state seed"])
+            rstate_jax = random.PRNGKey(config["general"]["random state seed"])
+            # TODO this feels like it shouldn't be in the config
+            config["photon propagator"]["olympus"]["runtime"] = {
+                "random state": rstate,
+                "random state jax": rstate_jax,
+            }
         self.inject()
         self.propagate()
         print("Dumping results")
@@ -272,7 +286,11 @@ class HEBE(object):
             config["general"]["storage location"] +
             config["general"]["meta name"] + ".parquet"
         )
-        config["runtime"] = None
+        # TODO this is a bad way of doing this
+        if config["photon propagator"]["name"].lower()=="olympus":
+            if "runtime" in config["photon propagator"]["olympus"].keys():
+                config["photon propagator"]["olympus"]["runtime"] = None
+        print(config)
         custom_meta_data = json.dumps(config)
         custom_meta_data_key = "config_prometheus"
         combined_meta = {
@@ -319,8 +337,8 @@ class HEBE(object):
         os.remove(config["injection"][injector_name]["paths"]["output name"])
         for key in self._results.keys():
             try:
-                os.fremove(
-                    f"{config['photon propagator']['storage location']}{key}.parquet"
+                os.remove(
+                    f"{config['general']['storage location']}{key}.parquet"
                 )
             except FileNotFoundError:
                 continue

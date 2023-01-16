@@ -16,31 +16,26 @@ def main(args=None):
         print("Using default seed!")
     else:
         rset = int(args[1])
-    try:
-        print('CURRENT SET %d' % rset)
-        pname = 'MuMinus'
-        config["general"]["random state seed"] = rset
-        config["general"]["meta_name"] = 'meta_data_%d' % rset
-        config['lepton injector']['simulation']['is ranged'] = False
-        config['lepton injector']['simulation']['output name'] = "./output/data_%d_output_LI.h5" % rset
-        config['photon propagator']['storage location'] = './output/rset_%d_' % rset
-        nevent = 2
-        config['lepton injector']['simulation']['nevents'] = nevent
-        config['lepton injector']['simulation']['minimal energy'] = 1e3
-        config['lepton injector']['simulation']['maximal energy'] = 1e4
-        config['lepton injector']['simulation']["injection radius"] = 800
-        config['lepton injector']['simulation']["endcap length"] = 800
-        config['lepton injector']['simulation']["cylinder radius"] = 800
-        config['lepton injector']['simulation']["cylinder height"] = 1000
-        config['detector']['injection offset'] = [0., 0., -2000]
-        config['lepton propagator']['lepton'] = pname
-        config["detector"]["file name"] = '../hebe/data/icecube-f2k'
-        config['photon propagator']['name'] = 'PPC_CUDA'
-        config['run']['group name'] = 'VolumeInjector0'
-        hebe = HEBE(userconfig=config)
-        hebe.sim()
-    except:
-        print("Error in the simulation")
+    print('CURRENT SET %d' % rset)
+    config["run"]["nevent"] = 2
+    config["general"]["state seed"] = rset
+    config["general"]["meta_name"] = 'meta_data_%d' % rset
+    config['photon propagator']['storage location'] = './output/rset_%d_' % rset
+    nevent = 2
+    config['injection']["LeptonInjector"]["paths"]['install location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/lib64/"
+    config['injection']["LeptonInjector"]["paths"]['xsec location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/LeptonInjector/resources/"
+    config["injection"]['LeptonInjector']['simulation']['is ranged'] = False
+    config["injection"]['LeptonInjector']['simulation']['output name'] = "./output/data_%d_output_LI.h5" % rset
+    config["injection"]['LeptonInjector']['simulation']['minimal energy'] = 1e3
+    config["injection"]['LeptonInjector']['simulation']['maximal energy'] = 1e4
+    config["injection"]['LeptonInjector']['simulation']["injection radius"] = 800
+    config["injection"]['LeptonInjector']['simulation']["endcap length"] = 800
+    config["injection"]['LeptonInjector']['simulation']["cylinder radius"] = 800
+    config["injection"]['LeptonInjector']['simulation']["cylinder height"] = 1000
+    config["detector"]["specs file"] = '../hebe/data/icecube-geo'
+    config['photon propagator']['name'] = 'PPC_CUDA'
+    hebe = HEBE(userconfig=config)
+    hebe.sim()
 
     hebe.sim()
     del hebe

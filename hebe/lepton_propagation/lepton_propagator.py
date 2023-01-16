@@ -28,6 +28,10 @@ class LeptonPropagator:
         if str(particle) not in self._prop_dict.keys():
             self._prop_dict[str(particle)] = self._make_propagator(particle)
         return self._pdef_dict[str(particle)], self._prop_dict[str(particle)]
+
+    @property
+    def config(self):
+        return self._config
     
     @abstractmethod
     def _make_propagator(self, particle: Particle):
