@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# hebe.py
+# prometheus.py
 # Copyright (C) 2022 Christian Haack, Jeffrey Lazar, Stephan Meighen-Berger,
 # Interface class to the package
 
@@ -28,7 +28,7 @@ class UnknownSimulationError(Exception):
         self.message = f"Simulation name {simname} is not recognized. Only PPC and olympus"
         super().__init__(self.message)
 
-class HEBE(object):
+class Prometheus(object):
     """
     class: HEBE
     Interace between injection and Olympus
@@ -290,7 +290,6 @@ class HEBE(object):
         if config["photon propagator"]["name"].lower()=="olympus":
             if "runtime" in config["photon propagator"]["olympus"].keys():
                 config["photon propagator"]["olympus"]["runtime"] = None
-        print(config)
         custom_meta_data = json.dumps(config)
         custom_meta_data_key = "config_prometheus"
         combined_meta = {
@@ -325,7 +324,7 @@ class HEBE(object):
             plot_tfirst=plot_tfirst, plot_hull=plot_hull)
 
     def __del__(self):
-        """ What to do when the hebe instance is deleted
+        """ What to do when the Prometheus instance is deleted
         """
         print("I am melting.... AHHHHHH!!!!")
 
