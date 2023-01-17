@@ -59,16 +59,14 @@ RUN cd /opt && mkdir PPC && \
     # correcting some errors in the file
     sed -i 's/if(flag) flag=/if(flag) flag=static_cast<bool>/g' ini.cxx && \
     make cpu && cd /home 
-FROM ppc as hebe
-RUN cd /opt && \
-    git clone https://docker-burner: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@github.com/Harvard-Neutrino/hebe.git && \
-    cd hebe
-FROM hebe as pip_stuff
+FROM ppc as pip_stuff
 RUN pip install --upgrade pip && \
     pip install torch-geometric jupyterlab awkward numba seaborn tqdm ipywidgets aquirdturtle_collapsible_headings plotly && \
     pip install matplotlib_inline Geometry3D && \
     pip install flake8 h5py scipy distrax dm-haiku==0.0.5 && \
-    pip install optax && pip install -U jaxlib
+    pip install optax && pip install -U jaxlib && \
+    pip install uproot && pip install schema && \
+    pip install fsspec
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 RUN pip install fennel_seed[jax]
 RUN conda install -c conda-forge pyarrow
@@ -82,7 +80,6 @@ RUN echo "export PATH=/usr/local/lib/nodejs/node-v14.17.0-linux-x64/bin:${PATH}"
     echo "export PPC_CUDA=/opt/PPC/PPC_CUDA/ppc" >> /root/.bashrc && \
     cd /bin && cp /root/.bashrc .bashrc && \
     cd /opt && cp /root/.bashrc .bashrc && \
-    cd /opt/hebe
 
 # Create some non-root user that owns the data and other directories by default
 RUN useradd -r myuser          # no specific user ID
