@@ -94,9 +94,8 @@ def generate_cascade(
             det.module_efficiencies,
             det.module_coords.shape[0] % splitter
         )
-        propagation_result = []
-        for id_set, _ in enumerate(det_subsets_coords):
-            propagation_result.append(pprop_func(
+        propagation_result = [
+            pprop_func(
             det_subsets_coords[id_set],
             det_subsets_eff[id_set],
             source_pos,
@@ -104,7 +103,8 @@ def generate_cascade(
             source_time,
             source_nphotons,
             seed=k2,
-        ))
+        ) for id_set, _ in enumerate(det_subsets_coords)
+        ]
         propagation_result = ak.concatenate(propagation_result)
     else:
         propagation_result = pprop_func(
@@ -370,9 +370,8 @@ def generate_realistic_track(
             det.module_efficiencies,
             det.module_coords.shape[0] % splitter
         )
-        propagation_result = []
-        for id_set, _ in enumerate(det_subsets_coords):
-            propagation_result.append(pprop_func(
+        propagation_result = [
+            pprop_func(
                 det_subsets_coords[id_set],
                 det_subsets_eff[id_set],
                 source_pos,
@@ -380,7 +379,8 @@ def generate_realistic_track(
                 source_time,
                 source_photons,
                 seed=k2,
-            ))
+            ) for id_set, _ in enumerate(det_subsets_coords)
+        ]
         propagation_result = ak.concatenate(propagation_result)
     else:
         propagation_result = pprop_func(
