@@ -49,7 +49,7 @@ _baseconfig = {
         'LeptonInjector': {
             'inject': True,
             'paths':{
-                'install location': '/opt/LI/install/lib/python3.9/site-packages',
+                'install location': '/opt/LI/install/lib/python3.10/site-packages',
                 'xsec location': '/opt/LI/source/resources/',
                 'diff xsec': "/test_xs.fits",
                 'total xsec': "/test_xs_total.fits",

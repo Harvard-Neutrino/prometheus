@@ -96,7 +96,7 @@ def make_new_injection(
             import LeptonInjector as LI
         except ImportError:
             import sys
-            print('Trying custom path set in confuig')
+            print('Trying custom path set in config')
             sys.path.append(path_dict['install location'])
             import LeptonInjector as LI
     except ImportError:

@@ -25,17 +25,17 @@ def main(args=None):
     config["general"]["random state seed"] = rset
     config["general"]["meta_name"] = f'meta_data_{rset}'
     config['general']['clean up'] = False
-    config['general']['storage location'] = f'./output/custom_{rset}_'
+    config['general']['storage location'] = f'./output/orca2_{rset}_'
     config['injection']["LeptonInjector"]['paths']['output name'] = (
-        f"./output/custom_{rset}_output_LI.h5"
+        f"./output/orca2_{rset}_output_LI.h5"
     )
     config['injection']["LeptonInjector"]['simulation']['nevents'] = 10
-    config['injection']["LeptonInjector"]['simulation']['minimal energy'] = 1e4
-    config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e5
+    config['injection']["LeptonInjector"]['simulation']['minimal energy'] = 1e2
+    config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e3
     config['photon propagator']['olympus']['simulation']['splitter'] = 1000
     config['detector']['injection offset'] = [0., 0., 0]
     config['photon propagator']['name'] = 'olympus'
-    config["detector"]["specs file"] = '../hebe/data/pone_triangle-geo'
+    config["detector"]["specs file"] = '../hebe/data/orca-geo'
     hebe = HEBE()
 
     hebe.sim()
