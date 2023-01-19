@@ -7,13 +7,52 @@ from .detector import Detector
 from .utils import random_serial
 from ..utils import iter_or_rep
 
+class InvalidRNGError(Exception):
+    """Raised when rng specification can't be parsed"""
+    def __init__(self, rng):
+        self.message = f"Unable to determine random state seeding from {rng}"
+        super.__init__(self.message)
 
-def detector_from_f2k(
-    fname,
-    efficiency=0.2,
-    noise_rate=1
-) -> Detector:
+def parse_rng(rng: Union[int, np.random.RandomState]) -> np.random.RandomState:
+    """Helps determine random number generation state from input
+
+    params
+    ______
+    rng: rng generator to make sense of
+
+    returns
+    _______
+    rng: np.random.RandomState
+
+    raises
+    ______
+    InvalidRNGError: If we don't know how to handle the input rng
     """
+    if isinstance(rng, np.random. RandomState):
+        pass
+    elif isinstance(rng, int):
+        rng = np.random.RandomState(rng)
+    else:
+        raise InvalidRNGError(rng)
+    return rng
+
+# TODO I think this is defunct
+def detector_from_f2k(
+    fname: str,
+    efficiency: float = 0.2,
+    noise_rate: float = 1.0
+) -> Detector:
+    """Makes detector from f2k file.
+
+    params
+    ______
+    fname: name of f2k file to use
+    efficiency: quantum efficiency of OMs
+    noise_rate: noise rate of OMs
+
+    returns
+    _______
+    det: Detector object
     """
     pos = []
     keys = []
@@ -106,56 +145,77 @@ def detector_from_geo(
     det = Detector(modules, medium)
     return det
 
-def make_line(x, y, n_z, dist_z, rng, baseline_noise_rate, line_id, efficiency=0.2):
+def make_line(
+    x: float,
+    y: float,
+    n_z: int,
+    dist_z: float,
+    rng: np.random.RandomState,
+    baseline_noise_rate: float,
+    line_id: int,
+    efficiency: float = 0.2
+):
+    """Make a line of detector modules. The modules share the same (x, y) coordinate and 
+    are spaced along the z-direction. This detector will be symetrically spaced about z=0
+
+    params
+    ______
+    x: x-position of the line in meters
+    y: y-position of the line in meters
+    n_z: Number of modules per line
+    dist_z: Spacing of the detector modules in z
+    rng: RandomState
+    baseline_noise_rate: Baseline noise rate in 1/ns. Will be multiplied to 
+        gamma(1, 0.25) distributed random rates per module.
+    line_id: Identifier for this line
+
+    returns
+    _______
+    det: Detector object
     """
-    Make a line of detector modules.
-    The modules share the same (x, y) coordinate and are spaced along the z-direction.
-    Parameters:
-        x, y: float
-            (x, y) position of the line
-        n_z: int
-            Number of modules per line
-        dist_z: float
-            Spacing of the detector modules in z
-        rng: RandomState
-        baseline_noise_rate: float
-            Baseline noise rate in 1/ns. Will be multiplied to gamma(1, 0.25) distributed
-            random rates per module.
-        line_id: int
-            Identifier for this line
-    """
+    rng = parse_rng(rng)
     modules = []
-    for i, pos_z in enumerate(np.linspace(-dist_z * n_z / 2, dist_z * n_z / 2, n_z)):
+    for idx, pos_z in enumerate(np.linspace(-dist_z * n_z / 2, dist_z * n_z / 2, n_z)):
         pos = np.array([x, y, pos_z])
         noise_rate = (
             scipy.stats.gamma.rvs(1, 0.25, random_state=rng) * baseline_noise_rate
         )
         mod = Module(
-            pos, key=(line_id, i), noise_rate=noise_rate, efficiency=efficiency
+            pos,
+            key=(line_id, idx),
+            noise_rate=noise_rate,
+            efficiency=efficiency
         )
         modules.append(mod)
     return modules
 
 
 def make_grid(
-    n_side, dist, n_z, dist_z, baseline_noise_rate=1e-6, rng=np.random.RandomState(1337)
+    n_side: int,
+    dist: float,
+    n_z: int,
+    dist_z: float,
+    baseline_noise_rate: float = 1e-6,
+    rng = Union[int, np.random.RandomState] = 1337
 ):
     """
-    Build a square detector grid.
-    Strings of detector modules are placed on a square grid.
-    The noise rate for each module is randomöy sampled from a gamma distribution
-    Paramaters:
-      n_side
-        Number of detector strings per side
-      dist
-        Spacing between strings [m]
-      n_z
-        Number of detector modules per string
-      dist_z
-        Distance of modules on a string [m]
-      baseline_noise_rate
-        Baseline noise rate (default 1E-6Hz)
+    Build a square detector grid. Strings of detector modules are placed 
+    on a square grid, with the number of strings per side, number of modules 
+    per string, and z-spacing on a string set by input. The noise rate for 
+    each module is randomöy sampled from a gamma distribution. The random
+    state may be set by input
+
+    params
+    ______
+    n_side: Number of detector strings per side
+    dist: Spacing between strings [m]
+    n_z: Number of detector modules per string
+    dist_z: Distance of modules on a string [m]
+    baseline_noise_rate: Baseline noise rate (default 1E-6Hz)
+    rng: way of specifying random number generation state. By default, the state will be
+        seeded with 1337
     """
+    rng = parse_rng(rng)
     modules = []
     x_pos = np.linspace(-n_side / 2 * dist, n_side / 2 * dist, n_side)
     y_pos = x_pos
@@ -167,24 +227,33 @@ def make_grid(
 
 
 def make_hex_grid(
-    n_side, dist, n_z, dist_z, baseline_noise_rate=1e-6, rng=np.random.RandomState(1337)
-):
+    n_side: int,
+    dist: float,
+    n_z: int,
+    dist_z: float,
+    baseline_noise_rate: float = 1e-6,
+    rng: Union[int, np.random.RandomState] = 1337
+) -> Detector:
+    """Build a hex detector grid. Strings of detector modules are placed on a hexagonal
+    grid with number of OMs per string and distance between these modules set by input.
+    The noise rate for each module is randomöy sampled from a gamma distribution.
+
+    params
+    ______
+    n_side: Number of detector strings per side
+    dist: Spacing between strings [m]
+    n_z: Number of detector modules per string
+    dist_z: Distance of modules on a string [m]
+    baseline_noise_rate: Baseline noise rate (default 1E-6Hz)
+    rng: way of specifying random number generation state. By default, the state will be
+        seeded with 1337
+
+    returns
+    _______
+    det: Hexagonal detector
     """
-    Build a hex detector grid.
-    Strings of detector modules are placed on a square grid.
-    The noise rate for each module is randomöy sampled from a gamma distribution
-    Paramaters:
-      n_side
-        Number of detector strings per side
-      dist
-        Spacing between strings [m]
-      n_z
-        Number of detector modules per string
-      dist_z
-        Distance of modules on a string [m]
-      baseline_noise_rate
-        Baseline noise rate (default 1E-6Hz)
-    """
+
+
     modules = []
     line_id = 0
 
@@ -200,17 +269,21 @@ def make_hex_grid(
             )
             line_id += 1
 
-        if irow != 0:
-            x_pos = np.linspace(
-                -(i_this_row - 1) / 2 * dist, (i_this_row - 1) / 2 * dist, i_this_row
-            )
-            y_pos = -irow * dist * np.sqrt(3) / 2
+        if irow==0:
+            continue
 
-            for x in x_pos:
-                modules += make_line(
-                    x, y_pos, n_z, dist_z, rng, baseline_noise_rate, line_id
-                )
-                line_id += 1
+        x_pos = np.linspace(
+            -(i_this_row - 1) / 2 * dist,
+            (i_this_row - 1) / 2 * dist,
+            i_this_row
+        )
+        y_pos = -irow * dist * np.sqrt(3) / 2
+
+        for x in x_pos:
+            modules += make_line(
+                x, y_pos, n_z, dist_z, rng, baseline_noise_rate, line_id
+            )
+            line_id += 1
 
     return modules
 
