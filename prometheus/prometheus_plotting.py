@@ -6,10 +6,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from hebe.utils import find_cog
-from numbers import Number
-#from utils.constants import *
-#from utils.event import *
+from .utils import find_cog
 
 def is_empty(event):
     nhit = 0
