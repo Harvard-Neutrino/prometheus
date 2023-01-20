@@ -196,7 +196,7 @@ def make_grid(
     n_z: int,
     dist_z: float,
     baseline_noise_rate: float = 1e-6,
-    rng = Union[int, np.random.RandomState] = 1337
+    rng: Union[int, np.random.RandomState] = 1337
 ):
     """
     Build a square detector grid. Strings of detector modules are placed 
