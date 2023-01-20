@@ -203,7 +203,8 @@ def main(args):
     config['photon propagator'][photo_prop]["paths"]['ppc_tmpfile'] = args.ppc_tmpfile.replace(".ppc", f"{seed}.ppc")
     config['photon propagator'][photo_prop]["paths"]['f2k_tmpfile'] = args.f2k_tmpfile.replace(".f2k", f"{seed}.f2k")
     config['photon propagator'][photo_prop]["paths"]['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/"
-    config['photon propagator'][photo_prop]["paths"]['ppctables'] = "../PPC_CUDA/"
+    #config['photon propagator'][photo_prop]["paths"]['ppctables'] = "../PPC_tables/ic_accept_all/"
+    config['photon propagator'][photo_prop]["paths"]['ppctables'] = "../PPC_tables/ic_default/"
     config['photon propagator'][photo_prop]["paths"]['ppc_exe'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/ppc"
     #config['photon propagator'][photo_prop]["simulation"]['supress_output'] = False
     prometheus = Prometheus(userconfig=config)
