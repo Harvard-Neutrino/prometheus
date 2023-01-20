@@ -3,144 +3,31 @@
 # Copyright (C) 2022 Jeffrey Lazar, Stephan Meighen-Berger
 # Interface class to the different lepton injectors
 
-from abc import ABC, abstractmethod
+from typing import Iterable
 
-class Injection(ABC):
+from .injection_event import InjectionEvent
 
-    @property
-    @abstractmethod
-    def injection_energy(self):
-        pass
-
-    @property
-    @abstractmethod
-    def injection_type(self):
-        pass
-
-    @property
-    @abstractmethod
-    def injection_interaction_type(self):
-        pass
-
-    @property
-    @abstractmethod
-    def injection_zenith(self):
-        pass
-
-    @property
-    @abstractmethod
-    def injection_azimuth(self):
-        pass
-
-    @property
-    @abstractmethod
-    def injection_bjorkenx(self):
-        pass
-
-    @property
-    @abstractmethod
-    def injection_bjorkeny(self):
-        pass
-
-    @property
-    @abstractmethod
-    def injection_position_x(self):
-        pass
-
-    @property
-    @abstractmethod
-    def injection_position_y(self):
-        pass
-
-    @property
-    @abstractmethod
-    def injection_position_z(self):
-        pass
-
-    @property
-    @abstractmethod
-    def injection_column_depth(self):
-        pass
-
-    @property
-    @abstractmethod
-    def primary_particle_1_type(self):
-        pass
-
-    @property
-    @abstractmethod
-    def primary_particle_1_energy(self):
-        pass
-
-    @property
-    @abstractmethod
-    def primary_particle_1_position_x(self):
-        pass
-
-    @property
-    @abstractmethod
-    def primary_particle_1_position_y(self):
-        pass
-
-    @property
-    @abstractmethod
-    def primary_particle_1_position_z(self):
-        pass
-
-    @property
-    @abstractmethod
-    def primary_particle_1_direction_theta(self):
-        pass
-
-    @property
-    @abstractmethod
-    def primary_particle_1_direction_phi(self):
-        pass
-
-    @property
-    @abstractmethod
-    def primary_particle_2_type(self):
-        pass
+class Injection:
     
-    @property
-    @abstractmethod
-    def primary_particle_2_energy(self):
-        pass
+    def __init__(
+        self,
+        events: Iterable[InjectionEvent]
+    ):
+        self._events = events
+        self._size = len(events)
+        self._current_idx = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self._current_idx >= self._size:
+            self._current_idx = 0
+            raise StopIteration
+        event = self.events[self._current_idx]
+        self._current_idx += 1
+        return event
 
     @property
-    @abstractmethod
-    def primary_particle_2_position_x(self):
-        pass
-
-    @property
-    @abstractmethod
-    def primary_particle_2_position_y(self):
-        pass
-
-    @property
-    @abstractmethod
-    def primary_particle_2_position_z(self):
-        pass
-
-    @property
-    @abstractmethod
-    def primary_particle_2_direction_theta(self):
-        pass
-
-    @property
-    @abstractmethod
-    def primary_particle_2_direction_phi(self):
-        pass
-
-    @property
-    @abstractmethod
-    def total_energy(self):
-        pass
-
-    @abstractmethod
-    def serialize_to_awkward(self):
-        pass
-
-    @abstractmethod
-    def serialize_to_dict(self):
-        pass
+    def events(self):
+        return self._events
