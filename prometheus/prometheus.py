@@ -228,6 +228,7 @@ class Prometheus(object):
     def construct_output(self):
         """Constructs a parquet file with metadata from the generated files.
         Currently this still treats olympus and ppc output differently."""
+        start = time()
         sim_switch = config["photon propagator"]["name"]
         if not ("ppc" in sim_switch.lower() or sim_switch.lower()=="olympus"):
             raise UnknownSimulationError(sim_switch)
@@ -268,17 +269,19 @@ class Prometheus(object):
         test_arr = totals_from_awkward_arr(outarr)
         if test_arr is not None:
             outarr = ak.with_field(outarr, test_arr, where="total")
-        print("Converting to parquet")
-        ak.to_parquet(
-            outarr,
-            f"{config['general']['storage location']}{config['general']['meta name']}.parquet"
-        )
+        # print("Converting to parquet")
+        # ak.to_parquet(
+        #     outarr,
+        #     f"{config['general']['storage location']}{config['general']['meta name']}.parquet"
+        # )
+        print("Converting to table")
+        table = ak.to_arrow_table(outarr)
         print("Adding metadata")
         # Adding meta data
-        table = pq.read_table(
-            config["general"]["storage location"] +
-            config["general"]["meta name"] + ".parquet"
-        )
+        # table = pq.read_table(
+        #     config["general"]["storage location"] +
+        #     config["general"]["meta name"] + ".parquet"
+        # )
         # TODO this is a bad way of doing this
         if config["photon propagator"]["name"].lower()=="olympus":
             if "runtime" in config["photon propagator"]["olympus"].keys():
@@ -294,9 +297,11 @@ class Prometheus(object):
             f"{config['general']['storage location']}{config['general']['meta name']}.parquet"
         )
         print("Finished new data file")
+        end = time()
+        print(f"The data dump took {end - start} seconds")
 
-    def plot(self, event, **kwargs):
-        plot_event(event, self._det, **kwargs)
+    # def plot(self, event, **kwargs):
+    #     plot_event(event, self._det, **kwargs)
 
     def event_plotting(
         self, det, event, record=None,

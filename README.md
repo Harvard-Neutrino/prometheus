@@ -22,7 +22,7 @@ Authors:
 
 ## Introduction <a name="introduction"></a>
 
-Welcome to Hebe!
+Welcome to Prometheus!
 
 A python package to model any neutrino telescope by glueing together (and adding) different public software tools.
 
@@ -30,12 +30,12 @@ A python package to model any neutrino telescope by glueing together (and adding
 
 Please cite this [software](https://github.com/Harvard-Neutrino/hebe) using
 ```
-@software{hebe2022@github,
+@software{prometheus2023@github,
   author = {Jeffrey Lazar and Stephan Meighen-Berger and Christian Haack and David Kim and Carlos Argueelles Delgado},
-  title = {{Hebe}: Neutrino Telescope Simulation Suite,
-  url = {https://github.com/Harvard-Neutrino/hebe},
+  title = {{Prometheus}: Neutrino Telescope Simulation Suite,
+  url = {https://github.com/Harvard-Neutrino/prometheus},
   version = {0.0.1},
-  year = {2022},
+  year = {2023},
 }
 ```
 

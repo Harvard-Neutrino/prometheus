@@ -47,6 +47,7 @@ def generate_cascade(
     seed,
     pprop_func,
     converter_func,
+    splitter=1000,
 ):
     """
     Generate a single cascade with given amplitude and position and return time of detected photons.
@@ -61,6 +62,8 @@ def generate_cascade(
             Function to calculate the photon signal
         converter_func: function
             Function to calculate number of photons as function of energy
+        splitter: int
+            Subset of the modules to use per run. This is for memory
 
     """
 
@@ -81,7 +84,30 @@ def generate_cascade(
         event_data,
     )
 
-    propagation_result = pprop_func(
+    # splitting for memory efficiency
+    if det.module_coords.shape[0] > splitter:
+        det_subsets_coords = np.array_split(
+            det.module_coords,
+            det.module_coords.shape[0] % splitter
+        )
+        det_subsets_eff = np.array_split(
+            det.module_efficiencies,
+            det.module_coords.shape[0] % splitter
+        )
+        propagation_result = [
+            pprop_func(
+            det_subsets_coords[id_set],
+            det_subsets_eff[id_set],
+            source_pos,
+            source_dir,
+            source_time,
+            source_nphotons,
+            seed=k2,
+        ) for id_set, _ in enumerate(det_subsets_coords)
+        ]
+        propagation_result = ak.concatenate(propagation_result)
+    else:
+        propagation_result = pprop_func(
         det.module_coords,
         det.module_efficiencies,
         source_pos,
@@ -275,6 +301,7 @@ def generate_realistic_track(
     key,
     pprop_func,
     proposal_prop,
+    splitter=1000
 ):
     """
     Generate a realistic track using energy losses from PROPOSAL.
@@ -289,6 +316,8 @@ def generate_realistic_track(
             Function to calculate the photon signal
         proposal_prop: function
             Propoposal propagator
+        splitter: int
+            Splits the detector modules in splitter sized chunks for memory efficiency
     """
 
     if proposal_prop is None:
@@ -331,15 +360,38 @@ def generate_realistic_track(
         source_array_to_sources(source_pos, source_dir, source_time, source_photons),
         event_data,
     )
-    propagation_result = pprop_func(
-        det.module_coords,
-        det.module_efficiencies,
-        source_pos,
-        source_dir,
-        source_time,
-        source_photons,
-        seed=k2,
-    )
+    # splitting for memory efficiency
+    if det.module_coords.shape[0] > splitter:
+        det_subsets_coords = np.array_split(
+            det.module_coords,
+            det.module_coords.shape[0] % splitter
+        )
+        det_subsets_eff = np.array_split(
+            det.module_efficiencies,
+            det.module_coords.shape[0] % splitter
+        )
+        propagation_result = [
+            pprop_func(
+                det_subsets_coords[id_set],
+                det_subsets_eff[id_set],
+                source_pos,
+                source_dir,
+                source_time,
+                source_photons,
+                seed=k2,
+            ) for id_set, _ in enumerate(det_subsets_coords)
+        ]
+        propagation_result = ak.concatenate(propagation_result)
+    else:
+        propagation_result = pprop_func(
+                det.module_coords,
+                det.module_efficiencies,
+                source_pos,
+                source_dir,
+                source_time,
+                source_photons,
+                seed=k2,
+            )
     return propagation_result, record
 
 
