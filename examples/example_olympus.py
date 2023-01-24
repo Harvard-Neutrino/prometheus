@@ -30,9 +30,9 @@ def main(args=None):
         f"./output/orca2_{rset}_output_LI.h5"
     )
     config['injection']["LeptonInjector"]['simulation']['nevents'] = 10
-    config['injection']["LeptonInjector"]['simulation']['minimal energy'] = 1e2
-    config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e3
-    config['photon propagator']['olympus']['simulation']['splitter'] = 1000
+    config['injection']["LeptonInjector"]['simulation']['minimal energy'] = 1e4
+    config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e5
+    config['photon propagator']['olympus']['simulation']['splitter'] = 500
     config['detector']['injection offset'] = [0., 0., 0]
     config['photon propagator']['name'] = 'olympus'
     config["detector"]["specs file"] = '../hebe/data/orca-geo'
