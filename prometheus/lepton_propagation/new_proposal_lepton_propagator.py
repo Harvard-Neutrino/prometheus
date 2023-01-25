@@ -6,7 +6,7 @@ import numpy as np
 import proposal as pp
 
 from .lepton_propagator import LeptonPropagator
-from ..particle import Particle
+from ..particle import Particle, particle_from_proposal
 from ..detector import Detector
 from ..utils.units import GeV_to_MeV, MeV_to_GeV, cm_to_m, m_to_cm
 
@@ -229,6 +229,8 @@ def new_proposal_losses(
     for dist in loss_dists:
         pos = dist * particle.direction + particle.position
         particle.add_loss(Loss(1000000008, e_loss, pos))
+    for child in secondarys.decay_products():
+        particle.add_child(particle_from_proposal(child))
     if soft_losses:
         total_loss = np.sum([len(losses[loss]) for loss in losses])
     else:

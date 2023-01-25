@@ -40,15 +40,15 @@ def ppc_sim(
     elif abs(int(particle))==111: # It's a neutral pion
         # TODO handle this correctl by converting to photons after prop
         return None, None
-    elif abs(int(particle))==211: # It's a charged pion
-        if np.linalg.norm(particle.position) <= r_inice:
+    elif abs(int(particle))==211 or abs(int(particle))==321: # It's a charged pion
+        if np.linalg.norm(particle.position-det.offset) <= r_inice:
             loss = Loss(int(particle), particle.e, particle.position)
             particle.add_loss(loss)
     elif abs(int(particle))==311: # It's a neutral kaon
         # TODO handle this correctl by converting to photons after prop
         return None, None
     elif int(particle)==-2000001006 or int(particle)==2212: # Hadrons
-        if np.linalg.norm(particle.position) <= r_inice:
+        if np.linalg.norm(particle.position-det.offset) <= r_inice:
             loss = Loss(int(particle), particle.e, particle.position)
             particle.add_loss(loss)
     else:
@@ -68,10 +68,6 @@ def ppc_sim(
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
     process.wait()
     particle._hits = parse_ppc(ppc_file)
-    # Cleanup f2k_tmpfile
-    # TODO maybe make this optional
-    os.remove(ppc_file)
-    os.remove(f2k_file)
     return None, None
 
 class PPCPhotonPropagator(PhotonPropagator):
