@@ -4,10 +4,10 @@ sys.path.append("..")
 import numpy as np
 from pytest import approx
 
-from hebe.detector import detector_from_geo
-from hebe.detector.medium import Medium
+from prometheus.detector import detector_from_geo
+from prometheus.detector.medium import Medium
 
-ICECUBE = detector_from_geo("../hebe/data/icecube-geo")
+ICECUBE = detector_from_geo("../prometheus/data/icecube-geo")
 
 TOL = 1e-5
 

@@ -3,7 +3,7 @@
 # imports
 import sys
 sys.path.append('../')
-from hebe import HEBE, config
+from prometheus import Prometheus, config
 from jax.config import config as jconfig
 import gc
 import os
@@ -32,13 +32,11 @@ def main(args=None):
     config["injection"]['LeptonInjector']['simulation']["endcap length"] = 800
     config["injection"]['LeptonInjector']['simulation']["cylinder radius"] = 800
     config["injection"]['LeptonInjector']['simulation']["cylinder height"] = 1000
-    config["detector"]["specs file"] = '../hebe/data/icecube-geo'
+    config["detector"]["specs file"] = '../prometheus/data/icecube-geo'
     config['photon propagator']['name'] = 'PPC_CUDA'
-    hebe = HEBE(userconfig=config)
-    hebe.sim()
-
-    hebe.sim()
-    del hebe
+    prometheus = Prometheus(userconfig=config)
+    prometheus.sim()
+    del prometheus
     gc.collect()
     # Getting all memory using os.popen()
     total_memory, used_memory, _ = map(

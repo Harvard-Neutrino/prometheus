@@ -10,7 +10,7 @@ def simulate_batch(settings):
     id, n_events = settings
     import sys
     sys.path.append('../')
-    from hebe import HEBE, config
+    from prometheus import Prometheus, config
     from jax.config import config as jconfig
     import gc
     jconfig.update("jax_enable_x64", True)
@@ -29,11 +29,11 @@ def simulate_batch(settings):
     config['detector']['injection offset'] = [0., 0., 0]
     config['photon propagator']['name'] = 'olympus'
     config["detector"]['new detector'] = True
-    config["detector"]['detector specs file'] = '../hebe/data/custom.txt'
-    config["detector"]["file name"] = '../hebe/data/custom-f2k'
-    hebe = HEBE()
-    hebe.sim()
-    del hebe
+    config["detector"]['detector specs file'] = '../prometheus/data/custom.txt'
+    config["detector"]["file name"] = '../prometheus/data/custom-f2k'
+    prometheus = Prometheus()
+    prometheus.sim()
+    del prometheus
     gc.collect()
     return
 
