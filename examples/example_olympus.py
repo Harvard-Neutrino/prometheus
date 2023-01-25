@@ -30,16 +30,15 @@ def main(args=None):
         f"./output/orca2_{rset}_output_LI.h5"
     )
     config['injection']["LeptonInjector"]['simulation']['nevents'] = 10
-    config['injection']["LeptonInjector"]['simulation']['minimal energy'] = 1e2
-    config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e3
-    config['photon propagator']['olympus']['simulation']['splitter'] = 1000
-    config['detector']['injection offset'] = [0., 0., 0]
+    config['injection']["LeptonInjector"]['simulation']['minimal energy'] = 1e4
+    config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e5
+    config['photon propagator']['olympus']['simulation']['splitter'] = 3000
     config['photon propagator']['name'] = 'olympus'
     config["detector"]["specs file"] = '../hebe/data/orca-geo'
     prometheus = Prometheus()
 
-    prometheus.sim()
-    del prometheus
+    prom.sim()
+    del prom
     gc.collect()
     # Getting all memory using os.popen()
     total_memory, used_memory, _ = map(
