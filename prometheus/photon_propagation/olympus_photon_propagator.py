@@ -123,6 +123,11 @@ class OlympusPhotonPropagator(PhotonPropagator):
                 )
             om_idx += 1
         particle._hits = hits
+        for child in particle.children:
+            if child.e < 1:
+                continue
+            self.propagate(child)
+
 
     def _c_medium_f(self, wl):
         """ Speed of light in medium for wl (nm)
