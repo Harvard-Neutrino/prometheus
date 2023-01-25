@@ -26,7 +26,7 @@ def main(args=None):
     config['injection']["LeptonInjector"]['paths']['output name'] = (
         f"./output/custom_{rset}_output_LI.h5"
     )
-    config['injection']["LeptonInjector"]['simulation']['nevents'] = 10
+    config['run']['nevents'] = 10
     config['injection']["LeptonInjector"]['simulation']['minimal energy'] = 1e4
     config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e5
     config['detector']['injection offset'] = [0., 0., 0]
