@@ -196,16 +196,6 @@ _baseconfig = {
             }
         },
     },
-    ###########################################################################
-    # Plot
-    ###########################################################################
-    # TODO do we wanna keep plotting as an option internally ? I kind think we should
-    # totally factor it out
-    'plot': {
-        'xrange': [-1500, 1500],
-        'yrange': [-1500, 1500],
-        'zrange': [-3000, 100]
-    }
 }
 
 
