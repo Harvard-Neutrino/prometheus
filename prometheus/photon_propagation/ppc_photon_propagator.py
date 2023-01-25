@@ -25,17 +25,12 @@ def ppc_sim(
     command = f"{ppc_config['paths']['ppc_exe']} {ppc_config['simulation']['device']} < {f2k_file} > {ppc_file}"
     if ppc_config["simulation"]["supress_output"]:
         command += " 2>/dev/null"
-    # TODO This could all be factored out into a LP step
     if abs(int(particle)) in [12, 14, 16]: # It's a neutrino
         return None, None
     # TODO put this in config
     r_inice = det.outer_radius + 1000
     if abs(int(particle)) in [11, 13, 15]: # It's a charged lepton
         lp.energy_losses(particle, det)
-        for child in particle.children:
-            # TODO put this in config
-            if child.e > 1: # GeV
-                ppc_sim(child, det, lp, ppc_config)
     # All of these we consider as point depositions
     elif abs(int(particle))==111: # It's a neutral pion
         # TODO handle this correctl by converting to photons after prop
@@ -68,7 +63,12 @@ def ppc_sim(
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
     process.wait()
     particle._hits = parse_ppc(ppc_file)
-    return None, None
+
+    for child in particle.children:
+        # TODO put this in config
+        if child.e < 1: # GeV
+            continue
+        ppc_sim(child, det, lp, ppc_config)
 
 class PPCPhotonPropagator(PhotonPropagator):
     """Interface for simulating energy losses and light propagation using PPC"""
