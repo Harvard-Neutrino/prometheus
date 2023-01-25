@@ -185,8 +185,8 @@ class Prometheus(object):
                 for final_state in injection_event.final_states:
                     pbar.set_description(f"Propagating {final_state}")
                     self._photon_propagator.propagate(final_state)
-
-        config["runtime"] = None
+        if config["photon propagator"]["name"].lower()=="olympus":
+            config["photon propagator"]["olympus"]["runtime"] = None
 
     def sim(self):
         """Performs injection of precipitating interaction, calculates energy losses,
@@ -211,16 +211,10 @@ class Prometheus(object):
         from .utils.serialization import serialize_particles_to_awkward, set_serialization_index
         set_serialization_index(self.injection)
         outarr = ak.Array({})
-        test_arr = serialize_particles_to_awkward(self.detector, self.injection)
         outarr = ak.with_field(outarr, self.injection.to_awkward(), where="mc_truth")
-        # TODO: Unify this for olympus and PPC
-        if "ppc" in sim_switch.lower():
-                
-            # We only add this to the array if anything made light
-            if test_arr is not None:
-                outarr = ak.with_field(outarr, test_arr, where="total")
-        elif sim_switch.lower() == "olympus":
-            raise ValueError("WIP :-)")
+        test_arr = serialize_particles_to_awkward(self.detector, self.injection)
+        if test_arr is not None:
+            outarr = ak.with_field(outarr, test_arr, where="total")
         outfile = f"{config['general']['storage location']}{config['general']['meta name']}.parquet"
         ak.to_parquet(outarr, outfile)
         table = pq.read_table(outfile)
