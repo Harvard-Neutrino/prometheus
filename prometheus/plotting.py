@@ -73,7 +73,7 @@ def plot_event(
     azi_angle=None
 ):
     # TODO: Add formatting check
-    fig = plt.figure(figsize=(10, 4))
+    fig = plt.figure(figsize=(6, 5))
     ax  = fig.add_subplot(111, projection='3d')
     #particle_fields = [field for field in event.fields if field not in "mc_truth event_id".split()]
     #om_ids = []
@@ -156,7 +156,7 @@ def plot_event(
     
     # Rotate the axes and update
     if azi_angle is None:
-        azi_angle = np.degrees(event.mc_truth.injection_azimuth+np.pi/2)
+        azi_angle = np.degrees(event.mc_truth.initial_azimuth+np.pi/2)
     ax.view_init(elevation_angle, azi_angle)
     plt.savefig(figname, bbox_inches='tight')
 
