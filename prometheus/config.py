@@ -50,9 +50,9 @@ _baseconfig = {
             'inject': True,
             'paths':{
                 'install location': '/opt/LI/install/lib/python3.9/site-packages',
-                'xsec location': '/opt/LI/source/resources/',
-                'diff xsec': "/test_xs.fits",
-                'total xsec': "/test_xs_total.fits",
+                'xsec dir': '/opt/LI/source/resources/',
+                'diff xsec': "test_xs.fits",
+                'total xsec': "test_xs_total.fits",
                 'output name': "./data_output.h5",
                 "lic name": "./config.lic",
                 'earth model location': "earthparams/",
