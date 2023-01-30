@@ -34,11 +34,11 @@ def main(args=None):
     config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e5
     config['photon propagator']['olympus']['simulation']['splitter'] = 3000
     config['photon propagator']['name'] = 'olympus'
-    config["detector"]["specs file"] = '../hebe/data/orca-geo'
+    config["detector"]["specs file"] = '../prometheus/data/pone_triangle-geo'
     prometheus = Prometheus()
 
-    prom.sim()
-    del prom
+    prometheus.sim()
+    del prometheus
     gc.collect()
     # Getting all memory using os.popen()
     total_memory, used_memory, _ = map(
