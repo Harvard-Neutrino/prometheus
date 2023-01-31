@@ -32,17 +32,13 @@ def make_new_LI_injection(
         raise ImportError("LeptonInjector not found!")
     xs_folder = os.path.join(
         os.path.dirname(__file__),
-        path_dict["xsec location"]
+        path_dict["xsec dir"]
     )
     n_events = injection_specs["nevents"]
-    diff_xs = f"{path_dict['xsec location']}/{path_dict['diff xsec']}"
-    total_xs = f"{path_dict['xsec location']}/{path_dict['total xsec']}"
+    diff_xs = f"{path_dict['xsec dir']}/{path_dict['diff xsec']}"
+    total_xs = f"{path_dict['xsec dir']}/{path_dict['total xsec']}"
     is_ranged = injection_specs["is ranged"]
     particles = []
-    print(
-        injection_specs["final state 1"],
-        injection_specs["final state 2"]
-    )
     for id_name, names in enumerate([
         injection_specs["final state 1"],
         injection_specs["final state 2"]
@@ -86,10 +82,10 @@ def make_new_LI_injection(
     )
     controller.SetEarthModel(injection_specs["earth model"], path_to)
     controller.setSeed(injection_specs["random state seed"])
-    controller.NameOutfile(path_dict["output name"])
-    controller.NameLicFile(path_dict["lic name"])
+    controller.NameOutfile(path_dict["injection file"])
+    controller.NameLicFile(path_dict["lic file"])
 
     # run the simulation
     controller.Execute()
     # Translate injection to detector coordinate system
-    apply_detector_offset(path_dict["output name"], detector_offset)
+    apply_detector_offset(path_dict["injection file"], detector_offset)
