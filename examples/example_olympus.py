@@ -30,11 +30,11 @@ def main(args=None):
         f"./output/orca2_{rset}_output_LI.h5"
     )
     config['injection']["LeptonInjector"]['simulation']['nevents'] = 10
-    config['injection']["LeptonInjector"]['simulation']['minimal energy'] = 1e4
-    config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e5
-    config['photon propagator']['olympus']['simulation']['splitter'] = 3000
+    config['injection']["LeptonInjector"]['simulation']['minimal energy'] = 1e2
+    config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e3
+    config['photon propagator']['olympus']['simulation']['splitter'] = 4000
     config['photon propagator']['name'] = 'olympus'
-    config["detector"]["specs file"] = '../prometheus/data/pone_triangle-geo'
+    config["detector"]["specs file"] = '../prometheus/data/orca-geo'
     prom = Prometheus()
 
     prom.sim()
