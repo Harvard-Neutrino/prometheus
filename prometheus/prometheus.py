@@ -148,7 +148,7 @@ class Prometheus(object):
                 raise InjectorNotImplementedError()
 
             injection_config["simulation"]["random state seed"] = (
-                config["general"]["random state seed"]
+                config["run"]["random state seed"]
             )
 
             INJECTOR_DICT[self._injector](
@@ -158,23 +158,23 @@ class Prometheus(object):
             )
 
         self._injection = INJECTION_CONSTRUCTOR_DICT[self._injector](
-            injection_config["paths"]["output name"]
+            injection_config["paths"]["injection file"]
         )
 
     # We should factor out generating losses and photon prop
     def propagate(self):
         """Calculates energy losses, generates photon yields, and propagates photons"""
         if config["photon propagator"]["name"].lower()=="olympus":
-            rstate = np.random.RandomState(config["general"]["random state seed"])
-            rstate_jax = random.PRNGKey(config["general"]["random state seed"])
+            rstate = np.random.RandomState(config["run"]["random state seed"])
+            rstate_jax = random.PRNGKey(config["run"]["random state seed"])
             # TODO this feels like it shouldn't be in the config
             config["photon propagator"]["olympus"]["runtime"] = {
                 "random state": rstate,
                 "random state jax": rstate_jax,
             }
 
-        if config["run"]["subset"]["switch"]:
-            nevents = config["run"]["subset"]["counts"]
+        if config["run"]["subset"] is not None:
+            nevents = config["run"]["subset"]
         else:
             nevents = len(self.injection)
 
@@ -193,12 +193,12 @@ class Prometheus(object):
         calculates photon yield, propagates photons, and save resultign photons"""
         if "runtime" in config["photon propagator"].keys():
             config["photon propagator"]["runtime"] = None
-        with open(config["general"]["config location"], "w") as f:
-            json.dump(config, f, indent=2)
+        #with open(config["general"]["config location"], "w") as f:
+        #    json.dump(config, f, indent=2)
         self.inject()
         self.propagate()
         self.construct_output()
-        if config["general"]["clean up"]:
+        if config["run"]["clean up"]:
             self._clean_up()
 
     def construct_output(self):
@@ -210,12 +210,19 @@ class Prometheus(object):
         print("Generating the different particle fields...")
         from .utils.serialization import serialize_particles_to_awkward, set_serialization_index
         set_serialization_index(self.injection)
-        outarr = ak.Array({})
+        outarr = ak.Record({"config": config})
+        photon_paths = config["photon propagator"][config["photon propagator"]["name"]]["paths"]
+        #outarr = ak.with_field(outarr, ak.Record(config), where="config")
         outarr = ak.with_field(outarr, self.injection.to_awkward(), where="mc_truth")
         test_arr = serialize_particles_to_awkward(self.detector, self.injection)
         if test_arr is not None:
-            outarr = ak.with_field(outarr, test_arr, where="total")
-        outfile = f"{config['general']['storage location']}{config['general']['meta name']}.parquet"
+            outarr = ak.with_field(
+                outarr,
+                test_arr,
+                where=photon_paths["photon field name"]
+            )
+        outfile = photon_paths['outfile']
+        print(outfile)
         ak.to_parquet(outarr, outfile)
         table = pq.read_table(outfile)
         custom_meta_data = json.dumps(config)
@@ -238,7 +245,7 @@ class Prometheus(object):
         for key in self._results.keys():
             try:
                 os.remove(
-                    f"{config['general']['storage location']}{key}.parquet"
+                    f"{config['run']['storage location']}{key}.parquet"
                 )
             except FileNotFoundError:
                 continue

@@ -15,26 +15,20 @@ _baseconfig = {
     "general": {
         # Random state seed
         "version": "GitHub",
-        "random state seed": 1337,
-        'config location': '../run/config.json',
-        'meta data file': True,  # Switch to store meta data file
-        'meta name': 'meta_data',
-        'clean up': False,  # Delete all intermediate and temporary files
-        'storage location': './output/',
-        'full output' : False
     },
     ###########################################################################
     # Scenario input
     ###########################################################################
     "run": {
-        # Defines some run parameters
+        "run number": 1337,
         'nevents': 10,
-        # If a subset should be used:
-        'subset': {
-            'switch': False,
-            'counts': 10,
-        },
-        'noise': False,
+        'storage prefix': './output/',
+        'config name': 'config',
+        'clean up': False,
+        'full output' : False,
+        # Random seed will follow run number if None
+        "random state seed": None,
+        'subset': None,
     },
     ###########################################################################
     # Detector
@@ -42,6 +36,7 @@ _baseconfig = {
     "detector": {
         'specs file': None,  # Name of the file to use for build
     },
+    ###########################################################################
     # Injection
     ###########################################################################
     'injection': {
@@ -53,9 +48,10 @@ _baseconfig = {
                 'xsec dir': '/opt/LI/source/resources/',
                 'diff xsec': "test_xs.fits",
                 'total xsec': "test_xs_total.fits",
-                'output name': "./data_output.h5",
-                "lic name": "./config.lic",
                 'earth model location': "earthparams/",
+                # These fields will be set with output prefix and run number
+                'injection file': None,
+                "lic file": None,
             },
             'simulation': {
                 'is ranged': False,
@@ -79,13 +75,15 @@ _baseconfig = {
         'Prometheus':{
             'inject': False,
             'paths': {
-                'output name': "./data_output.parquet"
+                'injection file': None,
             },
             'simulation': {}
         },
         'GENIE':{
             'inject': False,
-            'paths': {},
+            'paths': {
+                "injection file": None,
+            },
             'simulation': {}
         }
     },
@@ -153,6 +151,8 @@ _baseconfig = {
                 'photon model': 'pone_config.json',
                 'flow': "photon_arrival_time_nflow_params.pickle",
                 'counts': "photon_arrival_time_counts_params.pickle",
+                "photon field name": "photons",
+                "outfile": None
             },
             "simulation": {
                 'files': True,
@@ -175,6 +175,8 @@ _baseconfig = {
                 'f2k_prefix':'',
                 'ppctables':'../PPC_tables/ic_accept_all/',
                 'ppc_exe':'../PPC_CUDA/ppc', # binary executable
+                "photon field name": "photons",
+                "outfile": None
             },
             "simulation": {
                 'device':0, # GPU,
@@ -190,6 +192,8 @@ _baseconfig = {
                 'f2k_prefix':'',
                 'ppctables':'../PPC_tables/ic_accept_all/',
                 'ppc_exe': '../PPC/ppc',  # binary executable
+                "photon field name": "photons",
+                "outfile": None,
             },
             "simulation": {
                 'device': 0,  # CPU
