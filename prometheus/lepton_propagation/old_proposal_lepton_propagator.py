@@ -7,7 +7,7 @@ import proposal as pp
 
 from .lepton_propagator import LeptonPropagator
 from .loss import Loss
-from ..particle import Particle
+from ..particle import Particle, particle_from_proposal
 # TODO This doesn't need to be here
 from ..detector import Detector
 from ..utils import iter_or_rep
@@ -63,7 +63,6 @@ def make_medium(medium_string: str) -> pp.medium.Medium:
     -------
     medium_def: Medium in which the propagation should take place
     """
-    print('This assumes a homogeneous medium!')
     if medium_string.lower() not in 'water ice'.split():
         raise ValueError(f"Medium {medium_string} not supported at this time.")
     medium_def = getattr(pp.medium, medium_string.capitalize())()
@@ -195,13 +194,7 @@ def old_proposal_losses(
             if np.linalg.norm(pos - detector_center) <= r_inice:
                 particle.add_loss(Loss(sec.type, sec_energy, pos))
         else: # This is a particle. Might need to propagate
-            child = Particle(
-                sec.type,
-                sec.energy,
-                sec.position,
-                sec.direction,
-                parent=particle
-            )
+            child = particle_from_proposal(sec, parent=particle)
             particle.add_child(child)
     total_loss = None
     return particle
@@ -222,7 +215,6 @@ class OldProposalLeptonPropagator(LeptonPropagator):
         _______
         propagator: PROPOSAL propagator
         """ 
-        print("Making propagator")
         propagator = make_propagator(
             particle,
             self._config["simulation"],

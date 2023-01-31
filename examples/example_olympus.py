@@ -37,8 +37,8 @@ def main(args=None):
     config["detector"]["specs file"] = '../prometheus/data/orca-geo'
     prom = Prometheus()
 
-    prom.sim()
-    del prom
+    prometheus.sim()
+    del prometheus
     gc.collect()
     # Getting all memory using os.popen()
     total_memory, used_memory, _ = map(
