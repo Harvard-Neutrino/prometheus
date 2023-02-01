@@ -14,7 +14,7 @@ _baseconfig = {
     ###########################################################################
     "general": {
         # Random state seed
-        "version": "GitHub",
+        "version": "github"
     },
     ###########################################################################
     # Scenario input
@@ -24,7 +24,6 @@ _baseconfig = {
         'nevents': 10,
         'storage prefix': './output/',
         'config name': 'config',
-        'clean up': False,
         'full output' : False,
         # Random seed will follow run number if None
         "random state seed": None,
@@ -200,7 +199,7 @@ _baseconfig = {
                 'supress_output': True
             }
         },
-    },
+    }
 }
 
 

@@ -144,13 +144,11 @@ class Prometheus(object):
             injection_config["simulation"]["random state seed"] = (
                 config["run"]["random state seed"]
             )
-
             INJECTOR_DICT[self._injector](
                 injection_config["paths"],
                 injection_config["simulation"],
                 detector_offset=self.detector.offset
             )
-
         self._injection = INJECTION_CONSTRUCTOR_DICT[self._injector](
             injection_config["paths"]["injection file"]
         )
@@ -192,8 +190,6 @@ class Prometheus(object):
         self.inject()
         self.propagate()
         self.construct_output()
-        if config["run"]["clean up"]:
-            self._clean_up()
 
     def construct_output(self):
         """Constructs a parquet file with metadata from the generated files.
@@ -204,7 +200,8 @@ class Prometheus(object):
         print("Generating the different particle fields...")
         from .utils.serialization import serialize_particles_to_awkward, set_serialization_index
         set_serialization_index(self.injection)
-        outarr = ak.Record({"config": config})
+        json_config = json.dumps(config)
+        outarr = ak.Record({"config": json_config})
         photon_paths = config["photon propagator"][config["photon propagator"]["name"]]["paths"]
         #outarr = ak.with_field(outarr, ak.Record(config), where="config")
         outarr = ak.with_field(outarr, self.injection.to_awkward(), where="mc_truth")
@@ -216,30 +213,17 @@ class Prometheus(object):
                 where=photon_paths["photon field name"]
             )
         outfile = photon_paths['outfile']
-        print(outfile)
-        ak.to_parquet(outarr, outfile)
-        table = pq.read_table(outfile)
-        custom_meta_data = json.dumps(config)
+        # Converting to pyarrow table
+        outarr = ak.to_arrow_table(outarr)
+        # ak.to_parquet(outarr, outfile)
+        # table = pq.read_table(outfile)
         custom_meta_data_key = "config_prometheus"
-        combined_meta = {custom_meta_data_key.encode() : custom_meta_data.encode()}
-        table = table.replace_schema_metadata(combined_meta)
-        pq.write_table(table, outfile)
+        combined_meta = {custom_meta_data_key.encode() : json_config.encode()}
+        outarr = outarr.replace_schema_metadata(combined_meta)
+        pq.write_table(outarr, outfile)
 
     def __del__(self):
         """What to do when the Prometheus instance is deleted
         """
         print("I am melting.... AHHHHHH!!!!")
 
-    def _clean_up(self):
-        """Remove temporary and intermediate files.
-        """
-        print("Removing intermediate data files.")
-        injector_name = config["injection"]["name"]
-        os.remove(config["injection"][injector_name]["paths"]["output name"])
-        for key in self._results.keys():
-            try:
-                os.remove(
-                    f"{config['run']['storage location']}{key}.parquet"
-                )
-            except FileNotFoundError:
-                continue
