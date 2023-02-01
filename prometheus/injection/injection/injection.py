@@ -66,13 +66,13 @@ class Injection:
         # TODO make this recursive
         d = {}
         d["interaction"] = [x.interaction.value for x in self]
-        d["initial_energy"] = [x.initial_state.e for x in self]
-        d["initial_type"] = [x.initial_state.pdg_code for x in self]
-        d["initial_zenith"] = [x.initial_state.theta for x in self]
-        d["initial_azimuth"] = [x.initial_state.phi for x in self]
-        d["initial_x"] = [x.initial_state.position[0] for x in self]
-        d["initial_y"] = [x.initial_state.position[1] for x in self]
-        d["initial_z"] = [x.initial_state.position[2] for x in self]
+        d["initial_state_energy"] = [x.initial_state.e for x in self]
+        d["initial_state_type"] = [x.initial_state.pdg_code for x in self]
+        d["initial_state_zenith"] = [x.initial_state.theta for x in self]
+        d["initial_state_azimuth"] = [x.initial_state.phi for x in self]
+        d["initial_state_x"] = [x.initial_state.position[0] for x in self]
+        d["initial_state_y"] = [x.initial_state.position[1] for x in self]
+        d["initial_state_z"] = [x.initial_state.position[2] for x in self]
         final_state_es = []
         final_state_types = []
         final_state_zeniths = []
@@ -97,7 +97,7 @@ class Injection:
         d["final_state_x"] = final_state_xs
         d["final_state_y"] = final_state_ys
         d["final_state_z"] = final_state_zs
-        d["parent"] = parents
+        d["final_state_parent"] = parents
 
         return d
 
