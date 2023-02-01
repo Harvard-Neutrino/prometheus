@@ -22,18 +22,13 @@ def main(args=None):
     else:
         rset = int(args[1])
     print('CURRENT SET %d' % rset)
-    config["general"]["random state seed"] = rset
-    config["general"]["meta_name"] = f'meta_data_{rset}'
-    config['general']['run'] = True
-    config['general']['storage location'] = f'./output/pone_{rset}_'
-    config['injection']["LeptonInjector"]['paths']['output name'] = (
-        f"./output/orca2_{rset}_output_LI.h5"
-    )
+    config['run']['run number'] = rset
+    config["run"]["random state seed"] = rset
+    config['run']['nevents'] = 10
     # Injection parameters
     config["injection"]["name"] = "LeptonInjector"
-    config['injection']["LeptonInjector"]['simulation']['nevents'] = 10
     config['injection']["LeptonInjector"]['simulation']['minimal energy'] = 1e4
-    config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e5
+    config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e6
     # NUmber of modules to model at once
     # Smaller numbers make the simulation slower but less memory intensive
     config['photon propagator']['olympus']['simulation']['splitter'] = 4000
