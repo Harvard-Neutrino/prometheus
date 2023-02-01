@@ -14,6 +14,8 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 jconfig.update("jax_enable_x64", True)
+# Global flag to set a specific platform, must be used at startup.
+jconfig.update('jax_platform_name', 'cpu')
 
 def main(args=None):
     if args is None:
