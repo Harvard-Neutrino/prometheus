@@ -13,22 +13,6 @@ class CrossSectionFilesNotFoundError(Exception):
         self.message += "Sorry about it"
         super().__init__(self.message)
 
-def xs_files_exist(xs_dir):
-    from os.path import isfile
-    return (
-        isfile(f"{xs_dir}/dsdxdy-numu-N-cc-HERAPDF15NLO_EIG_central.fits") and
-        isfile(f"{xs_dir}/dsdxdy-numubar-N-cc-HERAPDF15NLO_EIG_central.fits") and
-        isfile(f"{xs_dir}/dsdxdy-numu-N-nc-HERAPDF15NLO_EIG_central.fits") and
-        isfile(f"{xs_dir}/dsdxdy-numubar-N-nc-HERAPDF15NLO_EIG_central.fits")
-    )
-
-DEFAULT_XS = {
-    "nu_cc_xs": "dsdxdy-numu-N-cc-HERAPDF15NLO_EIG_central.fits",
-    "nubar_cc_xs": "dsdxdy-numubar-N-cc-HERAPDF15NLO_EIG_central.fits",
-    "nu_nc_xs": "dsdxdy-numu-N-nc-HERAPDF15NLO_EIG_central.fits",
-    "nubar_nc_xs": "dsdxdy-numubar-N-nc-HERAPDF15NLO_EIG_central.fits"
-}
-
 class Weighter:
 
     """
@@ -44,35 +28,47 @@ class Weighter:
     """
     def __init__(
         self, 
-        xs_dir, 
         lic_file,
+        xs_prefix = "./",
+        nu_cc_xs = "dsdxdy-numu-N-cc-HERAPDF15NLO_EIG_central.fits",
+        nubar_cc_xs = "dsdxdy-numubar-N-cc-HERAPDF15NLO_EIG_central.fits",
+        nu_nc_xs = "dsdxdy-numu-N-nc-HERAPDF15NLO_EIG_central.fits",
+        nubar_nc_xs = "dsdxdy-numubar-N-nc-HERAPDF15NLO_EIG_central.fits",
         nevents=1,
-        **kwargs
-        ):
-        #if not xs_files_exist(xs_dir):
-        #    raise CrossSectionFilesNotFoundError(xs_dir)
-        self._xs_dir = xs_dir
+    ):
         self._lic_file = lic_file
         self._nevents = nevents
 
-        for k, v in DEFAULT_XS.items():
-            if k not in kwargs.keys():
-                kwargs[k] = v
-        print(f"{xs_dir}/{kwargs['nubar_nc_xs']}",)
+        self._nu_cc_xs = f"{xs_prefix}/{nu_cc_xs}"
+        self._nubar_cc_xs= f"{xs_prefix}/{nubar_cc_xs}"
+        self._nu_nc_xs = f"{xs_prefix}/{nu_nc_xs}"
+        self._nubar_nc_xs= f"{xs_prefix}/{nubar_nc_xs}"
             
         self._xs = LW.CrossSectionFromSpline(
-            f"{xs_dir}/{kwargs['nu_cc_xs']}",
-            f"{xs_dir}/{kwargs['nubar_cc_xs']}",
-            f"{xs_dir}/{kwargs['nu_nc_xs']}",
-            f"{xs_dir}/{kwargs['nubar_nc_xs']}",
+            self.nu_cc_xs,
+            self.nubar_cc_xs,
+            self.nu_nc_xs,
+            self.nubar_nc_xs,
         )
 
         self._generators = LW.MakeGeneratorsFromLICFile(lic_file)
         self._weighter = LW.Weighter(self._xs, self._generators)
 
     @property
-    def xs_dir(self) -> str:
-        return self._xs_dir
+    def nu_cc_xs(self) -> str:
+        return self._nu_cc_xs
+
+    @property
+    def nubar_cc_xs(self) -> str:
+        return self._nubar_cc_xs
+
+    @property
+    def nu_nc_xs(self) -> str:
+        return self._nu_nc_xs
+
+    @property
+    def nubar_nc_xs(self) -> str:
+        return self._nubar_nc_xs
 
     @property
     def lic_file(self) -> str:
@@ -89,19 +85,19 @@ class Weighter:
 
 class ParquetWeighter(Weighter):
 
-    def __init__(self, xs_dir: str, lic_file: str, nevents: int=1):
-        """
-        Class for weighting parquet events with LeptonWeighter
+    #def __init__(self, xs_dir: str, lic_file: str, nevents: int=1):
+    #    """
+    #    Class for weighting parquet events with LeptonWeighter
 
-        params
-        ______
-        xs_dir: Path to differential cross sections. This can usually be found in 
-                 `/LeptonWeighter/resources/data/`
-        lic_file: Path to lic_file created by LeptonInjector
-        nevents: (1) Events generated to rescale weight by. Helpful if you have non-uniform
-                 events per file. 
-        """
-        super().__init__(xs_dir, lic_file, nevents=nevents)
+    #    params
+    #    ______
+    #    xs_dir: Path to differential cross sections. This can usually be found in 
+    #             `/LeptonWeighter/resources/data/`
+    #    lic_file: Path to lic_file created by LeptonInjector
+    #    nevents: (1) Events generated to rescale weight by. Helpful if you have non-uniform
+    #             events per file. 
+    #    """
+    #    super().__init__(xs_dir, lic_file, nevents=nevents)
 
     def get_event_oneweight(self, event:ak.Record) -> float:
         """
@@ -133,19 +129,19 @@ class ParquetWeighter(Weighter):
 
 class H5Weighter(Weighter):
 
-    def __init__(self, xs_dir: str, lic_file: str, nevents: int=1, **kwargs):
-        """
-        Class for weighting h5 events with LeptonWeighter
+    #def __init__(self, xs_dir: str, lic_file: str, nevents: int=1, **kwargs):
+    #    """
+    #    Class for weighting h5 events with LeptonWeighter
 
-        params
-        ______
-        xs_dir: Path to differential cross sections. This can usually be found in 
-                 `/LeptonWeighter/resources/data/`
-        lic_file: Path to lic_file created by LeptonInjector
-        nevents: (1) Events generated to rescale weight by. Helpful if you have non-uniform
-                 events per file. 
-        """
-        super().__init__(xs_dir, lic_file, nevents=nevents, **kwargs)
+    #    params
+    #    ______
+    #    xs_dir: Path to differential cross sections. This can usually be found in 
+    #             `/LeptonWeighter/resources/data/`
+    #    lic_file: Path to lic_file created by LeptonInjector
+    #    nevents: (1) Events generated to rescale weight by. Helpful if you have non-uniform
+    #             events per file. 
+    #    """
+    #    super().__init__(xs_dir, lic_file, nevents=nevents, **kwargs)
 
     def get_event_oneweight(self, event_properties:h5.Dataset) -> float:
         """
