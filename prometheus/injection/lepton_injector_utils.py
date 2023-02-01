@@ -26,8 +26,17 @@ def make_new_LI_injection(
     detector_offset: np.ndarray
 ) -> None:
     import os
+    print('Importing LeptonInjector')
     try:
-        import LeptonInjector as LI
+        try:
+            print('Trying default pythonpath')
+            import LeptonInjector as LI
+        except ImportError:
+            import sys
+            print('Trying custom path set in config')
+            print("The path is " + path_dict['install location'])
+            sys.path.append(path_dict['install location'])
+            import LeptonInjector as LI
     except ImportError:
         raise ImportError("LeptonInjector not found!")
     xs_folder = os.path.join(

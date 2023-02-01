@@ -10,10 +10,14 @@ import os
 import json
 from typing import Union
 from tqdm import tqdm
-from time import time
 from jax import random  # noqa: E402
 
-from .utils import config_mims, clean_config
+from .utils import (
+    config_mims, clean_config,
+    UnknownInjectorError, UnknownLeptonPropagatorError,
+    UnknownPhotonPropagatorError, NoInjectionError,
+    InjectorNotImplementedError, CannotLoadDetectorError
+)
 from .config import config
 from .detector import Detector
 from .injection import RegisteredInjectors, INJECTION_CONSTRUCTOR_DICT
@@ -25,17 +29,12 @@ from .photon_propagation import (
 
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
 
-class CannotLoadDetectorError(Exception):
-    """Raised when detector not provided and cannot be determined from config"""
-    def __init__(self):
-        self.message = f"No Detector provided and no geo file path given in config"
-        super().__init__(self.message)
-
 def regularize(s: str) -> str:
     s = s.replace(" ", "")
     s = s.replace("_", "")
     s = s.upper()
     return s
+
 
 class Prometheus(object):
     """Class for unifying injection, energy loss calculation, and photon propagation"""
@@ -67,19 +66,16 @@ class Prometheus(object):
                 config.from_yaml(userconfig)
 
         if regularize(config["injection"]["name"]) not in RegisteredInjectors.list():
-            # TODO make this error
-            raise UnknownInjectorError(config["injection"]["name"])
+            raise UnknownInjectorError(config["injection"]["name"] + "is not supported as an injector!")
 
         if regularize(config["lepton propagator"]["name"]) not in RegisteredLeptonPropagators.list():
-            # TODO make this error
-            raise UnknownLeptonPropagatorError()
+            raise UnknownLeptonPropagatorError(config["lepton propagator"]["name"] + "is not a known lepton propagator")
 
         if regularize(config["photon propagator"]["name"]) not in RegisteredPhotonPropagators.list():
-            # TODO make this error
-            raise UnknownPhotonPropagatorError()
+            raise UnknownPhotonPropagatorError(config["photon propagator"]["name"] + " is not a known photon propagator")
 
         if detector is None and config["detector"]["specs file"] is None:
-            raise CannotLoadDetectorError()
+            raise CannotLoadDetectorError("No Detector provided and no geo file path given in config")
 
         if detector is None:
             from .detector import detector_from_geo
@@ -133,8 +129,7 @@ class Prometheus(object):
     @property
     def injection(self):
         if self._injection is None:
-            # TODO Make this error
-            raise NoInjectionError()
+            raise NoInjectionError("Injection has not been set!")
         return self._injection
 
     def inject(self):
@@ -144,8 +139,7 @@ class Prometheus(object):
 
             from .injection import INJECTOR_DICT
             if self._injector not in INJECTOR_DICT.keys():
-                # TODO make this error
-                raise InjectorNotImplementedError()
+                raise InjectorNotImplementedError(str(self._injector) + " is not a registered injector" )
 
             injection_config["simulation"]["random state seed"] = (
                 config["run"]["random state seed"]

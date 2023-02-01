@@ -24,21 +24,24 @@ def main(args=None):
     print('CURRENT SET %d' % rset)
     config["general"]["random state seed"] = rset
     config["general"]["meta_name"] = f'meta_data_{rset}'
-    config['general']['clean up'] = False
-    config['general']['storage location'] = f'./output/orca2_{rset}_'
+    config['general']['run'] = True
+    config['general']['storage location'] = f'./output/pone_{rset}_'
     config['injection']["LeptonInjector"]['paths']['output name'] = (
         f"./output/orca2_{rset}_output_LI.h5"
     )
+    # Injection parameters
+    config["injection"]["name"] = "LeptonInjector"
     config['injection']["LeptonInjector"]['simulation']['nevents'] = 10
-    config['injection']["LeptonInjector"]['simulation']['minimal energy'] = 1e2
-    config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e3
+    config['injection']["LeptonInjector"]['simulation']['minimal energy'] = 1e4
+    config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e5
+    # NUmber of modules to model at once
+    # Smaller numbers make the simulation slower but less memory intensive
     config['photon propagator']['olympus']['simulation']['splitter'] = 4000
-    config['photon propagator']['name'] = 'olympus'
-    config["detector"]["specs file"] = '../prometheus/data/orca-geo'
+    # config['photon propagator']['name'] = 'olympus'
+    config["detector"]["specs file"] = '../prometheus/data/pone_triangle-geo'
     prom = Prometheus()
-
-    prometheus.sim()
-    del prometheus
+    prom.sim()
+    del prom
     gc.collect()
     # Getting all memory using os.popen()
     total_memory, used_memory, _ = map(
