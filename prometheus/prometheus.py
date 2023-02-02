@@ -201,22 +201,32 @@ class Prometheus(object):
         from .utils.serialization import serialize_particles_to_awkward, set_serialization_index
         set_serialization_index(self.injection)
         json_config = json.dumps(config)
-        outarr = ak.Record({"config": json_config})
+        # builder = ak.ArrayBuilder()
+        # with builder.record('config'):
+        #     builder.field('config').append(json_config)
+        # outarr = builder.snapshot()
+        # outarr = ak.Record({"config": json_config})
         photon_paths = config["photon propagator"][config["photon propagator"]["name"]]["paths"]
-        #outarr = ak.with_field(outarr, ak.Record(config), where="config")
-        outarr = ak.with_field(outarr, self.injection.to_awkward(), where="mc_truth")
+        # outarr['mc_truth'] = self.injection.to_awkward()
         test_arr = serialize_particles_to_awkward(self.detector, self.injection)
         if test_arr is not None:
-            outarr = ak.with_field(
-                outarr,
-                test_arr,
-                where=photon_paths["photon field name"]
-            )
+            # outarr[photon_paths["photon field name"]] = test_arr
+            # outarr = ak.with_field(
+            #     outarr,
+            #     test_arr,
+            #     where=photon_paths["photon field name"]
+            # )
+            outarr = ak.Array({
+                'mc_truth': self.injection.to_awkward(),
+                photon_paths["photon field name"]: test_arr
+            })
+        else:
+            outarr = ak.Array({
+                'mc_truth': self.injection.to_awkward()
+            })
         outfile = photon_paths['outfile']
         # Converting to pyarrow table
         outarr = ak.to_arrow_table(outarr)
-        # ak.to_parquet(outarr, outfile)
-        # table = pq.read_table(outfile)
         custom_meta_data_key = "config_prometheus"
         combined_meta = {custom_meta_data_key.encode() : json_config.encode()}
         outarr = outarr.replace_schema_metadata(combined_meta)
