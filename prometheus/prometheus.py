@@ -10,10 +10,14 @@ import os
 import json
 from typing import Union
 from tqdm import tqdm
-from time import time
 from jax import random  # noqa: E402
 
-from .utils import config_mims, clean_config
+from .utils import (
+    config_mims, clean_config,
+    UnknownInjectorError, UnknownLeptonPropagatorError,
+    UnknownPhotonPropagatorError, NoInjectionError,
+    InjectorNotImplementedError, CannotLoadDetectorError
+)
 from .config import config
 from .detector import Detector
 from .injection import RegisteredInjectors, INJECTION_CONSTRUCTOR_DICT
@@ -25,17 +29,12 @@ from .photon_propagation import (
 
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
 
-class CannotLoadDetectorError(Exception):
-    """Raised when detector not provided and cannot be determined from config"""
-    def __init__(self):
-        self.message = f"No Detector provided and no geo file path given in config"
-        super().__init__(self.message)
-
 def regularize(s: str) -> str:
     s = s.replace(" ", "")
     s = s.replace("_", "")
     s = s.upper()
     return s
+
 
 class Prometheus(object):
     """Class for unifying injection, energy loss calculation, and photon propagation"""
@@ -67,19 +66,16 @@ class Prometheus(object):
                 config.from_yaml(userconfig)
 
         if regularize(config["injection"]["name"]) not in RegisteredInjectors.list():
-            # TODO make this error
-            raise UnknownInjectorError(config["injection"]["name"])
+            raise UnknownInjectorError(config["injection"]["name"] + "is not supported as an injector!")
 
         if regularize(config["lepton propagator"]["name"]) not in RegisteredLeptonPropagators.list():
-            # TODO make this error
-            raise UnknownLeptonPropagatorError()
+            raise UnknownLeptonPropagatorError(config["lepton propagator"]["name"] + "is not a known lepton propagator")
 
         if regularize(config["photon propagator"]["name"]) not in RegisteredPhotonPropagators.list():
-            # TODO make this error
-            raise UnknownPhotonPropagatorError()
+            raise UnknownPhotonPropagatorError(config["photon propagator"]["name"] + " is not a known photon propagator")
 
         if detector is None and config["detector"]["specs file"] is None:
-            raise CannotLoadDetectorError()
+            raise CannotLoadDetectorError("No Detector provided and no geo file path given in config")
 
         if detector is None:
             from .detector import detector_from_geo
@@ -133,8 +129,7 @@ class Prometheus(object):
     @property
     def injection(self):
         if self._injection is None:
-            # TODO Make this error
-            raise NoInjectionError()
+            raise NoInjectionError("Injection has not been set!")
         return self._injection
 
     def inject(self):
@@ -144,37 +139,34 @@ class Prometheus(object):
 
             from .injection import INJECTOR_DICT
             if self._injector not in INJECTOR_DICT.keys():
-                # TODO make this error
-                raise InjectorNotImplementedError()
+                raise InjectorNotImplementedError(str(self._injector) + " is not a registered injector" )
 
             injection_config["simulation"]["random state seed"] = (
-                config["general"]["random state seed"]
+                config["run"]["random state seed"]
             )
-
             INJECTOR_DICT[self._injector](
                 injection_config["paths"],
                 injection_config["simulation"],
                 detector_offset=self.detector.offset
             )
-
         self._injection = INJECTION_CONSTRUCTOR_DICT[self._injector](
-            injection_config["paths"]["output name"]
+            injection_config["paths"]["injection file"]
         )
 
     # We should factor out generating losses and photon prop
     def propagate(self):
         """Calculates energy losses, generates photon yields, and propagates photons"""
         if config["photon propagator"]["name"].lower()=="olympus":
-            rstate = np.random.RandomState(config["general"]["random state seed"])
-            rstate_jax = random.PRNGKey(config["general"]["random state seed"])
+            rstate = np.random.RandomState(config["run"]["random state seed"])
+            rstate_jax = random.PRNGKey(config["run"]["random state seed"])
             # TODO this feels like it shouldn't be in the config
             config["photon propagator"]["olympus"]["runtime"] = {
                 "random state": rstate,
                 "random state jax": rstate_jax,
             }
 
-        if config["run"]["subset"]["switch"]:
-            nevents = config["run"]["subset"]["counts"]
+        if config["run"]["subset"] is not None:
+            nevents = config["run"]["subset"]
         else:
             nevents = len(self.injection)
 
@@ -193,13 +185,11 @@ class Prometheus(object):
         calculates photon yield, propagates photons, and save resultign photons"""
         if "runtime" in config["photon propagator"].keys():
             config["photon propagator"]["runtime"] = None
-        with open(config["general"]["config location"], "w") as f:
-            json.dump(config, f, indent=2)
+        #with open(config["general"]["config location"], "w") as f:
+        #    json.dump(config, f, indent=2)
         self.inject()
         self.propagate()
         self.construct_output()
-        if config["general"]["clean up"]:
-            self._clean_up()
 
     def construct_output(self):
         """Constructs a parquet file with metadata from the generated files.
@@ -210,35 +200,40 @@ class Prometheus(object):
         print("Generating the different particle fields...")
         from .utils.serialization import serialize_particles_to_awkward, set_serialization_index
         set_serialization_index(self.injection)
-        outarr = ak.Array({})
-        outarr = ak.with_field(outarr, self.injection.to_awkward(), where="mc_truth")
+        json_config = json.dumps(config)
+        # builder = ak.ArrayBuilder()
+        # with builder.record('config'):
+        #     builder.field('config').append(json_config)
+        # outarr = builder.snapshot()
+        # outarr = ak.Record({"config": json_config})
+        photon_paths = config["photon propagator"][config["photon propagator"]["name"]]["paths"]
+        # outarr['mc_truth'] = self.injection.to_awkward()
         test_arr = serialize_particles_to_awkward(self.detector, self.injection)
         if test_arr is not None:
-            outarr = ak.with_field(outarr, test_arr, where="total")
-        outfile = f"{config['general']['storage location']}{config['general']['meta name']}.parquet"
-        ak.to_parquet(outarr, outfile)
-        table = pq.read_table(outfile)
-        custom_meta_data = json.dumps(config)
+            # outarr[photon_paths["photon field name"]] = test_arr
+            # outarr = ak.with_field(
+            #     outarr,
+            #     test_arr,
+            #     where=photon_paths["photon field name"]
+            # )
+            outarr = ak.Array({
+                'mc_truth': self.injection.to_awkward(),
+                photon_paths["photon field name"]: test_arr
+            })
+        else:
+            outarr = ak.Array({
+                'mc_truth': self.injection.to_awkward()
+            })
+        outfile = photon_paths['outfile']
+        # Converting to pyarrow table
+        outarr = ak.to_arrow_table(outarr)
         custom_meta_data_key = "config_prometheus"
-        combined_meta = {custom_meta_data_key.encode() : custom_meta_data.encode()}
-        table = table.replace_schema_metadata(combined_meta)
-        pq.write_table(table, outfile)
+        combined_meta = {custom_meta_data_key.encode() : json_config.encode()}
+        outarr = outarr.replace_schema_metadata(combined_meta)
+        pq.write_table(outarr, outfile)
 
     def __del__(self):
         """What to do when the Prometheus instance is deleted
         """
         print("I am melting.... AHHHHHH!!!!")
 
-    def _clean_up(self):
-        """Remove temporary and intermediate files.
-        """
-        print("Removing intermediate data files.")
-        injector_name = config["injection"]["name"]
-        os.remove(config["injection"][injector_name]["paths"]["output name"])
-        for key in self._results.keys():
-            try:
-                os.remove(
-                    f"{config['general']['storage location']}{key}.parquet"
-                )
-            except FileNotFoundError:
-                continue

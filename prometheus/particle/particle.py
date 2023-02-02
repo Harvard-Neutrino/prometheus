@@ -103,7 +103,7 @@ class PropagatableParticle(Particle):
         e: float,
         position: np.ndarray,
         direction: np.ndarray,
-        parent=None
+        parent: Particle
     ):
         super().__init__(pdg_code, e, position, direction)
         self._parent = parent

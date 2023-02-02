@@ -2,14 +2,17 @@
 # Shows how to generate some simple data sets
 # imports
 import sys
+from typing import Union
+
 sys.path.append('../')
 from prometheus import Prometheus, config
-from jax.config import config as jconfig
+#from jax.config import config as jconfig
+#
+#jconfig.update("jax_enable_x64", True)
 
-jconfig.update("jax_enable_x64", True)
-
-ranged_leptons = "MuMinus MuPlus".split()
-chared_leptons = "EMinus EPlus MuMinus MuPlus TauMinus TauPlus".split()
+RANGED_LEPTONS = "MuMinus MuPlus".split()
+CHARGED_LEPTONS = "EMinus EPlus MuMinus MuPlus TauMinus TauPlus".split()
+SOFTWARE_PREFIX = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/"
 
 def initialize_args():
     import argparse
@@ -151,61 +154,78 @@ def initialize_args():
     )
     return parser.parse_args()
 
+def is_ranged_injection(final_states) -> bool:
+    """Determine whether we should do ranged injection by default.
+    We say this should happen if there is a charged mu or tau lepton
+    since these can travel pretty far.
+
+    params
+    ______
+    final_states: LeptonInjector names for all final states
+
+    returns
+    _______
+    is_ranged: bool saying whether default behavior is to do ranged injection
+    """
+    ranged_states = "MuMinus MuPlus TauMinus TauPlus".split()
+    for final_state in final_states:
+        if final_state in ranged_states:
+            return True
+    return False
+
 def main(args):
     nevent = args.n
     seed = args.seed
-
-    print('CURRENT SET %d' % seed)
+    prefix = f"{args.final_1}_{args.final_2}_seed_{seed}"
+    config['run']["nevents"] = nevent
+    config["run"]["random state seed"] = seed
+    config["run"]["run number"] = seed
+    config["run"]["meta_name"] = 'meta_data_%d' % seed
+    config['run']['storage prefix'] = (
+        f'{args.output_prefix}/'
+    )
     config["detector"]["specs file"] = args.geo_file
     config["detector"]["padding"] = args.padding
-    config["general"]["random state seed"] = seed
-    config["general"]["meta_name"] = 'meta_data_%d' % seed
-    if args.final_1 in chared_leptons:
-        clepton = args.final_1
-    elif args.final_2 in chared_leptons:
-        clepton = args.final_2
-    else:
-        clepton = None
-    if clepton in ranged_leptons:
-        if args.force_volume:
-            print("Doing volume injection")
-            config['run']['group name'] = 'VolumeInjector0'
-            config['injection']["LeptonInjector"]['simulation']['is ranged'] = False
-        else:
-            print("Doing ranged injection")
-            config['run']['group name'] = 'RangedInjector0'
-            config['injection']["LeptonInjector"]['simulation']['is ranged'] = True
-    else:
-        print("Doing volume injection")
-        config['run']['group name'] = 'VolumeInjector0'
-        config['injection']["LeptonInjector"]['simulation']['is ranged'] = False
     if args.injection:
         config["injection"]["LeptonInjector"]["inject"] = False
         config['injection']["LeptonInjector"]['paths']['output name'] = args.injection
-        config['run']['group name'] = 'RangedInjector0'
     else:
-        config['run']["nevents"] = nevent
+        is_ranged = is_ranged_injection([args.final_1, args.final_2])
+        if args.force_volume or not is_ranged:
+            config['injection']["LeptonInjector"]['simulation']['is ranged'] = False
+        else:
+            config['injection']["LeptonInjector"]['simulation']['is ranged'] = True
         config['injection']["LeptonInjector"]['simulation']['final state 1'] = args.final_1
         config['injection']["LeptonInjector"]['simulation']['final state 2'] = args.final_2
         config['injection']["LeptonInjector"]['simulation']['minimal energy'] = args.emin
         config['injection']["LeptonInjector"]['simulation']['maximal energy'] = args.emax
         config['injection']["LeptonInjector"]['simulation']["power law"] = args.gamma
-        config['injection']["LeptonInjector"]['paths']['output name'] = f"{args.output_prefix}/data_{seed}_output_LI.h5"
-        config['injection']["LeptonInjector"]["paths"]['install location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/lib64/"
-        config['injection']["LeptonInjector"]["paths"]['xsec location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/LeptonInjector/resources/"
+        config['injection']["LeptonInjector"]['paths']['injection file'] = (
+            f"{args.output_prefix}/{prefix}_LI_output.h5"
+        )
         config['injection']["LeptonInjector"]['paths']["lic name"] = (
-            f"{args.output_prefix}/{args.final_1}_{args.final_2}_{seed}_LI_config.lic"
+            f"{args.output_prefix}/{prefix}_LI_config.lic"
+        )
+        config['injection']["LeptonInjector"]["paths"]['install location'] = (
+            f"{SOFTWARE_PREFIX}/lib64/"
+        )
+        config['injection']["LeptonInjector"]["paths"]['xsec dir'] = (
+            f"{SOFTWARE_PREFIX}/source/LeptonInjector/resources/"
         )
     config["lepton propagator"]['name'] = "old proposal"
-    config['general']['storage location'] = f'{args.output_prefix}/{args.final_1}_{args.final_2}_seed_{seed}_'
-    photo_prop = "PPC_CUDA"
-    config['photon propagator']['name'] = photo_prop
-    config['photon propagator'][photo_prop]["paths"]['ppc_tmpfile'] = args.ppc_tmpfile.replace(".ppc", f"{seed}.ppc")
-    config['photon propagator'][photo_prop]["paths"]['f2k_tmpfile'] = args.f2k_tmpfile.replace(".f2k", f"{seed}.f2k")
-    config['photon propagator'][photo_prop]["paths"]['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/"
+    config['photon propagator']['name'] = "PPC_CUDA"
+    config['photon propagator']["PPC_CUDA"]["paths"]['outfile'] = (
+        f"{args.output_prefix}/{prefix}_photons.parquet"
+    )
+    config['photon propagator']["PPC_CUDA"]["paths"]['ppc_tmpfile'] = args.ppc_tmpfile.replace(".ppc", f"{seed}.ppc")
+    config['photon propagator']["PPC_CUDA"]["paths"]['f2k_tmpfile'] = args.f2k_tmpfile.replace(".f2k", f"{seed}.f2k")
+    config['photon propagator']["PPC_CUDA"]["paths"]['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/"
+    config['photon propagator']["PPC_CUDA"]["paths"]['ppctables'] = "../PPC_tables/ic_default/"
+    # Uncomment this line to not use IceCube's angular acceptance
     #config['photon propagator'][photo_prop]["paths"]['ppctables'] = "../PPC_tables/ic_accept_all/"
-    config['photon propagator'][photo_prop]["paths"]['ppctables'] = "../PPC_tables/ic_default/"
-    config['photon propagator'][photo_prop]["paths"]['ppc_exe'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/ppc"
+    config['photon propagator']["PPC_CUDA"]["paths"]['ppc_exe'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/ppc"
+
+    # This line is here for debugging. Uncommenting will generate a lot of output
     #config['photon propagator'][photo_prop]["simulation"]['supress_output'] = False
     prometheus = Prometheus(userconfig=config)
     prometheus.sim()
@@ -213,11 +233,4 @@ def main(args):
 
 if __name__ == "__main__":
     args = initialize_args()
-    print(args.f2k_tmpfile)
-    print("--------------------------------------------------------------")
-    print("--------------------------------------------------------------")
-    print("Launching simulation")
     main(args)
-    print("Finished call")
-    print("--------------------------------------------------------------")
-    print("--------------------------------------------------------------")

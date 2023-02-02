@@ -11,10 +11,21 @@ def config_mims(config: dict, detector) -> None:
         the detector.
     """
     # Set up injection stuff
+    run_config = config["run"]
+    if run_config["random state seed"] is None:
+        run_config["random state seed"] = run_config["run number"]
     injection_config = config["injection"][config["injection"]["name"]]
     if injection_config["inject"]:
         injection_config["simulation"]["nevents"] = config["run"]["nevents"]
-        injection_config["simulation"]["random state seed"] = config["general"]["random state seed"]
+        injection_config["simulation"]["random state seed"] = config["run"]["random state seed"]
+        if injection_config["paths"]["injection file"] is None:
+            injection_config["paths"]["injection file"] = (
+                f"{config['run']['storage prefix']}/{config['run']['run number']}_LI_output.h5"
+            )
+        if injection_config["paths"]["lic file"] is None:
+            injection_config["paths"]["lic file"] = (
+                f"{config['run']['storage prefix']}/{config['run']['run number']}_LI_config.lic"
+            )
         is_ice = detector.medium.name == "ICE"
         if injection_config["simulation"]["endcap length"] is None:
             endcap = get_endcap(detector.module_coords, is_ice)
@@ -27,6 +38,14 @@ def config_mims(config: dict, detector) -> None:
             injection_config["simulation"]["cylinder radius"] = cyl_radius
         if injection_config["simulation"]["cylinder height"] is None:
             injection_config["simulation"]["cylinder height"] = cyl_height
+        #if injection_config["paths"]["injection file"] is None:
+        #    injection_config["paths"]["output name"] = (
+        #        f"{config['run']['storage location']}/{config['run']['random state seed']}_LI_output.h5"
+        #    )
+        #if injection_config["paths"]["lic name"] is None:
+        #    injection_config["paths"]["lic name"] = (
+        #        f"{config['run']['storage location']}/{config['run']['random state seed']}_LI_config.lic"
+        #    )
     # Set up lepton propagation stuff
     lepton_prop_config = config["lepton propagator"][config["lepton propagator"]["name"]]
     if (
@@ -38,4 +57,9 @@ def config_mims(config: dict, detector) -> None:
     if lepton_prop_config["simulation"]["inner radius"] is None:
        lepton_prop_config["simulation"]["inner radius"] = (
             detector.outer_radius + lepton_prop_config["simulation"]["propagation padding"]
+        )
+    pp_config = config["photon propagator"][config["photon propagator"]["name"]]
+    if pp_config["paths"]["outfile"] is None:
+        pp_config["paths"]["outfile"] = (
+            f"{config['run']['storage prefix']}/{config['run']['run number']}_photons.parquet"
         )

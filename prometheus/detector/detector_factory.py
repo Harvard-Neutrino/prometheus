@@ -1,4 +1,5 @@
 import numpy as np
+import scipy
 from typing import Union
 
 from .module import Module
@@ -13,7 +14,7 @@ class InvalidRNGError(Exception):
         self.message = f"Unable to determine random state seeding from {rng}"
         super.__init__(self.message)
 
-def parse_rng(rng: Union[int, np.random.RandomState]) -> np.random.RandomState:
+def parse_rng(rng: Union[None, int, np.random.RandomState]) -> np.random.RandomState:
     """Helps determine random number generation state from input
 
     params
@@ -28,7 +29,9 @@ def parse_rng(rng: Union[int, np.random.RandomState]) -> np.random.RandomState:
     ______
     InvalidRNGError: If we don't know how to handle the input rng
     """
-    if isinstance(rng, np.random. RandomState):
+    if rng is None:
+        rng = np.random.RandomState()
+    elif isinstance(rng, np.random. RandomState):
         pass
     elif isinstance(rng, int):
         rng = np.random.RandomState(rng)

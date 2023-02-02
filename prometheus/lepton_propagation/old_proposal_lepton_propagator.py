@@ -63,7 +63,6 @@ def make_medium(medium_string: str) -> pp.medium.Medium:
     -------
     medium_def: Medium in which the propagation should take place
     """
-    print('This assumes a homogeneous medium!')
     if medium_string.lower() not in 'water ice'.split():
         raise ValueError(f"Medium {medium_string} not supported at this time.")
     medium_def = getattr(pp.medium, medium_string.capitalize())()
@@ -216,7 +215,6 @@ class OldProposalLeptonPropagator(LeptonPropagator):
         _______
         propagator: PROPOSAL propagator
         """ 
-        print("Making propagator")
         propagator = make_propagator(
             particle,
             self._config["simulation"],

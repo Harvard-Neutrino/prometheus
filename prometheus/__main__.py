@@ -5,9 +5,9 @@
 from utils.hebe_ui import run_ui 
 
 def main():
-    """ Gives some HEBE information
+    """ Gives some PROMETHEUS information
     """
-    # print("Welcome to HEBE!")
+    # print("Welcome to PROMETHEUS!")
     # print("Why are you here?")
     # print("No one should be seeing this! What the blazes have you done?")
     run_ui()
