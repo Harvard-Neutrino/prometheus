@@ -10,3 +10,4 @@ from .photon_propagation import __init__
 from .prometheus import Prometheus
 
 __all__ = (Prometheus, config)
+__version__ = '1.0.0'

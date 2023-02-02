@@ -14,6 +14,8 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 jconfig.update("jax_enable_x64", True)
+# Global flag to set a specific platform, must be used at startup.
+jconfig.update('jax_platform_name', 'cpu')
 
 def main(args=None):
     if args is None:
@@ -24,7 +26,7 @@ def main(args=None):
     print('CURRENT SET %d' % rset)
     config['run']['run number'] = rset
     config["run"]["random state seed"] = rset
-    config['run']['nevents'] = 10
+    config['run']['nevents'] = 2
     # Injection parameters
     config["injection"]["name"] = "LeptonInjector"
     config['injection']["LeptonInjector"]['simulation']['minimal energy'] = 1e4
@@ -32,7 +34,7 @@ def main(args=None):
     # NUmber of modules to model at once
     # Smaller numbers make the simulation slower but less memory intensive
     config['photon propagator']['olympus']['simulation']['splitter'] = 4000
-    # config['photon propagator']['name'] = 'olympus'
+    # config['photon propagator']['name'] = 'oly    mpus'
     config["detector"]["specs file"] = '../prometheus/data/pone_triangle-geo'
     prom = Prometheus()
     prom.sim()

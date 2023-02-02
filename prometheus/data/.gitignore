@@ -6,5 +6,6 @@
 !icecube-geo
 !pone_triangle-geo
 !orca-geo
+!icecube_gen2-geo
 # Except this file
 !.gitignore
