@@ -1,0 +1,11 @@
+#-------------------------------------------------------
+# EarthModel density files
+#
+# Aug. 14 2014 Kotoyo Hoshina <hoshina@icecube.wisc.edu>
+#-------------------------------------------------------
+
+PLEASE USE
+Standard Earth Density Model : PREM_mmm.dat
+
+Do not use any other models for most of analysis, they are very artificial!
+
