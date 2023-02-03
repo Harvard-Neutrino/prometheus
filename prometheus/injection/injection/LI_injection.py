@@ -86,27 +86,31 @@ def injection_event_from_LI(injection: h5.Group, idx: int) -> LIInjectionEvent:
     event: Prometheus LIInjectionEvent corresponding to input
     """
     direction = injection["initial"]["Direction"][idx]
+    theta = direction[0]
+    phi = np.mod(np.pi + direction[1], 2*np.pi)
     initial_state = Particle(
         injection["properties"]["initialType"][idx],
         injection["initial"]["Energy"][idx],
         injection["initial"]["Position"][idx],
         np.array([
-            np.sin(direction[0]) * np.cos(direction[1]),
-            np.sin(direction[0]) * np.sin(direction[1]),
-            np.cos(direction[0]),
+            np.sin(theta) * np.cos(phi),
+            np.sin(theta) * np.sin(phi),
+            np.cos(theta),
         ])
     )
     final_states = []
     for final_ctr in [1,2]:
         direction = injection[f"final_{final_ctr}"]["Direction"][idx]
+        theta = direction[0]
+        phi = direction[1]
         final_state = PropagatableParticle(
             injection["properties"][f"finalType{final_ctr}"][idx],
             injection[f"final_{final_ctr}"]["Energy"][idx],
             injection[f"final_{final_ctr}"]["Position"][idx],
             np.array([
-                np.sin(direction[0]) * np.cos(direction[1]),
-                np.sin(direction[0]) * np.sin(direction[1]),
-                np.cos(direction[0]),
+                np.sin(theta) * np.cos(phi),
+                np.sin(theta) * np.sin(phi),
+                np.cos(theta),
             ]),
             parent=initial_state
         )
