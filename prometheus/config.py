@@ -59,8 +59,8 @@ _baseconfig = {
                 'minimal energy': 1e3, # GeV
                 'maximal energy': 1e6, # GeV
                 'power law': 1.0,
-                'min zenith': 80.0, # degree
-                'max zenith': 180.0, # degree
+                'min zenith': 0.0, # degree
+                'max zenith': 100.0, # degree
                 'min azimuth': 0.0, # degree
                 'max azimuth': 360.0, # degree
                 'earth model': "Planet",
