@@ -186,7 +186,7 @@ def main(args):
     config["detector"]["padding"] = args.padding
     if args.injection:
         config["injection"]["LeptonInjector"]["inject"] = False
-        config['injection']["LeptonInjector"]['paths']['output name'] = args.injection
+        config['injection']["LeptonInjector"]['paths']['injection file'] = args.injection
     else:
         is_ranged = is_ranged_injection([args.final_1, args.final_2])
         if args.force_volume or not is_ranged:
@@ -224,7 +224,7 @@ def main(args):
     config['photon propagator']["PPC_CUDA"]["paths"]['ppc_exe'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/ppc"
 
     # This line is here for debugging. Uncommenting will generate a lot of output
-    #config['photon propagator'][photo_prop]["simulation"]['supress_output'] = False
+    #config['photon propagator']["PPC_CUDA"]["simulation"]['supress_output'] = False
     prometheus = Prometheus(userconfig=config)
     prometheus.sim()
     del prometheus
