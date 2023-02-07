@@ -19,6 +19,8 @@ class PhotonPropagator:
             to generate losses from the particles
         detector: Prometheus detector object in which the light will be
             propagated
+        photon_prop_config: dictionary containing all the configuration settings
+            for photon propagation
         """
         self._lepton_propagator = lepton_propagator
         self._detector = detector
@@ -29,13 +31,13 @@ class PhotonPropagator:
         pass
 
     @property
-    def config(self):
+    def config(self) -> dict:
         return self._config
 
     @property
-    def detector(self):
+    def detector(self) -> Detector:
         return self._detector
 
     @property
-    def lepton_propagator(self):
+    def lepton_propagator(self) -> LeptonPropagator:
         return self._lepton_propagator
