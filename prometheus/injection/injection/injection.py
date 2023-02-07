@@ -5,12 +5,20 @@
 
 import numpy as np
 import awkward as ak
-from typing import Iterable, Union
+from typing import Iterable, Union, Any
 
 from .. import Particle
 from ..injection_event.injection_event import InjectionEvent
 
-def recursive_getattr(x, attr):
+def recursive_getattr(x: Any, attr: str) -> Any:
+    """Get an attribute that is farther down, e.g. 
+    recursive_getattr(obj, "a.b")==getattr(getattr(obj, "a"), "b")
+
+    params
+    ______
+    x: base object
+    attr: period-delimited string of attributes to grab
+    """
     for a in attr.split("."):
         x = getattr(x, a)
     return x
@@ -18,8 +26,23 @@ def recursive_getattr(x, attr):
 def recursively_get_final_property(
     particles: Iterable[Particle],
     attr: str,
-    idx = None
-) -> Iterable[Union[float, int]]:
+    idx: Union[None, int] = None
+) -> np.ndarray:
+    """Helper for getting the attributes from particles. This is busted, sorry.
+
+    params
+    ______
+    particles: Iterable with particles that you want to get the same attribute from
+    attr: period-delimited string of attributes to grab
+    idx: If the final attribute is an iterable, and you only want the value
+        from a specific index, use this. This is useful for e.g. getting the 
+        x-position from a 3-vector
+
+    returns
+    _______
+    A numpy array with the requested attr for each particle. The shape of this
+        array will be equal to the length of the input particles
+    """
     l = np.array([])
     for particle in particles:
         if idx is None:
@@ -32,19 +55,24 @@ def recursively_get_final_property(
     return l
 
 class Injection:
-    
+    """Base class for Prometheus injection"""
     def __init__(
         self,
         events: Iterable[InjectionEvent]
     ):
+        """
+        params
+        ______
+        events: A list of injection events
+        """
         self._events = events
         self._size = len(events)
         self._current_idx = 0
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx) -> InjectionEvent:
         return self.events[idx]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.events)
 
     def __iter__(self):
@@ -59,11 +87,11 @@ class Injection:
         return event
 
     @property
-    def events(self):
+    def events(self) -> List[InjectionEvent]:
         return self._events
 
     def to_dict(self) -> dict:
-        # TODO make this recursive
+        """Convert all the properties of the injection to a dict"""
         d = {}
         d["interaction"] = [x.interaction.value for x in self]
         d["initial_state_energy"] = [x.initial_state.e for x in self]
@@ -102,4 +130,5 @@ class Injection:
         return d
 
     def to_awkward(self) -> ak.Array:
+        """Convert all the properties of the injection to an Awkward array"""
         return ak.Array(self.to_dict())
