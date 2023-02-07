@@ -120,7 +120,7 @@ def make_line(
     rng: np.random.RandomState = 1337,
     baseline_noise_rate: float = 1.0e3,
     efficiency: float = 0.2
-):
+) -> Detector:
     """Make a line of detector modules. The modules share the same (x, y) coordinate and 
     are spaced along the z-direction. This detector will be symetrically spaced about z=z_cent
 
@@ -172,7 +172,7 @@ def make_grid(
     rng: Union[int, None, np.random.RandomState] = 1337
     baseline_noise_rate: float = 1.0e3,
     efficiency: float = 0.2
-):
+) -> Detector:
     """Build a square detector grid. Strings of detector modules are placed 
     on a square grid, with the number of strings per side, number of modules 
     per string, and z-spacing on a string set by input. The noise rate for 
@@ -309,7 +309,7 @@ def make_triang(
     rng: np.random.RandomState = 1337,
     baseline_noise_rate: float = 1.0e3,
     efficiency: float = 0.2
-):
+) -> Detector:
     """Build a triangular detector grid. Strings of detector modules are placed 
     on a the corners of a equilateral triangle, with input side length,
     number of modules per string, and z-spacing on a string set by input.
@@ -381,7 +381,7 @@ def make_rhombus(
     rng: Union[int, None, np.random.RandomState] = 1337
     baseline_noise_rate: float = 1.0e3,
     efficiency: float = 0.2
-):
+) -> Detector:
     """Make a rhombus detector
 
     params
