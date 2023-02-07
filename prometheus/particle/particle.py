@@ -37,9 +37,7 @@ class Particle(object):
         """
         self._e = e
         self._position = np.array(position)
-        self._pp_position = pp_vector(*(m_to_cm*position))
         self._direction = np.array(direction)
-        self._pp_direction = pp_vector(*direction)
         self._theta = np.arccos(self._direction[2])
         self._phi = np.arctan2(self.direction[1], self.direction[0])
         self._pdg_code = pdg_code
@@ -84,16 +82,6 @@ class Particle(object):
     @property
     def phi(self):
         return self._phi
-
-    @property
-    def pp_direction(self):
-        return self._pp_direction
-
-    @property
-    def pp_position(self):
-        return self._pp_position
-
-
 
 class PropagatableParticle(Particle):
     """Particle event structure with added feature to support propagation"""

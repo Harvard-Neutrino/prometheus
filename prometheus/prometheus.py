@@ -112,6 +112,7 @@ class Prometheus(object):
         config_mims(config, self.detector)
         clean_config(config)
 
+        pp.RandomGenerator.get().set_seed(config["run"]["random state seed"])
         lepton_prop_config = config["lepton propagator"][config["lepton propagator"]["name"]]
         self._lepton_propagator = LeptonPropagator(lepton_prop_config)
 

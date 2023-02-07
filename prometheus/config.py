@@ -94,20 +94,22 @@ _baseconfig = {
         # PROPOSAL with versions >= 7
         "new proposal":{
             "paths":{
-                "tables path": "~/.local/share/PROPOSAL/tables"
+                "tables path": "~/.local/share/PROPOSAL/tables",
+                "earth file": "../resources/earthparams/densities/PREM_mmc.dat",
             },
             "simulation":{
                 'track length': 5000,
                 # TODO figure out why this breaks for 1e-2
-                'vcut': [1, 1],
+                'vcut': 1,
                 #'vcut': [1e-2, 1e-2],
-                'ecut': [0.5, 0.5], # GeV
+                'ecut': 0.5, # GeV
                 'soft losses': False,
                 'propagation padding': 900,
                 'interpolation': True,
                 'lpm effect': True,
                 'continuous randomization': True,
                 'soft losses': True,
+                "interpolate": True,
                 'scattering model': "Moliere",
                 'maximum radius': 1e18, # m
                 # all none elements will be set off detector config settings
@@ -118,12 +120,13 @@ _baseconfig = {
         # PROPOSAL with versions <= 6
         "old proposal":{
             "paths":{
-                "tables path": "~/.local/share/PROPOSAL/tables"
+                "tables path": "~/.local/share/PROPOSAL/tables",
+                "earth file": "../resources/earthparams/densities/PREM_mmc.dat",
             },
             "simulation":{
                 'track length': 5000,
-                'vcut': [1, 1],
-                'ecut': [0.1, 0.5], # GeV
+                'vcut': 1,
+                'ecut': 0.1, # GeV
                 'soft losses': False,
                 'propagation padding': 900,
                 'interpolation': True,
