@@ -30,6 +30,16 @@ from .photon_propagation import (
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
 
 def regularize(s: str) -> str:
+    """Helper fnuction to regularize strings
+
+    params
+    ______
+    s: string to regularize
+
+    returns
+    _______
+    s: regularized string
+    """
     s = s.replace(" ", "")
     s = s.replace("_", "")
     s = s.upper()
@@ -55,6 +65,12 @@ class Prometheus(object):
 
         raises
         ______
+        UnknownInjectorError: If we don't know how to handle the injector the config
+            is asking for
+        UnknownLeptonPropagatorError: If we don't know how to handle the lepton
+            propagator you are asking for
+        UnknownPhotonPropagatorError: If we don't know how to handle the photon
+            propagator you are asking for
         CannotLoadDetectorError: When no detector provided and no
             geo file path provided in config
 
@@ -186,8 +202,6 @@ class Prometheus(object):
         calculates photon yield, propagates photons, and save resultign photons"""
         if "runtime" in config["photon propagator"].keys():
             config["photon propagator"]["runtime"] = None
-        #with open(config["general"]["config location"], "w") as f:
-        #    json.dump(config, f, indent=2)
         self.inject()
         self.propagate()
         self.construct_output()
@@ -197,8 +211,6 @@ class Prometheus(object):
         Currently this still treats olympus and ppc output differently."""
         sim_switch = config["photon propagator"]["name"]
 
-        print(f"Generating output for a {sim_switch} simulation.")
-        print("Generating the different particle fields...")
         from .utils.serialization import serialize_particles_to_awkward, set_serialization_index
         set_serialization_index(self.injection)
         json_config = json.dumps(config)
@@ -211,12 +223,6 @@ class Prometheus(object):
         # outarr['mc_truth'] = self.injection.to_awkward()
         test_arr = serialize_particles_to_awkward(self.detector, self.injection)
         if test_arr is not None:
-            # outarr[photon_paths["photon field name"]] = test_arr
-            # outarr = ak.with_field(
-            #     outarr,
-            #     test_arr,
-            #     where=photon_paths["photon field name"]
-            # )
             outarr = ak.Array({
                 'mc_truth': self.injection.to_awkward(),
                 photon_paths["photon field name"]: test_arr
