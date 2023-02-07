@@ -23,6 +23,6 @@ def accumulate_hits(
     hits_ids = []
     for idx, particle in enumerate(particles):
         hits_ids += [(h, particle.serialization_idx) for h in particle.hits]
-        hits_ids += accumulate_hits(particle._children)
+        hits_ids += accumulate_hits(particle.children)
 
     return hits_ids

@@ -96,7 +96,8 @@ def injection_event_from_LI(injection: h5.Group, idx: int) -> LIInjectionEvent:
             np.sin(theta) * np.cos(phi),
             np.sin(theta) * np.sin(phi),
             np.cos(theta),
-        ])
+        ]),
+        None
     )
     final_states = []
     for final_ctr in [1,2]:
@@ -112,7 +113,8 @@ def injection_event_from_LI(injection: h5.Group, idx: int) -> LIInjectionEvent:
                 np.sin(theta) * np.sin(phi),
                 np.cos(theta),
             ]),
-            parent=initial_state
+            None,
+            initial_state
         )
         final_states.append(final_state)
     interaction = INTERACTION_CONVERTER[(

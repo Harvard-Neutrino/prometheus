@@ -245,7 +245,7 @@ def new_proposal_losses(
     r_inice: float,
     detector_center: np.ndarray,
     coordinate_shift: np.ndarray
-):
+) -> None:
     """Propagate a Prometheus particle using PROPOSAL, modifying the particle
     losses in place
 
@@ -277,7 +277,7 @@ def new_proposal_losses(
             )
             # TODO more this to the serialization function. DTaSD
             if np.linalg.norm(pos - detector_center) <= r_inice:
-                particle.add_loss(Loss(loss.type, loss.energy, pos))
+                particle.losses.append(Loss(loss.type, loss.energy, pos))
     #continuous_loss_sum = np.sum(secondarys.continuous_losses()) * MeV_to_GeV
     total_dist = secondarys.track_propagated_distances()[-1] * cm_to_m
     # TODO: Add this to config
@@ -291,12 +291,11 @@ def new_proposal_losses(
     e_loss = continuous_loss_sum / len(loss_dists)
     for dist in loss_dists:
         pos = dist * particle.direction + particle.position
-        particle.add_loss(Loss(1000000008, e_loss, pos))
+        particle.losses.append(Loss(1000000008, e_loss, pos))
     for child in secondarys.decay_products():
-        particle.add_child(
+        particle.children.append(
             particle_from_proposal(child, coordinate_shift, parent=particle)
         )
-    return particle
 
 class NewProposalLeptonPropagator(LeptonPropagator):
     """Class for propagating charged leptons with PROPOSAL versions >= 7"""
@@ -350,8 +349,9 @@ class NewProposalLeptonPropagator(LeptonPropagator):
         self, 
         particle: Particle,
         detector: Detector
-    ) -> Particle:
-        """Propagate a particle and track the losses
+    ) -> None:
+        """Propagate a particle and track the losses. Losses and children
+        are added in place
 
         params
         ______
@@ -372,4 +372,3 @@ class NewProposalLeptonPropagator(LeptonPropagator):
             detector.offset,
             self._coordinate_shift
         )
-        return propped_particle
