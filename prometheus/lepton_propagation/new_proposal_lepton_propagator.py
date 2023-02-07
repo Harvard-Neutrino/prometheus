@@ -22,6 +22,16 @@ MEDIUM_DICT = {
 }
 
 def remove_comments(s: str) -> str:
+    """Helper for removing trailing comments
+
+    params
+    ______
+    s: string you want to remove comments from
+
+    returns
+    _______
+    s: string without the comments
+    """
     if "#" not in s:
         return s
     idx = s.index("#")
@@ -40,9 +50,10 @@ def make_particle_definition(particle: Particle) -> pp.particle.ParticleDef:
     pdef: PROPOSAL particle definition object corresponing
         to input particle
     '''
+    print("Bebopafasdfasfdsaf")
     if str(particle) not in 'MuMinus MuPlus EMinus EPlus TauMinus TauPlus'.split():
-        raise ValueError(f"Particle string {str(particle)} not recognized")
-    pdef = getattr(pp.particle, f'{str(particle)}Def')()
+        raise ValueError(f"Particle string {particle} not recognized")
+    pdef = getattr(pp.particle, f'{particle}Def')()
     return pdef
 
 
@@ -65,7 +76,7 @@ def make_propagator(
     """
 
     pdef = make_particle_definition(particle)
-    utilities = make_collection_utilities(
+    utilities = make_propagation_utilities(
         pdef,
         path_dict["earth file"],
         simulation_specs
@@ -77,6 +88,16 @@ def make_propagator(
     return prop
 
 def make_geometries(earth_file: str) -> List[pp.Cartesian3D]:
+    """Make list of proposal geometries from earth datafile
+
+    params
+    ______
+    earth_file: data file where the parametrization of Earth is stored
+    
+    returns
+    _______
+    geometries: List of PROPOSAL spherical shells that make up the Earth
+    """
     geometries = []
     with open(earth_file, "r") as f:
         inner_radius = 0
@@ -97,6 +118,18 @@ def make_geometries(earth_file: str) -> List[pp.Cartesian3D]:
     return geometries
             
 def make_density_distributions(earth_file: str) -> List[pp.density_distribution.density_distribution]:
+    """Make list of proposal homogeneous density distributions from
+    Earth datafile
+
+    params
+    ______
+    earth_file: data file where the parametrization of Earth is stored
+
+    returns
+    _______
+    density_distributions: Density distributions corresponding to the 
+        average density in each layer of the Earth model at linear order
+    """
     with open(earth_file, "r") as f:
         inner_radius = 0
         density_distributions = []
@@ -117,11 +150,24 @@ def make_density_distributions(earth_file: str) -> List[pp.density_distribution.
     return density_distributions
 
 
-def make_collection_utilities(
-    particle_def,
-    earth_file,
-    simulation_specs
-):
+def make_propagation_utilities(
+    particle_def: pp.particle.ParticleDef,
+    earth_file: str,
+    simulation_specs: dict
+) -> pp.PropagationUtility:
+    """Make a list of PROPOSAL propagation utilities from an earth file
+        for a particle given some simulation specifications
+
+    params
+    ______
+    particle_def: PROPOSAL particle definition
+    earth_file: data file where the parametrization of Earth is stored
+    simulation_specs: dictionary specifying all the simulation specifications
+
+    returns
+    _______
+    utilities: List of PROPOSAL PropagationUtility objects
+    """
     cuts = pp.EnergyCutSettings(
         simulation_specs["ecut"] * GeV_to_MeV,
         simulation_specs["vcut"],
@@ -162,26 +208,27 @@ def make_collection_utilities(
 
     return utilities
 
-def make_medium(medium_string: str) -> pp.medium.Medium:
-    """
-    Makes a proposal medium
+def init_pp_particle(
+    particle: Particle,
+    #pdef: pp.particle.ParticleDef,
+    coordinate_shift: np.ndarray
+) -> pp.particle.ParticleState:
+    """Initialize a PROPOSAL particle
 
     params
-    ------
-    medium_string: String which defines the medium in which 
-        proposal should propagate
+    ______
+    particle: Prometheus particle for which to make the PROPOSAL state
+    pdef: PROPOSAL particle definition
+    coordinate_shift: Difference between the PROPOSAL coordinate system
+        centered on the the Earth's center and Prometheus coordinate
+        system in meters. The norm of this vector should be the radius
+        between the center of the Earth and the start of the atmoshphere
 
     returns
-    -------
-    medium_def: Medium in which the propagation should take place
+    _______
+    init_state: PROPOSAL particle state with energy, position, and direction
+        matching input particle
     """
-    if medium_string.lower() not in 'water ice'.split():
-        raise ValueError(f"Medium {medium_string} not supported at this time.")
-    else:
-        medium_def = getattr(pp.medium, medium_string.capitalize())()
-    return medium_def
-
-def init_pp_particle(particle, pdef, coordinate_shift):
     init_state = pp.particle.ParticleState()
     init_state.position = pp.Cartesian3D(
         *(particle.position + coordinate_shift) * m_to_cm
@@ -190,16 +237,32 @@ def init_pp_particle(particle, pdef, coordinate_shift):
     init_state.direction = pp.Cartesian3D(*particle.direction)
     return init_state
 
+# TODO Sorry about this function:-(
 def new_proposal_losses(
-    prop,
-    p_def, 
-    particle,
-    padding,
-    r_inice,
-    detector_center,
-    coordinate_shift
+    prop: pp.Propagator,
+    particle: Particle,
+    padding: float,
+    r_inice: float,
+    detector_center: np.ndarray,
+    coordinate_shift: np.ndarray
 ):
-    init_state = init_pp_particle(particle, p_def, coordinate_shift)
+    """Propagate a Prometheus particle using PROPOSAL, modifying the particle
+    losses in place
+
+    params
+    ______
+    prop: Proposal propagator porresponding to the input particle
+    particle: Prometheus particle to propagate
+    padding: propagation padding in meters. The propagation distance is calcuated as:
+        np.linalg.norm(particle.position - detector_center) + padding
+    detector_center: Center of the detector in Prometheus coordinate system in meters
+    coordinate_shift: Difference between the PROPOSAL coordinate system
+        centered on the the Earth's center and Prometheus coordinate
+        system in meters. The norm of this vector should be the radius
+        between the center of the Earth and the start of the atmoshphere, and 
+        should usually only have a z-component
+    """
+    init_state = init_pp_particle(particle, coordinate_shift)
     propagation_length = np.linalg.norm(particle.position) + padding
     secondarys = prop.propagate(init_state, propagation_length * m_to_cm)
     continuous_loss_sum  = 0
@@ -212,6 +275,7 @@ def new_proposal_losses(
                 np.array([loss.position.x, loss.position.y, loss.position.z]) * cm_to_m -
                 coordinate_shift
             )
+            # TODO more this to the serialization function. DTaSD
             if np.linalg.norm(pos - detector_center) <= r_inice:
                 particle.add_loss(Loss(loss.type, loss.energy, pos))
     #continuous_loss_sum = np.sum(secondarys.continuous_losses()) * MeV_to_GeV
@@ -293,16 +357,15 @@ class NewProposalLeptonPropagator(LeptonPropagator):
         ______
         particle: Prometheus Particle that should be propagated
         detector: Detector that this is being propagated within
-            This is a temporary fix and will hopefully we solved soon :-)
 
         returns
         _______
         propped_particle: Prometheus Particle after propagation
         """
+        # TODO particle_def is not needed. DTaSD
         particle_def, propagator = self[particle]
         propped_particle = new_proposal_losses(
             propagator,
-            particle_def,
             particle,
             self._config["simulation"]["propagation padding"],
             detector.outer_radius + 1000.0,
