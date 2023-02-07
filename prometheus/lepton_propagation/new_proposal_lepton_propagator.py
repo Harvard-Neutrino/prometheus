@@ -78,11 +78,11 @@ def make_propagator(
     pdef = make_particle_definition(particle)
     utilities = make_propagation_utilities(
         pdef,
-        path_dict["earth file"],
+        path_dict["earth model location"],
         simulation_specs
     )
-    geometries = make_geometries(path_dict["earth file"])
-    density_distrs = make_density_distributions(path_dict["earth file"])
+    geometries = make_geometries(path_dict["earth model location"])
+    density_distrs = make_density_distributions(path_dict["earth model location"])
     prop = pp.Propagator(pdef, list(zip(geometries, utilities, density_distrs)))
 
     return prop

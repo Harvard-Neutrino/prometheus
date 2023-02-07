@@ -5,11 +5,13 @@ import sys
 from typing import Union
 
 sys.path.append('../')
+import prometheus
 from prometheus import Prometheus, config
 #from jax.config import config as jconfig
 #
 #jconfig.update("jax_enable_x64", True)
 
+RESOURCE_DIR = f"{'/'.join(prometheus.__path__[0].split('/')[:-1])}/resources/"
 SOFTWARE_PREFIX = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/"
 
 def initialize_args():
@@ -208,8 +210,12 @@ def main(args):
             f"{SOFTWARE_PREFIX}/lib64/"
         )
         config['injection']["LeptonInjector"]["paths"]['xsec dir'] = (
-            f"{SOFTWARE_PREFIX}/source/LeptonInjector/resources/"
+            f"{RESOURCE_DIR}/cross_section_splines/"
         )
+        config['injection']["LeptonInjector"]["paths"]['earth model location'] = (
+            f"{RESOURCE_DIR}/earthparams/densities/PREM_mmc.dat"
+        )
+
     config["lepton propagator"]['name'] = "old proposal"
     config['photon propagator']['name'] = "PPC_CUDA"
     config['photon propagator']["PPC_CUDA"]["paths"]['outfile'] = (

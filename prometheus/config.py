@@ -45,12 +45,12 @@ _baseconfig = {
             'paths':{
                 'install location': '/opt/LI/install/lib/python3.9/site-packages',
                 'xsec dir': '/opt/LI/source/resources/',
-                'diff xsec': "test_xs.fits",
-                'total xsec': "test_xs_total.fits",
-                'earth model location': "earthparams/",
+                "earth model location": "../resources/earthparams/densities/PREM_mmc.dat",
                 # These fields will be set with output prefix and run number
                 'injection file': None,
                 "lic file": None,
+                'diff xsec': None,
+                'total xsec': None,
             },
             'simulation': {
                 'is ranged': False,
@@ -95,7 +95,8 @@ _baseconfig = {
         "new proposal":{
             "paths":{
                 "tables path": "~/.local/share/PROPOSAL/tables",
-                "earth file": "../resources/earthparams/densities/PREM_mmc.dat",
+                "earth model location": None,
+                #"earth model location": "../resources/earthparams/densities/PREM_mmc.dat",
             },
             "simulation":{
                 'track length': 5000,
@@ -121,7 +122,8 @@ _baseconfig = {
         "old proposal":{
             "paths":{
                 "tables path": "~/.local/share/PROPOSAL/tables",
-                "earth file": "../resources/earthparams/densities/PREM_mmc.dat",
+                "earth model location": None,
+                #"earth model location": "../resources/earthparams/densities/PREM_mmc.dat",
             },
             "simulation":{
                 'track length': 5000,

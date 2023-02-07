@@ -2,6 +2,7 @@
 # detector_handler.py
 # Copyright (C) 2022 Christian Haack, Jeffrey Lazar, Stephan Meighen-Berger,
 # Deals with detector stuff
+from __future__ import annotations
 
 import numpy as np
 import awkward as ak
@@ -53,7 +54,7 @@ class Detector(object):
         idx = self._om_keys.index(key)
         return self.modules[idx]
 
-    def __add__(self, other):
+    def __add__(self, other) -> Detector:
         modules = np.hcat(self.modules, other.modules)
         return Detector(modules)
 

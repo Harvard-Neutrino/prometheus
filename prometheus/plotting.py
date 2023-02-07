@@ -41,8 +41,6 @@ def plot_brightest(
     hit_counts = np.array(hit_counts)
     event_id = np.argmax(hit_counts)
     event = events[event_id]
-    print('The brightest event has the id %d' % event_id)
-    print('The energy of the primary neutrino is %.1f' % event.mc_truth.injection_energy)
     plot_event(
         event, det, brightest_event=brightest_event, figname=figname,
         save=save, show=show, channel=channel, show_doms=show_doms,

@@ -5,6 +5,7 @@
 import numpy as np
 import proposal as pp
 from typing import List
+print(pp.__file__)
 
 from .lepton_propagator import LeptonPropagator
 from .loss import Loss
@@ -175,7 +176,7 @@ def make_propagator(
         pp.Vector3D(), simulation_specs["maximum radius"], 0.0
         #pp.Vector3D(), simulation_specs["maximum radius"] * m_to_cm, 0.0
     )
-    sec_defs = make_sector_defs(path_dict["earth file"], simulation_specs)
+    sec_defs = make_sector_defs(path_dict["earth model location"], simulation_specs)
     interpolation_def = pp.InterpolationDef()
     interpolation_def.path_to_tables = path_dict["tables path"]
     interpolation_def.path_to_tables_readonly = path_dict["tables path"]
@@ -234,7 +235,7 @@ def old_proposal_losses(
 class OldProposalLeptonPropagator(LeptonPropagator):
     """Class for propagating charged leptons with PROPOSAL versions <= 6"""
     def __init__(self, config: dict):
-        with open(config["paths"]["earth file"], "r") as f:
+        with open(config["paths"]["earth model location"], "r") as f:
             for line in f:
                 if line[0]=="#" or line[0]==" " or line[:1]=="\n":
                     continue
