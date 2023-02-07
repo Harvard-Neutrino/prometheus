@@ -21,6 +21,16 @@ MEDIUM_DICT = {
     "AIR": pp.medium.Air
 }
 def remove_comments(s: str) -> str:
+    """Helper for removing trailing comments
+
+    params
+    ______
+    s: string you want to remove comments from
+
+    returns
+    _______
+    s: string without the comments
+    """
     if "#" not in s:
         return s
     idx = s.index("#")
@@ -43,8 +53,16 @@ def make_particle_def(particle: Particle) -> pp.particle.ParticleDef:
     return pdef
 
 def make_detector(earth_file: str) -> pp.geometry.Sphere:
-    """Make a PROPOSAL detector object
+    """Make a PROPOSAL sphere with radius eqaul to the max radius
+    from an Earth data file
 
+    params
+    ______
+    earth_file: Earth datafile
+    
+    returns
+    _______
+    detector: PROPOSAL Sphere
     """
     with open(earth_file, "r") as f:
         for line in f:
@@ -57,6 +75,18 @@ def make_detector(earth_file: str) -> pp.geometry.Sphere:
     return detector
 
 def make_sector_defs(earth_file: str, simulation_specs: dict) -> List[pp.SectorDefinition]:
+    """Make list of PROPOSAL sector definitions for an input Earth 
+    data file according to given simulation specifications
+
+    params
+    ______
+    earth_file: Earth datafile
+    simulation_specs: dictionary specifying simulation paramters
+
+    returns
+    _______
+    sec_defs: list of PROPOSAL sector definitions
+    """
     inner_radius = 0
     sec_defs = []
     with open(earth_file, "r") as f:
@@ -121,24 +151,6 @@ def init_dynamic_data(
     particle_dd.energy = particle.e * GeV_to_MeV
     return particle_dd
 
-def make_medium(medium_string: str) -> pp.medium.Medium:
-    """
-    Makes a proposal medium
-
-    params
-    ------
-    medium_string: String which defines the medium in which
-        proposal should propagate
-
-    returns
-    -------
-    medium_def: Medium in which the propagation should take place
-    """
-    if medium_string.lower() not in 'water ice'.split():
-        raise ValueError(f"Medium {medium_string} not supported at this time.")
-    medium_def = getattr(pp.medium, medium_string.capitalize())()
-    return medium_def
-
 def make_propagator(
     particle: str,
     simulation_specs: dict,
@@ -198,11 +210,6 @@ def old_proposal_losses(
         recorded. This should be a few scattering lengths for accuracy, but not too
         much more because then you will propagate light which never makes it
     detector_center: Center of the detector in meters
-
-    returns
-    _______
-    propped_particle: PROMETHEUS particle after propagation, including energy
-        losses and children
     """
     particle_dd = init_dynamic_data(particle, pdef, coordinate_shift)
     propagation_length = np.linalg.norm(particle.position) + padding
@@ -216,12 +223,11 @@ def old_proposal_losses(
         pos = np.array([sec.position.x, sec.position.y, sec.position.z]) * cm_to_m - coordinate_shift
         if sec.type > 1000000000: # This is an energy loss
             if np.linalg.norm(pos - detector_center) <= r_inice:
-                particle.add_loss(Loss(sec.type, sec_energy, pos))
+                particle.losses.append(Loss(sec.type, sec_energy, pos))
         else: # This is a particle. Might need to propagate
             child = particle_from_proposal(sec, coordinate_shift, parent=particle)
-            particle.add_child(child)
+            particle.children.append(child)
     total_loss = None
-    return particle
 
 
 
@@ -277,8 +283,9 @@ class OldProposalLeptonPropagator(LeptonPropagator):
         self, 
         particle: Particle,
         detector: Detector
-    ) -> Particle:
-        """Propagate a particle and track the losses
+    ) -> None:
+        """Propagate a particle and track the losses. Losses and 
+        children are applied in place
 
         params
         ______
@@ -291,7 +298,7 @@ class OldProposalLeptonPropagator(LeptonPropagator):
         propped_particle: Prometheus Particle after propagation
         """
         particle_def, propagator = self[particle]
-        propped_particle = old_proposal_losses(
+        old_proposal_losses(
             propagator,
             particle_def,
             particle,
@@ -300,4 +307,3 @@ class OldProposalLeptonPropagator(LeptonPropagator):
             detector.offset,
             self._coordinate_shift
         )
-        return propped_particle
