@@ -5,7 +5,7 @@
 
 import numpy as np
 import awkward as ak
-from typing import Iterable, Union, Any
+from typing import Iterable, Union, Any, List
 
 from .. import Particle
 from ..injection_event.injection_event import InjectionEvent
