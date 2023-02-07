@@ -1,5 +1,4 @@
 import numpy as np
-from typing import Tuple
 import os
 import subprocess
 
@@ -16,8 +15,16 @@ def ppc_sim(
     det: Detector,
     lp: LeptonPropagator,
     ppc_config: dict
-) -> Tuple[None, None]:
-    """
+) -> None:
+    """Simulate the propagation of a particle and of any photons resulting from
+    the energy losses of this particle
+
+    params
+    ______
+    particle: Particle to propagate
+    det: Detector object to simulate within
+    lp: Prometheus LeptonPropagator to imulate any charged leptons
+    ppc_config: dictionary containg the configuration settings for the photon propagation
     """
     # TODO I think this could be factored out into a separate energy loss section
     # But that is not a now problem
@@ -55,7 +62,7 @@ def ppc_sim(
         command += " 2>/dev/null"
 
     if not should_propagate(particle):
-        return None, None
+        return 
     serialize_to_f2k(particle, f2k_tmpfile)
     det.to_f2k(
         geo_tmpfile,
@@ -78,27 +85,10 @@ def ppc_sim(
 
 class PPCPhotonPropagator(PhotonPropagator):
     """Interface for simulating energy losses and light propagation using PPC"""
-    def __init__(
-        self,
-        lepton_propagator: LeptonPropagator,
-        detector: Detector,
-        photon_prop_config: dict
-    ):
-        """Initialize the PhotonPropagator object
-        
-        params
-        ______
-        lepton_propagator: Prometheus LeptonPropagator object which will be used
-            to generate losses from the particles
-        detector: Prometheus detector object in which the light will be
-            propagated
-        """
-        super().__init__(lepton_propagator, detector, photon_prop_config)
-
-    def propagate(self, particle: Particle) -> Tuple[None, None]:
-        """Propagate input particle using PPC. This returns None for consistency with
-        Olympus. Instead it modifies the state of the input Particle. We should make this
-        more consistent but that is a problem for another day...
+    def propagate(self, particle: Particle) -> None:
+        """Propagate input particle using PPC. Instead it modifies the 
+        state of the input Particle. We should make this more consistent 
+        but that is a problem for another day...
 
         params
         ______
