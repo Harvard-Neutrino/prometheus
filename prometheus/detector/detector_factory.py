@@ -30,8 +30,8 @@ def parse_rng(rng: Union[None, int, np.random.RandomState]) -> np.random.RandomS
     InvalidRNGError: If we don't know how to handle the input rng
     """
     if not (
-        isinstance(rng, int) or 
-        isinstance(rng, np.random.RandomState)) or
+        isinstance(rng, int) or \
+        isinstance(rng, np.random.RandomState) or \
         rng is None
     ):
         raise InvalidRNGError(rng)
@@ -115,7 +115,7 @@ def make_line(
     y: float,
     n_z: int,
     dist_z: float,
-    z_cent: float
+    z_cent: float,
     line_id: int,
     rng: np.random.RandomState = 1337,
     baseline_noise_rate: float = 1.0e3,
@@ -169,7 +169,7 @@ def make_grid(
     n_z: int,
     dist_z: float,
     z_cent: float,
-    rng: Union[int, None, np.random.RandomState] = 1337
+    rng: Union[int, None, np.random.RandomState] = 1337,
     baseline_noise_rate: float = 1.0e3,
     efficiency: float = 0.2
 ) -> Detector:
@@ -267,7 +267,7 @@ def make_hex_grid(
                 n_z,
                 dist_z,
                 z_cent,
-                line_id
+                line_id,
                 rng=rng,
                 baseline_noise_rate=baseline_noise_rate,
                 efficiency=efficiency
@@ -378,7 +378,7 @@ def make_rhombus(
     n_z,
     dist_z,
     z_cent,
-    rng: Union[int, None, np.random.RandomState] = 1337
+    rng: Union[int, None, np.random.RandomState] = 1337,
     baseline_noise_rate: float = 1.0e3,
     efficiency: float = 0.2
 ) -> Detector:
