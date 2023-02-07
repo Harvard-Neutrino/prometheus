@@ -29,8 +29,6 @@ class OlympusPhotonPropagator(PhotonPropagator):
         config: dict
     ):
         super().__init__(lepton_propagator, detector, config)
-        print('Using olympus')
-        print('Setting up the medium')
 
         if not self.config['simulation']['files']:
             ValueError('Currently only file runs for olympus are supported!')

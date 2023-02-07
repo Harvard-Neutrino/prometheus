@@ -49,13 +49,13 @@ def make_new_LI_injection(
             import LeptonInjector as LI
     except ImportError:
         raise ImportError("LeptonInjector not found!")
+    n_events = injection_specs["nevents"]
     xs_folder = os.path.join(
         os.path.dirname(__file__),
         path_dict["xsec dir"]
     )
-    n_events = injection_specs["nevents"]
-    diff_xs = f"{path_dict['xsec dir']}/{path_dict['diff xsec']}"
-    total_xs = f"{path_dict['xsec dir']}/{path_dict['total xsec']}"
+    diff_xs = path_dict['diff xsec']
+    total_xs = path_dict['total xsec']
     is_ranged = injection_specs["is ranged"]
     particles = []
     for id_name, names in enumerate([
@@ -96,10 +96,15 @@ def make_new_LI_injection(
             inject_radius, endcap_length, cyinder_radius, cyinder_height
         )
     path_to = os.path.join(
-        os.path.dirname(__file__),
-        xs_folder, path_dict["earth model location"]
+        path_dict["earth model location"]
     )
-    controller.SetEarthModel(injection_specs["earth model"], path_to)
+    # TODO this is a temporary fix until we install Benito's branch of LI
+    earth_model_dir = "/".join(path_dict["earth model location"].split("/")[:-2]) + "/"
+    controller.SetEarthModel(
+        injection_specs["earth model"],
+        earth_model_dir
+        #path_dict["earth model location"]
+    )
     controller.setSeed(injection_specs["random state seed"])
     controller.NameOutfile(path_dict["injection file"])
     controller.NameLicFile(path_dict["lic file"])

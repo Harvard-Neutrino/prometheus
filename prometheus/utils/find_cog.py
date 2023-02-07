@@ -6,5 +6,4 @@ def find_cog(event_dict, detector):
     charges = np.array([len(event_dict[key]) for key in keys])
     xyz = np.array([detector[key].pos for key in keys])
     cog = np.sum(xyz.T * charges, axis=1) / np.sum(charges)
-    print(cog)
     return cog
