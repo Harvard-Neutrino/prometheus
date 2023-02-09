@@ -173,6 +173,8 @@ _baseconfig = {
         'PPC_CUDA':{
             "paths":{
                 'location':'../PPC_CUDA/',
+                'force': False,
+                "ppc_tmpdir:": "./.ppc_tmp",
                 'ppc_tmpfile':'.event_hits.ppc.tmp',
                 'f2k_tmpfile':'.event_losses.f2k.tmp',
                 'ppc_prefix':'',
@@ -190,6 +192,8 @@ _baseconfig = {
         'PPC': {
             "paths": {
                 'location': '../PPC/',
+                'force': False,
+                "ppc_tmpdir:": "./.ppc_tmp",
                 'ppc_tmpfile': '.event_hits.ppc.tmp',
                 'f2k_tmpfile': '.event_losses.f2k.tmp',
                 'ppc_prefix':'',
@@ -206,7 +210,6 @@ _baseconfig = {
         },
     }
 }
-
 
 class ConfigClass(dict):
     """ The configuration class. This is used

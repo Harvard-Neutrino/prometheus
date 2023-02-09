@@ -29,6 +29,12 @@ from .photon_propagation import (
 
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
 
+class PpcTmpdirExistsError(Exception):
+    """Raised if PPC tmpdir exists and force not specified"""
+    def __init__(self, path):
+        self.message = f"{path} exists. Please remove it or specify force in the config"
+        super().__init__(self.message)
+
 def regularize(s: str) -> str:
     """Helper fnuction to regularize strings
 
@@ -181,6 +187,38 @@ class Prometheus(object):
                 "random state": rstate,
                 "random state jax": rstate_jax,
             }
+        elif config["photon propagator"]["name"].lower()=="ppc":
+            from glob import glob
+            import shutil
+            from .utils.clean_ppc_tmpdir import clean_ppc_tmpdir
+            if (
+                os.path.exists(config['photon propagator']["PPC"]["paths"]["ppc_tmpdir"]) and \
+                not config["photon propagator"]["PPC"]["paths"]["force"]
+            ):
+                raise PpcTmpdirExistsError(
+                    config['photon propagator']["PPC"]["paths"]["ppc_tmpdir"]
+                )
+            os.mkdir(config['photon propagator']["PPC"]["paths"]["ppc_tmpdir"])
+            fs = glob(f"{config['photon propagator']['PPC']['paths']['ppctables']}/*")
+            for f in fs:
+                shutil.copy(f, config['photon propagator']["PPC"]["paths"]["ppc_tmpdir"])
+        elif config["photon propagator"]["name"].lower()=="ppc_cuda":
+            from glob import glob
+            import shutil
+            from .utils.clean_ppc_tmpdir import clean_ppc_tmpdir
+            if (
+                os.path.exists(config['photon propagator']["PPC_CUDA"]["paths"]["ppc_tmpdir"]) and \
+                not config["photon propagator"]["PPC_CUDA"]["paths"]["force"]
+            ):
+                raise PpcTmpdirExistsError(
+                    config['photon propagator']["PPC_CUDA"]["paths"]["ppc_tmpdir"]
+                )
+            elif os.path.exists(config['photon propagator']["PPC_CUDA"]["paths"]["ppc_tmpdir"]):
+                clean_ppc_tmpdir(config['photon propagator']["PPC_CUDA"]["paths"]["ppc_tmpdir"])
+            os.mkdir(config['photon propagator']["PPC_CUDA"]["paths"]["ppc_tmpdir"])
+            fs = glob(f"{config['photon propagator']['PPC_CUDA']['paths']['ppctables']}/*")
+            for f in fs:
+                shutil.copy(f, config['photon propagator']["PPC_CUDA"]["paths"]["ppc_tmpdir"])
 
         if config["run"]["subset"] is not None:
             nevents = config["run"]["subset"]
@@ -196,6 +234,11 @@ class Prometheus(object):
                     self._photon_propagator.propagate(final_state)
         if config["photon propagator"]["name"].lower()=="olympus":
             config["photon propagator"]["olympus"]["runtime"] = None
+        elif config["photon propagator"]["name"].lower()=="ppc":
+            clean_ppc_tmpdir(config['photon propagator']['PPC']['paths']['ppc_tmpdir'])
+        elif config["photon propagator"]["name"].lower()=="ppc_cuda":
+            clean_ppc_tmpdir(config['photon propagator']['PPC_CUDA']['paths']['ppc_tmpdir'])
+
 
     def sim(self):
         """Performs injection of precipitating interaction, calculates energy losses,
