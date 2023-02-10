@@ -122,12 +122,12 @@ def injection_event_from_LI(injection: h5.Group, idx: int) -> LIInjectionEvent:
         final_states[0].pdg_code,
         final_states[1].pdg_code,
     )]
-    vertex_x = injection["properties"]["x"][0]
-    vertex_y = injection["properties"]["y"][0]
-    vertex_z = injection["properties"]["z"][0]
-    bjorken_x = injection["properties"]["finalStateX"][0]
-    bjorken_y = injection["properties"]["finalStateY"][0]
-    column_depth = injection["properties"]["totalColumnDepth"][0]
+    vertex_x = injection["properties"]["x"][idx]
+    vertex_y = injection["properties"]["y"][idx]
+    vertex_z = injection["properties"]["z"][idx]
+    bjorken_x = injection["properties"]["finalStateX"][idx]
+    bjorken_y = injection["properties"]["finalStateY"][idx]
+    column_depth = injection["properties"]["totalColumnDepth"][idx]
     
     event = LIInjectionEvent(
         initial_state,
