@@ -5,6 +5,9 @@
 
 from typing import Dict, Any
 import yaml
+import os
+
+RESOURCES_DIR = os.path.abspath(f"{os.path.dirname(__file__)}/../resources/")
 
 _baseconfig: Dict[str, Any]
 
@@ -96,7 +99,6 @@ _baseconfig = {
             "paths":{
                 "tables path": "~/.local/share/PROPOSAL/tables",
                 "earth model location": None,
-                #"earth model location": "../resources/earthparams/densities/PREM_mmc.dat",
             },
             "simulation":{
                 'track length': 5000,
@@ -123,7 +125,6 @@ _baseconfig = {
             "paths":{
                 "tables path": "~/.local/share/PROPOSAL/tables",
                 "earth model location": None,
-                #"earth model location": "../resources/earthparams/densities/PREM_mmc.dat",
             },
             "simulation":{
                 'track length': 5000,
