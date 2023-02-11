@@ -36,7 +36,7 @@ _baseconfig = {
     # Detector
     ###########################################################################
     "detector": {
-        'specs file': None,  # Name of the file to use for build
+        'geo file': None,  # Name of the file to use for build
     },
     ###########################################################################
     # Injection
@@ -48,8 +48,8 @@ _baseconfig = {
             'paths':{
                 'install location': '/opt/LI/install/lib/python3.9/site-packages',
                 'xsec dir': '/opt/LI/source/resources/',
-                "earth model location": "../resources/earthparams/densities/PREM_mmc.dat",
                 # These fields will be set with output prefix and run number
+                "earth model location": None,
                 'injection file': None,
                 "lic file": None,
                 'diff xsec': None,
