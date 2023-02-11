@@ -1,0 +1,39 @@
+# 
+# crust model file
+# PREM + mmc crust setup
+# crust data is consistent with MMC mediadef.
+#
+#   format :
+#   upper_radius[m] label[string] MediumType[string] number_of_parameters[int] parameters[double]...
+#    - Data must be in ascending order in upper_radius
+#    - no space before first column
+#    - delimiter must be whitespaces
+#    - data must include at least 7 lines with labels
+#      "innercore_boundary", "coremantle_boundary", "moho_boundary", 
+#      "rockice_boundary", "iceair_boundary", "earth_radius", and "atmo_radius"
+#    - MediumType must be consistent with EarthModelService::MediumType
+#    - number_of_parameters is the number of params for polynominal density function
+#    - parameters : ex.
+#       for 3 parameters p0, p1, p2 and distance from Earth's center x :
+#       density = p0 + p1*x + p2*x*x 
+#
+#       CAUTION : the unit of density must be [g/cm3] (CGS unit)
+#
+#    - lines start from '#' or whitespace are treated
+#      as comments
+#
+
+
+1221500 innercore_boundary    INNERCORE   3    13.0885   0                          -2.17742748697875934e-13  
+3480000 coremantle_boundary   OUTERCORE   4    12.5815   -1.98367603202009108e-07   -8.97421093229181259e-14   -2.13773109929070169e-20 
+5701000 lowermantle_boundary  MANTLE      4    7.9565    -1.01649662533354259e-06   1.36199775701391389e-13    -1.19131495406828110e-20 
+5771000 lower_transition      MANTLE      2    5.3197    -2.32867681682624407e-07
+5971000 middle_transition     MANTLE      2    11.2494   -1.26036728927954783e-06
+6151000 upper_transition      MANTLE      2    7.1089    -5.97159001726573544e-07
+6346600 moho_boundary         MANTLE      2    2.691     1.08679956050855438e-07   # surface of mantle
+6356000 inner_crust           ROCK        1    2.900    
+6371324 rockice_boundary      ROCK        1    2.650      # surface of bed rock, 1.0 x 2.65
+6373934 clearice_boundary     ICE         1    0.921585   # 200m below ice surface, 1.005 x 0.917
+6374134 iceair_boundary       ICE         1    0.762944   # surface of ice, 0.832 x 0.917
+6478000 atmo_radius           AIR         1    0.000811   # 0.673atm x 1.205e-3(g/cm3 for 1atm) 
+

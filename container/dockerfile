@@ -24,6 +24,8 @@ RUN cd /opt &&\
     && mkdir /opt/.conda \
     && bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda3\
     && rm -f Miniconda3-latest-Linux-x86_64.sh
+# Python > 3.10 breaks current pybinding of LI
+RUN conda install python=3.9
 RUN conda install pip
 # change conan install .. -o with_python=True to conan install .. -o with_python=True -o boost:extra_b2_flags=define=BOOST_FILESYSTEM_DISABLE_STATX for old kernels
 RUN python -m pip install conan && \
@@ -64,9 +66,9 @@ FROM ppc as pip_stuff
 RUN python -m pip install --upgrade pip && \
     python -m pip install torch-geometric jupyterlab awkward numba seaborn tqdm ipywidgets aquirdturtle_collapsible_headings plotly && \
     python -m pip install matplotlib_inline Geometry3D flake8 h5py scipy distrax dm-haiku==0.0.5&& \
-    python -m pip install optax uproot && pip install schema fsspec && python -m pip install -U jaxlib
+    python -m pip install optax uproot && pip install schema fsspec
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
-RUN python -m pip install fennel_seed[jax]
+RUN python -m pip install fennel_seed[cpu]
 RUN conda install -c conda-forge pyarrow
 FROM pip_stuff as pathing_stuff
 ENV PATH=${PATH}:/usr/local/lib/nodejs/node-v14.17.0-linux-x64/bin:/opt/miniconda3/bin:

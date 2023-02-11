@@ -4,11 +4,38 @@
 
 import numpy as np
 import proposal as pp
+from typing import List
 
-from .lepton_propagator import LeptonPropagator
-from ..particle import Particle
+from ..particle import Particle, particle_from_proposal
 from ..detector import Detector
 from ..utils.units import GeV_to_MeV, MeV_to_GeV, cm_to_m, m_to_cm
+from .loss import Loss
+from .lepton_propagator import LeptonPropagator
+
+MEDIUM_DICT = {
+    "INNERCORE": pp.medium.StandardRock,
+    "OUTERCORE": pp.medium.StandardRock,
+    "MANTLE": pp.medium.StandardRock,
+    "ROCK": pp.medium.StandardRock,
+    "ICE": pp.medium.Ice,
+    "AIR": pp.medium.Air
+}
+
+def remove_comments(s: str) -> str:
+    """Helper for removing trailing comments
+
+    params
+    ______
+    s: string you want to remove comments from
+
+    returns
+    _______
+    s: string without the comments
+    """
+    if "#" not in s:
+        return s
+    idx = s.index("#")
+    return s[:idx]
 
 def make_particle_definition(particle: Particle) -> pp.particle.ParticleDef:
     '''
@@ -24,9 +51,10 @@ def make_particle_definition(particle: Particle) -> pp.particle.ParticleDef:
         to input particle
     '''
     if str(particle) not in 'MuMinus MuPlus EMinus EPlus TauMinus TauPlus'.split():
-        raise ValueError(f"Particle string {str(particle)} not recognized")
-    pdef = getattr(pp.particle, f'{str(particle)}Def')()
+        raise ValueError(f"Particle string {particle} not recognized")
+    pdef = getattr(pp.particle, f'{particle}Def')()
     return pdef
+
 
 def make_propagator(
     particle: Particle,
@@ -45,199 +73,251 @@ def make_propagator(
     _______
     prop: PROPOSAL propagator for input Particle
     """
-    # Make the PROPOSAL utilities object
-    ecut = simulation_specs["ecut"]
-    vcut = simulation_specs["vcut"]
-    if hasattr(vcut, "__iter__") and len(ecut)!=2:
-        raise ValueError("You can only specify vcut lists of length 2")
-    if hasattr(ecut, "__iter__") and len(ecut)!=2:
-        raise ValueError("You can only specify ecut lists of length 2")
 
     pdef = make_particle_definition(particle)
-    medium = make_medium(simulation_specs["medium"])
-    # TODO figure out how to get the rest of the options working
-    do_continuous_randomization = simulation_specs["continuous randomization"]
-    # List have been passed for both energy cut settings
-    # TODO: Check what the hell this is
-    interpolate = True
-    if hasattr(vcut, "__iter__") and hasattr(ecut, "__iter__"):
-        utilities = [
-            make_utility(
-                pdef,
-                interpolate,
-                pp.EnergyCutSettings(
-                    ec * GeV_to_MeV,
-                    vc,
-                    do_continuous_randomization),
-                medium
-            )
-        for ec, vc in zip(ecut, vcut)]
-    # A List was passed for vcut only
-    elif hasattr(vcut, "__iter__"):
-        utilities = [
-            make_utility(
-                pdef,
-                interpolate,
-                pp.EnergyCutSettings(
-                    ecut * GeV_to_MeV,
-                    vc,
-                    do_continuous_randomization
-                ),
-                medium
-            )
-        for vc in vcut]
-    # A List was passed for ecut only
-    elif hasattr(ecut, "__iter__"):
-        utilities = [
-            make_utility(
-                pdef,
-                interpolate,
-                pp.EnergyCutSettings(
-                    ec * GeV_to_MeV,
-                    vcut,
-                    do_continuous_randomization
-                ),
-                medium
-            )
-        for ec in ecut]
-    # Scalars were passed for both energy cut settings
-    else:
-        utilities = [
-            make_utility(
-                pdef,
-                interpolate,
-                pp.EnergyCutSettings(
-                    ecut * GeV_to_MeV,
-                    vcut,
-                    do_continuous_randomization
-                ),
-                medium
-            )
-        for _ in range(2)]
-
-    # Make the PROPOSAL geometries
-    inner_r = [0, simulation_specs["inner radius"]]
-    outer_r = [simulation_specs["inner radius"], simulation_specs["maximum radius"]]
-    geometries = [
-        pp.geometry.Sphere(
-            pp.Cartesian3D(),
-            end * m_to_cm,
-            start * m_to_cm
-        )
-        for start, end in zip(outer_r, inner_r)
-    ]
-
-    # Make the density distributions
-    density_distrs = [
-        pp.density_distribution.density_homogeneous(
-            medium.mass_density
-        ) for _ in range(2)
-    ]
-
+    utilities = make_propagation_utilities(
+        pdef,
+        path_dict["earth model location"],
+        simulation_specs
+    )
+    geometries = make_geometries(path_dict["earth model location"])
+    density_distrs = make_density_distributions(path_dict["earth model location"])
     prop = pp.Propagator(pdef, list(zip(geometries, utilities, density_distrs)))
 
     return prop
 
-def make_utility(
-    particle_def,
-    interpolate,
-    cuts,
-    medium
-):
-    collection = pp.PropagationUtilityCollection()
-    cross = pp.crosssection.make_std_crosssection(
-        particle_def,
-        medium,
-        cuts,
-        interpolate
-    )
-    # TODO look into continuous randomization
-    create_tables = True
-    collection.displacement = pp.make_displacement(cross, create_tables)
-    collection.interaction = pp.make_interaction(cross, create_tables)
-    collection.time = pp.make_time(cross, particle_def, create_tables)
-    collection.decay = pp.make_decay(cross, particle_def, create_tables)
-
-    utility = pp.PropagationUtility(collection=collection)
-
-    return utility
-
-def make_medium(medium_string: str) -> pp.medium.Medium:
-    """
-    Makes a proposal medium
+# Pydoc crashes if you remove the comment :-(
+def make_geometries(earth_file: str) -> List:
+#def make_geometries(earth_file: str) -> List[pp.Cartesian3D]:
+    """Make list of proposal geometries from earth datafile
 
     params
-    ------
-    medium_string: String which defines the medium in which 
-        proposal should propagate
+    ______
+    earth_file: data file where the parametrization of Earth is stored
+    
+    returns
+    _______
+    geometries: List of PROPOSAL spherical shells that make up the Earth
+    """
+    geometries = []
+    with open(earth_file, "r") as f:
+        inner_radius = 0
+        for line in f:
+            if line[0]=="#" or line[0]==" " or line[:1]=="\n":
+                continue
+            line = remove_comments(line)
+            split_line = [x for x in line.replace("\n", "").split(" ") if len(x)>0]
+            outer_radius = float(split_line[0])
+            geometry = pp.geometry.Sphere(
+                pp.Cartesian3D(0,0,1),
+                outer_radius * m_to_cm,
+                inner_radius * m_to_cm,
+            )
+            geometries.append(geometry)
+            inner_radius = outer_radius
+
+    return geometries
+            
+# Once again, uncomment messes with pydoc :-(
+def make_density_distributions(earth_file: str) -> List:
+#def make_density_distributions(earth_file: str) -> List[pp.density_distribution.density_distribution]:
+    """Make list of proposal homogeneous density distributions from
+    Earth datafile
+
+    params
+    ______
+    earth_file: data file where the parametrization of Earth is stored
 
     returns
-    -------
-    medium_def: Medium in which the propagation should take place
+    _______
+    density_distributions: Density distributions corresponding to the 
+        average density in each layer of the Earth model at linear order
     """
-    if medium_string.lower() not in 'water ice'.split():
-        raise ValueError(f"Medium {medium_string} not supported at this time.")
-    else:
-        medium_def = getattr(pp.medium, medium_string.capitalize())()
-    return medium_def
+    with open(earth_file, "r") as f:
+        inner_radius = 0
+        density_distributions = []
+        for line in f:
+            if line[0]=="#" or line[0]==" " or line[:1]=="\n":
+                continue
+            line = remove_comments(line)
+            split_line = [x for x in line.replace("\n", "").split(" ") if len(x)>0]
+            outer_radius = float(split_line[0])
+            if len(split_line[4:])==1:
+                rho_bar = float(split_line[4])
+            else:
+                p0 = float(split_line[4])
+                p1 = float(split_line[5])
+                rho_bar = p0 + p1 * (inner_radius + outer_radius) /2
+            density = pp.density_distribution.density_homogeneous(rho_bar)
+            density_distributions.append(density)
+    return density_distributions
 
-def init_pp_particle(particle, pdef):
-    # Function must be called for each new particle.
-    # Maybe. Or we might just be able to overwrite the
-    # information but that requires some care. Makes me a bit nervous
+
+def make_propagation_utilities(
+    particle_def: pp.particle.ParticleDef,
+    earth_file: str,
+    simulation_specs: dict
+):
+# Pydoc again. Once day we will triumph
+#) -> pp.PropagationUtility:
+    """Make a list of PROPOSAL propagation utilities from an earth file
+        for a particle given some simulation specifications
+
+    params
+    ______
+    particle_def: PROPOSAL particle definition
+    earth_file: data file where the parametrization of Earth is stored
+    simulation_specs: dictionary specifying all the simulation specifications
+
+    returns
+    _______
+    utilities: List of PROPOSAL PropagationUtility objects
+    """
+    cuts = pp.EnergyCutSettings(
+        simulation_specs["ecut"] * GeV_to_MeV,
+        simulation_specs["vcut"],
+        simulation_specs["continuous randomization"]
+    )
+    utilities = []
+    with open(earth_file, "r") as f:
+        inner_radius = 0
+        for line in f:
+            if line[0]=="#" or line[0]==" " or line[:1]=="\n":
+                continue
+            line = remove_comments(line)
+            split_line = [x for x in line.replace("\n", "").split(" ") if len(x)>0]
+            outer_radius = float(split_line[0])
+            if len(split_line[4:])==1:
+                rho_bar = float(split_line[4])
+            else:
+                p0 = float(split_line[4])
+                p1 = float(split_line[5])
+                rho_bar = p0 + p1 * (inner_radius + outer_radius) /2
+            test_medium = MEDIUM_DICT[split_line[2]]()
+            medium = MEDIUM_DICT[split_line[2]]()
+            collection = pp.PropagationUtilityCollection()
+            cross = pp.crosssection.make_std_crosssection(
+                particle_def,
+                medium,
+                cuts,
+                simulation_specs["interpolate"]
+            )
+            create_tables = True
+            collection.displacement = pp.make_displacement(cross, create_tables)
+            collection.interaction = pp.make_interaction(cross, create_tables)
+            collection.time = pp.make_time(cross, particle_def, create_tables)
+            collection.decay = pp.make_decay(cross, particle_def, create_tables)
+
+            utility = pp.PropagationUtility(collection=collection)
+            utilities.append(utility)
+
+    return utilities
+
+def init_pp_particle(
+    particle: Particle,
+    #pdef: pp.particle.ParticleDef,
+    coordinate_shift: np.ndarray
+):
+# Pydoc
+#) -> pp.particle.ParticleState:
+    """Initialize a PROPOSAL particle
+
+    params
+    ______
+    particle: Prometheus particle for which to make the PROPOSAL state
+    pdef: PROPOSAL particle definition
+    coordinate_shift: Difference between the PROPOSAL coordinate system
+        centered on the the Earth's center and Prometheus coordinate
+        system in meters. The norm of this vector should be the radius
+        between the center of the Earth and the start of the atmoshphere
+
+    returns
+    _______
+    init_state: PROPOSAL particle state with energy, position, and direction
+        matching input particle
+    """
     init_state = pp.particle.ParticleState()
     init_state.position = pp.Cartesian3D(
-        *particle.position
+        *(particle.position + coordinate_shift) * m_to_cm
     )
-    init_state.energy = particle.energy * GeV_to_MeV
+    init_state.energy = particle.e* GeV_to_MeV
     init_state.direction = pp.Cartesian3D(*particle.direction)
     return init_state
 
+# TODO Sorry about this function:-(
 def new_proposal_losses(
-    prop,
-    p_def, 
-    particle,
-    padding,
-    r_inice,
-    detector_center
-):
-    # TODO: Check if init state needs to be set
-    init_state = init_pp_particle(particle, p_def)
+    prop: pp.Propagator,
+    particle: Particle,
+    padding: float,
+    r_inice: float,
+    detector_center: np.ndarray,
+    coordinate_shift: np.ndarray
+) -> None:
+    """Propagate a Prometheus particle using PROPOSAL, modifying the particle
+    losses in place
+
+    params
+    ______
+    prop: Proposal propagator porresponding to the input particle
+    particle: Prometheus particle to propagate
+    padding: propagation padding in meters. The propagation distance is calcuated as:
+        np.linalg.norm(particle.position - detector_center) + padding
+    detector_center: Center of the detector in Prometheus coordinate system in meters
+    coordinate_shift: Difference between the PROPOSAL coordinate system
+        centered on the the Earth's center and Prometheus coordinate
+        system in meters. The norm of this vector should be the radius
+        between the center of the Earth and the start of the atmoshphere, and 
+        should usually only have a z-component
+    """
+    init_state = init_pp_particle(particle, coordinate_shift)
     propagation_length = np.linalg.norm(particle.position) + padding
     secondarys = prop.propagate(init_state, propagation_length * m_to_cm)
-    continuous_loss  = 0
+    continuous_loss_sum  = 0
     for loss in secondarys.stochastic_losses():
         loss_energy = loss.energy * MeV_to_GeV
-        if loss.types==1000000008:
-            continuous_loss += loss_energy
+        if loss.type==1000000008:
+            continuous_loss_sum += loss_energy
         else:
+            pos = (
+                np.array([loss.position.x, loss.position.y, loss.position.z]) * cm_to_m -
+                coordinate_shift
+            )
+            # TODO more this to the serialization function. DTaSD
             if np.linalg.norm(pos - detector_center) <= r_inice:
-                pos = np.array([loss.position.x, loss.position.y, loss.position.z]) * cm_to_m
-                particle.add_loss(Loss(sec.type, sec_energy, pos))
-    # TODO: Update this ugly fix
-    cont_loss_sum = np.sum(secondarys.continuous_losses()) * MeV_to_GeV
+                particle.losses.append(Loss(loss.type, loss.energy, pos))
+    #continuous_loss_sum = np.sum(secondarys.continuous_losses()) * MeV_to_GeV
     total_dist = secondarys.track_propagated_distances()[-1] * cm_to_m
     # TODO: Add this to config
     cont_resolution = 1.
     loss_dists = np.arange(0, total_dist, cont_resolution)
     # TODO: Remove this really ugly fix
     if len (loss_dists) == 0:
-        cont_loss_sum = 1.* MeV_to_GeV
+        continuous_loss_sum = 1.* MeV_to_GeV
         total_dist = 1.1
         loss_dists = np.array([0., 1.])
-    e_loss = cont_loss_sum / len(loss_dists)
+    e_loss = continuous_loss_sum / len(loss_dists)
     for dist in loss_dists:
         pos = dist * particle.direction + particle.position
-        particle.add_loss(Loss(1000000008, e_loss, pos))
-    if soft_losses:
-        total_loss = np.sum([len(losses[loss]) for loss in losses])
-    else:
-        total_loss = np.sum([len(losses[loss]) for loss in losses if loss != 'continuous'])
-    return particle
+        particle.losses.append(Loss(1000000008, e_loss, pos))
+    for child in secondarys.decay_products():
+        particle.children.append(
+            particle_from_proposal(child, coordinate_shift, parent=particle)
+        )
 
 class NewProposalLeptonPropagator(LeptonPropagator):
     """Class for propagating charged leptons with PROPOSAL versions >= 7"""
     def __init__(self, config):
+        with open(config["paths"]["earth file"], "r") as f:
+            for line in f:
+                if line[0]=="#" or line[0]==" " or line[:1]=="\n":
+                    continue
+                line = remove_comments(line)
+                split_line = [x for x in line.replace("\n", "").split(" ") if len(x)>0]
+                if split_line[2]=="AIR":
+                    break
+                outer_radius = float(split_line[0])
+
+        self._coordinate_shift = np.array([0, 0, outer_radius])
         super().__init__(config)
 
     def _make_propagator(self, particle: Particle) -> pp.Propagator:
@@ -276,26 +356,26 @@ class NewProposalLeptonPropagator(LeptonPropagator):
         self, 
         particle: Particle,
         detector: Detector
-    ) -> Particle:
-        """Propagate a particle and track the losses
+    ) -> None:
+        """Propagate a particle and track the losses. Losses and children
+        are added in place
 
         params
         ______
         particle: Prometheus Particle that should be propagated
         detector: Detector that this is being propagated within
-            This is a temporary fix and will hopefully we solved soon :-)
 
         returns
         _______
         propped_particle: Prometheus Particle after propagation
         """
+        # TODO particle_def is not needed. DTaSD
         particle_def, propagator = self[particle]
         propped_particle = new_proposal_losses(
             propagator,
-            particle_def,
             particle,
             self._config["simulation"]["propagation padding"],
             detector.outer_radius + 1000.0,
-            detector.offset
+            detector.offset,
+            self._coordinate_shift
         )
-        return propped_particle

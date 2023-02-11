@@ -1,9 +1,10 @@
 import numpy as np
 
-from .photon_propagator import PhotonPropagator
 from ..lepton_propagation import LeptonPropagator
 from ..particle import Particle
 from ..detector import Detector
+from .photon_propagator import PhotonPropagator
+from .hit import Hit
 
 from olympus.event_generation.lightyield import make_realistic_cascade_source
 from olympus.event_generation.utils import sph_to_cart_jnp
@@ -28,8 +29,6 @@ class OlympusPhotonPropagator(PhotonPropagator):
         config: dict
     ):
         super().__init__(lepton_propagator, detector, config)
-        print('Using olympus')
-        print('Setting up the medium')
 
         if not self.config['simulation']['files']:
             ValueError('Currently only file runs for olympus are supported!')
@@ -107,9 +106,28 @@ class OlympusPhotonPropagator(PhotonPropagator):
                 pprop_func=self._gen_ph,
                 splitter=self.config['simulation']['splitter']
             )
-        #if self.config['run']['noise']:
-        #    res_event, _ = simulate_noise(self._det, res_event)
-        return res_event, res_record
+
+        hits = []
+        nstrings = len(set([mod.key[0] for mod in self.detector.modules]))
+        string_idx = 0
+        om_idx = 0
+        oms_per_string = len(self.detector.modules) / nstrings
+        for dom_hits in res_event:
+            if om_idx==oms_per_string:
+                om_idx = 0
+                string_idx += 1
+            for hit in dom_hits:
+                hits.append(
+                    Hit(string_idx, om_idx, float(hit), None,
+                    None, None, None, None)
+                )
+            om_idx += 1
+        particle._hits = hits
+        for child in particle.children:
+            if child.e < 1:
+                continue
+            self.propagate(child)
+
 
     def _c_medium_f(self, wl):
         """ Speed of light in medium for wl (nm)

@@ -1,0 +1,34 @@
+# 
+# crust model file
+# PREM + mmc crust setup
+# crust data is consistent with MMC mediadef.
+#
+#
+#   format :
+#   upper_radius[m] density[g/cm^3] label[string]
+#    - Data must be in ascending order in upper_radius
+#    - no space before first column
+#    - delimiter must be whitespaces
+#    - data must include at least 5 lines with labels
+#      "moho_boundary", "rockice_boundary",
+#      "iceair_boundary", "earth_radius", and "atmo_radius"
+#    - density must be the density up to the defined radius 
+#      except for "moho_boundary"
+#    - density of "moho_boundary" should be same as
+#      the density of next layer
+#    - "earth_radius" is NOT the geophysical boundary.
+#      This is the definition that all simulation program
+#      regards "the radius of the Earth".
+#    - lines start from '#' or whitespace are treated
+#      as comments
+#
+
+
+6346600 2.900    moho_boundary
+6356000 2.900    inner_crust           # 
+6371324 2.650    rockice_boundary      # surface of bed rock, 1.0 x 2.65
+6373934 0.921585 clearice_boundary     # 200m below ice surface, 1.005 x 0.917
+6374134 0.762944 iceair_boundary       # surface of ice, 0.832 x 0.917
+6374134 0.762944 earth_radius          # user-defined earth radius
+6478000 0.000811 atmo_radius           # 0.673atm x 1.205e-3(g/cm3 for 1atm) 
+

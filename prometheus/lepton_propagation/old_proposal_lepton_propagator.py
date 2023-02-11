@@ -4,14 +4,38 @@
 
 import numpy as np
 import proposal as pp
+from typing import List
 
 from .lepton_propagator import LeptonPropagator
 from .loss import Loss
-from ..particle import Particle
-# TODO This doesn't need to be here
+from ..particle import Particle, particle_from_proposal
 from ..detector import Detector
-from ..utils import iter_or_rep
 from ..utils.units import GeV_to_MeV, MeV_to_GeV, cm_to_m, m_to_cm
+
+MEDIUM_DICT = {
+    "INNERCORE": pp.medium.StandardRock,
+    "OUTERCORE": pp.medium.StandardRock,
+    "MANTLE": pp.medium.StandardRock,
+    "ROCK": pp.medium.StandardRock,
+    "ICE": pp.medium.Ice,
+    "AIR": pp.medium.Air,
+    "WATER": pp.medium.Water
+}
+def remove_comments(s: str) -> str:
+    """Helper for removing trailing comments
+
+    params
+    ______
+    s: string you want to remove comments from
+
+    returns
+    _______
+    s: string without the comments
+    """
+    if "#" not in s:
+        return s
+    idx = s.index("#")
+    return s[:idx]
 
 def make_particle_def(particle: Particle) -> pp.particle.ParticleDef:
     """Makes a PROPOSAL particle definition
@@ -25,13 +49,91 @@ def make_particle_def(particle: Particle) -> pp.particle.ParticleDef:
     pdef: PROPOSAL particle definition
     """
     if str(particle) not in 'MuMinus MuPlus EMinus EPlus TauMinus TauPlus'.split():
-        raise ValueError(f"Particle string {str(particle_string)} not recognized")
+        raise ValueError(f"Cannot propagate {str(particle)} with PROPOSAL")
     pdef = getattr(pp.particle, f'{str(particle)}Def')()
     return pdef
 
+def make_detector(earth_file: str) -> pp.geometry.Sphere:
+    """Make a PROPOSAL sphere with radius eqaul to the max radius
+    from an Earth data file
+
+    params
+    ______
+    earth_file: Earth datafile
+    
+    returns
+    _______
+    detector: PROPOSAL Sphere
+    """
+    with open(earth_file, "r") as f:
+        for line in f:
+            if line[0]=="#" or line[0]==" " or line[:1]=="\n":
+                continue
+            line = remove_comments(line)
+            split_line = [x for x in line.replace("\n", "").split(" ") if len(x)>0]
+            outer_radius = float(split_line[0])
+    detector = pp.geometry.Sphere(pp.Vector3D(0,0,1), outer_radius, 0.0)
+    return detector
+
+def make_sector_defs(earth_file: str, simulation_specs: dict) -> List[pp.SectorDefinition]:
+    """Make list of PROPOSAL sector definitions for an input Earth 
+    data file according to given simulation specifications
+
+    params
+    ______
+    earth_file: Earth datafile
+    simulation_specs: dictionary specifying simulation paramters
+
+    returns
+    _______
+    sec_defs: list of PROPOSAL sector definitions
+    """
+    inner_radius = 0
+    sec_defs = []
+    with open(earth_file, "r") as f:
+        for line in f:
+            if line[0]=="#" or line[0]==" " or line[:1]=="\n":
+                continue
+            line = remove_comments(line)
+            split_line = [x for x in line.replace("\n", "").split(" ") if len(x)>0]
+            outer_radius = float(split_line[0])
+            # Compute average density in linear approx
+            if len(split_line[4:])==1:
+                rho_bar = float(split_line[4])
+            else:
+                p0 = float(split_line[4])
+                p1 = float(split_line[5])
+                rho_bar = p0 + p1 * (inner_radius + outer_radius) /2
+
+            sector_def = pp.SectorDefinition()
+            sector_def.cut_settings.ecut = simulation_specs["ecut"] * GeV_to_MeV
+            sector_def.cut_settings.vcut = simulation_specs["vcut"]
+
+            sector_def.geometry = pp.geometry.Sphere(
+                pp.Vector3D(0,0,1),
+                # Do not apply units. PROPOSAL has a bug that this needs meters not cm
+                outer_radius,
+                inner_radius,
+                #outer_radius * m_to_cm,
+                #inner_radius * m_to_cm,
+            )
+            test_medium = MEDIUM_DICT[split_line[2]]()
+            medium = MEDIUM_DICT[split_line[2]](rho_bar / test_medium.mass_density)
+            sector_def.medium = medium
+
+            sector_def.crosssection_defs.brems_def.lpm_effect = simulation_specs["lpm effect"]
+            sector_def.crosssection_defs.epair_def.lpm_effect = simulation_specs["lpm effect"]
+            sector_def.do_continuous_randomization = simulation_specs["continuous randomization"]
+            sector_def.do_continuous_energy_loss_output = simulation_specs['soft losses']
+
+            sec_defs.append(sector_def)
+            inner_radius = outer_radius
+    return sec_defs
+
 def init_dynamic_data(
     particle: Particle,
-    particle_definition: pp.particle.ParticleDef
+    particle_definition: pp.particle.ParticleDef,
+    coordinate_shift: np.ndarray
 ) -> pp.particle.DynamicData:
     """Makes PROPOSAL DynamicData:
 
@@ -45,60 +147,10 @@ def init_dynamic_data(
     particle_dd: PROPOSAL DynamicData for input particle
     """
     particle_dd = pp.particle.DynamicData(particle_definition.particle_type)
-    particle_dd.position = particle.pp_position
-    particle_dd.direction = particle.pp_direction
+    particle_dd.position = pp.Vector3D(*(particle.position + coordinate_shift) * m_to_cm)
+    particle_dd.direction = pp.Vector3D(*particle.direction)
     particle_dd.energy = particle.e * GeV_to_MeV
     return particle_dd
-
-def make_medium(medium_string: str) -> pp.medium.Medium:
-    """
-    Makes a proposal medium
-
-    params
-    ------
-    medium_string: String which defines the medium in which
-        proposal should propagate
-
-    returns
-    -------
-    medium_def: Medium in which the propagation should take place
-    """
-    print('This assumes a homogeneous medium!')
-    if medium_string.lower() not in 'water ice'.split():
-        raise ValueError(f"Medium {medium_string} not supported at this time.")
-    medium_def = getattr(pp.medium, medium_string.capitalize())()
-    return medium_def
-
-def init_sector(
-    start: float,
-    end: float,
-    ecut: float,
-    vcut: float
-) -> pp.SectorDefinition:
-    """Make a PROPOSAL spherical shell sector definition
-
-    params
-    ______
-    start: inner radius of the shell (m)
-    end: outer radius of the shell (m)
-    ecut: Absolute energy cutoff below which to treat losses continuously
-    vcut: Relative energy cutoff below which to treat losses continuously
-
-    returns
-    _______
-    sec_def: PROPOSAL sector definition with spherical geometry
-    """
-    #Define a sector
-    sec_def = pp.SectorDefinition()
-    sec_def.geometry = pp.geometry.Sphere(
-        pp.Vector3D(),
-        end * m_to_cm,
-        start * m_to_cm
-    )
-    sec_def.cut_settings.ecut = ecut * GeV_to_MeV
-    sec_def.cut_settings.vcut = vcut
-    # What should the default behavior of this be ?
-    return sec_def
 
 def make_propagator(
     particle: str,
@@ -118,29 +170,13 @@ def make_propagator(
     prop: PROPOSAL propagator for input Particle
     """
     pdef = make_particle_def(particle)
-    inner_r = [0, simulation_specs["inner radius"]]
-    outer_r = [simulation_specs["inner radius"], simulation_specs["maximum radius"]]
-    ecut = iter_or_rep(simulation_specs["ecut"])
-    vcut = iter_or_rep(simulation_specs["vcut"])
-    medium = make_medium(simulation_specs["medium"])
     detector = pp.geometry.Sphere(
-        pp.Vector3D(), simulation_specs["maximum radius"] * m_to_cm, 0.0
+        # Don't do unit conversion here. Sphere is busted and expects
+        # stuff in meters
+        pp.Vector3D(), simulation_specs["maximum radius"], 0.0
+        #pp.Vector3D(), simulation_specs["maximum radius"] * m_to_cm, 0.0
     )
-    sec_defs = []
-    for start, end, ecut, vcut in zip(inner_r, outer_r, ecut, vcut):
-        sec_def = init_sector(start, end, ecut, vcut)
-        sec_def.medium = medium
-        sec_def.particle_location = pp.ParticleLocation.inside_detector
-        sec_def.scattering_model = (
-            getattr(pp.scattering.ScatteringModel, simulation_specs["scattering model"])
-        )
-	    # Bool options
-        sec_def.crosssection_defs.brems_def.lpm_effect = simulation_specs["lpm effect"]
-        sec_def.crosssection_defs.epair_def.lpm_effect = simulation_specs["lpm effect"]
-        sec_def.do_continuous_randomization = simulation_specs["continuous randomization"]
-        sec_def.do_continuous_energy_loss_output = simulation_specs['soft losses']
-        sec_defs.append(sec_def)
-
+    sec_defs = make_sector_defs(path_dict["earth model location"], simulation_specs)
     interpolation_def = pp.InterpolationDef()
     interpolation_def.path_to_tables = path_dict["tables path"]
     interpolation_def.path_to_tables_readonly = path_dict["tables path"]
@@ -159,7 +195,8 @@ def old_proposal_losses(
     # I think the last three args of this function are just shit that make this
     # dumb thing work
     r_inice: float,
-    detector_center: np.ndarray
+    detector_center: np.ndarray,
+    coordinate_shift: np.ndarray
 ) -> Particle:
     """Propagates charged lepton using PROPOSAL version <= 6
 
@@ -174,13 +211,8 @@ def old_proposal_losses(
         recorded. This should be a few scattering lengths for accuracy, but not too
         much more because then you will propagate light which never makes it
     detector_center: Center of the detector in meters
-
-    returns
-    _______
-    propped_particle: PROMETHEUS particle after propagation, including energy
-        losses and children
     """
-    particle_dd = init_dynamic_data(particle, pdef)
+    particle_dd = init_dynamic_data(particle, pdef, coordinate_shift)
     propagation_length = np.linalg.norm(particle.position) + padding
     secondarys = prop.propagate(
         particle_dd, propagation_length * m_to_cm
@@ -189,26 +221,31 @@ def old_proposal_losses(
     continuous_loss = 0
     for sec in secondarys.particles:
         sec_energy = (sec.parent_particle_energy - sec.energy) * MeV_to_GeV
-        # This should work with just the position but that requires some testing
-        pos = np.array([sec.position.x, sec.position.y, sec.position.z]) * cm_to_m
+        pos = np.array([sec.position.x, sec.position.y, sec.position.z]) * cm_to_m - coordinate_shift
         if sec.type > 1000000000: # This is an energy loss
             if np.linalg.norm(pos - detector_center) <= r_inice:
-                particle.add_loss(Loss(sec.type, sec_energy, pos))
+                particle.losses.append(Loss(sec.type, sec_energy, pos))
         else: # This is a particle. Might need to propagate
-            child = Particle(
-                sec.type,
-                sec.energy,
-                sec.position,
-                sec.direction,
-                parent=particle
-            )
-            particle.add_child(child)
+            child = particle_from_proposal(sec, coordinate_shift, parent=particle)
+            particle.children.append(child)
     total_loss = None
-    return particle
+
+
 
 class OldProposalLeptonPropagator(LeptonPropagator):
     """Class for propagating charged leptons with PROPOSAL versions <= 6"""
-    def __init__(self, config):
+    def __init__(self, config: dict):
+        with open(config["paths"]["earth model location"], "r") as f:
+            for line in f:
+                if line[0]=="#" or line[0]==" " or line[:1]=="\n":
+                    continue
+                line = remove_comments(line)
+                split_line = [x for x in line.replace("\n", "").split(" ") if len(x)>0]
+                if split_line[2]=="AIR":
+                    break
+                outer_radius = float(split_line[0]) 
+
+        self._coordinate_shift = np.array([0, 0, outer_radius])
         super().__init__(config)
 
     def _make_propagator(self, particle: Particle) -> pp.Propagator:
@@ -222,7 +259,6 @@ class OldProposalLeptonPropagator(LeptonPropagator):
         _______
         propagator: PROPOSAL propagator
         """ 
-        print("Making propagator")
         propagator = make_propagator(
             particle,
             self._config["simulation"],
@@ -248,8 +284,9 @@ class OldProposalLeptonPropagator(LeptonPropagator):
         self, 
         particle: Particle,
         detector: Detector
-    ) -> Particle:
-        """Propagate a particle and track the losses
+    ) -> None:
+        """Propagate a particle and track the losses. Losses and 
+        children are applied in place
 
         params
         ______
@@ -262,12 +299,12 @@ class OldProposalLeptonPropagator(LeptonPropagator):
         propped_particle: Prometheus Particle after propagation
         """
         particle_def, propagator = self[particle]
-        propped_particle = old_proposal_losses(
+        old_proposal_losses(
             propagator,
             particle_def,
             particle,
             self._config["simulation"]["propagation padding"],
             detector.outer_radius + 1000.0,
-            detector.offset
+            detector.offset,
+            self._coordinate_shift
         )
-        return propped_particle

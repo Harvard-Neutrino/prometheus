@@ -3,9 +3,9 @@
 # Authors: David Kim
 # User interface for Prometheus
 
-from hebe.config import config
-from hebe.utils.detector_dictionaries import detectors, final_states
-from hebe.utils.geo_utils import (
+from .. import config
+from .detector_dictionaries import detectors, final_states
+from .geo_utils import (
     from_geo,get_volume,
     get_endcap,
     get_injection_radius

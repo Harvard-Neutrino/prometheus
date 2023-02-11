@@ -2,10 +2,11 @@
 # detector_handler.py
 # Copyright (C) 2022 Christian Haack, Jeffrey Lazar, Stephan Meighen-Berger,
 # Deals with detector stuff
+from __future__ import annotations
 
 import numpy as np
 import awkward as ak
-from typing import List, Union
+from typing import List, Union, Tuple
 
 from .module import Module
 from .medium import Medium
@@ -24,8 +25,7 @@ class IncompatibleMACIDsError(Exception):
         super().__init__(self.message)
 
 class Detector(object):
-    """Interface for detector methods
-    """
+    """Prometheus detector object"""
     def __init__(self, modules: List[Module], medium: Union[Medium, None]):
         """Initialize detector.
         params
@@ -44,42 +44,42 @@ class Detector(object):
         # TODO replace this with the functions David writes
         self._outer_radius = np.linalg.norm(self.module_coords-self.offset, axis=1).max()
         self._outer_cylinder = (
-                np.linalg.norm(self.module_coords[:, :2] - self.offset[:2].transpose(), axis=1).max(),
+            np.linalg.norm(self.module_coords[:, :2] - self.offset[:2].transpose(), axis=1).max(),
             self.module_coords[:, 2].max() - self.module_coords[:, 2].min(),
         )
         self._n_modules = len(modules)
         self._om_keys = [om.key for om in self.modules]
 
-    def __getitem__(self, key):
+    def __getitem__(self, key) -> Module:
         idx = self._om_keys.index(key)
         return self.modules[idx]
 
-    def __add__(self, other):
+    def __add__(self, other) -> Detector:
         modules = np.hcat(self.modules, other.modules)
         return Detector(modules)
 
     @property
-    def medium(self):
+    def medium(self) -> Medium:
         return self._medium
 
     @property
-    def modules(self):
+    def modules(self) -> List[Module]:
         return self._modules
 
     @property
-    def n_modules(self):
+    def n_modules(self) -> int:
         return self._n_modules
 
     @property
-    def outer_radius(self):
+    def outer_radius(self) -> float:
         return self._outer_radius
 
     @property
-    def outer_cylinder(self):
+    def outer_cylinder(self) -> Tuple[float, float]:
         return self._outer_cylinder
 
     @property
-    def offset(self):
+    def offset(self) -> np.ndarray:
         return self._offset
 
     def to_f2k(

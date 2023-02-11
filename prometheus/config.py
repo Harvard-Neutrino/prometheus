@@ -5,6 +5,9 @@
 
 from typing import Dict, Any
 import yaml
+import os
+
+RESOURCES_DIR = os.path.abspath(f"{os.path.dirname(__file__)}/../resources/")
 
 _baseconfig: Dict[str, Any]
 
@@ -14,34 +17,28 @@ _baseconfig = {
     ###########################################################################
     "general": {
         # Random state seed
-        "version": "GitHub",
-        "random state seed": 1337,
-        'config location': '../run/config.json',
-        'meta data file': True,  # Switch to store meta data file
-        'meta name': 'meta_data',
-        'clean up': False,  # Delete all intermediate and temporary files
-        'storage location': './output/',
-        'full output' : False
+        "version": "github"
     },
     ###########################################################################
     # Scenario input
     ###########################################################################
     "run": {
-        # Defines some run parameters
+        "run number": 1337,
         'nevents': 10,
-        # If a subset should be used:
-        'subset': {
-            'switch': False,
-            'counts': 10,
-        },
-        'noise': False,
+        'storage prefix': './output/',
+        'config name': 'config',
+        'full output' : False,
+        # Random seed will follow run number if None
+        "random state seed": None,
+        'subset': None,
     },
     ###########################################################################
     # Detector
     ###########################################################################
     "detector": {
-        'specs file': None,  # Name of the file to use for build
+        'geo file': None,  # Name of the file to use for build
     },
+    ###########################################################################
     # Injection
     ###########################################################################
     'injection': {
@@ -50,12 +47,13 @@ _baseconfig = {
             'inject': True,
             'paths':{
                 'install location': '/opt/LI/install/lib/python3.9/site-packages',
-                'xsec location': '/opt/LI/source/resources/',
-                'diff xsec': "/test_xs.fits",
-                'total xsec': "/test_xs_total.fits",
-                'output name': "./data_output.h5",
-                "lic name": "./config.lic",
-                'earth model location': "earthparams/",
+                'xsec dir': '/opt/LI/source/resources/',
+                # These fields will be set with output prefix and run number
+                "earth model location": None,
+                'injection file': None,
+                "lic file": None,
+                'diff xsec': None,
+                'total xsec': None,
             },
             'simulation': {
                 'is ranged': False,
@@ -64,8 +62,8 @@ _baseconfig = {
                 'minimal energy': 1e3, # GeV
                 'maximal energy': 1e6, # GeV
                 'power law': 1.0,
-                'min zenith': 80.0, # degree
-                'max zenith': 180.0, # degree
+                'min zenith': 0.0, # degree
+                'max zenith': 100.0, # degree
                 'min azimuth': 0.0, # degree
                 'max azimuth': 360.0, # degree
                 'earth model': "Planet",
@@ -79,13 +77,15 @@ _baseconfig = {
         'Prometheus':{
             'inject': False,
             'paths': {
-                'output name': "./data_output.parquet"
+                'injection file': None,
             },
             'simulation': {}
         },
         'GENIE':{
             'inject': False,
-            'paths': {},
+            'paths': {
+                "injection file": None,
+            },
             'simulation': {}
         }
     },
@@ -97,20 +97,22 @@ _baseconfig = {
         # PROPOSAL with versions >= 7
         "new proposal":{
             "paths":{
-                "tables path": "~/.local/share/PROPOSAL/tables"
+                "tables path": "~/.local/share/PROPOSAL/tables",
+                "earth model location": None,
             },
             "simulation":{
                 'track length': 5000,
                 # TODO figure out why this breaks for 1e-2
-                'vcut': [1, 1],
+                'vcut': 1,
                 #'vcut': [1e-2, 1e-2],
-                'ecut': [0.5, 0.5], # GeV
+                'ecut': 0.5, # GeV
                 'soft losses': False,
                 'propagation padding': 900,
                 'interpolation': True,
                 'lpm effect': True,
                 'continuous randomization': True,
                 'soft losses': True,
+                "interpolate": True,
                 'scattering model': "Moliere",
                 'maximum radius': 1e18, # m
                 # all none elements will be set off detector config settings
@@ -121,12 +123,13 @@ _baseconfig = {
         # PROPOSAL with versions <= 6
         "old proposal":{
             "paths":{
-                "tables path": "~/.local/share/PROPOSAL/tables"
+                "tables path": "~/.local/share/PROPOSAL/tables",
+                "earth model location": None,
             },
             "simulation":{
                 'track length': 5000,
-                'vcut': [1, 1],
-                'ecut': [0.1, 0.5], # GeV
+                'vcut': 1,
+                'ecut': 0.1, # GeV
                 'soft losses': False,
                 'propagation padding': 900,
                 'interpolation': True,
@@ -153,6 +156,8 @@ _baseconfig = {
                 'photon model': 'pone_config.json',
                 'flow': "photon_arrival_time_nflow_params.pickle",
                 'counts': "photon_arrival_time_counts_params.pickle",
+                "photon field name": "photons",
+                "outfile": None
             },
             "simulation": {
                 'files': True,
@@ -169,12 +174,16 @@ _baseconfig = {
         'PPC_CUDA':{
             "paths":{
                 'location':'../PPC_CUDA/',
+                'force': False,
+                "ppc_tmpdir:": "./.ppc_tmp",
                 'ppc_tmpfile':'.event_hits.ppc.tmp',
                 'f2k_tmpfile':'.event_losses.f2k.tmp',
                 'ppc_prefix':'',
                 'f2k_prefix':'',
-                'ppctables':'../PPC_tables/ic_accept_all/',
-                'ppc_exe':'../PPC_CUDA/ppc', # binary executable
+                'ppctables':'../resources/PPC_tables/ic_accept_all/',
+                'ppc_exe':'../resources/PPC_executables/PPC_CUDA/ppc', # binary executable
+                "photon field name": "photons",
+                "outfile": None
             },
             "simulation": {
                 'device':0, # GPU,
@@ -184,31 +193,24 @@ _baseconfig = {
         'PPC': {
             "paths": {
                 'location': '../PPC/',
+                'force': False,
+                "ppc_tmpdir:": "./.ppc_tmp",
                 'ppc_tmpfile': '.event_hits.ppc.tmp',
                 'f2k_tmpfile': '.event_losses.f2k.tmp',
                 'ppc_prefix':'',
                 'f2k_prefix':'',
-                'ppctables':'../PPC_tables/ic_accept_all/',
-                'ppc_exe': '../PPC/ppc',  # binary executable
+                'ppctables':'../resources/PPC_tables/ic_accept_all/',
+                'ppc_exe': '../resources/PPC_executables/PPC/ppc',  # binary executable
+                "photon field name": "photons",
+                "outfile": None,
             },
             "simulation": {
                 'device': 0,  # CPU
                 'supress_output': True
             }
         },
-    },
-    ###########################################################################
-    # Plot
-    ###########################################################################
-    # TODO do we wanna keep plotting as an option internally ? I kind think we should
-    # totally factor it out
-    'plot': {
-        'xrange': [-1500, 1500],
-        'yrange': [-1500, 1500],
-        'zrange': [-3000, 100]
     }
 }
-
 
 class ConfigClass(dict):
     """ The configuration class. This is used

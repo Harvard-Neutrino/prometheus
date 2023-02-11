@@ -20,7 +20,7 @@ def serialize_loss(loss, parent, output_f2k):
     c = SpeedOfLight
     c /= s_to_ns
     dt = d / c
-    line = f'TR 0 {0} {str(loss)} {offpos[0]} {offpos[1]} {offpos[2] + PPC_MAGIC_Z} {theta} {phi} 0 {loss.e} {dt} \n'
+    line = f'TR 0 {0} {loss} {offpos[0]} {offpos[1]} {offpos[2] + PPC_MAGIC_Z} {theta} {phi} 0 {loss.e} {dt} \n'
     output_f2k.write(line)
 
 # Create an f2k file from given events
