@@ -121,7 +121,7 @@ def initialize_args():
         "--geo_file",
         dest="geo_file",
         type=str,
-        default="../prometheus/data/icecube-geo",
+        default="../resources/geofiles/icecube.geo",
         help="F2k file describing the geometry of the detector"
     )
     parser.add_argument(

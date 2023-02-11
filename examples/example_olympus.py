@@ -35,7 +35,7 @@ def main(args=None):
     # Smaller numbers make the simulation slower but less memory intensive
     config['photon propagator']['olympus']['simulation']['splitter'] = 4000
     # config['photon propagator']['name'] = 'oly    mpus'
-    config["detector"]["geo file"] = '../prometheus/data/pone_triangle-geo'
+    config["detector"]["geo file"] = '../resources/geofiles/pone_triangle.geo'
     prom = Prometheus()
     prom.sim()
     del prom
