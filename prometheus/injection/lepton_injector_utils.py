@@ -36,6 +36,7 @@ def make_new_LI_injection(
 
     """
     import os
+    import EarthModelService as em
     print('Importing LeptonInjector')
     try:
         try:
@@ -95,16 +96,23 @@ def make_new_LI_injection(
             max_azimuth, min_zenith, max_zenith,
             inject_radius, endcap_length, cyinder_radius, cyinder_height
         )
-    path_to = os.path.join(
-        path_dict["earth model location"]
-    )
-    # TODO this is a temporary fix until we install Benito's branch of LI
     earth_model_dir = "/".join(path_dict["earth model location"].split("/")[:-2]) + "/"
-    controller.SetEarthModel(
-        injection_specs["earth model"],
-        earth_model_dir
-        #path_dict["earth model location"]
+    earth_model_name = path_dict["earth model location"].split("/")[-1].split(".")[0]
+    earth = em.EarthModelService(
+        "Zorg",
+        earth_model_dir,
+        [earth_model_name],
+        ["Standard"],
+        "NoIce",
+        0.0,
+        -detector_offset[2]
     )
+    controller.SetEarthModelService(earth)
+    #controller.SetEarthModelFromPath(
+    #    injection_specs["earth model"],
+    #    earth_model_dir
+    #    #path_dict["earth model location"]
+    #)
     controller.setSeed(injection_specs["random state seed"])
     controller.NameOutfile(path_dict["injection file"])
     controller.NameLicFile(path_dict["lic file"])
