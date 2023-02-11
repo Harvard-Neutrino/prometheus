@@ -4,115 +4,57 @@
 # Storage class for particles
 
 import numpy as np
-import proposal as pp
-if int(pp.__version__.split(".")[0]) >= 7:
-    from proposal import Cartesian3D as pp_vector
-else:
-    from proposal import Vector3D as pp_vector
-from ..utils.units import m_to_cm, cm_to_m, GeV_to_MeV, MeV_to_GeV
+from dataclasses import dataclass, field
+from typing import Optional, List
+
 from ..utils.translators import PDG_to_pstring
 
-class Particle(object):
+@dataclass
+class Particle:
+    """Base dataclass for particle event structure
 
-    def __init__(
-        self,
-        pdg_code,
-        e,
-        position,
-        direction,
-        theta=0.,
-        phi=0.,
-        parent=None
-    ):
-        if isinstance(position, pp_vector):
-            if not isinstance(direction, pp_vector):
-                raise ValueError()
-            self._e = e * MeV_to_GeV
-            self._position = cm_to_m * np.array([position.x, position.y, position.z])
-            self._pp_position = position
-            self._direction = np.array([direction.x, direction.y, direction.z])
-            self._pp_direction = direction
-            self._theta = theta
-            self._phi = phi
-        else:
-            self._e = e
-            self._position = np.array(position)
-            self._pp_position = pp_vector(*(m_to_cm*position))
-            self._direction = np.array(direction)
-            self._pp_direction = pp_vector(*direction)
-            self._theta = theta
-            self._phi = phi
-        self._pdg_code = pdg_code
-        self._parent = parent
-        self._children = []
-        self._losses = []
-        self._hits = []
-        self._str = PDG_to_pstring[pdg_code]
+    fields
+    ______
+    pdg_code: PDG mc code
+    e: energy in GeV
+    position: particle position in meters
+    direction: unit vector pointing along particle momentum
+    serialization_idx: Index helper for serialization. This
+        will be overwritten at serialization time
+    """
+    pdg_code: int
+    e: float
+    position: np.ndarray
+    direction: np.ndarray
+    serialization_idx: int
+
 
     def __str__(self):
-        return self._str
+        return PDG_to_pstring[self.pdg_code]
 
     def __int__(self):
-        return int(self._pdg_code)
-
-    def __repr__(self):
-        s = f"pdg_code : {self._pdg_code}\n"
-        s += f"name : {self._str}\n"
-        s += f"e : {self._e}\n"
-        s += f"position : {self._position}\n"
-        s += f"direction : {self._direction}\n"
-        return s
-
-    @property
-    def e(self):
-        return self._e
-
-    @property
-    def pdg_code(self):
-        return self._pdg_code
-
-    @property
-    def position(self):
-        return self._position
-
-    @property
-    def direction(self):
-        return self._direction
+        return int(self.pdg_code)
 
     @property
     def theta(self):
-        return self._theta
+        return np.arccos(self.direction[2])
 
     @property
     def phi(self):
-        return self._phi
+        return np.arctan2(self.direction[1], self.direction[0])
 
-    @property
-    def children(self):
-        return self._children
-
-    @property
-    def parent(self):
-        return self._parent
-
-    @property
-    def pp_direction(self):
-        return self._pp_direction
-
-    @property
-    def pp_position(self):
-        return self._pp_position
-
-    @property
-    def losses(self):
-        return self._losses
-
-    @property
-    def hits(self):
-        return self._hits
-
-    def add_loss(self, loss):
-        self._losses.append(loss)
-
-    def add_child(self, child):
-        self._children.append(child)
+@dataclass
+class PropagatableParticle(Particle):
+    """Particle event structure with added feature to support propagation
+    
+    fields
+    ______
+    parent: Particle which created this particle
+    children: Particles that this one spawned
+    losses: energy losses created by this particle
+    hits: OM hits originating from this particle
+    """
+    parent: Particle
+    children: List[Particle] = field(default_factory=list)
+    losses: List = field(default_factory=list)
+    hits: List = field(default_factory=list)

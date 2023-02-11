@@ -1,0 +1,31 @@
+# 
+# crust model file
+# PREM (legacy nugen setup)
+#
+#
+#   format :
+#   upper_radius[m] density[g/cm^3] label[string]
+#    - Data must be in ascending order in upper_radius
+#    - no space before first column
+#    - delimiter must be whitespaces
+#    - data must include at least 5 lines with labels
+#      "moho_boundary", "rockice_boundary",
+#      "iceair_boundary", "earth_radius", and "atmo_radius"
+#    - density must be the density up to the defined radius 
+#      except for "moho_boundary"
+#    - density of "moho_boundary" should be same as
+#      the density of next layer
+#    - "earth_radius" is NOT the geophysical boundary.
+#      This is the definition that all simulation program
+#      regards "the radius of the Earth".
+#    - lines start from '#' or whitespace are treated
+#      as comments
+#
+
+6346600 2.900 moho_boundary
+6356000 2.900 inner_crust       
+6375000 2.650 rockice_boundary     # Official PREM is 2.6 
+6378000 0.930 iceair_boundary      # ice (most thick part)
+6378000 0.930 earth_radius         # earth radius for simulation
+6478000 0.000 atmo_radius
+

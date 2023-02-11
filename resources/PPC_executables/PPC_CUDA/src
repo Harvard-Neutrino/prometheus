@@ -1,0 +1,6 @@
+CUDA=/usr/local/cuda
+export PATH=$PATH:$CUDA/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CUDA/lib64
+
+# NPHO_0=1792 NPHO_4=0
+# CUDA_VISIBLE_DEVICES="3,0,1,2,4,5"
