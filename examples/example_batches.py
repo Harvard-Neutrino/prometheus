@@ -29,7 +29,7 @@ def simulate_batch(settings):
     config['detector']['injection offset'] = [0., 0., 0]
     config['photon propagator']['name'] = 'olympus'
     config["detector"]['new detector'] = True
-    config["detector"]['detector specs file'] = '../prometheus/data/custom.txt'
+    config["detector"]['geo file'] = '../prometheus/data/custom.txt'
     config["detector"]["file name"] = '../prometheus/data/custom-f2k'
     prometheus = Prometheus()
     prometheus.sim()
