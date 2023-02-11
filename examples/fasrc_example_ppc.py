@@ -184,7 +184,7 @@ def main(args):
     config['run']['storage prefix'] = (
         f'{args.output_prefix}/'
     )
-    config["detector"]["specs file"] = args.geo_file
+    config["detector"]["geo file"] = args.geo_file
     config["detector"]["padding"] = args.padding
     if args.injection:
         config["injection"]["LeptonInjector"]["inject"] = False

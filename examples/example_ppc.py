@@ -32,7 +32,7 @@ def main(args=None):
     config["injection"]['LeptonInjector']['simulation']["endcap length"] = 800
     config["injection"]['LeptonInjector']['simulation']["cylinder radius"] = 800
     config["injection"]['LeptonInjector']['simulation']["cylinder height"] = 1000
-    config["detector"]["specs file"] = '../prometheus/data/icecube-geo'
+    config["detector"]["geo file"] = '../prometheus/data/icecube-geo'
     config['photon propagator']['name'] = 'PPC_CUDA'
     prometheus = Prometheus(userconfig=config)
     prometheus.sim()
