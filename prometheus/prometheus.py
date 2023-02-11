@@ -66,7 +66,7 @@ class Prometheus(object):
         userconfig: Configuration dictionary or path to yaml file 
             which specifies configuration
         detector: Detector to be used or path to geo file to load detector file.
-            If this is left out, the path from the `userconfig["detector"]["specs file"]`
+            If this is left out, the path from the `userconfig["detector"]["geo file"]`
             be loaded
 
         raises
@@ -96,12 +96,12 @@ class Prometheus(object):
         if regularize(config["photon propagator"]["name"]) not in RegisteredPhotonPropagators.list():
             raise UnknownPhotonPropagatorError(config["photon propagator"]["name"] + " is not a known photon propagator")
 
-        if detector is None and config["detector"]["specs file"] is None:
+        if detector is None and config["detector"]["geo file"] is None:
             raise CannotLoadDetectorError("No Detector provided and no geo file path given in config")
 
         if detector is None:
             from .detector import detector_from_geo
-            detector = detector_from_geo(config["detector"]["specs file"])
+            detector = detector_from_geo(config["detector"]["geo file"])
 
         self._injector = getattr(
             RegisteredInjectors,
