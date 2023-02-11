@@ -1,5 +1,5 @@
 ### Metadata ###
-Medium:	ice
+Medium:	water
 DOM Radius [cm]:	30
 ### Modules ###
 -58.49567473	-13.35125604	-1240.0	0	0
