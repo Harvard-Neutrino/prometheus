@@ -44,7 +44,7 @@ _baseconfig = {
             'inject': True,
             'paths':{
                 'install location': '/opt/LI/install/lib/python3.9/site-packages',
-                'xsec dir': '/opt/LI/source/resources/',
+                'xsec dir': '../resources/cross_section_splines/',
                 "earth model location": "../resources/earthparams/densities/PREM_mmc.dat",
                 # These fields will be set with output prefix and run number
                 'injection file': None,
