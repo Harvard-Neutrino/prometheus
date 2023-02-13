@@ -26,17 +26,15 @@ _baseconfig = {
         "run number": 1337,
         'nevents': 10,
         'storage prefix': './output/',
-        'config name': 'config',
-        'full output' : False,
         # Random seed will follow run number if None
         "random state seed": None,
-        'subset': None,
+        'subset': None
     },
     ###########################################################################
     # Detector
     ###########################################################################
     "detector": {
-        'geo file': None,  # Name of the file to use for build
+        'geo file': None # Name of the file to use for detector
     },
     ###########################################################################
     # Injection
@@ -47,7 +45,7 @@ _baseconfig = {
             'inject': True,
             'paths':{
                 'install location': '/opt/LI/install/lib/python3.9/site-packages',
-                'xsec dir': '/opt/LI/source/resources/',
+                'xsec dir': f'{RESOURCES_DIR}/cross_section_splines/',
                 # These fields will be set with output prefix and run number
                 "earth model location": None,
                 'injection file': None,
@@ -75,6 +73,7 @@ _baseconfig = {
             },
         },
         'Prometheus':{
+            # TODO make error if this is set to True
             'inject': False,
             'paths': {
                 'injection file': None,
@@ -82,6 +81,7 @@ _baseconfig = {
             'simulation': {}
         },
         'GENIE':{
+            # TODO make error if this is set to True
             'inject': False,
             'paths': {
                 "injection file": None,
