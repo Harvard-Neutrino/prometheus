@@ -5,7 +5,6 @@
 import numpy as np
 import proposal as pp
 from typing import List
-print(pp.__file__)
 
 from .lepton_propagator import LeptonPropagator
 from .loss import Loss
@@ -19,7 +18,8 @@ MEDIUM_DICT = {
     "MANTLE": pp.medium.StandardRock,
     "ROCK": pp.medium.StandardRock,
     "ICE": pp.medium.Ice,
-    "AIR": pp.medium.Air
+    "AIR": pp.medium.Air,
+    "WATER": pp.medium.Water
 }
 def remove_comments(s: str) -> str:
     """Helper for removing trailing comments

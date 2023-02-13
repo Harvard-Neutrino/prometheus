@@ -26,7 +26,7 @@ def initialize_args():
         help="number of events to simulate."
     )
     parser.add_argument(
-        "-s",
+       "-s",
         "--seed",
         dest="seed",
         type=int,
@@ -121,7 +121,7 @@ def initialize_args():
         "--geo_file",
         dest="geo_file",
         type=str,
-        default="../prometheus/data/icecube-geo",
+        default="../resources/geofiles/icecube.geo",
         help="F2k file describing the geometry of the detector"
     )
     parser.add_argument(
@@ -184,7 +184,7 @@ def main(args):
     config['run']['storage prefix'] = (
         f'{args.output_prefix}/'
     )
-    config["detector"]["specs file"] = args.geo_file
+    config["detector"]["geo file"] = args.geo_file
     config["detector"]["padding"] = args.padding
     if args.injection:
         config["injection"]["LeptonInjector"]["inject"] = False
@@ -197,6 +197,8 @@ def main(args):
             config['injection']["LeptonInjector"]['simulation']['is ranged'] = True
         config['injection']["LeptonInjector"]['simulation']['final state 1'] = args.final_1
         config['injection']["LeptonInjector"]['simulation']['final state 2'] = args.final_2
+        config['injection']["LeptonInjector"]['simulation']['min zenith'] = 0
+        config['injection']["LeptonInjector"]['simulation']['max zenith'] = 180
         config['injection']["LeptonInjector"]['simulation']['minimal energy'] = args.emin
         config['injection']["LeptonInjector"]['simulation']['maximal energy'] = args.emax
         config['injection']["LeptonInjector"]['simulation']["power law"] = args.gamma
@@ -221,6 +223,7 @@ def main(args):
     config['photon propagator']["PPC_CUDA"]["paths"]['outfile'] = (
         f"{args.output_prefix}/{prefix}_photons.parquet"
     )
+    config['photon propagator']["PPC_CUDA"]["paths"]['ppc_tmpdir'] = args.ppc_tmpfile.replace(".ppc", f"{seed}.ppc")
     config['photon propagator']["PPC_CUDA"]["paths"]['ppc_tmpfile'] = args.ppc_tmpfile.replace(".ppc", f"{seed}.ppc")
     config['photon propagator']["PPC_CUDA"]["paths"]['f2k_tmpfile'] = args.f2k_tmpfile.replace(".f2k", f"{seed}.f2k")
     config['photon propagator']["PPC_CUDA"]["paths"]['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/"
@@ -228,6 +231,7 @@ def main(args):
     # Uncomment this line to not use IceCube's angular acceptance
     #config['photon propagator'][photo_prop]["paths"]['ppctables'] = "../resources/PPC_tables/ic_accept_all/"
     config['photon propagator']["PPC_CUDA"]["paths"]['ppc_exe'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/ppc"
+    config["photon propagator"]["PPC_CUDA"]["paths"]["ppc_tmpdir"] = "./ppc_tmpdir"
 
     # This line is here for debugging. Uncommenting will generate a lot of output
     #config['photon propagator']["PPC_CUDA"]["simulation"]['supress_output'] = False

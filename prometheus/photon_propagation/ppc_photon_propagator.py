@@ -53,10 +53,9 @@ def ppc_sim(
         # TODO make this into a custom error
         print(repr(particle))
         raise ValueError("Unrecognized particle")
-
-    geo_tmpfile = f"{ppc_config['paths']['ppctables']}/geo-f2k"
-    ppc_tmpfile = f"{ppc_config['paths']['ppc_tmpfile']}_{str(particle)}"
-    f2k_tmpfile = f"{ppc_config['paths']['f2k_tmpfile']}_{str(particle)}"
+    geo_tmpfile = f"{ppc_config['paths']['ppc_tmpdir']}/geo-f2k"
+    ppc_tmpfile = f"{ppc_config['paths']['ppc_tmpdir']}/{ppc_config['paths']['ppc_tmpfile']}_{str(particle)}"
+    f2k_tmpfile = f"{ppc_config['paths']['ppc_tmpdir']}/{ppc_config['paths']['f2k_tmpfile']}_{str(particle)}"
     command = f"{ppc_config['paths']['ppc_exe']} {ppc_config['simulation']['device']} < {f2k_tmpfile} > {ppc_tmpfile}"
     if ppc_config["simulation"]["supress_output"]:
         command += " 2>/dev/null"
@@ -69,7 +68,7 @@ def ppc_sim(
         serial_nos=[m.serial_no for m in det.modules]
     )
     tenv = os.environ.copy()
-    tenv["PPCTABLESDIR"] = ppc_config["paths"]["ppctables"]
+    tenv["PPCTABLESDIR"] = ppc_config["paths"]["ppc_tmpdir"]
 
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
     process.wait()
