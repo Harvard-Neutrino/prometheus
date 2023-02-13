@@ -5,6 +5,9 @@
 
 from typing import Dict, Any
 import yaml
+import os
+
+RESOURCES_DIR = os.path.abspath(f"{os.path.dirname(__file__)}/../resources/")
 
 _baseconfig: Dict[str, Any]
 
@@ -33,7 +36,7 @@ _baseconfig = {
     # Detector
     ###########################################################################
     "detector": {
-        'specs file': None,  # Name of the file to use for build
+        'geo file': None,  # Name of the file to use for build
     },
     ###########################################################################
     # Injection
@@ -44,9 +47,9 @@ _baseconfig = {
             'inject': True,
             'paths':{
                 'install location': '/opt/LI/install/lib/python3.9/site-packages',
-                'xsec dir': '../resources/cross_section_splines/',
-                "earth model location": "../resources/earthparams/densities/PREM_mmc.dat",
+                'xsec dir': '/opt/LI/source/resources/',
                 # These fields will be set with output prefix and run number
+                "earth model location": None,
                 'injection file': None,
                 "lic file": None,
                 'diff xsec': None,
@@ -96,7 +99,6 @@ _baseconfig = {
             "paths":{
                 "tables path": "~/.local/share/PROPOSAL/tables",
                 "earth model location": None,
-                #"earth model location": "../resources/earthparams/densities/PREM_mmc.dat",
             },
             "simulation":{
                 'track length': 5000,
@@ -123,7 +125,6 @@ _baseconfig = {
             "paths":{
                 "tables path": "~/.local/share/PROPOSAL/tables",
                 "earth model location": None,
-                #"earth model location": "../resources/earthparams/densities/PREM_mmc.dat",
             },
             "simulation":{
                 'track length': 5000,
@@ -173,6 +174,8 @@ _baseconfig = {
         'PPC_CUDA':{
             "paths":{
                 'location':'../PPC_CUDA/',
+                'force': False,
+                "ppc_tmpdir:": "./.ppc_tmp",
                 'ppc_tmpfile':'.event_hits.ppc.tmp',
                 'f2k_tmpfile':'.event_losses.f2k.tmp',
                 'ppc_prefix':'',
@@ -190,6 +193,8 @@ _baseconfig = {
         'PPC': {
             "paths": {
                 'location': '../PPC/',
+                'force': False,
+                "ppc_tmpdir:": "./.ppc_tmp",
                 'ppc_tmpfile': '.event_hits.ppc.tmp',
                 'f2k_tmpfile': '.event_losses.f2k.tmp',
                 'ppc_prefix':'',
@@ -206,7 +211,6 @@ _baseconfig = {
         },
     }
 }
-
 
 class ConfigClass(dict):
     """ The configuration class. This is used

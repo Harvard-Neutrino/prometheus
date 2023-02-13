@@ -17,19 +17,23 @@ class ParquetWeighter(Weighter):
         _______
         oneweight: Oneweight for event [GeV sr m^2]
         """
+        raise ValueError("This is busted sorry :-/")
         lw_event = LW.Event()
-        injection = event.mc_truth
-        lw_event.energy = injection.injection_energy
-        lw_event.zenith = injection.injection_zenith
-        lw_event.azimuth = injection.injection_azimuth
-        lw_event.interaction_x = injection.injection_bjorkenx
-        lw_event.interaction_y = injection.injection_bjorkeny
-        lw_event.final_state_particle_0 = LW.ParticleType(injection.primary_lepton_1_type)
-        lw_event.final_state_particle_1 = LW.ParticleType(injection.primary_hadron_1_type)
-        lw_event.primary_type = LW.ParticleType(injection.injection_type)
-        lw_event.total_column_depth = injection.injection_column_depth
-        lw_event.x = injection.injection_position_x
-        lw_event.y = injection.injection_position_y
-        lw_event.z = injection.injection_position_z
+        injection = event["mc_truth"]
+        lw_event.energy = injection["initial_state_energy"]
+        lw_event.zenith = injection["initial_state_zenith"]
+        lw_event.azimuth = injection["initial_state_azimuth"]
+        lw_event.interaction_x = injection["bjorken_x"]
+        lw_event.interaction_y = injection["bjorken_y"]
+        initial_idxs = np.where(injection["final_state_parent"]==0)[0]
+        final_state_1_idx = initial_idxs[0]
+        final_state_2_idx = initial_idxs[1]
+        lw_event.final_state_particle_0 = LW.ParticleType(injection["final_state_type"][final_state_1_idx])
+        lw_event.final_state_particle_1 = LW.ParticleType(injection["final_state_type"][final_state_2_idx])
+        lw_event.primary_type = LW.ParticleType(injection["initial_state_type"])
+        lw_event.total_column_depth = injection["column_depth"]
+        lw_event.x = injection["initial_state_x"]
+        lw_event.y = injection["initial_state_y"]
+        lw_event.z = injection["initial_state_z"]
         return self._weighter.get_oneweight(lw_event) * self.nevents
 

@@ -50,7 +50,6 @@ def make_particle_definition(particle: Particle) -> pp.particle.ParticleDef:
     pdef: PROPOSAL particle definition object corresponing
         to input particle
     '''
-    print("Bebopafasdfasfdsaf")
     if str(particle) not in 'MuMinus MuPlus EMinus EPlus TauMinus TauPlus'.split():
         raise ValueError(f"Particle string {particle} not recognized")
     pdef = getattr(pp.particle, f'{particle}Def')()
@@ -87,7 +86,9 @@ def make_propagator(
 
     return prop
 
-def make_geometries(earth_file: str) -> List[pp.Cartesian3D]:
+# Pydoc crashes if you remove the comment :-(
+def make_geometries(earth_file: str) -> List:
+#def make_geometries(earth_file: str) -> List[pp.Cartesian3D]:
     """Make list of proposal geometries from earth datafile
 
     params
@@ -117,7 +118,9 @@ def make_geometries(earth_file: str) -> List[pp.Cartesian3D]:
 
     return geometries
             
-def make_density_distributions(earth_file: str) -> List[pp.density_distribution.density_distribution]:
+# Once again, uncomment messes with pydoc :-(
+def make_density_distributions(earth_file: str) -> List:
+#def make_density_distributions(earth_file: str) -> List[pp.density_distribution.density_distribution]:
     """Make list of proposal homogeneous density distributions from
     Earth datafile
 
@@ -154,7 +157,9 @@ def make_propagation_utilities(
     particle_def: pp.particle.ParticleDef,
     earth_file: str,
     simulation_specs: dict
-) -> pp.PropagationUtility:
+):
+# Pydoc again. Once day we will triumph
+#) -> pp.PropagationUtility:
     """Make a list of PROPOSAL propagation utilities from an earth file
         for a particle given some simulation specifications
 
@@ -212,7 +217,9 @@ def init_pp_particle(
     particle: Particle,
     #pdef: pp.particle.ParticleDef,
     coordinate_shift: np.ndarray
-) -> pp.particle.ParticleState:
+):
+# Pydoc
+#) -> pp.particle.ParticleState:
     """Initialize a PROPOSAL particle
 
     params
