@@ -40,7 +40,7 @@ RUN PYTHONPATH=$PYTHONPATH:/opt/PROPOSAL/build/src/pyPROPOSAL python /opt/PROPOS
 FROM base_tables as leptoninjector
 RUN conda install -c conda-forge photospline && \
     mkdir /opt/LI && cd /opt/LI && \
-    git clone https://github.com/icecube/LeptonInjector.git && \
+    git clone -b with_earth_py https://github.com/icecube/LeptonInjector.git && \
     mv LeptonInjector source && mkdir build && mkdir install && \
     cd build && cmake -DCMAKE_INSTALL_PREFIX=../install ../source && \
     make -j4 && make install
