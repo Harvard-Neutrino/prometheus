@@ -98,7 +98,7 @@ _baseconfig = {
         # PROPOSAL with versions >= 7
         "new proposal":{
             "paths":{
-                "tables path": f"{RESOURCES_DIR}/PROPOSAL_tables/"
+                "tables path": f"{RESOURCES_DIR}/PROPOSAL_tables/",
                 "earth model location": None,
             },
             "simulation":{
