@@ -67,6 +67,10 @@ def config_mims(config: dict, detector) -> None:
     check_consistency(config)
 
 def check_consistency(config: dict) -> None:
+    # TODO check whether medium is knowable
+    # TODO check if medium is consistent
+    
+    
     pass
     #if (
     #    config["simulation"]["medium"] is not None and
@@ -84,6 +88,7 @@ def photon_prop_config_mims(config: dict, output_prefix: str) -> None:
 def lepton_prop_config_mims(config: dict, detector, earth_model_file: str) -> None:
     config["simulation"]["medium"] = detector.medium.name.capitalize()
     if config["paths"]["earth model location"] is None:
+        # TODO what are you doing here, Jeff ?
         config["paths"]["earth model location"] = config["paths"]["earth model location"]
     if config["simulation"]["inner radius"] is None:
        config["simulation"]["inner radius"] = (
