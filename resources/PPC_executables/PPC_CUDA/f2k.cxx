@@ -389,8 +389,8 @@ void f2k(){
 
     if(sscanf(in.c_str(), "%31s", name)==1){ if(strcmp(name, "EM")==0) eini(); }
     if(sscanf(in.c_str(), str, &gens, &igen, name, &x, &y, &z, &th, &ph, &l, &E, &t)==11){
-      th=180-th; ph=ph<180?ph+180:ph-180;
-      th*=FPI/180; ph*=FPI/180;
+      // th=180-th; ph=ph<180?ph+180:ph-180;
+      // th*=FPI/180; ph*=FPI/180;
       float costh=cosf(th), sinth=sinf(th), cosph=cosf(ph), sinph=sinf(ph);
       p.q=flne; p.n.x=sinth*cosph; p.n.y=sinth*sinph; p.n.z=costh;
       if(0==strcmp(name, "amu+") || 0==strcmp(name, "amu-") || 0==strcmp(name, "amu")) addp(x, y, z, t, E, l);
