@@ -5,9 +5,15 @@ INTERACTION_DICT = {
     ("EMinus", "Hadrons"): "CC",
     ("MuMinus", "Hadrons"): "CC",
     ("TauMinus", "Hadrons"): "CC",
-    ("NuEMinus", "Hadrons"): "NC",
-    ("NuMuMinus", "Hadrons"): "NC",
-    ("NuTauMinus", "Hadrons"): "NC",
+    ("EPlus", "Hadrons"): "CC",
+    ("MuPlus", "Hadrons"): "CC",
+    ("TauPlus", "Hadrons"): "CC",
+    ("NuE", "Hadrons"): "NC",
+    ("NuMu", "Hadrons"): "NC",
+    ("NuTau", "Hadrons"): "NC",
+    ("NuEBar", "Hadrons"): "NC",
+    ("NuMuBar", "Hadrons"): "NC",
+    ("NuTauBar", "Hadrons"): "NC",
 }
 EARTH_MODEL_DICT = {
     "gvd.geo": "PREM_gvd.dat",
