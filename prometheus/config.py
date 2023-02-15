@@ -47,7 +47,7 @@ _baseconfig = {
             'inject': True,
             'paths':{
                 'install location': '/opt/LI/install/lib/python3.9/site-packages',
-                'xsec dir': '/opt/LI/source/resources/',
+                'xsec dir': f'{RESOURCES_DIR}/cross_section_splines/',
                 # These fields will be set with output prefix and run number
                 "earth model location": None,
                 'injection file': None,
