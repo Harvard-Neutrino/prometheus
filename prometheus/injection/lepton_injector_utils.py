@@ -36,17 +36,18 @@ def make_new_LI_injection(
 
     """
     import os
-    import EarthModelService as em
     print('Importing LeptonInjector')
     try:
         try:
             print('Trying default pythonpath')
+            import EarthModelService as em
             import LeptonInjector as LI
         except ImportError:
             import sys
             print('Trying custom path set in config')
             print(f"The path is {path_dict['install location']}")
             sys.path.append(path_dict['install location'])
+            import EarthModelService as em
             import LeptonInjector as LI
     except ImportError:
         raise ImportError("LeptonInjector not found!")

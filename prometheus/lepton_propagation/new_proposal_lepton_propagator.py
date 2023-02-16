@@ -307,7 +307,7 @@ def new_proposal_losses(
 class NewProposalLeptonPropagator(LeptonPropagator):
     """Class for propagating charged leptons with PROPOSAL versions >= 7"""
     def __init__(self, config):
-        with open(config["paths"]["earth file"], "r") as f:
+        with open(config["paths"]["earth model location"], "r") as f:
             for line in f:
                 if line[0]=="#" or line[0]==" " or line[:1]=="\n":
                     continue
