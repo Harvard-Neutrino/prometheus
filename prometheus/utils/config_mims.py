@@ -17,15 +17,15 @@ INTERACTION_DICT = {
 }
 EARTH_MODEL_DICT = {
     "gvd.geo": "PREM_gvd.dat",
-    "icecube.geo": "PREM_mmc.dat",
-    "icecube_gen2.geo": "PREM_mmc.dat",
-    "icecube_upgrade.geo": "PREM_mmc.dat",
+    "icecube.geo": "PREM_south_pole.dat",
+    "icecube_gen2.geo": "PREM_south_pole.dat",
+    "icecube_upgrade.geo": "PREM_south_pole.dat",
     "orca.geo": "PREM_orca.dat",
     "arca.geo": "PREM_arca.dat",
     "pone.geo": "PREM_pone.dat",
     # The following options are used in case another file is provided
     "WATER": "PREM_water.dat",
-    "ICE": "PREM_mmc.dat",
+    "ICE": "PREM_south_pole.dat",
 }
 
 
