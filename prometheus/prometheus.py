@@ -262,19 +262,18 @@ class Prometheus(object):
         #     builder.field('config').append(json_config)
         # outarr = builder.snapshot()
         # outarr = ak.Record({"config": json_config})
-        photon_paths = config["photon propagator"][config["photon propagator"]["name"]]["paths"]
         # outarr['mc_truth'] = self.injection.to_awkward()
         test_arr = serialize_particles_to_awkward(self.detector, self.injection)
         if test_arr is not None:
             outarr = ak.Array({
                 'mc_truth': self.injection.to_awkward(),
-                photon_paths["photon field name"]: test_arr
+                config["photon propagator"]["photon field name"]: test_arr
             })
         else:
             outarr = ak.Array({
                 'mc_truth': self.injection.to_awkward()
             })
-        outfile = photon_paths['outfile']
+        outfile = config["photon propagator"][config["photon propagator"]["name"]]["paths"]['outfile']
         # Converting to pyarrow table
         outarr = ak.to_arrow_table(outarr)
         custom_meta_data_key = "config_prometheus"
