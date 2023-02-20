@@ -170,12 +170,7 @@ def make_propagator(
     prop: PROPOSAL propagator for input Particle
     """
     pdef = make_particle_def(particle)
-    detector = pp.geometry.Sphere(
-        # Don't do unit conversion here. Sphere is busted and expects
-        # stuff in meters
-        pp.Vector3D(), simulation_specs["maximum radius"], 0.0
-        #pp.Vector3D(), simulation_specs["maximum radius"] * m_to_cm, 0.0
-    )
+    detector = make_detector(path_dict["earth model location"])
     sec_defs = make_sector_defs(path_dict["earth model location"], simulation_specs)
     interpolation_def = pp.InterpolationDef()
     interpolation_def.path_to_tables = path_dict["tables path"]
