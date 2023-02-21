@@ -33,6 +33,6 @@
 6346600 moho_boundary         MANTLE      2    2.691     1.08679956050855438e-07   # surface of mantle
 6356000 inner_crust           ROCK        1    2.900    
 6371324 rockice_boundary      ROCK        1    2.650      # surface of bed rock, 1.0 x 2.65
-6374184 clearice_boundary     WATER       1    1.0   # 200m below ice surface, 1.005 x 0.917
+6374184 clearice_boundary     WATER       1    1.0   # 2869 m from diagram on https://www.pacific-neutrino.org/
 6478000 atmo_radius           AIR         1    0.000811   # 0.673atm x 1.205e-3(g/cm3 for 1atm) 
 
