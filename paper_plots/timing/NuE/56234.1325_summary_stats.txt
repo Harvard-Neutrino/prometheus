@@ -1,0 +1,52 @@
+Mon Feb 13 12:00:41 2023    NuE/timing_56234.1325.dat
+
+         89150515 function calls (89046022 primitive calls) in 4640.884 seconds
+
+   Ordered by: cumulative time
+   List reduced from 948 to 1 due to restriction <'ppc_photon_propagator.py:87'>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     2000    0.250    0.000 4592.003    2.296 ppc_photon_propagator.py:87(propagate)
+
+
+Mon Feb 13 12:00:41 2023    NuE/timing_56234.1325.dat
+
+         89150515 function calls (89046022 primitive calls) in 4640.884 seconds
+
+Mon Feb 13 12:00:41 2023    NuE/timing_56234.1325.dat
+
+         89150515 function calls (89046022 primitive calls) in 4640.884 seconds
+
+Mon Feb 13 12:00:41 2023    NuE/timing_56234.1325.dat
+
+         89150515 function calls (89046022 primitive calls) in 4640.884 seconds
+
+   Ordered by: cumulative time
+   List reduced from 948 to 1 due to restriction <'prometheus.py:158'>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    9.487    9.487 prometheus.py:158(inject)
+
+
+Mon Feb 13 12:00:41 2023    NuE/timing_56234.1325.dat
+
+         89150515 function calls (89046022 primitive calls) in 4640.884 seconds
+
+   Ordered by: cumulative time
+   List reduced from 948 to 1 due to restriction <'prometheus.py:252'>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.020    0.020   34.635   34.635 prometheus.py:252(construct_output)
+
+
+Mon Feb 13 12:00:41 2023    NuE/timing_56234.1325.dat
+
+         89150515 function calls (89046022 primitive calls) in 4640.884 seconds
+
+   Ordered by: cumulative time
+   List reduced from 948 to 1 due to restriction <'prometheus.py:243'>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000 4637.885 4637.885 prometheus.py:243(sim)
+
+

@@ -1,6 +1,6 @@
 import os
 
-RESOURCES_DIR = f"{os.path.dirname(__file__)}/../../resources/"
+RESOURCES_DIR = os.path.abspath(f"{os.path.dirname(__file__)}/../../resources/")
 INTERACTION_DICT = {
     ("EMinus", "Hadrons"): "CC",
     ("MuMinus", "Hadrons"): "CC",
@@ -96,13 +96,17 @@ def lepton_prop_config_mims(config: dict, detector, earth_model_file: str) -> No
     if config["paths"]["earth model location"] is None:
         # TODO what are you doing here, Jeff ?
         config["paths"]["earth model location"] = config["paths"]["earth model location"]
-    if config["simulation"]["inner radius"] is None:
-       config["simulation"]["inner radius"] = (
-            detector.outer_radius + config["simulation"]["propagation padding"]
-        )
+
+    if config["simulation"]["propagation padding"] is None:
+        config["simulation"]["propagation padding"] = detector.outer_radius
+        if detector.medium.name=="WATER":
+            config["simulation"]["propagation padding"] += 50
+        else:
+            config["simulation"]["propagation padding"] += 200
+
     if config["paths"]["earth model location"] is None:
-        if earth_model_file is None:
-            earth_model_file = EARTH_MODEL_DICT[detector.medium.name]
+#        if earth_model_file is None:
+#            earth_model_file = EARTH_MODEL_DICT[detector.medium.name]
         config["paths"]["earth model location"] = (
             os.path.abspath(f"{RESOURCES_DIR}/earthparams/densities/{earth_model_file}")
         )
@@ -121,8 +125,7 @@ def injection_config_mims(
         return
 
     if config["paths"]["earth model location"] is None:
-        if earth_model_file is None:
-            earth_model_file = EARTH_MODEL_DICT[detector.medium.name]
+        #earth_model_file = EARTH_MODEL_DICT[detector.medium.name]
         config["paths"]["earth model location"] = (
             os.path.abspath(f"{RESOURCES_DIR}/earthparams/densities/{earth_model_file}")
         )

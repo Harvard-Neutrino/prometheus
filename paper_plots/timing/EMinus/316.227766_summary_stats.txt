@@ -1,0 +1,67 @@
+Sun Feb 12 03:08:25 2023    EMinus/timing_316.227766.dat
+
+         167862882 function calls (167662589 primitive calls) in 6666.136 seconds
+
+   Ordered by: cumulative time
+   List reduced from 958 to 1 due to restriction <'ppc_photon_propagator.py:87'>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     2000    0.444    0.000 6648.421    3.324 ppc_photon_propagator.py:87(propagate)
+
+
+Sun Feb 12 03:08:25 2023    EMinus/timing_316.227766.dat
+
+         167862882 function calls (167662589 primitive calls) in 6666.136 seconds
+
+   Ordered by: cumulative time
+   List reduced from 958 to 1 due to restriction <'old_proposal_lepton_propagator.py:283'>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1000    0.028    0.000   53.948    0.054 old_proposal_lepton_propagator.py:283(energy_losses)
+
+
+Sun Feb 12 03:08:25 2023    EMinus/timing_316.227766.dat
+
+         167862882 function calls (167662589 primitive calls) in 6666.136 seconds
+
+   Ordered by: cumulative time
+   List reduced from 958 to 2 due to restriction <'lepton_propagator.py:15'>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1000    0.012    0.000   50.053    0.050 lepton_propagator.py:15(__getitem__)
+        1   49.947   49.947   50.008   50.008 old_proposal_lepton_propagator.py:155(make_propagator)
+
+
+Sun Feb 12 03:08:25 2023    EMinus/timing_316.227766.dat
+
+         167862882 function calls (167662589 primitive calls) in 6666.136 seconds
+
+   Ordered by: cumulative time
+   List reduced from 958 to 1 due to restriction <'prometheus.py:158'>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000   10.142   10.142 prometheus.py:158(inject)
+
+
+Sun Feb 12 03:08:25 2023    EMinus/timing_316.227766.dat
+
+         167862882 function calls (167662589 primitive calls) in 6666.136 seconds
+
+   Ordered by: cumulative time
+   List reduced from 958 to 1 due to restriction <'prometheus.py:252'>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.001    0.001    1.394    1.394 prometheus.py:252(construct_output)
+
+
+Sun Feb 12 03:08:25 2023    EMinus/timing_316.227766.dat
+
+         167862882 function calls (167662589 primitive calls) in 6666.136 seconds
+
+   Ordered by: cumulative time
+   List reduced from 958 to 1 due to restriction <'prometheus.py:243'>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000 6662.677 6662.677 prometheus.py:243(sim)
+
+
