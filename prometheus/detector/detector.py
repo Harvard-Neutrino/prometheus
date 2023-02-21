@@ -55,8 +55,10 @@ class Detector(object):
         return self.modules[idx]
 
     def __add__(self, other) -> Detector:
-        modules = np.hcat(self.modules, other.modules)
-        return Detector(modules)
+        if self.medium!=other.medium:
+            raise ValueError("Cannot combine detectors that are in different media")
+        modules = self.modules + other.modules
+        return Detector(modules, self.medium)
 
     @property
     def medium(self) -> Medium:
@@ -132,3 +134,32 @@ class Detector(object):
                     line += f"\t{key}"
                 line += "\n"
                 f2k_out.write(line)
+
+    def display(self, ax=None, elevation_angle=0, azimuth=0):
+        import matplotlib.pyplot as plt
+        if ax is None:
+            fig = plt.figure(figsize=(6, 5))
+            ax = fig.add_subplot(111, projection='3d')
+        ax.set_axis_off()
+        ax.scatter(
+            self.module_coords[:,0],
+            self.module_coords[:,1],
+            self.module_coords[:,2],
+            alpha=0.5,
+            s=0.2
+        )
+        ax.view_init(np.degrees(elevation_angle), np.degrees(azimuth))
+        plt.show()
+
+    def to_geo(self, geofile):
+        with open(geofile, "w") as f:
+            f.write("### Metadata ###\n")
+            f.write(f"Medium:\t{self.medium.name.lower()}\n")
+            f.write("### Modules ###\n")
+            for module in self.modules:
+                line = f"{module.pos[0]}\t{module.pos[1]}\t{module.pos[2]}"
+                for x in module.key:
+                    line += f"\t{x}"
+                line += "\n"
+                f.write(line)
+
