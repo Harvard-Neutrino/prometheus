@@ -40,16 +40,29 @@ def config_mims(config: dict, detector) -> None:
         the detector.
     """
     # Set up injection stuff
+
+    if detector.medium.name=="WATER":
+        config["photon propagator"]["name"] = "olympus"
+    elif detector.medium.name=="ICE" and config["photon propagator"]["name"] is None:
+        config["photon propagator"]["name"] = "PPC"
+
     run_config = config["run"]
     if run_config["random state seed"] is None:
         run_config["random state seed"] = run_config["run number"]
+
     output_prefix = os.path.abspath(f"{config['run']['storage prefix']}/{config['run']['run number']}")
+    if config["run"]["outfile"] is None:
+        config["run"]["outfile"] = (
+            f"{output_prefix}_photons.parquet"
+        )
 
     # Find which earth model we think we should be using
     earth_model_file = None
     base_geofile = os.path.basename(config["detector"]["geo file"])
     if base_geofile in EARTH_MODEL_DICT.keys():
         earth_model_file = EARTH_MODEL_DICT[base_geofile]
+    else:
+        earth_model_file = EARTH_MODEL_DICT[detector.medium.name]
 
     injection_config_mims(
         config["injection"][config["injection"]["name"]],
@@ -85,18 +98,11 @@ def check_consistency(config: dict) -> None:
     #    raise ValueError("Detector and lepton propagator have conflicting media")
 
 def photon_prop_config_mims(config: dict, output_prefix: str) -> None:
-    if config["paths"]["outfile"] is None:
-        config["paths"]["outfile"] = (
-            f"{output_prefix}_photons.parquet"
-        )
+    pass
 
 
 def lepton_prop_config_mims(config: dict, detector, earth_model_file: str) -> None:
     config["simulation"]["medium"] = detector.medium.name.capitalize()
-    if config["paths"]["earth model location"] is None:
-        # TODO what are you doing here, Jeff ?
-        config["paths"]["earth model location"] = config["paths"]["earth model location"]
-
     if config["simulation"]["propagation padding"] is None:
         config["simulation"]["propagation padding"] = detector.outer_radius
         if detector.medium.name=="WATER":
@@ -108,7 +114,7 @@ def lepton_prop_config_mims(config: dict, detector, earth_model_file: str) -> No
 #        if earth_model_file is None:
 #            earth_model_file = EARTH_MODEL_DICT[detector.medium.name]
         config["paths"]["earth model location"] = (
-            os.path.abspath(f"{RESOURCES_DIR}/earthparams/densities/{earth_model_file}")
+            f"{RESOURCES_DIR}/earthparams/densities/{earth_model_file}"
         )
 
 def injection_config_mims(
