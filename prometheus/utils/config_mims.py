@@ -136,6 +136,11 @@ def injection_config_mims(
             os.path.abspath(f"{RESOURCES_DIR}/earthparams/densities/{earth_model_file}")
         )
 
+    if config["simulation"]["is ranged"] is None:
+        config["simulation"]["is ranged"] = False
+        if config["simulation"]["final_1"] in "MuMinus MuPlus".split():
+            config["simulation"]["is ranged"] = True
+
     config["simulation"]["nevents"] = nevents
     # Make sure seeding is consistent
     config["simulation"]["random state seed"] = seed
