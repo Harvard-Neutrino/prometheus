@@ -87,14 +87,6 @@ class Prometheus(object):
             else:
                 config.from_yaml(userconfig)
 
-        if regularize(config["injection"]["name"]) not in RegisteredInjectors.list():
-            raise UnknownInjectorError(config["injection"]["name"] + "is not supported as an injector!")
-
-        if regularize(config["lepton propagator"]["name"]) not in RegisteredLeptonPropagators.list():
-            raise UnknownLeptonPropagatorError(config["lepton propagator"]["name"] + "is not a known lepton propagator")
-
-        if regularize(config["photon propagator"]["name"]) not in RegisteredPhotonPropagators.list():
-            raise UnknownPhotonPropagatorError(config["photon propagator"]["name"] + " is not a known photon propagator")
 
         if detector is None and config["detector"]["geo file"] is None:
             raise CannotLoadDetectorError("No Detector provided and no geo file path given in config")
@@ -103,18 +95,6 @@ class Prometheus(object):
             from .detector import detector_from_geo
             detector = detector_from_geo(config["detector"]["geo file"])
 
-        self._injector = getattr(
-            RegisteredInjectors,
-            regularize(config["injection"]["name"])
-        )
-        self._lp = getattr(
-            RegisteredLeptonPropagators,
-            regularize(config["lepton propagator"]["name"])
-        )
-        self._pp = getattr(
-            RegisteredPhotonPropagators,
-            regularize(config["photon propagator"]["name"])
-        )
         
         self._detector = detector
         self._injection = None
@@ -122,6 +102,7 @@ class Prometheus(object):
         # Infer which config to use from the PROPOSAL version
         # We need to check the version prior to import, otherwise
         # the type hinting will throw an error
+        # We can probably hide this in MIMS
         import proposal as pp
         if int(pp.__version__.split(".")[0]) <= 6:
             from .lepton_propagation import OldProposalLeptonPropagator as LeptonPropagator
@@ -133,6 +114,30 @@ class Prometheus(object):
 
         config_mims(config, self.detector)
         clean_config(config)
+
+        self._injector = getattr(
+            RegisteredInjectors,
+            regularize(config["injection"]["name"])
+        )
+
+        self._lp = getattr(
+            RegisteredLeptonPropagators,
+            regularize(config["lepton propagator"]["name"])
+        )
+
+        self._pp = getattr(
+            RegisteredPhotonPropagators,
+            regularize(config["photon propagator"]["name"])
+        )
+
+        if regularize(config["injection"]["name"]) not in RegisteredInjectors.list():
+            raise UnknownInjectorError(config["injection"]["name"] + "is not supported as an injector!")
+
+        if regularize(config["lepton propagator"]["name"]) not in RegisteredLeptonPropagators.list():
+            raise UnknownLeptonPropagatorError(config["lepton propagator"]["name"] + "is not a known lepton propagator")
+
+        if regularize(config["photon propagator"]["name"]) not in RegisteredPhotonPropagators.list():
+            raise UnknownPhotonPropagatorError(config["photon propagator"]["name"] + " is not a known photon propagator")
 
         pp.RandomGenerator.get().set_seed(config["run"]["random state seed"])
         lepton_prop_config = config["lepton propagator"][config["lepton propagator"]["name"]]
