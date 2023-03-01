@@ -156,8 +156,8 @@ class Prometheus(object):
 
     @property
     def injection(self):
-        if self._injection is None:
-            raise NoInjectionError("Injection has not been set!")
+        #if self._injection is None:
+        #    raise NoInjectionError("Injection has not been set!")
         return self._injection
 
     def inject(self):
