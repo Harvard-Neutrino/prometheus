@@ -92,7 +92,6 @@ class OlympusPhotonPropagator(PhotonPropagator):
                     splitter=self.config['simulation']['splitter']
                 )
             )
-            print(res_event)
         # Cascades
         else:
             import functools
