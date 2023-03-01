@@ -278,7 +278,7 @@ class Prometheus(object):
             outarr = ak.Array({
                 'mc_truth': self.injection.to_awkward()
             })
-        outfile = config["photon propagator"][config["photon propagator"]["name"]]["paths"]['outfile']
+        outfile = config["run"]['outfile']
         # Converting to pyarrow table
         outarr = ak.to_arrow_table(outarr)
         custom_meta_data_key = "config_prometheus"

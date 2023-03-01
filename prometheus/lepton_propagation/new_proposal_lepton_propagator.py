@@ -18,7 +18,8 @@ MEDIUM_DICT = {
     "MANTLE": pp.medium.StandardRock,
     "ROCK": pp.medium.StandardRock,
     "ICE": pp.medium.Ice,
-    "AIR": pp.medium.Air
+    "AIR": pp.medium.Air,
+    "WATER": pp.medium.Water
 }
 
 def remove_comments(s: str) -> str:
@@ -180,20 +181,23 @@ def make_propagation_utilities(
     )
     utilities = []
     with open(earth_file, "r") as f:
-        inner_radius = 0
+        # inner_radius = 0
         for line in f:
             if line[0]=="#" or line[0]==" " or line[:1]=="\n":
                 continue
             line = remove_comments(line)
             split_line = [x for x in line.replace("\n", "").split(" ") if len(x)>0]
-            outer_radius = float(split_line[0])
+            # outer_radius = float(split_line[0])
             if len(split_line[4:])==1:
-                rho_bar = float(split_line[4])
+                # TODO: Get the feeling these should be used but aren't
+                gibberish = None
+                # rho_bar = float(split_line[4])
             else:
                 p0 = float(split_line[4])
                 p1 = float(split_line[5])
-                rho_bar = p0 + p1 * (inner_radius + outer_radius) /2
-            test_medium = MEDIUM_DICT[split_line[2]]()
+                # TODO: Get the feeling these should be used but aren't
+                # rho_bar = p0 + p1 * (inner_radius + outer_radius) /2
+            # test_medium = MEDIUM_DICT[split_line[2]]()
             medium = MEDIUM_DICT[split_line[2]]()
             collection = pp.PropagationUtilityCollection()
             cross = pp.crosssection.make_std_crosssection(
