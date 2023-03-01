@@ -138,7 +138,7 @@ def injection_config_mims(
 
     if config["simulation"]["is ranged"] is None:
         config["simulation"]["is ranged"] = False
-        if config["simulation"]["final_1"] in "MuMinus MuPlus".split():
+        if config["simulation"]["final state 1"] in "MuMinus MuPlus".split():
             config["simulation"]["is ranged"] = True
 
     config["simulation"]["nevents"] = nevents
