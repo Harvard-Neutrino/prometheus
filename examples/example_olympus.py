@@ -26,7 +26,7 @@ def main(args=None):
     print('CURRENT SET %d' % rset)
     config['run']['run number'] = rset
     config["run"]["random state seed"] = rset
-    config['run']['nevents'] = 2
+    config['run']['nevents'] = 10
     # Injection parameters
     config["injection"]["name"] = "LeptonInjector"
     config['injection']["LeptonInjector"]['simulation']['minimal energy'] = 1e4

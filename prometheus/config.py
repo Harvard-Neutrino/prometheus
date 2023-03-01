@@ -65,7 +65,7 @@ _baseconfig = {
                 'min azimuth': 0.0, # degree
                 'max azimuth': 360.0, # degree
                 # The following None params will be set internally unless specified
-                'is ranged': None, # TODO account for this into mims
+                'is ranged': False, # TODO account for this into mims
                 "injection radius": None, # m
                 "endcap length": None, # m
                 "cylinder radius": None, # m
