@@ -257,7 +257,7 @@ class Prometheus(object):
     def construct_output(self):
         """Constructs a parquet file with metadata from the generated files.
         Currently this still treats olympus and ppc output differently."""
-        sim_switch = config["photon propagator"]["name"]
+        # sim_switch = config["photon propagator"]["name"]
 
         from .utils.serialization import serialize_particles_to_awkward, set_serialization_index
         set_serialization_index(self.injection)
@@ -278,7 +278,7 @@ class Prometheus(object):
             outarr = ak.Array({
                 'mc_truth': self.injection.to_awkward()
             })
-        outfile = config["photon propagator"][config["photon propagator"]["name"]]["paths"]['outfile']
+        outfile = config["run"]['outfile']
         # Converting to pyarrow table
         outarr = ak.to_arrow_table(outarr)
         custom_meta_data_key = "config_prometheus"
