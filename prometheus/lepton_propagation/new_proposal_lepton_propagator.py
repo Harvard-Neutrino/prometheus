@@ -75,6 +75,7 @@ def make_propagator(
     prop: PROPOSAL propagator for input Particle
     """
 
+    pp.InterpolationSettings.tables_path = path_dict["tables path"]
     pdef = make_particle_definition(particle)
     utilities = make_propagation_utilities(
         pdef,
