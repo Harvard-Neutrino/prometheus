@@ -37,5 +37,4 @@ def serialize_particles_to_awkward(
     for field, fxn in hit_functions:
         outdict[field] = fxn(all_hits)
     outarr = ak.Array(outdict)
-
     return outarr
