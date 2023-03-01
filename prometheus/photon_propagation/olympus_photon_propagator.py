@@ -82,7 +82,7 @@ class OlympusPhotonPropagator(PhotonPropagator):
         # Tracks
         if injection_event['particle_id'] in self.config['particles']['track particles']:
             _, proposal_prop = self.lepton_propagator[particle]
-            res_event, res_record = (
+            res_event, _ = (
                 generate_realistic_track(
                     self.detector,
                     injection_event,
@@ -92,10 +92,11 @@ class OlympusPhotonPropagator(PhotonPropagator):
                     splitter=self.config['simulation']['splitter']
                 )
             )
+            print(res_event)
         # Cascades
         else:
             import functools
-            res_event, res_record = generate_cascade(
+            res_event, _ = generate_cascade(
                 self.detector,
                 injection_event,
                 seed = self.config['runtime']['random state jax'],
@@ -122,7 +123,7 @@ class OlympusPhotonPropagator(PhotonPropagator):
                     None, None, None, None)
                 )
             om_idx += 1
-        particle._hits = hits
+        particle.hits = hits
         for child in particle.children:
             if child.e < 1:
                 continue

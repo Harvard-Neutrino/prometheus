@@ -257,7 +257,7 @@ class Prometheus(object):
     def construct_output(self):
         """Constructs a parquet file with metadata from the generated files.
         Currently this still treats olympus and ppc output differently."""
-        sim_switch = config["photon propagator"]["name"]
+        # sim_switch = config["photon propagator"]["name"]
 
         from .utils.serialization import serialize_particles_to_awkward, set_serialization_index
         set_serialization_index(self.injection)
