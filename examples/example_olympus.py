@@ -26,16 +26,16 @@ def main(args=None):
     print('CURRENT SET %d' % rset)
     config['run']['run number'] = rset
     config["run"]["random state seed"] = rset
-    config['run']['nevents'] = 10
+    config['run']['nevents'] = 100
     # Injection parameters
     config["injection"]["name"] = "LeptonInjector"
+    config["injection"]['LeptonInjector']['simulation']['is ranged'] = None  # Automatic
     config['injection']["LeptonInjector"]['simulation']['minimal energy'] = 1e4
     config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e6
     # NUmber of modules to model at once
     # Smaller numbers make the simulation slower but less memory intensive
     config['photon propagator']['olympus']['simulation']['splitter'] = 4000
-    # config['photon propagator']['name'] = 'oly    mpus'
-    config["detector"]["geo file"] = '../resources/geofiles/pone_triangle.geo'
+    config["detector"]["geo file"] = '../resources/geofiles/arca.geo'
     prom = Prometheus()
     prom.sim()
     del prom
