@@ -1,4 +1,4 @@
-from typing import Iterable, Tuple, Optional
+from typing import Iterable, Tuple
 
 from prometheus.particle import PropagatableParticle
 from prometheus.photon_propagation.hit import Hit

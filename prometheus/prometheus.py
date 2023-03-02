@@ -10,6 +10,7 @@ import os
 import json
 from typing import Union
 from tqdm import tqdm
+from time import time
 from jax import random  # noqa: E402
 
 from .utils import (
@@ -81,6 +82,7 @@ class Prometheus(object):
             geo file path provided in config
 
         """
+        self._start_timing_misc = time()
         if userconfig is not None:
             if isinstance(userconfig, dict):
                 config.from_dict(userconfig)
@@ -149,6 +151,8 @@ class Prometheus(object):
             self.detector,
             pp_config
         )
+        self._end_timing_misc = time()
+
 
     @property
     def detector(self):
@@ -250,9 +254,23 @@ class Prometheus(object):
         calculates photon yield, propagates photons, and save resultign photons"""
         if "runtime" in config["photon propagator"].keys():
             config["photon propagator"]["runtime"] = None
+        start_inj = time()
         self.inject()
+        end_inj = time()
+        start_prop = time()
         self.propagate()
+        end_prop = time()
+        start_out = time()
         self.construct_output()
+        end_out = time()
+        # Timing stuff
+        # TODO: remove this?
+        self._timing_arr = np.array([
+            self._end_timing_misc - self._start_timing_misc,
+            end_inj - start_inj,
+            end_prop - start_prop,
+            end_out - start_out,
+        ])
 
     def construct_output(self):
         """Constructs a parquet file with metadata from the generated files.
