@@ -1,7 +1,8 @@
 import numpy as np
 from glob import glob
 import matplotlib.pyplot as plt
-plt.style.use("../paper.mplstyle")
+import os
+plt.style.use(os.path.abspath("../paper.mplstyle"))
 
 MAXNREADLINES = 3
 
@@ -33,13 +34,13 @@ def parse_line(line, outarr):
     splitline = line.split()
     if len(splitline)!=6:
         return
-    elif 'ppc_photon_propagator.py:87' in splitline[-1]:
+    elif 'ppc_photon_propagator.py' in splitline[-1] and "propagate" in splitline[-1]:
         idx = 0
     elif 'prometheus.py' in splitline[-1] and "inject)" in splitline[-1]:
         idx = 1
     elif 'prometheus.py' in splitline[-1] and "construct_output" in splitline[-1]:
         idx = 2
-    elif "lepton_propagator.py:278" in splitline[-1]:
+    elif "lepton_propagator.py" in splitline[-1] and "energy_losses" in splitline[-1]:
         idx = 3
     elif "lepton_propagator.py" in splitline[-1] and "getitem" in splitline[-1]:
         idx = 3
@@ -50,6 +51,7 @@ def parse_line(line, outarr):
     outarr[idx] += float(splitline[3])
 
 def mims(outarr):
+    print(outarr)
     total = outarr[:, 4]
     photon_prop = outarr[:, 0] - outarr[:, 3]
     lepton_prop = outarr[:, 3]
@@ -68,6 +70,7 @@ def mims(outarr):
 def prepare_output(timing_dir):
 
     fs = glob(f"{timing_dir}/*summary*")
+    print(fs)
     es = []
     outarr = np.zeros((len(fs), 5))
     for idx, f in enumerate(fs):
