@@ -36,7 +36,7 @@ def parse_line(line, outarr):
         return
     elif 'ppc_photon_propagator.py' in splitline[-1] and "propagate" in splitline[-1]:
         idx = 0
-    elif 'prometheus.py' in splitline[-1] and "inject)" in splitline[-1]:
+    elif 'prometheus.py' in splitline[-1] and "inject" in splitline[-1]:
         idx = 1
     elif 'prometheus.py' in splitline[-1] and "construct_output" in splitline[-1]:
         idx = 2
@@ -47,11 +47,11 @@ def parse_line(line, outarr):
     elif "prometheus.py" in splitline[-1] and "sim" in splitline[-1]:
         idx = 4
     else:
+        #print(splitline)
         return
     outarr[idx] += float(splitline[3])
 
 def mims(outarr):
-    print(outarr)
     total = outarr[:, 4]
     photon_prop = outarr[:, 0] - outarr[:, 3]
     lepton_prop = outarr[:, 3]
@@ -69,8 +69,7 @@ def mims(outarr):
 
 def prepare_output(timing_dir):
 
-    fs = glob(f"{timing_dir}/*summary*")
-    print(fs)
+    fs = sorted(glob(f"{timing_dir}/*summary*"))
     es = []
     outarr = np.zeros((len(fs), 5))
     for idx, f in enumerate(fs):
