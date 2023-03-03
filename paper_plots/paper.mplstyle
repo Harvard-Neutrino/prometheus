@@ -5,7 +5,6 @@ font.size: 20
 font.family: serif
 font.serif: Computer Modern, Latin Modern Roman, Bitstream Vera Serif
 text.usetex: True
-#axes.prop_cycle: cycler('color', ['29A2C6','FF6D31','73B66B','9467BD','FFCB18','EF597B']
 axes.prop_cycle: cycler('color', ['C59F6A','EF6A41','FDBE68','72946F','F8B5BA','55AFB4','4A4996'])
 #axes.grid: True
 #axes.grid.which: both
