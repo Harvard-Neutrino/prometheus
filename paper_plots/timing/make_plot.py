@@ -35,13 +35,15 @@ def parse_line(line, outarr):
         return
     elif 'ppc_photon_propagator.py:87' in splitline[-1]:
         idx = 0
-    elif 'prometheus.py:163' in splitline[-1]:
+    elif 'prometheus.py' in splitline[-1] and "inject)" in splitline[-1]:
         idx = 1
-    elif 'prometheus.py:252' in splitline[-1]:
+    elif 'prometheus.py' in splitline[-1] and "construct_output" in splitline[-1]:
         idx = 2
-    elif "lepton_propagator.py:15(" in splitline[-1]:
+    elif "lepton_propagator.py:278" in splitline[-1]:
         idx = 3
-    elif "prometheus.py:248" in splitline[-1]:
+    elif "lepton_propagator.py" in splitline[-1] and "getitem" in splitline[-1]:
+        idx = 3
+    elif "prometheus.py" in splitline[-1] and "sim" in splitline[-1]:
         idx = 4
     else:
         return
