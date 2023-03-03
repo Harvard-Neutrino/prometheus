@@ -301,7 +301,7 @@ def generate_realistic_track(
     key,
     pprop_func,
     proposal_prop,
-    splitter=1000
+    splitter=10000
 ):
     """
     Generate a realistic track using energy losses from PROPOSAL.
