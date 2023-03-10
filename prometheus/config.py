@@ -27,10 +27,9 @@ _baseconfig = {
         'nevents': 10,
         'storage prefix': './output/',
         'config name': 'config',
-        'full output' : False,
+        # 'full output' : False,
         # Random seed will follow run number if None
         "random state seed": None,
-        'subset': None,
     },
     ###########################################################################
     # Detector
