@@ -55,7 +55,7 @@ _baseconfig = {
                 'total xsec': None,
             },
             'simulation': {
-                'is ranged': False,
+
                 'final state 1': 'MuMinus',
                 'final state 2': 'Hadrons',
                 'minimal energy': 1e3, # GeV
@@ -67,6 +67,7 @@ _baseconfig = {
                 'max azimuth': 360.0, # degree
                 'earth model': "Planet",
                 # The following None params will be set internally unless specified
+                "is ranged": None,
                 "injection radius": None, # m
                 "endcap length": None, # m
                 "cylinder radius": None, # m
