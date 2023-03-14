@@ -18,8 +18,8 @@ jconfig.update("jax_enable_x64", True)
 jconfig.update('jax_platform_name', 'cpu')
 
 def main(args=None):
-    if args is None:
-        args = 1337
+    if len(args) == 1:
+        rset = 1337
         print("Using default seed!")
     else:
         rset = int(args[1])
@@ -34,17 +34,12 @@ def main(args=None):
     config['injection']["LeptonInjector"]['simulation']['maximal energy'] = 1e5
     # NUmber of modules to model at once
     # Smaller numbers make the simulation slower but less memory intensive
-    config['photon propagator']['olympus']['simulation']['splitter'] = 4000
-    config["detector"]["geo file"] = '../resources/geofiles/arca.geo'
+    config['photon propagator']['olympus']['simulation']['splitter'] =  10000 # 10000
+    config["detector"]["geo file"] = '../resources/geofiles/demo_water.geo'
     prom = Prometheus()
     prom.sim()
-    del prom
-    gc.collect()
-    # Getting all memory using os.popen()
-    total_memory, used_memory, _ = map(
-        int, os.popen('free -t -m').readlines()[-1].split()[1:])
-    # Memory usage
-    print("RAM memory % used:", round((used_memory/total_memory) * 100, 2))
+    # del prom
+    print(tracemalloc.get_traced_memory())
 
 if __name__ == "__main__":
     print("--------------------------------------------------------------")
@@ -52,7 +47,6 @@ if __name__ == "__main__":
     print("Launching simulation")
     tracemalloc.start()
     main(sys.argv)
-    print(tracemalloc.get_traced_memory())
     tracemalloc.stop()
     print("Finished call")
     print("--------------------------------------------------------------")
