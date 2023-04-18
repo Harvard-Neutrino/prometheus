@@ -7,10 +7,8 @@ from typing import Union
 sys.path.append('../')
 import prometheus
 from prometheus import Prometheus, config
-#from jax.config import config as jconfig
-#
-#jconfig.update("jax_enable_x64", True)
 
+print('/'.join(prometheus.__path__[0].split('/')[:-1]))
 RESOURCE_DIR = f"{'/'.join(prometheus.__path__[0].split('/')[:-1])}/resources/"
 SOFTWARE_PREFIX = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/"
 
@@ -214,9 +212,9 @@ def main(args):
         config['injection']["LeptonInjector"]["paths"]['xsec dir'] = (
             f"{RESOURCE_DIR}/cross_section_splines/"
         )
-        config['injection']["LeptonInjector"]["paths"]['earth model location'] = (
-            f"{RESOURCE_DIR}/earthparams/densities/PREM_mmc.dat"
-        )
+        #config['injection']["LeptonInjector"]["paths"]['earth model location'] = (
+        #    f"{RESOURCE_DIR}/earthparams/densities/PREM_mmc.dat"
+        #)
 
     config["lepton propagator"]['name'] = "old proposal"
     config['photon propagator']['name'] = "PPC_CUDA"
@@ -227,14 +225,14 @@ def main(args):
     config['photon propagator']["PPC_CUDA"]["paths"]['ppc_tmpfile'] = args.ppc_tmpfile.replace(".ppc", f"{seed}.ppc")
     config['photon propagator']["PPC_CUDA"]["paths"]['f2k_tmpfile'] = args.f2k_tmpfile.replace(".f2k", f"{seed}.f2k")
     config['photon propagator']["PPC_CUDA"]["paths"]['location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/"
-    config['photon propagator']["PPC_CUDA"]["paths"]['ppctables'] = "../resources/PPC_tables/ic_default/"
+    config['photon propagator']["PPC_CUDA"]["paths"]['ppctables'] = "../resources/PPC_tables/south_pole/"
     # Uncomment this line to not use IceCube's angular acceptance
     #config['photon propagator'][photo_prop]["paths"]['ppctables'] = "../resources/PPC_tables/ic_accept_all/"
     config['photon propagator']["PPC_CUDA"]["paths"]['ppc_exe'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/PPC_CUDA_new/ppc"
     config["photon propagator"]["PPC_CUDA"]["paths"]["ppc_tmpdir"] = "./ppc_tmpdir"
 
     # This line is here for debugging. Uncommenting will generate a lot of output
-    #config['photon propagator']["PPC_CUDA"]["simulation"]['supress_output'] = False
+    config['photon propagator']["PPC_CUDA"]["simulation"]['supress_output'] = False
     prometheus = Prometheus(userconfig=config)
     prometheus.sim()
     del prometheus

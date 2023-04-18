@@ -1,4 +1,4 @@
-from typing import Iterable, Tuple, Optional
+from typing import Iterable, Tuple
 
 from prometheus.particle import PropagatableParticle
 from prometheus.photon_propagation.hit import Hit
@@ -21,7 +21,7 @@ def accumulate_hits(
     """
 
     hits_ids = []
-    for idx, particle in enumerate(particles):
+    for _, particle in enumerate(particles):
         hits_ids += [(h, particle.serialization_idx) for h in particle.hits]
         hits_ids += accumulate_hits(particle.children)
 

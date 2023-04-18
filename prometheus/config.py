@@ -26,16 +26,16 @@ _baseconfig = {
         "run number": 1337,
         'nevents': 10,
         'storage prefix': './output/',
-        'config name': 'config',
-        # 'full output' : False,
         # Random seed will follow run number if None
+        "outfile": None,
         "random state seed": None,
+        'subset': None
     },
     ###########################################################################
     # Detector
     ###########################################################################
     "detector": {
-        'geo file': None,  # Name of the file to use for build
+        'geo file': None # Name of the file to use for detector
     },
     ###########################################################################
     # Injection
@@ -46,7 +46,7 @@ _baseconfig = {
             'inject': True,
             'paths':{
                 'install location': '/opt/LI/install/lib/python3.9/site-packages',
-                'xsec dir': '/opt/LI/source/resources/',
+                'xsec dir': f'{RESOURCES_DIR}/cross_section_splines/',
                 # These fields will be set with output prefix and run number
                 "earth model location": None,
                 'injection file': None,
@@ -55,26 +55,26 @@ _baseconfig = {
                 'total xsec': None,
             },
             'simulation': {
-
                 'final state 1': 'MuMinus',
                 'final state 2': 'Hadrons',
-                'minimal energy': 1e3, # GeV
+                'minimal energy': 1e2, # GeV
                 'maximal energy': 1e6, # GeV
-                'power law': 1.0,
+                'power law': 1.0, # Energies picked by E^{-(power law)}
                 'min zenith': 0.0, # degree
-                'max zenith': 100.0, # degree
+                'max zenith': 180.0, # degree
                 'min azimuth': 0.0, # degree
                 'max azimuth': 360.0, # degree
-                'earth model': "Planet",
                 # The following None params will be set internally unless specified
-                "is ranged": None,
+                'is ranged': None,
                 "injection radius": None, # m
                 "endcap length": None, # m
                 "cylinder radius": None, # m
                 "cylinder height": None, # m
+                'earth model': None
             },
         },
         'Prometheus':{
+            # TODO make error if this is set to True
             'inject': False,
             'paths': {
                 'injection file': None,
@@ -82,6 +82,7 @@ _baseconfig = {
             'simulation': {}
         },
         'GENIE':{
+            # TODO make error if this is set to True
             'inject': False,
             'paths': {
                 "injection file": None,
@@ -97,26 +98,27 @@ _baseconfig = {
         # PROPOSAL with versions >= 7
         "new proposal":{
             "paths":{
-                "tables path": "~/.local/share/PROPOSAL/tables",
+                "tables path": f"{RESOURCES_DIR}/PROPOSAL_tables/",
                 "earth model location": None,
             },
             "simulation":{
-                'track length': 5000,
+                # TODO Maybe this should all be in M
+                #'track length': 5000,
                 # TODO figure out why this breaks for 1e-2
                 'vcut': 1,
-                #'vcut': [1e-2, 1e-2],
                 'ecut': 0.5, # GeV
-                'soft losses': False,
-                'propagation padding': 900,
+                'soft losses': False, # These are particles that don't generate cherenkov light
                 'interpolation': True,
                 'lpm effect': True,
                 'continuous randomization': True,
                 'soft losses': True,
                 "interpolate": True,
                 'scattering model': "Moliere",
-                'maximum radius': 1e18, # m
+                #'maximum radius': 1e18, # m
                 # all none elements will be set off detector config settings
-                'inner radius': None,
+                #'inner radius': None,
+                'propagation padding': None, # m
+                # TODO is this being used
                 'medium': None,
             },
         },
@@ -127,20 +129,20 @@ _baseconfig = {
                 "earth model location": None,
             },
             "simulation":{
-                'track length': 5000,
+                #'track length': 5000,
                 'vcut': 1,
                 'ecut': 0.1, # GeV
                 'soft losses': False,
-                'propagation padding': 900,
                 'interpolation': True,
                 'lpm effect': True,
                 'continuous randomization': True,
                 'soft losses': True,
                 'scattering model': "Moliere",
-                'force propagation params': False,
-                'maximum radius' : 1e18, # m
+                # 'force propagation params': False,
+                #'maximum radius' : 1e18, # m
                 # all none elements will be set off detector config settings
-                'inner radius': None,
+                #'inner radius': None,
+                'propagation padding': None,
                 'medium': None,
             }
         }
@@ -149,15 +151,16 @@ _baseconfig = {
     # Photon propagator
     ###########################################################################
     'photon propagator': {
-        'name': 'olympus',
+        'name': None, # We will set this based on detector medium
+        "photon field name": "photons",
         'olympus': {
             "paths": {
-                'location': '../resources/',
+                'location': f"{RESOURCES_DIR}/olympus_resources/",
                 'photon model': 'pone_config.json',
                 'flow': "photon_arrival_time_nflow_params.pickle",
                 'counts': "photon_arrival_time_counts_params.pickle",
-                "photon field name": "photons",
-                "outfile": None
+                #"photon field name": "photons",
+                #"outfile": None
             },
             "simulation": {
                 'files': True,
@@ -173,7 +176,7 @@ _baseconfig = {
         },
         'PPC_CUDA':{
             "paths":{
-                'location':'../PPC_CUDA/',
+                'location': f'{RESOURCES_DIR}/PPC_executables/PPC_CUDA/',
                 'force': False,
                 "ppc_tmpdir:": "./.ppc_tmp",
                 'ppc_tmpfile':'.event_hits.ppc.tmp',
@@ -182,8 +185,7 @@ _baseconfig = {
                 'f2k_prefix':'',
                 'ppctables':'../resources/PPC_tables/ic_accept_all/',
                 'ppc_exe':'../resources/PPC_executables/PPC_CUDA/ppc', # binary executable
-                "photon field name": "photons",
-                "outfile": None
+                #"outfile": None
             },
             "simulation": {
                 'device':0, # GPU,
@@ -192,7 +194,7 @@ _baseconfig = {
         },
         'PPC': {
             "paths": {
-                'location': '../PPC/',
+                'location':f'{RESOURCES_DIR}/PPC_executables/PPC/',
                 'force': False,
                 "ppc_tmpdir:": "./.ppc_tmp",
                 'ppc_tmpfile': '.event_hits.ppc.tmp',
@@ -201,8 +203,8 @@ _baseconfig = {
                 'f2k_prefix':'',
                 'ppctables':'../resources/PPC_tables/ic_accept_all/',
                 'ppc_exe': '../resources/PPC_executables/PPC/ppc',  # binary executable
-                "photon field name": "photons",
-                "outfile": None,
+                #"photon field name": "photons",
+                #"outfile": None,
             },
             "simulation": {
                 'device': 0,  # CPU

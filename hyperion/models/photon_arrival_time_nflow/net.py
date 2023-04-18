@@ -83,7 +83,7 @@ def traf_dist_builder(flow_num_layers, flow_range, return_base=False):
     def make_transformed_dist(traf_params):
         spl_params = jnp.split(traf_params, flow_num_layers, axis=-1)
 
-        base_dist = distrax.Gamma(1.5, 1 / 10)
+        base_dist = distrax.Gamma(1.5, 1. / 10.)
         flow = make_spl_flow(spl_params, flow_range[0], flow_range[1]) + [
             distrax.ScalarAffine(shift=4, scale=1)
         ]

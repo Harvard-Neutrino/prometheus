@@ -10,6 +10,7 @@ import os
 import json
 from typing import Union
 from tqdm import tqdm
+from time import time
 from jax import random  # noqa: E402
 
 from .utils import (
@@ -81,20 +82,13 @@ class Prometheus(object):
             geo file path provided in config
 
         """
+        self._start_timing_misc = time()
         if userconfig is not None:
             if isinstance(userconfig, dict):
                 config.from_dict(userconfig)
             else:
                 config.from_yaml(userconfig)
 
-        if regularize(config["injection"]["name"]) not in RegisteredInjectors.list():
-            raise UnknownInjectorError(config["injection"]["name"] + "is not supported as an injector!")
-
-        if regularize(config["lepton propagator"]["name"]) not in RegisteredLeptonPropagators.list():
-            raise UnknownLeptonPropagatorError(config["lepton propagator"]["name"] + "is not a known lepton propagator")
-
-        if regularize(config["photon propagator"]["name"]) not in RegisteredPhotonPropagators.list():
-            raise UnknownPhotonPropagatorError(config["photon propagator"]["name"] + " is not a known photon propagator")
 
         if detector is None and config["detector"]["geo file"] is None:
             raise CannotLoadDetectorError("No Detector provided and no geo file path given in config")
@@ -103,18 +97,6 @@ class Prometheus(object):
             from .detector import detector_from_geo
             detector = detector_from_geo(config["detector"]["geo file"])
 
-        self._injector = getattr(
-            RegisteredInjectors,
-            regularize(config["injection"]["name"])
-        )
-        self._lp = getattr(
-            RegisteredLeptonPropagators,
-            regularize(config["lepton propagator"]["name"])
-        )
-        self._pp = getattr(
-            RegisteredPhotonPropagators,
-            regularize(config["photon propagator"]["name"])
-        )
         
         self._detector = detector
         self._injection = None
@@ -122,6 +104,7 @@ class Prometheus(object):
         # Infer which config to use from the PROPOSAL version
         # We need to check the version prior to import, otherwise
         # the type hinting will throw an error
+        # We can probably hide this in MIMS
         import proposal as pp
         if int(pp.__version__.split(".")[0]) <= 6:
             from .lepton_propagation import OldProposalLeptonPropagator as LeptonPropagator
@@ -134,6 +117,30 @@ class Prometheus(object):
         config_mims(config, self.detector)
         clean_config(config)
 
+        self._injector = getattr(
+            RegisteredInjectors,
+            regularize(config["injection"]["name"])
+        )
+
+        self._lp = getattr(
+            RegisteredLeptonPropagators,
+            regularize(config["lepton propagator"]["name"])
+        )
+
+        self._pp = getattr(
+            RegisteredPhotonPropagators,
+            regularize(config["photon propagator"]["name"])
+        )
+
+        if regularize(config["injection"]["name"]) not in RegisteredInjectors.list():
+            raise UnknownInjectorError(config["injection"]["name"] + "is not supported as an injector!")
+
+        if regularize(config["lepton propagator"]["name"]) not in RegisteredLeptonPropagators.list():
+            raise UnknownLeptonPropagatorError(config["lepton propagator"]["name"] + "is not a known lepton propagator")
+
+        if regularize(config["photon propagator"]["name"]) not in RegisteredPhotonPropagators.list():
+            raise UnknownPhotonPropagatorError(config["photon propagator"]["name"] + " is not a known photon propagator")
+
         pp.RandomGenerator.get().set_seed(config["run"]["random state seed"])
         lepton_prop_config = config["lepton propagator"][config["lepton propagator"]["name"]]
         self._lepton_propagator = LeptonPropagator(lepton_prop_config)
@@ -144,6 +151,8 @@ class Prometheus(object):
             self.detector,
             pp_config
         )
+        self._end_timing_misc = time()
+
 
     @property
     def detector(self):
@@ -151,8 +160,8 @@ class Prometheus(object):
 
     @property
     def injection(self):
-        if self._injection is None:
-            raise NoInjectionError("Injection has not been set!")
+        #if self._injection is None:
+        #    raise NoInjectionError("Injection has not been set!")
         return self._injection
 
     def inject(self):
@@ -245,14 +254,28 @@ class Prometheus(object):
         calculates photon yield, propagates photons, and save resultign photons"""
         if "runtime" in config["photon propagator"].keys():
             config["photon propagator"]["runtime"] = None
+        start_inj = time()
         self.inject()
+        end_inj = time()
+        start_prop = time()
         self.propagate()
+        end_prop = time()
+        start_out = time()
         self.construct_output()
+        end_out = time()
+        # Timing stuff
+        # TODO: remove this?
+        self._timing_arr = np.array([
+            self._end_timing_misc - self._start_timing_misc,
+            end_inj - start_inj,
+            end_prop - start_prop,
+            end_out - start_out,
+        ])
 
     def construct_output(self):
         """Constructs a parquet file with metadata from the generated files.
         Currently this still treats olympus and ppc output differently."""
-        sim_switch = config["photon propagator"]["name"]
+        # sim_switch = config["photon propagator"]["name"]
 
         from .utils.serialization import serialize_particles_to_awkward, set_serialization_index
         set_serialization_index(self.injection)
@@ -262,19 +285,18 @@ class Prometheus(object):
         #     builder.field('config').append(json_config)
         # outarr = builder.snapshot()
         # outarr = ak.Record({"config": json_config})
-        photon_paths = config["photon propagator"][config["photon propagator"]["name"]]["paths"]
         # outarr['mc_truth'] = self.injection.to_awkward()
         test_arr = serialize_particles_to_awkward(self.detector, self.injection)
         if test_arr is not None:
             outarr = ak.Array({
                 'mc_truth': self.injection.to_awkward(),
-                photon_paths["photon field name"]: test_arr
+                config["photon propagator"]["photon field name"]: test_arr
             })
         else:
             outarr = ak.Array({
                 'mc_truth': self.injection.to_awkward()
             })
-        outfile = photon_paths['outfile']
+        outfile = config["run"]['outfile']
         # Converting to pyarrow table
         outarr = ak.to_arrow_table(outarr)
         custom_meta_data_key = "config_prometheus"

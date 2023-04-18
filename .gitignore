@@ -31,3 +31,7 @@ LI
 
 # Keep some config files
 !pone_config.json
+
+memories.npy
+
+timings.npy

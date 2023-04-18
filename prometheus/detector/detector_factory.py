@@ -1,6 +1,7 @@
 import numpy as np
 import scipy
-from typing import Union
+from typing import Union, List
+import itertools
 
 from .module import Module
 from .medium import Medium
@@ -120,7 +121,7 @@ def make_line(
     rng: np.random.RandomState = 1337,
     baseline_noise_rate: float = 1.0e3,
     efficiency: float = 0.2
-) -> Detector:
+) -> List[Module]:
     """Make a line of detector modules. The modules share the same (x, y) coordinate and 
     are spaced along the z-direction. This detector will be symetrically spaced about z=z_cent
 
@@ -147,7 +148,7 @@ def make_line(
     rng = parse_rng(rng)
     modules = []
     zmin = -dist_z * n_z / 2 + z_cent
-    zmiax= dist_z * n_z / 2 + z_cent
+    zmax = dist_z * n_z / 2 + z_cent
     for idx, z in enumerate(np.linspace(zmin, zmax, n_z)):
         pos = np.array([x, y, z])
         noise_rate = (
@@ -169,6 +170,7 @@ def make_grid(
     n_z: int,
     dist_z: float,
     z_cent: float,
+    medium: Medium,
     rng: Union[int, None, np.random.RandomState] = 1337,
     baseline_noise_rate: float = 1.0e3,
     efficiency: float = 0.2
@@ -213,7 +215,7 @@ def make_grid(
             efficiency=efficiency
         )
 
-    det = Detector(modules)
+    det = Detector(modules, medium)
     return det
 
 
@@ -223,6 +225,7 @@ def make_hex_grid(
     n_z: int,
     dist_z: float,
     z_cent: float,
+    medium: Medium, 
     baseline_noise_rate: float = 1e3,
     rng: Union[int, None, np.random.RandomState] = 1337,
     efficiency: float = 0.2
@@ -298,7 +301,7 @@ def make_hex_grid(
             )
             line_id += 1
 
-    det = Detector(modules)
+    det = Detector(modules, medium)
     return det
 
 def make_triang(
@@ -306,6 +309,7 @@ def make_triang(
     n_z,
     dist_z,
     z_cent,
+    medium: Medium,
     rng: np.random.RandomState = 1337,
     baseline_noise_rate: float = 1.0e3,
     efficiency: float = 0.2
@@ -369,7 +373,7 @@ def make_triang(
         efficiency=efficiency
     )
 
-    det = Detector(modules)
+    det = Detector(modules, medium)
     return det
 
 
@@ -378,6 +382,7 @@ def make_rhombus(
     n_z,
     dist_z,
     z_cent,
+    medium: Medium,
     rng: Union[int, None, np.random.RandomState] = 1337,
     baseline_noise_rate: float = 1.0e3,
     efficiency: float = 0.2
@@ -446,5 +451,5 @@ def make_rhombus(
         baseline_noise_rate=baseline_noise_rate,
         efficiency=efficiency
     )
-    det = Detector(modules)
+    det = Detector(modules, medium)
     return det

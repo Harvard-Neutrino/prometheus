@@ -1,25 +1,31 @@
 import os
 
-RESOURCES_DIR = f"{os.path.dirname(__file__)}/../../resources/"
+RESOURCES_DIR = os.path.abspath(f"{os.path.dirname(__file__)}/../../resources/")
 INTERACTION_DICT = {
     ("EMinus", "Hadrons"): "CC",
     ("MuMinus", "Hadrons"): "CC",
     ("TauMinus", "Hadrons"): "CC",
-    ("NuEMinus", "Hadrons"): "NC",
-    ("NuMuMinus", "Hadrons"): "NC",
-    ("NuTauMinus", "Hadrons"): "NC",
+    ("EPlus", "Hadrons"): "CC",
+    ("MuPlus", "Hadrons"): "CC",
+    ("TauPlus", "Hadrons"): "CC",
+    ("NuE", "Hadrons"): "NC",
+    ("NuMu", "Hadrons"): "NC",
+    ("NuTau", "Hadrons"): "NC",
+    ("NuEBar", "Hadrons"): "NC",
+    ("NuMuBar", "Hadrons"): "NC",
+    ("NuTauBar", "Hadrons"): "NC",
 }
 EARTH_MODEL_DICT = {
     "gvd.geo": "PREM_gvd.dat",
-    "icecube.geo": "PREM_mmc.dat",
-    "icecube_gen2.geo": "PREM_mmc.dat",
-    "icecube_upgrade.geo": "PREM_mmc.dat",
+    "icecube.geo": "PREM_south_pole.dat",
+    "icecube_gen2.geo": "PREM_south_pole.dat",
+    "icecube_upgrade.geo": "PREM_south_pole.dat",
     "orca.geo": "PREM_orca.dat",
     "arca.geo": "PREM_arca.dat",
     "pone.geo": "PREM_pone.dat",
     # The following options are used in case another file is provided
     "WATER": "PREM_water.dat",
-    "ICE": "PREM_mmc.dat",
+    "ICE": "PREM_south_pole.dat",
 }
 
 
@@ -34,16 +40,29 @@ def config_mims(config: dict, detector) -> None:
         the detector.
     """
     # Set up injection stuff
+
+    if detector.medium.name=="WATER":
+        config["photon propagator"]["name"] = "olympus"
+    elif detector.medium.name=="ICE" and config["photon propagator"]["name"] is None:
+        config["photon propagator"]["name"] = "PPC"
+
     run_config = config["run"]
     if run_config["random state seed"] is None:
         run_config["random state seed"] = run_config["run number"]
+
     output_prefix = os.path.abspath(f"{config['run']['storage prefix']}/{config['run']['run number']}")
+    if config["run"]["outfile"] is None:
+        config["run"]["outfile"] = (
+            f"{output_prefix}_photons.parquet"
+        )
 
     # Find which earth model we think we should be using
     earth_model_file = None
     base_geofile = os.path.basename(config["detector"]["geo file"])
     if base_geofile in EARTH_MODEL_DICT.keys():
         earth_model_file = EARTH_MODEL_DICT[base_geofile]
+    else:
+        earth_model_file = EARTH_MODEL_DICT[detector.medium.name]
 
     injection_config_mims(
         config["injection"][config["injection"]["name"]],
@@ -67,6 +86,10 @@ def config_mims(config: dict, detector) -> None:
     check_consistency(config)
 
 def check_consistency(config: dict) -> None:
+    # TODO check whether medium is knowable
+    # TODO check if medium is consistent
+    
+    
     pass
     #if (
     #    config["simulation"]["medium"] is not None and
@@ -75,25 +98,23 @@ def check_consistency(config: dict) -> None:
     #    raise ValueError("Detector and lepton propagator have conflicting media")
 
 def photon_prop_config_mims(config: dict, output_prefix: str) -> None:
-    if config["paths"]["outfile"] is None:
-        config["paths"]["outfile"] = (
-            f"{output_prefix}_photons.parquet"
-        )
+    pass
 
 
 def lepton_prop_config_mims(config: dict, detector, earth_model_file: str) -> None:
     config["simulation"]["medium"] = detector.medium.name.capitalize()
+    if config["simulation"]["propagation padding"] is None:
+        config["simulation"]["propagation padding"] = detector.outer_radius
+        if detector.medium.name=="WATER":
+            config["simulation"]["propagation padding"] += 50
+        else:
+            config["simulation"]["propagation padding"] += 200
+
     if config["paths"]["earth model location"] is None:
-        config["paths"]["earth model location"] = config["paths"]["earth model location"]
-    if config["simulation"]["inner radius"] is None:
-       config["simulation"]["inner radius"] = (
-            detector.outer_radius + config["simulation"]["propagation padding"]
-        )
-    if config["paths"]["earth model location"] is None:
-        if earth_model_file is None:
-            earth_model_file = EARTH_MODEL_DICT[detector.medium.name]
+#        if earth_model_file is None:
+#            earth_model_file = EARTH_MODEL_DICT[detector.medium.name]
         config["paths"]["earth model location"] = (
-            os.path.abspath(f"{RESOURCES_DIR}/earthparams/densities/{earth_model_file}")
+            f"{RESOURCES_DIR}/earthparams/densities/{earth_model_file}"
         )
 
 def injection_config_mims(
@@ -110,11 +131,15 @@ def injection_config_mims(
         return
 
     if config["paths"]["earth model location"] is None:
-        if earth_model_file is None:
-            earth_model_file = EARTH_MODEL_DICT[detector.medium.name]
+        #earth_model_file = EARTH_MODEL_DICT[detector.medium.name]
         config["paths"]["earth model location"] = (
             os.path.abspath(f"{RESOURCES_DIR}/earthparams/densities/{earth_model_file}")
         )
+
+    if config["simulation"]["is ranged"] is None:
+        config["simulation"]["is ranged"] = False
+        if config["simulation"]["final state 1"] in "MuMinus MuPlus".split():
+            config["simulation"]["is ranged"] = True
 
     config["simulation"]["nevents"] = nevents
     # Make sure seeding is consistent
