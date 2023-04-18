@@ -15,7 +15,6 @@ def serialize_particles_to_awkward(
 
     if not any([len(h) > 0 for h in all_hits]):
         return None
-
     xyz = [
         np.array([det[(h.string_id, h.om_id)].pos for h, _ in event_hits]).transpose()
         for event_hits in all_hits
@@ -37,5 +36,4 @@ def serialize_particles_to_awkward(
     for field, fxn in hit_functions:
         outdict[field] = fxn(all_hits)
     outarr = ak.Array(outdict)
-
     return outarr

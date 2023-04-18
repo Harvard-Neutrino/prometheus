@@ -12,6 +12,6 @@ def clean_config(config: dict) -> None:
     """
     # TODO move the actual config up a level
     for x in ["injection", "lepton propagator", "photon propagator"]:
-        keys = [key for key in config[x].keys() if key not in ["name", config[x]["name"]]]
+        keys = [key for key in config[x].keys() if key not in ["name", config[x]["name"], "photon field name"]]
         for key in keys:
             del config[x][key]

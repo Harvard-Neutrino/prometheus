@@ -18,7 +18,8 @@ MEDIUM_DICT = {
     "MANTLE": pp.medium.StandardRock,
     "ROCK": pp.medium.StandardRock,
     "ICE": pp.medium.Ice,
-    "AIR": pp.medium.Air
+    "AIR": pp.medium.Air,
+    "WATER": pp.medium.Water
 }
 
 def remove_comments(s: str) -> str:
@@ -74,6 +75,7 @@ def make_propagator(
     prop: PROPOSAL propagator for input Particle
     """
 
+    pp.InterpolationSettings.tables_path = path_dict["tables path"]
     pdef = make_particle_definition(particle)
     utilities = make_propagation_utilities(
         pdef,
@@ -180,20 +182,23 @@ def make_propagation_utilities(
     )
     utilities = []
     with open(earth_file, "r") as f:
-        inner_radius = 0
+        # inner_radius = 0
         for line in f:
             if line[0]=="#" or line[0]==" " or line[:1]=="\n":
                 continue
             line = remove_comments(line)
             split_line = [x for x in line.replace("\n", "").split(" ") if len(x)>0]
-            outer_radius = float(split_line[0])
+            # outer_radius = float(split_line[0])
             if len(split_line[4:])==1:
-                rho_bar = float(split_line[4])
+                # TODO: Get the feeling these should be used but aren't
+                gibberish = None
+                # rho_bar = float(split_line[4])
             else:
                 p0 = float(split_line[4])
                 p1 = float(split_line[5])
-                rho_bar = p0 + p1 * (inner_radius + outer_radius) /2
-            test_medium = MEDIUM_DICT[split_line[2]]()
+                # TODO: Get the feeling these should be used but aren't
+                # rho_bar = p0 + p1 * (inner_radius + outer_radius) /2
+            # test_medium = MEDIUM_DICT[split_line[2]]()
             medium = MEDIUM_DICT[split_line[2]]()
             collection = pp.PropagationUtilityCollection()
             cross = pp.crosssection.make_std_crosssection(
@@ -240,7 +245,7 @@ def init_pp_particle(
     init_state.position = pp.Cartesian3D(
         *(particle.position + coordinate_shift) * m_to_cm
     )
-    init_state.energy = particle.e* GeV_to_MeV
+    init_state.energy = particle.e * GeV_to_MeV
     init_state.direction = pp.Cartesian3D(*particle.direction)
     return init_state
 
@@ -284,7 +289,9 @@ def new_proposal_losses(
             )
             # TODO more this to the serialization function. DTaSD
             if np.linalg.norm(pos - detector_center) <= r_inice:
-                particle.losses.append(Loss(loss.type, loss.energy, pos))
+                particle.losses.append(
+                    Loss(loss.type, loss_energy, pos)
+                )
     #continuous_loss_sum = np.sum(secondarys.continuous_losses()) * MeV_to_GeV
     total_dist = secondarys.track_propagated_distances()[-1] * cm_to_m
     # TODO: Add this to config
@@ -307,7 +314,7 @@ def new_proposal_losses(
 class NewProposalLeptonPropagator(LeptonPropagator):
     """Class for propagating charged leptons with PROPOSAL versions >= 7"""
     def __init__(self, config):
-        with open(config["paths"]["earth file"], "r") as f:
+        with open(config["paths"]["earth model location"], "r") as f:
             for line in f:
                 if line[0]=="#" or line[0]==" " or line[:1]=="\n":
                     continue
