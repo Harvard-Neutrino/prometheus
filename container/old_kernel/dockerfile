@@ -1,5 +1,9 @@
 # syntax=docker/dockerfile:1
 FROM ubuntu:18.04 as base
+# labels
+LABEL author="Stephan Meighen-Berger"
+LABEL version="1.0"
+LABEL description="Image for Prometheus - Old Kernel"
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
     apt-get -y --no-install-recommends install \
