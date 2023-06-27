@@ -245,7 +245,7 @@ def init_pp_particle(
     init_state.position = pp.Cartesian3D(
         *(particle.position + coordinate_shift) * m_to_cm
     )
-    init_state.energy = particle.e* GeV_to_MeV
+    init_state.energy = particle.e * GeV_to_MeV
     init_state.direction = pp.Cartesian3D(*particle.direction)
     return init_state
 
@@ -289,7 +289,9 @@ def new_proposal_losses(
             )
             # TODO more this to the serialization function. DTaSD
             if np.linalg.norm(pos - detector_center) <= r_inice:
-                particle.losses.append(Loss(loss.type, loss.energy, pos))
+                particle.losses.append(
+                    Loss(loss.type, loss_energy, pos)
+                )
     #continuous_loss_sum = np.sum(secondarys.continuous_losses()) * MeV_to_GeV
     total_dist = secondarys.track_propagated_distances()[-1] * cm_to_m
     # TODO: Add this to config
