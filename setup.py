@@ -23,8 +23,10 @@ setuptools.setup(
         # Should we make this optional
         "tqdm>=4.52.0",
         "jax>=0.2.21",
+        "jaxlib>="
         "proposal>=6.1.6",
         "h5py",
+        "fennel-seed"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
