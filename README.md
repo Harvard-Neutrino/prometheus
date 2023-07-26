@@ -70,7 +70,7 @@ If this is encoutered, please see instructions for installing from source above.
 
 While you can install `Prometheus` manually using the raw code from here, one can also download docker or singularity image with all dependencies prebuilt from: [repo](https://drive.google.com/drive/folders/1-PbSiZQr0n85g9PrhbHMeURDOA02QUSY?usp=sharing).
 
-Then load the docker image. In the container you would find prometheus under /home/myuser/prometheus . Note you may need to run bash + source /opt/.bashrc before using prometheus.
+Then load the docker image. In the container you will find prometheus under /home/myuser/prometheus . Note you may need to run bash + source /opt/.bashrc before using prometheus.
 
 We also offer a singularity image should you need it in the same [repo](https://drive.google.com/drive/folders/1-PbSiZQr0n85g9PrhbHMeURDOA02QUSY?usp=sharing), which may be useful for running simulations on a cluster.
 This are currently in beta and require some setup:
