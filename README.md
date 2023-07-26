@@ -70,20 +70,20 @@ If this is encoutered, please see instructions for installing from source above.
 
 While you can install `Prometheus` manually using the raw code from here, one can also download docker or singularity image with all dependencies prebuilt from: [repo](https://drive.google.com/drive/folders/1-PbSiZQr0n85g9PrhbHMeURDOA02QUSY?usp=sharing).
 
-Then load the docker image. In the container you would find hebe under /opt/hebe/ .
+Then load the docker image. In the container you would find prometheus under /home/myuser/prometheus . Note you may need to run bash + source /opt/.bashrc before using prometheus.
 
 We also offer a singularity image should you need it in the same [repo](https://drive.google.com/drive/folders/1-PbSiZQr0n85g9PrhbHMeURDOA02QUSY?usp=sharing), which may be useful for running simulations on a cluster.
 This are currently in beta and require some setup:
 
-1. Download the latest .sif file (currently v3.0.3)
+1. Download the latest .sif file (currently v1.0.2)
 2. run ``` singularity shell name_of_file.sif ```
 3. enter the /opt folder ```cd /opt ```
 4. source the bash file ``` source .bashrc ```
-5. clone hebe from the repository to a folder of your choice. The setup should now be done
+5. clone prometheus from the repository to a folder of your choice. The setup should now be done
+
+Please note, that some systems still use older kernels not compatible with newer boost versions. In such a case use the containers with the "old" keyword.
 
 For GPU usage the repository offers a GPU docker image, which you will need to use to build an image yourself. Then you will also have to compile ppc (using e.g. make gpu in the PPC_CUDA folder) youself. Note that you may change the arch version in the makefile of PPC to do this, depending on your hardware.
-
-Next, if you want to run `Prometheus` for ice-based detectors, you will need to compile PPC
 
 
 ## Citation <a name="citation"></a>
