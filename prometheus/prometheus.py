@@ -229,10 +229,10 @@ class Prometheus(object):
             for f in fs:
                 shutil.copy(f, config['photon propagator']["PPC_CUDA"]["paths"]["ppc_tmpdir"])
 
-        if config["run"]["subset"] is not None:
-            nevents = config["run"]["subset"]
-        else:
-            nevents = len(self.injection)
+        # if config["run"]["subset"] is not None:
+        #     nevents = config["run"]["subset"]
+        # else:
+        nevents = len(self.injection)
 
         with tqdm(enumerate(self.injection), total=len(self.injection)) as pbar:
             for idx, injection_event in pbar:
