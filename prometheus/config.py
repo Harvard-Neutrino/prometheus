@@ -70,7 +70,7 @@ _baseconfig = {
                 "endcap length": None, # m
                 "cylinder radius": None, # m
                 "cylinder height": None, # m
-                'earth model': None
+                #'earth model': None
             },
         },
         'Prometheus':{
@@ -105,7 +105,7 @@ _baseconfig = {
                 # TODO Maybe this should all be in M
                 #'track length': 5000,
                 # TODO figure out why this breaks for 1e-2
-                'vcut': 1,
+                'vcut': 0.01,
                 'ecut': 0.5, # GeV
                 'soft losses': False, # These are particles that don't generate cherenkov light
                 'interpolation': True,
@@ -165,7 +165,7 @@ _baseconfig = {
             "simulation": {
                 'files': True,
                 'wavelength': 700,  # in nm
-                'splitter': 3000,  # Module chunks to work on at once (higher = faster but more memory)
+                'splitter': 100000,  # Module chunks to work on at once (higher = faster but more memory)
             },
             'particles':
             {
@@ -183,7 +183,7 @@ _baseconfig = {
                 'f2k_tmpfile':'.event_losses.f2k.tmp',
                 'ppc_prefix':'',
                 'f2k_prefix':'',
-                'ppctables':'../resources/PPC_tables/ic_accept_all/',
+                'ppctables':'../resources/PPC_tables/south_pole/',
                 'ppc_exe':'../resources/PPC_executables/PPC_CUDA/ppc', # binary executable
                 #"outfile": None
             },
@@ -196,12 +196,12 @@ _baseconfig = {
             "paths": {
                 'location':f'{RESOURCES_DIR}/PPC_executables/PPC/',
                 'force': False,
-                "ppc_tmpdir:": "./.ppc_tmp",
+                "ppc_tmpdir": "./.ppc_tmp",
                 'ppc_tmpfile': '.event_hits.ppc.tmp',
                 'f2k_tmpfile': '.event_losses.f2k.tmp',
                 'ppc_prefix':'',
                 'f2k_prefix':'',
-                'ppctables':'../resources/PPC_tables/ic_accept_all/',
+                'ppctables':'../resources/PPC_tables/south_pole/',
                 'ppc_exe': '../resources/PPC_executables/PPC/ppc',  # binary executable
                 #"photon field name": "photons",
                 #"outfile": None,
