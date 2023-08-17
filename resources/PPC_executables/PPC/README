@@ -1,0 +1,78 @@
+Getting the code
+Both versions of stand-alone ppc (CPU/GPU, Original/Assembly) can be downloaded from the ppc homepage. The headlines in red in the black box on the top left link to the archive files containing the program and the necessary data tables, and to the icetray version. Some files are also linked individually (in green) for a quick reference.
+The data tables (from one of aha, spx, or mie subdirectories of dat.tgz) need to be placed within the ppc directory before running (unless using PPCTABLESDIR as described below) for CPU/GPU version, and before compilation for the Original/Assembly version.
+
+The rest of these notes applies only to the CPU/GPU version.
+The following assumes the user shell is bash.
+
+Compilation
+make gpu:  compile the ppc  executable for GPU
+make cpu:  compile the ppc  executable for CPU
+By default only GPU devices of compute capability of 1.2 or higher are supported. If necessary, ppc can be compiled for devices supporting compute capability of 1.1 with
+arch=11 make gpu
+It is not possible to run ppc on devices with a compute capability of 1.0.
+If the above compilation and/or running of the program fails, you may need to source the src file. Be sure to edit this file if it does not reflect your CUDA toolkit configuration. Use the latest CUDA driver/toolkit from NVIDIA. You do not need the SDK.
+
+Some parameters of the program can be changed via the #define statements in the ini.cxx file. Normally there should be no need for this as by default the program is configured for the best physics and performance with the provided data tables.
+
+Running the program
+./ppc
+Prints a summary of available tables, and an error if something is missing. If all necessary tables are found, the GPU version also prints a summary of the available GPU devices within your system. These are numbered starting with 0 and must be specified with a [gpu] parameter in the examples below. The CPU version also expects this parameter; use it to pick the random number sequence.
+
+./ppc [gpu]
+Process muon simulation in f2k format from stdin. The muons must have been processed by mmc with the "-recc" option, which prints out all muon segments individually as "amu" particles.
+
+WFLA=405 ./ppc [str] [om] [num] [gpu]
+Simulate [num] photons emitted by a flasher or a standard candle at the position [str],[om]. Please note the following rules:
+positive [str] simulates horizontal flashers, negative [-str] simulates tilted flashers,
+         str=0 and om=1,2 simulates standard candles 1 and 2,
+         you must set WFLA=337 before simulating the standard candles,
+         if the wv.dat file contains the flasher wavelength profile, WFLA=405 should be omitted,
+         if [num] is specified as x*y, x photons are simulated y times (with y trailing empty lines).
+         WFLA=[w] ./ppc - [x] [y]
+         Print out the table of ice parameters (IceCube coordinate z of the center of the ice layer, absorption coefficient, and geometrical scattering coefficient) for wavelength w in [nm] at the IceCube coordinates x and y in [m]. The parameters are computed using formulae of section 2 of the SPICE and PPC paper. To get the effective scattering coefficient multiply the geometrical scattering coefficient by 1-g.
+         Program output
+         HIT [str] [om] [time] [costh]
+         one photon hit in OM [str],[om] at time [time] in [ns] arriving from direction specified with cos(eta), where eta is the angle between the PMT axis (assumed to point down) and the direction from which the photon arrived. In muon simulation all photon HIT records immediately follow the tracks on which these photons originated.
+         Environment variables
+         PPCTABLESDIR=dat/mie
+         Set the location of the data tables (not necessary if all tables are in the current directory).
+         WFLA=405
+         Ignore the wavelength profile contained within the file wv.dat and simulate all photons with this single wavelength.
+         FLDR=-1
+         Set FLDR=x+(n-1)*360, where 0<=x<360 and n>0 to simulate n LEDs in a symmetrical n-fold pattern, with first LED centered in the direction x. Negative or unset FLDR simulate a symmetric in azimuth pattern of light. Ignored when processing muon simulation.
+         BADMP=20
+         Specify up to one bad multiprocessor (MP). Allows running ppc on broken GPUs. If a GPU is faulty, ppc will often end with an "unspecified kernel failure", or some other CUDA error, or hang the GPU, or crash the computer. This is often accompanied with a system log message (accessible with "dmesg") such as
+         NVRM: Xid ...
+         One may need to try different values of BADMP to determine which MP should be disabled. If a specified MP does not exist ppc will exit with an error. If a nan or an inf is caught within the kernel code, ppc will print out an error specifying on which MP this happened. In such a case that is most likely the bad MP.
+         As an example, out of 24 GPUs within our 12 GTX 295 cards, 3 contain bad MPs. These are always the same, and the only ones that lead to the "nan or an inf" errors. Rarely the MP number itself reported within such an error would be wrong; e.g., MP #3 was once printed, however this GPU does not have MP #3, the only MPs that are present on this GPU are those in the following list:
+
+         0 1 2 4 5 6 8 9 10 12 13 14 16 17 18 20 21 22 24 25 26 28 29 30 32 33 34 36 37 38.
+         The frequency with which the bad MPs manifest themselves appears to depend on the GPU temperature (both too high and too low, depending on the GPU) and GPU load.
+         Configuration files
+         cfg.txt
+         configuration file with 4 parameters:
+         DOM radius "oversize" scaling factor
+         overall DOM efficiency correction
+         fraction of "SAM" contribution to the scattering function
+         g=<cos(theta)>
+         wv.dat
+         wavelength-tabulated DOM acceptance calculated from qe_dom2007a table of efficiency.h file of photonics.
+         as.dat
+         parameters of the angular sensitivity polynomial expansion. This file should be selected from the two available choices:
+         as.nominal: nominal (measured in the lab)
+    as.holeice: hole ice (corrected by hole ice model)
+    To record all arriving photons without applying the angular sensitivity curve, create the file as.dat with only one element set to 1:
+    echo 1 > as.dat
+    rnd.txt
+    table of random number multipliers for the multiply-with-carry random number generator. If more multipliers are needed, use this larger file borrowed from CUDAMCML.
+    tilt.par
+    tilt.dat
+    files describing the ice tilt. These are paired with particular ice models, and for some ice models (aha, spice1) they must not be present.
+    icemodel.par
+    file with 4 parameters of the icemodel: alpha, kappa, A, B (as defined in section 4 of the SPICE and PPC paper). Each parameter is followed by its measurement uncertainty, which is ignored by the program.
+    The older models (older than SPICE Lea or WHAM) have 6 parameters: alpha, kappa, A, B, D, E.
+
+    icemodel.dat
+    main ice properties table: depth of the center of the layer, be(400), adust(400), delta tau (as defined in section 2 of the SPICE and PPC paper). All layers must be of equal width, and there must be at least 2 layers defined in the file.
+    If the file icemodel.par contains 6 parameters, then the absorption coefficient is calculated as adust(400)=(D*[3rd element in a line]+E)*400-kappa.

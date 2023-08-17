@@ -28,8 +28,7 @@ _baseconfig = {
         'storage prefix': './output/',
         # Random seed will follow run number if None
         "outfile": None,
-        "random state seed": None,
-        'subset': None
+        "random state seed": None
     },
     ###########################################################################
     # Detector
