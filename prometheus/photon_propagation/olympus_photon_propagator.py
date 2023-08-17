@@ -59,6 +59,11 @@ class OlympusPhotonPropagator(PhotonPropagator):
         res_event: PLEASE FILL THIS IN
         res_record: PLEASE FILL THIS IN
         """
+
+        # neutrinos don't produce light
+        if abs(int(particle)) in [12, 14, 16]:
+            return
+
         prop_distance = (
             np.linalg.norm(particle.position - self.detector.offset) 
             + self.lepton_propagator.config["simulation"]["propagation padding"]

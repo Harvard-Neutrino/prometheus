@@ -47,7 +47,7 @@ def generate_cascade(
     seed,
     pprop_func,
     converter_func,
-    splitter=1000,
+    splitter=100000,
 ):
     """
     Generate a single cascade with given amplitude and position and return time of detected photons.
@@ -301,7 +301,7 @@ def generate_realistic_track(
     key,
     pprop_func,
     proposal_prop,
-    splitter=10000
+    splitter=100000
 ):
     """
     Generate a realistic track using energy losses from PROPOSAL.
