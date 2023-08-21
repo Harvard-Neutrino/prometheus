@@ -211,7 +211,8 @@ def make_propagation_utilities(
             collection.displacement = pp.make_displacement(cross, create_tables)
             collection.interaction = pp.make_interaction(cross, create_tables)
             collection.time = pp.make_time(cross, particle_def, create_tables)
-            collection.decay = pp.make_decay(cross, particle_def, create_tables)
+            if simulation_specs["decay"]:
+                collection.decay = pp.make_decay(cross, particle_def, create_tables)
 
             utility = pp.PropagationUtility(collection=collection)
             utilities.append(utility)
