@@ -87,7 +87,7 @@ def injection_event_from_LI(injection: h5.Group, idx: int) -> LIInjectionEvent:
     """
     direction = injection["initial"]["Direction"][idx]
     theta = direction[0]
-    phi = np.mod(np.pi + direction[1], 2*np.pi)
+    phi = direction[1]
     initial_state = Particle(
         injection["properties"]["initialType"][idx],
         injection["initial"]["Energy"][idx],

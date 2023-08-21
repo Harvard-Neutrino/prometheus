@@ -2,7 +2,7 @@
 FROM ubuntu:18.04 as base
 # labels
 LABEL author="Stephan Meighen-Berger"
-LABEL version="1.0.0"
+LABEL version="1.0.2"
 LABEL description="Image for Prometheus - New Kernel"
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
@@ -99,7 +99,8 @@ RUN echo "export PATH=/usr/local/lib/nodejs/node-v14.17.0-linux-x64/bin:${PATH}"
 # Create some non-root user that owns the data and other directories by default
 RUN useradd -r myuser          # no specific user ID
 RUN mkdir /home/myuser
-RUN cd /home/myuser cp /root/.bashrc .bashrc
+RUN cd /home/myuser cp /opt/.bashrc .bashrc
+RUN git clone https://github.com/Harvard-Neutrino/prometheus.git /home/myuser/prometheus
 RUN chown -R myuser /home/myuser
 USER myuser
 SHELL ["/bin/bash", "-c"]
