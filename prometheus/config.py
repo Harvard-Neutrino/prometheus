@@ -65,7 +65,7 @@ _baseconfig = {
                 'min azimuth': 0.0, # degree
                 'max azimuth': 360.0, # degree
                 # The following None params will be set internally unless specified
-                'is ranged': None,
+                'is ranged': None, # TODO account for this into mims
                 "injection radius": None, # m
                 "endcap length": None, # m
                 "cylinder radius": None, # m
@@ -105,14 +105,15 @@ _baseconfig = {
                 # TODO Maybe this should all be in M
                 #'track length': 5000,
                 # TODO figure out why this breaks for 1e-2
-                'vcut': 0.01,
+                'vcut': 0.1,
                 'ecut': 0.5, # GeV
-                'soft losses': False, # These are particles that don't generate cherenkov light
+                #'soft losses': False, # These are particles that don't generate cherenkov light
                 'interpolation': True,
                 'lpm effect': True,
                 'continuous randomization': True,
                 'soft losses': True,
                 "interpolate": True,
+                "decay": True,
                 'scattering model': "Moliere",
                 #'maximum radius': 1e18, # m
                 # all none elements will be set off detector config settings
@@ -132,7 +133,7 @@ _baseconfig = {
                 #'track length': 5000,
                 'vcut': 1,
                 'ecut': 0.1, # GeV
-                'soft losses': False,
+                #'soft losses': False,
                 'interpolation': True,
                 'lpm effect': True,
                 'continuous randomization': True,
@@ -183,7 +184,7 @@ _baseconfig = {
                 'f2k_tmpfile':'.event_losses.f2k.tmp',
                 'ppc_prefix':'',
                 'f2k_prefix':'',
-                'ppctables':'../resources/PPC_tables/south_pole/',
+                'ppctables':'../resources/PPC_tables/ic_accept_all/',
                 'ppc_exe':'../resources/PPC_executables/PPC_CUDA/ppc', # binary executable
                 #"outfile": None
             },
@@ -201,7 +202,7 @@ _baseconfig = {
                 'f2k_tmpfile': '.event_losses.f2k.tmp',
                 'ppc_prefix':'',
                 'f2k_prefix':'',
-                'ppctables':'../resources/PPC_tables/south_pole/',
+                'ppctables':'../resources/PPC_tables/ic_accept_all/',
                 'ppc_exe': '../resources/PPC_executables/PPC/ppc',  # binary executable
                 #"photon field name": "photons",
                 #"outfile": None,
