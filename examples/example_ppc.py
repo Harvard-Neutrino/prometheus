@@ -4,36 +4,33 @@
 import sys
 sys.path.append('../')
 from prometheus import Prometheus, config
-from jax.config import config as jconfig
+import prometheus
+#from jax.config import config as jconfig
 import gc
 import os
 
-jconfig.update("jax_enable_x64", True)
+#jconfig.update("jax_enable_x64", True)
 
-def main(args=None):
-    if args is None:
-        args = 1337
-        print("Using default seed!")
-    else:
-        rset = int(args[1])
-    print('CURRENT SET %d' % rset)
+RESOURCE_DIR = f"{'/'.join(prometheus.__path__[0].split('/')[:-1])}/resources/"
+
+def main(simset):
+    print('CURRENT SET %d' % simset)
     config["run"]["nevent"] = 2
-    config["general"]["state seed"] = rset
-    config["general"]["meta_name"] = 'meta_data_%d' % rset
-    config['photon propagator']['storage location'] = './output/rset_%d_' % rset
+    config["general"]["state seed"] = simset
+    config["general"]["meta_name"] = 'meta_data_%d' % simset
+    config['photon propagator']['storage location'] = './output/simset_%d_' % simset
     nevent = 2
-    config['injection']["LeptonInjector"]["paths"]['install location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/lib64/"
-    config['injection']["LeptonInjector"]["paths"]['xsec location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/source/LeptonInjector/resources/"
+    config['injection']["LeptonInjector"]["paths"]['xsec dir'] = (
+        f"{RESOURCE_DIR}/cross_section_splines/"
+    )
+    #config['injection']["LeptonInjector"]["paths"]['install location'] = "/n/holylfs05/LABS/arguelles_delgado_lab/Lab/common_software/lib64/"
+    config["detector"]["geo file"] = f"{RESOURCE_DIR}/geofiles/icecube.geo"
     config["injection"]['LeptonInjector']['simulation']['is ranged'] = False
-    config["injection"]['LeptonInjector']['simulation']['output name'] = "./output/data_%d_output_LI.h5" % rset
+    config["injection"]['LeptonInjector']['simulation']['output name'] = "./output/data_%d_output_LI.h5" % simset
     config["injection"]['LeptonInjector']['simulation']['minimal energy'] = 1e3
     config["injection"]['LeptonInjector']['simulation']['maximal energy'] = 1e4
-    config["injection"]['LeptonInjector']['simulation']["injection radius"] = 800
-    config["injection"]['LeptonInjector']['simulation']["endcap length"] = 800
-    config["injection"]['LeptonInjector']['simulation']["cylinder radius"] = 800
-    config["injection"]['LeptonInjector']['simulation']["cylinder height"] = 1000
-    config["detector"]["geo file"] = '../prometheus/data/icecube.geo'
     config['photon propagator']['name'] = 'PPC_CUDA'
+    config["photon propagator"]["PPC_CUDA"]["paths"]["ppc_tmpdir"] = "./ppc_tmpdir"
     prometheus = Prometheus(userconfig=config)
     prometheus.sim()
     del prometheus
@@ -48,7 +45,10 @@ if __name__ == "__main__":
     print("--------------------------------------------------------------")
     print("--------------------------------------------------------------")
     print("Launching simulation")
-    main(sys.argv)
+    simset = 925
+    if len(sys.argv)==2:
+        simset = int(sys.argv[1])
+    main(simset)
     print("Finished call")
     print("--------------------------------------------------------------")
     print("--------------------------------------------------------------")
