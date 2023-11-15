@@ -15,10 +15,9 @@ RESOURCE_DIR = f"{'/'.join(prometheus.__path__[0].split('/')[:-1])}/resources/"
 
 def main(simset):
     print('CURRENT SET %d' % simset)
-    config["run"]["nevent"] = 2
+    config["run"]["nevents"] = 20
     config["run"]["random state seed"] = simset
     config["run"]["outfile"] = f"./output/simset_{simset}_photons.parquet"
-    nevent = 2
     config['injection']["LeptonInjector"]["paths"]['xsec dir'] = (
         f"{RESOURCE_DIR}/cross_section_splines/"
     )
