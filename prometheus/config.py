@@ -183,7 +183,7 @@ _baseconfig = {
                 'f2k_tmpfile':'.event_losses.f2k.tmp',
                 'ppc_prefix':'',
                 'f2k_prefix':'',
-                'ppctables':'../resources/PPC_tables/ic_accept_all/',
+                'ppctables':'../resources/PPC_tables/south_pole/',
                 'ppc_exe':'../resources/PPC_executables/PPC_CUDA/ppc', # binary executable
                 #"outfile": None
             },
@@ -201,7 +201,7 @@ _baseconfig = {
                 'f2k_tmpfile': '.event_losses.f2k.tmp',
                 'ppc_prefix':'',
                 'f2k_prefix':'',
-                'ppctables':'../resources/PPC_tables/ic_accept_all/',
+                'ppctables':'../resources/PPC_tables/south_pole/',
                 'ppc_exe': '../resources/PPC_executables/PPC/ppc',  # binary executable
                 #"photon field name": "photons",
                 #"outfile": None,
