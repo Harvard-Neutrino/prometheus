@@ -2,7 +2,7 @@
 FROM ubuntu:18.04 as base
 # labels
 LABEL author="Stephan Meighen-Berger"
-LABEL version="1.0.2"
+LABEL version="1.0.3"
 LABEL description="Image for Prometheus - Old Kernel"
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
@@ -14,12 +14,17 @@ RUN apt-get update && \
     libssl-dev \
     python3-dev \
     ca-certificates \
-    wget libgsl-dev pkg-config libhdf5-serial-dev libboost-all-dev python-dev && \
+    wget libgsl-dev pkg-config libhdf5-serial-dev libboost-all-dev autotools-dev libicu-dev libbz2-dev && \
     # apt-get install libboost-all-dev && \
     rm -rf /var/lib/apt/lists/*
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.22.2/cmake-3.22.2.tar.gz --no-check-certificate && \
     tar -zxvf cmake-3.22.2.tar.gz && \
     cd cmake-3.22.2 && ./bootstrap && make -j4 && make install
+# Custom verison of boost needed for proposal on old kernels
+# FROM base as boost
+# RUN wget -O boost_1_72_0.tar.gz https://boostorg.jfrog.io/artifactory/main/release/1.72.0/source/boost_1_72_0.tar.gz
+# RUN tar xzvf boost_1_72_0.tar.gz
+# RUN cd boost_1_72_0 && ./bootstrap.sh --prefix=/usr/ && ./b2 && ./b2 install
 FROM base as python
 ENV PATH="/opt/miniconda3/bin:${PATH}"
 ARG PATH="/opt/miniconda3/bin:${PATH}"
@@ -34,19 +39,23 @@ ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/miniconda3/lib
 # RUN conda install python=3.9
 RUN conda install python=3.9
 RUN conda install pip
+RUN conda install -c conda-forge gcc=12.1.0
 RUN python -m pip install --upgrade pip
-# change conan install .. -o with_python=True to conan install .. -o with_python=True -o boost:extra_b2_flags=define=BOOST_FILESYSTEM_DISABLE_STATX for old kernels
 # Problems with conan autamtic versions
-RUN python -m pip install proposal
-# RUN python -m pip install conan==1.59.0 && \
-#     conan profile new default --detect && conan profile update settings.compiler.libcxx=libstdc++11 default && \
-#     mkdir /opt/PROPOSAL && cd /opt/PROPOSAL && \
-#     git clone https://github.com/tudo-astroparticlephysics/PROPOSAL.git . && \
-#     mkdir -p build && cd build && conan install .. -o with_python=True --require-override=boost/1.72.0 &&\
-#     conan build ..
+# RUN python -m pip install proposal
+RUN python -m pip install -Iv conan==1.59.0 && \
+    conan profile new default --detect --force && conan profile update settings.compiler.libcxx=libstdc++11 default && \
+    mkdir /opt/PROPOSAL && cd /opt/PROPOSAL && \
+    git clone https://github.com/tudo-astroparticlephysics/PROPOSAL.git . && \
+    mkdir -p build && cd build && conan install .. -o with_python=True --require-override=boost/1.72.0 --build missing &&\
+    conan build ..
 FROM python as base_tables
-RUN mkdir /opt/PROPOSAL
+# RUN mkdir /opt/PROPOSAL
 COPY build_proposal_tables.py /opt/PROPOSAL/build_proposal_tables.py
+RUN find /opt/PROPOSAL/ -type f -name \*.so
+RUN ls -la /opt/PROPOSAL/build/Release/src/pyPROPOSAL
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/PROPOSAL/build/Release/src/pyPROPOSAL
+ENV PYTHONPATH=${PYTHONPATH}:/opt/PROPOSAL/build/Release/src/pyPROPOSAL
 RUN python /opt/PROPOSAL/build_proposal_tables.py
 FROM base_tables as leptoninjector
 RUN conda install -c conda-forge photospline && \
@@ -83,12 +92,12 @@ RUN python -m pip install fennel_seed[cpu]
 RUN conda install -c conda-forge pyarrow
 FROM pip_stuff as pathing_stuff
 ENV PATH=${PATH}:/usr/local/lib/nodejs/node-v14.17.0-linux-x64/bin:/opt/miniconda3/bin:
-ENV PYTHONPATH=${PYTHONPATH}:/opt/PROPOSAL/build/src/pyPROPOSAL:/workspaces/repos/hyperion:/workspaces/repos/olympus
+ENV PYTHONPATH=${PYTHONPATH}:/opt/PROPOSAL/build/Release/src/pyPROPOSAL:/workspaces/repos/hyperion:/workspaces/repos/olympus
 ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/LI/install/lib
 ENV PPC=/opt/PPC/PPC/ppc
 ENV PPC_CUDA=/opt/PPC/PPC_CUDA/ppc
 RUN echo "export PATH=/usr/local/lib/nodejs/node-v14.17.0-linux-x64/bin:${PATH}" >> /root/.bashrc && \
-    echo "export PYTHONPATH=${PYTHONPATH}:/opt/PROPOSAL/build/src/pyPROPOSAL:/workspaces/repos/hyperion:/workspaces/repos/olympus" >> /root/.bashrc && \
+    echo "export PYTHONPATH=${PYTHONPATH}:/opt/PROPOSAL/build/Release/src/pyPROPOSAL:/workspaces/repos/hyperion:/workspaces/repos/olympus" >> /root/.bashrc && \
     echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/LI/install/lib:/opt/miniconda3/lib" >> /root/.bashrc && \
     echo "export EARTH_PARAMS=/opt/LI/source/resources/earthparams/" >> /root/.bashrc && \
     echo "export PPC=/opt/PPC/PPC/ppc" >> /root/.bashrc && \
