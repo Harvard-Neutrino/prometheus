@@ -15,6 +15,10 @@ pyyaml = "^6.0.1"
 proposal = "^7.6.2"
 jaxlib = "^0.4.24"
 jax = "^0.4.24"
+fennel-seed = "^1.3.4"
+distrax = "^0.1.5"
+dm-haiku = "^0.0.11"
+h5py = "^3.10.0"
 
 
 [build-system]
