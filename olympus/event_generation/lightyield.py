@@ -10,6 +10,10 @@ from .constants import Constants
 
 config["general"]["jax"] = True
 fennel_instance = Fennel()
+try:
+    jax_trapz = jax.numpy.trapz
+except AttributeError:
+    jax_trapz = jax.scipy.integrate.trapezoid
 
 
 def simple_cascade_light_yield(energy, *args):
@@ -43,7 +47,7 @@ def fennel_total_light_yield(energy, particle_id, wavelength_range):
     counts_func = funcs[0]
 
     wavelengths = jnp.linspace(wavelength_range[0], wavelength_range[1], 100)
-    light_yield = jnp.trapz(counts_func(energy, wavelengths).ravel(), wavelengths)
+    light_yield = jax_trapz(counts_func(energy, wavelengths).ravel(), wavelengths)
 
     return light_yield
 
@@ -72,7 +76,7 @@ def fennel_frac_long_light_yield(energy, particle_id, resolution=0.2):
     def integrate(low, high, resolution=1000):
         trapz_x_eval = jnp.linspace(low, high, resolution) * 100  # to cm
         trapz_y_eval = long_func(energy, trapz_x_eval)
-        return jnp.trapz(trapz_y_eval, trapz_x_eval)
+        return jax_trapz(trapz_y_eval, trapz_x_eval)
 
     integrate_v = jax.vmap(integrate, in_axes=[0, 0])
 
