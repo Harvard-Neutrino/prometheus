@@ -52,18 +52,19 @@ def make_new_LI_injection(
     except ImportError:
         raise ImportError("LeptonInjector not found!")
     n_events = injection_specs["nevents"]
-    xs_folder = os.path.join(
-        os.path.dirname(__file__),
-        path_dict["xsec dir"]
-    )
+    #xs_folder = os.path.join(
+    #    os.path.dirname(__file__),
+    #    path_dict["xsec dir"]
+    #)
     diff_xs = path_dict['diff xsec']
     total_xs = path_dict['total xsec']
     is_ranged = injection_specs["is ranged"]
     particles = []
-    for id_name, names in enumerate([
-        injection_specs["final state 1"],
-        injection_specs["final state 2"]
-    ]):
+    for names in [injection_specs["final state 1"], injection_specs["final state 2"]]:
+    #for id_name, names in enumerate([
+    #    injection_specs["final state 1"],
+    #    injection_specs["final state 2"]
+    #]):
         particles.append(getattr(LI.Particle.ParticleType, names))
     
     the_injector = LI.Injector(
@@ -86,17 +87,11 @@ def make_new_LI_injection(
     cyinder_radius = injection_specs["cylinder radius"]
     cyinder_height = injection_specs["cylinder height"]
     # construct the controller
-    if is_ranged:
-        controller = LI.Controller(
-            the_injector, min_E, max_E, gamma, min_azimuth,
-            max_azimuth, min_zenith, max_zenith, 
-        )
-    else:
-        controller = LI.Controller(
-            the_injector, min_E, max_E, gamma, min_azimuth,
-            max_azimuth, min_zenith, max_zenith,
-            inject_radius, endcap_length, cyinder_radius, cyinder_height
-        )
+    controller = LI.Controller(
+        the_injector, min_E, max_E, gamma, min_azimuth,
+        max_azimuth, min_zenith, max_zenith, 
+        inject_radius, endcap_length, cyinder_radius, cyinder_height
+    )
     earth_model_dir = "/".join(path_dict["earth model location"].split("/")[:-2]) + "/"
     earth_model_name = path_dict["earth model location"].split("/")[-1].split(".")[0]
     earth = em.EarthModelService(
@@ -109,11 +104,6 @@ def make_new_LI_injection(
         -detector_offset[2]
     )
     controller.SetEarthModelService(earth)
-    #controller.SetEarthModelFromPath(
-    #    injection_specs["earth model"],
-    #    earth_model_dir
-    #    #path_dict["earth model location"]
-    #)
     controller.setSeed(injection_specs["random state seed"])
     controller.NameOutfile(path_dict["injection file"])
     controller.NameLicFile(path_dict["lic file"])
