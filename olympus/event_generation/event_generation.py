@@ -186,7 +186,7 @@ def generate_muon_energy_losses(
     except ImportError as e:
         logger.critical("Could not import proposal!")
         raise e
-
+    
     init_state = pp.particle.ParticleState()
     init_state.energy = energy * 1e3  # initial energy in MeV
     init_state.position = pp.Cartesian3D(
