@@ -21,9 +21,10 @@ def initialize_args():
     args = parser.parse_args()
     return args
 
-def main(parquet_file=None, nbins=10):
+def main(parquet_file=None, nbins=10) -> None:
 
-    #args = initialize_args()
+    args = initialize_args()
+    parquet_file = args.parquet_file
 
     if parquet_file is None:
         parquet_file = args.parquet_file
@@ -45,9 +46,10 @@ def main(parquet_file=None, nbins=10):
     edges = np.logspace(
         np.log10(inj_conf["minimal energy"]),
         np.log10(inj_conf["maximal energy"]),
-        nbins+1
+        args.nbins+1
     )
     widths = np.diff(edges)
+    cents = (edges[1:] + edges[:-1]) / 2
 
     # Load up events
     a = ak.from_parquet(parquet_file)
@@ -63,4 +65,8 @@ def main(parquet_file=None, nbins=10):
 
     effa = h / delta_omega / widths / len(a)
 
-    return (edges[1:] + edges[:-1]) / 2, effa
+    print(f"Energies: {cents} GeV")
+    print(f"Effective area: {effa} m")
+
+if __name__=="__main__":
+    main()
