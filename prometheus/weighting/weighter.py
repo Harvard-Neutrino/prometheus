@@ -18,21 +18,28 @@ class Weighter:
     """
     def __init__(
         self, 
-        lic_file,
-        xs_prefix = "./",
-        nu_cc_xs = "dsdxdy-numu-N-cc-HERAPDF15NLO_EIG_central.fits",
-        nubar_cc_xs = "dsdxdy-numubar-N-cc-HERAPDF15NLO_EIG_central.fits",
-        nu_nc_xs = "dsdxdy-numu-N-nc-HERAPDF15NLO_EIG_central.fits",
-        nubar_nc_xs = "dsdxdy-numubar-N-nc-HERAPDF15NLO_EIG_central.fits",
-        nevents=1,
+        lic_file: str,
+        xs_prefix: str = None,
+        nu_cc_xs: str = "dsdxdy_nu_CC_iso.fits",
+        nubar_cc_xs: str = "dsdxdy_nubar_CC_iso.fits",
+        nu_nc_xs: str = "dsdxdy_nu_NC_iso.fits",
+        nubar_nc_xs: str = "dsdxdy_nubar_NC_iso.fits",
+        nevents: int = 1
     ):
+        if xs_prefix is None:
+            import os
+            import prometheus
+            path = os.path.dirname(prometheus.__file__)
+            xs_prefix = os.path.abspath(f"{path}/../resources/cross_section_splines/")
+
+
         self._lic_file = lic_file
         self._nevents = nevents
 
         self._nu_cc_xs = f"{xs_prefix}/{nu_cc_xs}"
-        self._nubar_cc_xs= f"{xs_prefix}/{nubar_cc_xs}"
+        self._nubar_cc_xs = f"{xs_prefix}/{nubar_cc_xs}"
         self._nu_nc_xs = f"{xs_prefix}/{nu_nc_xs}"
-        self._nubar_nc_xs= f"{xs_prefix}/{nubar_nc_xs}"
+        self._nubar_nc_xs = f"{xs_prefix}/{nubar_nc_xs}"
             
         self._xs = LW.CrossSectionFromSpline(
             self.nu_cc_xs,
