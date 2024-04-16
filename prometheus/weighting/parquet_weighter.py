@@ -80,7 +80,7 @@ class ParquetWeighter(Weighter):
         lw_event.x = injection["initial_state_x"] - self._offset[0]
         lw_event.y = injection["initial_state_y"] - self._offset[1]
         lw_event.z = injection["initial_state_z"] - self._offset[2]
-        return self._weighter.get_oneweight(lw_event) * self.nevents
+        return self._weighter.get_oneweight(lw_event) * self.nevents / 1e4 # m
 
     def weight_events(self):
         return np.array([self._get_event_oneweight(x) for x in self._data])
