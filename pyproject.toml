@@ -20,6 +20,9 @@ distrax = "^0.1.5"
 dm-haiku = "^0.0.11"
 h5py = "^3.10.0"
 
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"
 
 [build-system]
 requires = ["poetry-core"]
