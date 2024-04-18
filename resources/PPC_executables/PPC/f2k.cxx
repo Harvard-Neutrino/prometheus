@@ -308,7 +308,7 @@ void print(){
       tmph.time=h.t;
       hitz.push_back(tmph);
 #else
-      printf("HIT %d %d %f %f\n", n.str, n.dom, h.t, h.z);
+      printf("HIT %d %d %f %f %f %f %f %f\n", n.str, n.dom, h.t, h.z, h.dth, h.dph, h.pth, h.pph);
 #endif
     }
   }
