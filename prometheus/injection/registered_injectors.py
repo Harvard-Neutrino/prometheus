@@ -5,3 +5,4 @@ class RegisteredInjectors(ExtendedEnum):
     LEPTONINJECTOR=1
     PROMETHEUS=2
     GENIE=3
+    SIREN=4

@@ -6,3 +6,4 @@ class Interactions(Enum):
     CHARGED_CURRENT = 1
     NEUTRAL_CURRENT = 2
     DIMUON = 3
+    DIPOLE = 4

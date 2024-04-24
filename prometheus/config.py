@@ -87,6 +87,14 @@ _baseconfig = {
                 "injection file": None,
             },
             'simulation': {}
+        },
+        'SIREN':{
+            # TODO make error if this is set to True
+            'inject': False,
+            'paths': {
+                "injection file": None,
+            },
+            'simulation': {}
         }
     },
     ###########################################################################

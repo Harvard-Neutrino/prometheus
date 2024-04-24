@@ -21,7 +21,8 @@ def prometheus_inj_to_li_injection_event(truth: ak.Record) -> LIInjectionEvent:
             np.cos(truth["initial_azimuth"]) * np.sin(truth["initial_zenith"]),
             np.sin(truth["initial_azimuth"]) * np.sin(truth["initial_zenith"]),
             np.cos(truth["initial_zenith"]),
-        ])
+        ]),
+        0
     )
     final_states = []
     for idx, parent in enumerate(truth["parent"]):
@@ -40,6 +41,7 @@ def prometheus_inj_to_li_injection_event(truth: ak.Record) -> LIInjectionEvent:
                 np.sin(truth["final_state_azimuth", idx]) * np.sin(truth["final_state_zenith", idx]),
                 np.cos(truth["final_state_zenith", idx]),
             ]),
+            0,
             initial_state
         )
         final_states.append(final_state)

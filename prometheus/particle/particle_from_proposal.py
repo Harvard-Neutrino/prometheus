@@ -26,5 +26,5 @@ def particle_from_proposal(
     direction = np.array(
         [pp_particle.direction.x, pp_particle.direction.y, pp_particle.direction.z]
     )
-    child = PropagatableParticle(pdg_code, e, position, direction, None, parent)
+    child = PropagatableParticle(pdg_code, e, position, direction, parent.time, None, parent)
     return child

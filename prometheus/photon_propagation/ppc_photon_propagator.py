@@ -72,7 +72,7 @@ def ppc_sim(
 
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
     process.wait()
-    particle.hits = parse_ppc(ppc_tmpfile)
+    particle.hits = parse_ppc(ppc_tmpfile,time=particle.time)
     for f in [geo_tmpfile, f2k_tmpfile, ppc_tmpfile]:
         os.remove(f)
 

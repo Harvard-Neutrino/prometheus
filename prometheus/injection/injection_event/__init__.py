@@ -1,1 +1,2 @@
 from .LI_injection_event import LIInjectionEvent
+from .SIREN_injection_event import SIRENInjectionEvent

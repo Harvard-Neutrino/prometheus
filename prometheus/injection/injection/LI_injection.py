@@ -97,6 +97,7 @@ def injection_event_from_LI(injection: h5.Group, idx: int) -> LIInjectionEvent:
             np.sin(theta) * np.sin(phi),
             np.cos(theta),
         ]),
+        0,
         None
     )
     final_states = []
@@ -113,6 +114,7 @@ def injection_event_from_LI(injection: h5.Group, idx: int) -> LIInjectionEvent:
                 np.sin(theta) * np.sin(phi),
                 np.cos(theta),
             ]),
+            0,
             None,
             initial_state
         )

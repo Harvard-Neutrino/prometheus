@@ -19,6 +19,7 @@ class Particle:
     e: energy in GeV
     position: particle position in meters
     direction: unit vector pointing along particle momentum
+    time: relative time of the particle creation w.r.t. the intial interaction
     serialization_idx: Index helper for serialization. This
         will be overwritten at serialization time
     """
@@ -26,6 +27,7 @@ class Particle:
     e: float
     position: np.ndarray
     direction: np.ndarray
+    time: float
     serialization_idx: int
 
 
