@@ -20,7 +20,7 @@ class ParquetWeighter(Weighter):
         nu_nc_xs: str = "dsdxdy_nu_NC_iso.fits",
         nubar_nc_xs: str = "dsdxdy_nubar_NC_iso.fits",
         xs_prefix: Optional[str] = None,
-        lic_file: Optional[str] = None
+        lic_file: Optional[str] = None,
         offset: Optional[np.ndarray] = None
     ):
 
