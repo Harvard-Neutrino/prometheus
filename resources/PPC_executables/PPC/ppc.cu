@@ -25,7 +25,6 @@ namespace xppc{
 #include "pro.cu"
 
   void initialize(float enh = 1.f){ m.set(); d.eff*=enh; }
-
   unsigned int pmax, pmxo, pn;
 
 #ifdef XCPU

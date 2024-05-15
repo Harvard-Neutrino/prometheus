@@ -343,6 +343,7 @@ __global__ void propagate(dats * ed, unsigned int num){
       TOT=-logf(xrnd(s)), IFH(SCA,sca)=0;
     }
 
+    float sqd;
 #ifdef HOLE
     if(SCA==0) SCA=-logf(xrnd(s)), old=om;
     float sca, tot;
@@ -470,7 +471,8 @@ __global__ void propagate(dats * ed, unsigned int num){
 	      b+=n.z*dr; c+=dr*dr;
 	      float D=b*b-c+e.R2;
 	      if(D>=0){
-		float h=b-sqrtf(D)*e.zR;
+                sqd=sqrtf(D);
+		float h=b-sqd*e.zR;
 		if(h>0 && h<=del) om=l, del=h;
 	      }
 	    }
@@ -554,6 +556,18 @@ __global__ void propagate(dats * ed, unsigned int num){
     if(om!=-1){
       bool flag=true;
       hit h; h.i=om; h.t=r.w; h.n=niw; h.z=w->wvl;
+
+      h.pth=acosf(n.z);
+      h.pph=atan2f(n.y, n.x);
+
+      sqd*=1-e.zR;
+      const DOM & dom=oms[om];
+      float dx=dom.r[0]-r.x+sqd*n.x;
+      float dy=dom.r[1]-r.y+sqd*n.y;
+      float dz=dom.r[2]-r.z+sqd*n.z;
+
+      h.dth=acosf(min(max(dz/e.R, -1.f), 1.f)); 
+      h.dph=atan2f(dy, dx);
 
 #ifdef ASENS
       float sum;

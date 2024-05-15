@@ -93,10 +93,9 @@ bool rdef=false;
 float rmax=1;
 
 struct hit{
-  unsigned int i;
-  float t;
-  unsigned int n;
-  float z;
+  unsigned int i, n;
+  float t, z;
+  float pth, pph, dth, dph;
 };
 
 #ifdef XCPU
