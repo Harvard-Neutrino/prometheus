@@ -57,7 +57,7 @@ class ParquetWeighter(Weighter):
             nubar_cc_xs=nubar_cc_xs,
             nu_nc_xs=nu_nc_xs,
             nubar_nc_xs=nubar_nc_xs,
-            nevents=len(self._data["photons"])
+            nevents=len(self._data["mc_truth"])
         )
 
     def _get_event_oneweight(self, event:ak.Record) -> float:
