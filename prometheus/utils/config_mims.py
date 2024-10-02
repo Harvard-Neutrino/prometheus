@@ -64,6 +64,8 @@ def config_mims(config: dict, detector) -> None:
     else:
         earth_model_file = EARTH_MODEL_DICT[detector.medium.name]
 
+    config["detector"]["offset"] = [detector._offset[0], detector._offset[1], detector._offset[2]]
+
     injection_config_mims(
         config["injection"][config["injection"]["name"]],
         detector,
