@@ -4,6 +4,8 @@ import awkward as ak
 import LeptonWeighter as LW
 import pyarrow.parquet as pq
 
+from typing import Optional
+
 from .weighter import Weighter
 
 WARNMSG = "It looks like the lic file provided does not match that in the Parquet file. You may want to check this."
@@ -13,12 +15,13 @@ class ParquetWeighter(Weighter):
     def __init__(
         self,
         parquet_file:str,
-        xs_prefix: str = None,
         nu_cc_xs: str = "dsdxdy_nu_CC_iso.fits",
         nubar_cc_xs: str = "dsdxdy_nubar_CC_iso.fits",
         nu_nc_xs: str = "dsdxdy_nu_NC_iso.fits",
         nubar_nc_xs: str = "dsdxdy_nubar_NC_iso.fits",
-        lic_file: str=None
+        xs_prefix: Optional[str] = None,
+        lic_file: Optional[str] = None,
+        offset: Optional[np.ndarray] = None
     ):
 
         config = json.loads(
@@ -38,7 +41,14 @@ class ParquetWeighter(Weighter):
             lic_file = exp_lic_file
 
         self._data = ak.from_parquet(parquet_file)
-        self._offset = np.array(config["detector"]["offset"])
+        print(config)
+        if offset is None:
+            try:
+                self._offset = np.array(config["detector"]["offset"])
+            except KeyError:
+                from ..detector import detector_from_geo
+                det = detector_from_geo(config["detector"]["geo file"])
+                self._offset = np.array(det.offset)
 
         super().__init__(
             lic_file,
@@ -47,7 +57,7 @@ class ParquetWeighter(Weighter):
             nubar_cc_xs=nubar_cc_xs,
             nu_nc_xs=nu_nc_xs,
             nubar_nc_xs=nubar_nc_xs,
-            nevents=len(self._data["photons"])
+            nevents=len(self._data["mc_truth"])
         )
 
     def _get_event_oneweight(self, event:ak.Record) -> float:
