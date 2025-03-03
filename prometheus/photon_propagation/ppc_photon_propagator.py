@@ -40,14 +40,14 @@ def ppc_sim(
         return
     elif abs(int(particle))==211 or abs(int(particle))==321: # It's a charged pion
         if np.linalg.norm(particle.position-det.offset) <= r_inice:
-            loss = Loss(int(particle), particle.e, particle.position)
+            loss = Loss(int(particle), particle.e, particle.position, 0) ## no track length for pion
             particle.losses.append(loss)
     elif abs(int(particle))==311: # It's a neutral kaon
         # TODO handle this correctl by converting to photons after prop
         return
     elif int(particle)==-2000001006 or int(particle)==2212: # Hadrons
         if np.linalg.norm(particle.position-det.offset) <= r_inice:
-            loss = Loss(int(particle), particle.e, particle.position)
+            loss = Loss(int(particle), particle.e, particle.position, 0) ## no track length for hadron
             particle.losses.append(loss)
     else:
         # TODO make this into a custom error

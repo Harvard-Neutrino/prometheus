@@ -71,6 +71,9 @@ int_type_to_str = {
     1000000008:"delta",
     -2000001006:"hadr",
     2212:"hadr",
+
+    ## muon track (manually added):
+    1000000018: "amu-" ### works for now....
 }
 
 str_to_int_type = {val:key for key, val in int_type_to_str.items()}

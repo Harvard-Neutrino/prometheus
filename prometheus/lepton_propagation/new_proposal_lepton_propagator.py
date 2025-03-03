@@ -12,6 +12,22 @@ from ..utils.units import GeV_to_MeV, MeV_to_GeV, cm_to_m, m_to_cm
 from .loss import Loss
 from .lepton_propagator import LeptonPropagator
 
+import warnings
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+## !! uncomment following block if you wish to see logger line (TR f2k print line) in this file: !!
+
+# if not logger.handlers:
+#     stream_handler = logging.StreamHandler()
+#     stream_handler.setLevel(logging.DEBUG)
+#     formatter = logging.Formatter('%(levelname)s: %(message)s')
+#     stream_handler.setFormatter(formatter)
+#     logger.addHandler(stream_handler)
+
+
+
 MEDIUM_DICT = {
     "INNERCORE": pp.medium.StandardRock,
     "OUTERCORE": pp.medium.StandardRock,
@@ -175,6 +191,14 @@ def make_propagation_utilities(
     _______
     utilities: List of PROPOSAL PropagationUtility objects
     """
+    ### ppc 'amu' parameterisations are from 0.5 GeV Ecut GEANT4 simulations, so anything other than Ecut=0.5 GeV would mismodel light yield from muons
+    ## should find a better way to deal with these settings (perhaps even take away user option to change them), but for now:
+    if simulation_specs["ecut"] != 0.5 or simulation_specs["vcut"] != 1:
+        warnings.warn("Adjusting ecut and vcut to work with ppc", UserWarning)
+        simulation_specs["ecut"] = 0.5
+        simulation_specs["vcut"] = 1
+         
+
     cuts = pp.EnergyCutSettings(
         simulation_specs["ecut"] * GeV_to_MeV,
         simulation_specs["vcut"],
@@ -278,35 +302,68 @@ def new_proposal_losses(
     init_state = init_pp_particle(particle, coordinate_shift)
     propagation_length = np.linalg.norm(particle.position) + padding
     secondarys = prop.propagate(init_state, propagation_length * m_to_cm)
-    continuous_loss_sum  = 0
-    for loss in secondarys.stochastic_losses():
-        loss_energy = loss.energy * MeV_to_GeV
-        if loss.type==1000000008:
-            continuous_loss_sum += loss_energy
-        else:
+
+    if particle.pdg_code == 13: ## TODO should find a way to remove this if statement and combine with non-amu loss types
+        for i in range(1, len(secondarys.track_types())):
+            time = secondarys.track_times()[i]
+            l=0
+            l = (secondarys.track_propagated_distances()[i] - secondarys.track_propagated_distances()[i-1])*cm_to_m # to m 
+            x = secondarys.track_positions()[i-1][0]
+            y = secondarys.track_positions()[i-1][1]
+            z = secondarys.track_positions()[i-1][2]
+            x_dir = secondarys.track_directions()[i-1][0] # prometheus not currently using (for logging purposes)
+            y_dir = secondarys.track_directions()[i-1][1] # prometheus not currently using (for logging purposes)
+            z_dir = secondarys.track_directions()[i-1][2] # prometheus not currently using (for logging purposes)
+            time = secondarys.track_times()[i-1] # prometheus not currently using (for logging purposes)
             pos = (
-                np.array([loss.position.x, loss.position.y, loss.position.z]) * cm_to_m -
+                np.array([x, y, z]) * cm_to_m -
                 coordinate_shift
             )
-            # TODO more this to the serialization function. DTaSD
-            if np.linalg.norm(pos - detector_center) <= r_inice:
-                particle.losses.append(
-                    Loss(loss.type, loss_energy, pos)
+            energy = (secondarys.track_energies()[i-1] - secondarys.track_energies()[i])*MeV_to_GeV # to gev
+            theta = np.arctan2(np.sqrt(x_dir*x_dir + y_dir*y_dir), z_dir) # prometheus not currently using (for logging purposes)
+            phi = np.arctan2(y_dir, x_dir) # prometheus not currently using (for logging purposes)
+            loss_type = secondarys.track_types()[i].value
+
+            
+            ## quick fix for now. Reason for change of type is: 1000000008 is also used for electron and tau continous losses, and I'm not sure what those losses should be, but probably not amu... 
+            if loss_type == 1000000008: 
+                loss_type=1000000018 ## 1000000018 is defined in translators as 'amu-'
+
+            ### decay type (child decay particles handled later)
+            if loss_type != 1000000011: 
+                logger.debug(f"New proposal f2k line: TR {0} {0} {loss_type} {x*cm_to_m} {y*cm_to_m} {z*cm_to_m} {theta} {phi} {l} {energy} {time}\n") ## just for logging purposes (matches write_to_f2k.py TR line except z which is expected)
+                particle.losses.append(Loss(loss_type, energy, pos, l)) # this time using track length
+
+    else: ## not changing loss code for any particles other than muon (for now)
+        continuous_loss_sum  = 0
+        for loss in secondarys.stochastic_losses():
+            loss_energy = loss.energy * MeV_to_GeV
+            if loss.type==1000000008:
+                continuous_loss_sum += loss_energy
+            else:
+                pos = (
+                    np.array([loss.position.x, loss.position.y, loss.position.z]) * cm_to_m -
+                    coordinate_shift
                 )
-    #continuous_loss_sum = np.sum(secondarys.continuous_losses()) * MeV_to_GeV
-    total_dist = secondarys.track_propagated_distances()[-1] * cm_to_m
-    # TODO: Add this to config
-    cont_resolution = 1.
-    loss_dists = np.arange(0, total_dist, cont_resolution)
-    # TODO: Remove this really ugly fix
-    if len (loss_dists) == 0:
-        continuous_loss_sum = 1.* MeV_to_GeV
-        total_dist = 1.1
-        loss_dists = np.array([0., 1.])
-    e_loss = continuous_loss_sum / len(loss_dists)
-    for dist in loss_dists:
-        pos = dist * particle.direction + particle.position
-        particle.losses.append(Loss(1000000008, e_loss, pos))
+                # TODO more this to the serialization function. DTaSD
+                if np.linalg.norm(pos - detector_center) <= r_inice:
+                    particle.losses.append(
+                        Loss(loss.type, loss_energy, pos, 0) ## 0m  track length
+                    )
+        #continuous_loss_sum = np.sum(secondarys.continuous_losses()) * MeV_to_GeV
+        total_dist = secondarys.track_propagated_distances()[-1] * cm_to_m
+        # TODO: Add this to config
+        cont_resolution = 1.
+        loss_dists = np.arange(0, total_dist, cont_resolution)
+        # TODO: Remove this really ugly fix
+        if len (loss_dists) == 0:
+            continuous_loss_sum = 1.* MeV_to_GeV
+            total_dist = 1.1
+            loss_dists = np.array([0., 1.])
+        e_loss = continuous_loss_sum / len(loss_dists)
+        for dist in loss_dists:
+            pos = dist * particle.direction + particle.position
+            particle.losses.append(Loss(1000000008, e_loss, pos, 0)) ## 0 m track length
     for child in secondarys.decay_products():
         particle.children.append(
             particle_from_proposal(child, coordinate_shift, parent=particle)
