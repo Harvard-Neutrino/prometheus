@@ -328,6 +328,7 @@ def new_proposal_losses(
             ## quick fix for now. Reason for change of type is: 1000000008 is also used for electron and tau continous losses, and I'm not sure what those losses should be, but probably not amu... 
             if loss_type == 1000000008: 
                 loss_type=1000000018 ## 1000000018 is defined in translators as 'amu-'
+                energy = secondarys.track_energies()[i-1]*MeV_to_GeV # in case of muon track, energy should be energy of muon at start of track
 
             ### decay type (child decay particles handled later)
             if loss_type != 1000000011: 
