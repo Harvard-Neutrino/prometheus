@@ -303,68 +303,38 @@ def new_proposal_losses(
     propagation_length = np.linalg.norm(particle.position) + padding
     secondarys = prop.propagate(init_state, propagation_length * m_to_cm)
 
-    if particle.pdg_code == 13: ## TODO should find a way to remove this if statement and combine with non-amu loss types
-        for i in range(1, len(secondarys.track_types())):
-            time = secondarys.track_times()[i]
-            l=0
-            l = (secondarys.track_propagated_distances()[i] - secondarys.track_propagated_distances()[i-1])*cm_to_m # to m 
-            x = secondarys.track_positions()[i-1][0]
-            y = secondarys.track_positions()[i-1][1]
-            z = secondarys.track_positions()[i-1][2]
-            x_dir = secondarys.track_directions()[i-1][0] # prometheus not currently using (for logging purposes)
-            y_dir = secondarys.track_directions()[i-1][1] # prometheus not currently using (for logging purposes)
-            z_dir = secondarys.track_directions()[i-1][2] # prometheus not currently using (for logging purposes)
-            time = secondarys.track_times()[i-1] # prometheus not currently using (for logging purposes)
-            pos = (
-                np.array([x, y, z]) * cm_to_m -
-                coordinate_shift
-            )
-            energy = (secondarys.track_energies()[i-1] - secondarys.track_energies()[i])*MeV_to_GeV # to gev
-            theta = np.arctan2(np.sqrt(x_dir*x_dir + y_dir*y_dir), z_dir) # prometheus not currently using (for logging purposes)
-            phi = np.arctan2(y_dir, x_dir) # prometheus not currently using (for logging purposes)
-            loss_type = secondarys.track_types()[i].value
+    # fairly confident this is the correct thing to do
+    # here we iterate over the secondaries from PROPOSAL. If the secondary is a continuous track with loss_type == 1000000008 then we use amu-
+    # I think amu- works for continuous tracks for muons as well as electrons and taus (assuming beta=1). for info on light yield paramterization see: https://arxiv.org/pdf/1206.5530 , and f2k.cxx in PPC
+    for i in range(1, len(secondarys.track_types())):
+        time = secondarys.track_times()[i]
+        l=0
+        l = (secondarys.track_propagated_distances()[i] - secondarys.track_propagated_distances()[i-1])*cm_to_m # to m 
+        x = secondarys.track_positions()[i-1][0]
+        y = secondarys.track_positions()[i-1][1]
+        z = secondarys.track_positions()[i-1][2]
+        x_dir = secondarys.track_directions()[i-1][0] # prometheus not currently using (for logging purposes)
+        y_dir = secondarys.track_directions()[i-1][1] # prometheus not currently using (for logging purposes)
+        z_dir = secondarys.track_directions()[i-1][2] # prometheus not currently using (for logging purposes)
+        time = secondarys.track_times()[i-1] # prometheus not currently using (for logging purposes)
+        pos = (
+            np.array([x, y, z]) * cm_to_m -
+            coordinate_shift
+        )
+        energy = (secondarys.track_energies()[i-1] - secondarys.track_energies()[i])*MeV_to_GeV # to gev
+        theta = np.arctan2(np.sqrt(x_dir*x_dir + y_dir*y_dir), z_dir) # prometheus not currently using (for logging purposes)
+        phi = np.arctan2(y_dir, x_dir) # prometheus not currently using (for logging purposes)
+        loss_type = secondarys.track_types()[i].value
 
-            
-            ## quick fix for now. Reason for change of type is: 1000000008 is also used for electron and tau continous losses, and I'm not sure what those losses should be, but probably not amu... 
-            if loss_type == 1000000008: 
-                loss_type=1000000018 ## 1000000018 is defined in translators as 'amu-'
-                energy = secondarys.track_energies()[i-1]*MeV_to_GeV # in case of muon track, energy should be energy of muon at start of track
+        # fix energy of continuous track
+        if loss_type == 1000000008: 
+            energy = secondarys.track_energies()[i-1]*MeV_to_GeV # in case of continuous track, energy should be energy at start of track
 
-            ### decay type (child decay particles handled later)
-            if loss_type != 1000000011: 
-                logger.debug(f"New proposal f2k line: TR {0} {0} {loss_type} {x*cm_to_m} {y*cm_to_m} {z*cm_to_m} {theta} {phi} {l} {energy} {time}\n") ## just for logging purposes (matches write_to_f2k.py TR line except z which is expected)
-                particle.losses.append(Loss(loss_type, energy, pos, l)) # this time using track length
+        ### decay type (child decay particles handled later)
+        if loss_type != 1000000011: 
+            logger.debug(f"New proposal f2k line: TR {0} {0} {loss_type} {x*cm_to_m} {y*cm_to_m} {z*cm_to_m} {theta} {phi} {l} {energy} {time}\n") ## just for logging purposes (matches write_to_f2k.py TR line except z which is expected)
+            particle.losses.append(Loss(loss_type, energy, pos, l)) # this time using track length
 
-    else: ## not changing loss code for any particles other than muon (for now)
-        continuous_loss_sum  = 0
-        for loss in secondarys.stochastic_losses():
-            loss_energy = loss.energy * MeV_to_GeV
-            if loss.type==1000000008:
-                continuous_loss_sum += loss_energy
-            else:
-                pos = (
-                    np.array([loss.position.x, loss.position.y, loss.position.z]) * cm_to_m -
-                    coordinate_shift
-                )
-                # TODO more this to the serialization function. DTaSD
-                if np.linalg.norm(pos - detector_center) <= r_inice:
-                    particle.losses.append(
-                        Loss(loss.type, loss_energy, pos, 0) ## 0m  track length
-                    )
-        #continuous_loss_sum = np.sum(secondarys.continuous_losses()) * MeV_to_GeV
-        total_dist = secondarys.track_propagated_distances()[-1] * cm_to_m
-        # TODO: Add this to config
-        cont_resolution = 1.
-        loss_dists = np.arange(0, total_dist, cont_resolution)
-        # TODO: Remove this really ugly fix
-        if len (loss_dists) == 0:
-            continuous_loss_sum = 1.* MeV_to_GeV
-            total_dist = 1.1
-            loss_dists = np.array([0., 1.])
-        e_loss = continuous_loss_sum / len(loss_dists)
-        for dist in loss_dists:
-            pos = dist * particle.direction + particle.position
-            particle.losses.append(Loss(1000000008, e_loss, pos, 0)) ## 0 m track length
     for child in secondarys.decay_products():
         particle.children.append(
             particle_from_proposal(child, coordinate_shift, parent=particle)

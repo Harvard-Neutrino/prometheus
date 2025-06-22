@@ -67,13 +67,10 @@ int_type_to_str = {
     1000000005:"hadr",
     1000000006:"mupair",
     1000000007:"hadr",
-    # What do we do with this ???????
-    1000000008:"delta",
+
+    1000000008:"amu-", # needs to be amu- for continuous energy loss, see PPC f2k.cxx file
     -2000001006:"hadr",
     2212:"hadr",
-
-    ## muon track (manually added):
-    1000000018: "amu-" ### works for now....
 }
 
 str_to_int_type = {val:key for key, val in int_type_to_str.items()}
