@@ -2,47 +2,31 @@
 
 Welcome to Prometheus!
 
+<https://github.com/Harvard-Neutrino/prometheus>
+
 Authors:
+<!-- TODO: add IN icons? -->
+1. [Jeffrey Lazar](https://inspirehep.net/authors/1771794)
+2. [Stephan Meighen-Berger](https://inspirehep.net/authors/1828460)
+3. [Christian Haack](https://inspirehep.net/authors/1284379)
+4. [David Kim](https://github.com/david-kim2)
+5. [Santiago Giner](https://inspirehep.net/authors/2847732)
+6. [Carlos Argüelles Delgado](https://inspirehep.net/authors/1074902)
 
-1. Jeffrey Lazar
-2. Stephan Meighen-Berger
-3. Christian Haack
-4. David Kim
-5. Santiago Giner
-6. Carlos Argüelles Delgado
-
-
-## Table of contents
-
-1. [Introduction](#introduction)
-
-2. [Dependencies](#dependencies)
-
-3. [Installation](#installation)
-
-    3.1. [Installation from source](#source)
-
-    3.2. [Using Containers](#containers)
-
-4. [Citation](#citation)
-
-5. [Documentation](#documentation)
-
-
-## Introduction <a name="introduction"></a>
+## Introduction
 
 `Prometheus` is a `Python`-based package for simulating neutrino telescopes. Please see [2304.14526](http://arxiv.org/abs/2304.14526) for a detailed description of the package.
 
-## Dependencies <a name="dependencies"></a>
+## Dependencies
 
 `Prometheus` depends a few external packages, one can either install these manually or download images with the dependencies prebuilt.
 We provide details for providing either option here.
 
-## Installation <a name="installation"></a>
+## Installation
 
 To install all of `Prometheus`'s dependencies one has two options: either by downloading and compiling them from `PyPI`or source, or by downloading Docker or Singularity files.
 
-### Installation from source <a name="source"></a>
+### Installation from source
 
 First, we will discuss the packages which must be compiled from source.
 
@@ -66,7 +50,7 @@ After this, one can install all the Python dependencies by running the setup scr
 There have been some issues with installing `PROPOSAL` via pip.
 If this is encoutered, please see instructions for installing from source above.
 
-### Using Containers <a name="containers"></a>
+### Using Containers
 
 While you can install `Prometheus` manually using the raw code from here, one can also download docker or singularity image with all dependencies prebuilt from: [repo](https://drive.google.com/drive/folders/1-PbSiZQr0n85g9PrhbHMeURDOA02QUSY?usp=sharing).
 
@@ -86,7 +70,7 @@ Please note, that some systems still use older kernels not compatible with newer
 For GPU usage the repository offers a GPU docker image, which you will need to use to build an image yourself. Then you will also have to compile ppc (using e.g. make gpu in the PPC_CUDA folder) youself. Note that you may change the arch version in the makefile of PPC to do this, depending on your hardware.
 
 
-## Citation <a name="citation"></a>
+## Citation
 
 Please cite this [software](https://github.com/Harvard-Neutrino/prometheus) using
 ```
@@ -146,7 +130,7 @@ And please consider citing the packages that `Prometheus` uses internally, _i.e.
 }
 ```
 
-## Documentation <a name="documentation"></a>
+## Documentation
 
 API documentation can be found in `/documentation`
 
