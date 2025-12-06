@@ -1,6 +1,6 @@
 # Prometheus
 
-Welcome to Prometheus!
+Welcome to Prometheus, an open-source neutrino telescope simulation.
 
 <https://github.com/Harvard-Neutrino/prometheus>
 
@@ -15,27 +15,37 @@ Authors:
 
 ## Introduction
 
-`Prometheus` is a `Python`-based package for simulating neutrino telescopes. Please see [2304.14526](http://arxiv.org/abs/2304.14526) for a detailed description of the package.
+Prometheus is a Python-based package for simulating neutrino telescopes. Please see [the paper 2304.14526](http://arxiv.org/abs/2304.14526) for a detailed description of the package.
 
-## Dependencies
+## Contributions
 
-`Prometheus` depends a few external packages, one can either install these manually or download images with the dependencies prebuilt.
-We provide details for providing either option here.
+Prometheus is open-source. You are free to copy, modify, and distribute it with attribution under the terms of the GNU Lesser General Public License. See the LICENSE file for details.
+
+## Getting Started
+
+To work with Prometheus, you will need:
+
+- Python <!-- which version? -->
+<!-- TODO: add Docker and anything else needed -->
 
 ## Installation
 
-To install all of `Prometheus`'s dependencies one has two options: either by downloading and compiling them from `PyPI`or source, or by downloading Docker or Singularity files.
+To install all of the Prometheus's dependencies, you have two options:
 
-### Installation from source
+- download and compile them from `PyPI` or source,
+- download Docker or Singularity files.
 
-First, we will discuss the packages which must be compiled from source.
+### Install from PyPI
 
-First, we must install `LeptonInjector` which will be used to select neutrino interaction quantities.
-The source code for this as well as installation instructions can be found [here](https://github.com/icecube/LeptonInjector).
+#### Prerequisites
 
-Next, one may optionally install `PROPOSAL`, which is used to propagate the charged leptons that result from neutrino interactions.
-We say this is optional since it can also be installed using the setup script later.
-We only mention compiling it from source here because there have occasionally been issues with using `pip` for some operating systems.
+1. [LeptonInjector](https://github.com/icecube/LeptonInjector): used to select neutrino interaction quantities. The source code for it, as well as installation guide can be found in the [project repo](https://github.com/icecube/LeptonInjector?tab=readme-ov-file#download-compilation-and-installation).
+
+2. (optional) `PROPOSAL` <!-- Link -->: used to propagate the charged leptons that result from neutrino interactions. There have occasionally been issues with using `pip` for some operating systems, so you can optionally compile it at this stage, or install it later using the setup script. <!-- Link -->
+
+3. (for ice-based detectors simulation only) [Photon propagation code](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables) - d
+
+<!-- STOPPED HERE -->
 
 Next, if one wishes to simulate ice-based detectors, it is necessary to compile the photon propagation code.
 The source code for this can be found in `/resources/PPC_executables/`.
@@ -132,6 +142,6 @@ And please consider citing the packages that `Prometheus` uses internally, _i.e.
 
 ## Documentation
 
-API documentation can be found in `/documentation`
+API documentation can be found in `/docs`
 
 <!-- ## Installation <a name="installation"></a> -->
