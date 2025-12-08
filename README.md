@@ -5,7 +5,7 @@ Welcome to Prometheus, an open-source neutrino telescope simulation.
 <https://github.com/Harvard-Neutrino/prometheus>
 
 Authors:
-<!-- TODO: add IN icons? -->
+<!-- TODO: add IN icons or format this nicer -->
 1. [Jeffrey Lazar](https://inspirehep.net/authors/1771794)
 2. [Stephan Meighen-Berger](https://inspirehep.net/authors/1828460)
 3. [Christian Haack](https://inspirehep.net/authors/1284379)
@@ -25,8 +25,11 @@ Prometheus is open-source. You are free to copy, modify, and distribute it with 
 
 To work with Prometheus, you will need:
 
-- Python <!-- which version? -->
-<!-- TODO: add Docker and anything else needed -->
+- Python 3.11 or higher <!-- is this correct? -->
+- pip
+<!-- TODO: complete list -->
+
+Other prerequisits depend on how you choose to install the package. More details are available in [Installation](#installation) section below.
 
 ## Installation
 
@@ -37,55 +40,89 @@ To install all of the Prometheus's dependencies, you have two options:
 
 ### Install from source
 
+If you have Python and pip installed, this would be the easiest way to get you going.
+
 #### Prerequisites
 
-1. [LeptonInjector](https://github.com/icecube/LeptonInjector) - used to select neutrino interaction quantities. The source code for it, as well as installation guide can be found in the [project repo](https://github.com/icecube/LeptonInjector?tab=readme-ov-file#download-compilation-and-installation).
+Before installing dependencies and using Prometheus, you will need to install/compile those libraries first:
 
-<!-- What is this step about? Install it using pip before running a setup script, or install it with alternative methods if pip doesn't work? -->
-2. (optional) [PROPOSAL](https://github.com/tudo-astroparticlephysics/PROPOSAL) - used to propagate the charged leptons that result from neutrino interactions. PROPOSAL installation is included in the setup script<!-- Link to setup script -->, but people have reported issues with it in some operation systems. Therefore you can preemptively compile it at this stage either using `pip` or alternative methods, outlined in PROPOSAL's [advanced installation guide](https://github.com/tudo-astroparticlephysics/PROPOSAL/blob/master/INSTALL.md).
+1.[LeptonInjector](https://github.com/icecube/LeptonInjector) - used to select neutrino interaction quantities. The source code for it, as well as installation guide can be found in the [project repo](https://github.com/icecube/LeptonInjector?tab=readme-ov-file#download-compilation-and-installation).
 
-3. (optional) [Photon propagation code (PPC)](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables) - use it for ice-based detectors simulation. There are 2 versions available:
+<!-- TODO: What is this step about? Install it using pip before running a setup script, or install it with alternative methods if pip doesn't work? -->
+2.(optional) [PROPOSAL](https://github.com/tudo-astroparticlephysics/PROPOSAL) - used to propagate the charged leptons that result from neutrino interactions. PROPOSAL installation is included in the setup script<!-- TODO: Link to setup script -->, but people have reported issues with it in some operation systems. Therefore you can preemptively compile it at this stage either using `pip` or alternative methods, outlined in PROPOSAL's [advanced installation guide](https://github.com/tudo-astroparticlephysics/PROPOSAL/blob/master/INSTALL.md).
+
+3.(optional) [Photon propagation code (PPC)](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables) - use it for ice-based detectors simulation. There are 2 versions available:
     - regular version, runs on a CPU ([compilation instructions](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables/PPC))
     - CUDA code version, runs on a GPU ([compilation instructions](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables/PPC_CUDA)).
 
     Both of these use a modified version of the official [PPC code](https://github.com/icecube/ppc).
 
-4. (optional) [LeptonWeighter](https://github.com/icecube/LeptonWeighter) - use it if you need to do event weighting. The source code and instructions on how to compile it can be found in the [project repo](https://github.com/icecube/LeptonWeighter?tab=readme-ov-file#installation).
+4.(optional) [LeptonWeighter](https://github.com/icecube/LeptonWeighter) - use it if you need to do event weighting. The source code and instructions on how to compile it can be found in the [project repo](https://github.com/icecube/LeptonWeighter?tab=readme-ov-file#installation).
 
 #### Compilation
 
 After installing all of the prerequisites, install Python dependencies by running the setup script in your base directory:
 
 ```sh
-python setup.py install
+  python setup.py install
 ```
 
 If you are having issues installing PROPOSAL with `pip`, see PROPOSAL's [advanced installation guide](https://github.com/tudo-astroparticlephysics/PROPOSAL/blob/master/INSTALL.md) for alternative options.
 
-### Using Containers
+### Install with Containers
 
-While you can install `Prometheus` manually using the raw code from here, one can also download docker or singularity image with all dependencies prebuilt from: [repo](https://drive.google.com/drive/folders/1-PbSiZQr0n85g9PrhbHMeURDOA02QUSY?usp=sharing).
+If installing from source doesn't work for you, feel free to download a Docker or Singularity image with all dependencies already prebuilt from [this public Google drive folder](https://drive.google.com/drive/folders/1-PbSiZQr0n85g9PrhbHMeURDOA02QUSY?usp=sharing).
 
-Then load the docker image. In the container you will find prometheus under /home/myuser/prometheus . Note you may need to run bash + source /opt/.bashrc before using prometheus.
+#### Using Docker
 
-We also offer a singularity image should you need it in the same [repo](https://drive.google.com/drive/folders/1-PbSiZQr0n85g9PrhbHMeURDOA02QUSY?usp=sharing), which may be useful for running simulations on a cluster.
-This are currently in beta and require some setup:
+If you don't know what Docker is, or don't have it installed, instructions in [dockerdocs](https://docs.docker.com/desktop/) can help you get started.
 
-1. Download the latest .sif file (currently v1.0.2)
-2. run ``` singularity shell name_of_file.sif ```
-3. enter the /opt folder ```cd /opt ```
-4. source the bash file ``` source .bashrc ```
-5. clone prometheus from the repository to a folder of your choice. The setup should now be done
+After downloading the `prometheus_v_1_0_2.tar.gz` file from Google drive folder, navigate to the directory where your file is located in your terminal and run this command to [load the image](https://docs.docker.com/reference/cli/docker/image/load/):
 
-Please note, that some systems still use older kernels not compatible with newer boost versions. In such a case use the containers with the "old" keyword.
+```sh
+  docker load < prometheus_v_1_0_2.tar.gz
+```
 
-For GPU usage the repository offers a GPU docker image, which you will need to use to build an image yourself. Then you will also have to compile ppc (using e.g. make gpu in the PPC_CUDA folder) youself. Note that you may change the arch version in the makefile of PPC to do this, depending on your hardware.
+In the container you will find Prometheus under `/home/myuser/prometheus`.
+<!-- TODO: The container doesn't run on mac M1+ (passing --platform doesn't help) - it needs better instructions + how to run the image, how to actually use the thing. -->
 
+Note that you may need to run bash + `source /opt/.bashrc` before using Prometheus.
+<!-- TODO: What does it mean to run bash - launch a CLI? In what case is this needed? -->
+
+#### Using Singularity
+
+If you don't know what Singularity is, or don't have it installed, [Singularity docs](https://docs.sylabs.io/guides/3.5/user-guide/introduction.html) can help you get started.
+
+Using Singularity is helpful for performing simulations on a cluster. It's a beta version setup which requires some extra steps to run:
+
+1.Download the latest version `.sif` file (currently v1.0.2)
+
+2.In your terminal, run these commands:
+<!-- TODO: would be nice to explain what the steps do -->
+```sh
+# enter singularity shell
+singularity shell <file_name>.sif
+# navigate into the /opt directory
+cd /opt
+# source the bash file
+source .bashrc
+```
+<!-- TODO: Clone as in from git repo? -->
+3.Clone prometheus from the repository to a folder of your choice.
+
+<!-- TODO: How to verify the setup worked? -->
+Please note, that some systems still use older kernels not compatible with newer boost versions. If that's your case, you can download the `.sif` files with the "old" keyword in them: `prometheus_old_<version>.sif`.
+
+#### Using GPU
+<!-- TODO: unedited, need to clarify what this means and  where this docker image is -->
+
+For the GPU usage the repository offers a GPU docker image, which you will need to use to build an image yourself. Then you will also have to compile PPC (using e.g. make gpu in the PPC_CUDA folder) youself. Note that you may change the arch version in the makefile of PPC to do this, depending on your hardware.
 
 ## Citation
 
-Please cite this [software](https://github.com/Harvard-Neutrino/prometheus) using
-```
+Please cite this software like so:
+
+```bibtex
 @article{Lazar:2023rol,
     author = {Lazar, Jeffrey and Meighen-Berger, Stephan and Haack, Christian and Kim, David and Giner, Santiago and Arg\"uelles, Carlos A.},
     title = "{Prometheus: An Open-Source Neutrino Telescope Simulation}",
@@ -97,9 +134,9 @@ Please cite this [software](https://github.com/Harvard-Neutrino/prometheus) usin
 }
 ```
 
-And please consider citing the packages that `Prometheus` uses internally, _i.e._ `LeptonInjector`, `PROPOSAL`, `PPC`, and `LeptonWeighter` with the following citations.
+Also, please consider citing the packages that `Prometheus` uses internally: `LeptonInjector`, `PROPOSAL`, `PPC`, and `LeptonWeighter` with the following citations:
 
-```
+```bibtex
 @article{IceCube:2020tcq,
     author = "Abbasi, R. and others",
     collaboration = "IceCube",
@@ -143,7 +180,6 @@ And please consider citing the packages that `Prometheus` uses internally, _i.e.
 ```
 
 ## Documentation
+<!-- TODO: remove this when the doc site is up -->
 
-API documentation can be found in `/docs`
-
-<!-- ## Installation <a name="installation"></a> -->
+Detailed API documentation on Prometheus' modules and classes is available in the [/docs directory](https://github.com/Harvard-Neutrino/prometheus/tree/main/docs/prometheus).
