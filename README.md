@@ -32,33 +32,35 @@ To work with Prometheus, you will need:
 
 To install all of the Prometheus's dependencies, you have two options:
 
-- download and compile them from `PyPI` or source,
-- download Docker or Singularity files.
+- download and compile them from source/`PyPI`,
+- install using Docker or Singularity files.
 
-### Install from PyPI
+### Install from source
 
 #### Prerequisites
 
-1. [LeptonInjector](https://github.com/icecube/LeptonInjector): used to select neutrino interaction quantities. The source code for it, as well as installation guide can be found in the [project repo](https://github.com/icecube/LeptonInjector?tab=readme-ov-file#download-compilation-and-installation).
+1. [LeptonInjector](https://github.com/icecube/LeptonInjector) - used to select neutrino interaction quantities. The source code for it, as well as installation guide can be found in the [project repo](https://github.com/icecube/LeptonInjector?tab=readme-ov-file#download-compilation-and-installation).
 
-2. (optional) `PROPOSAL` <!-- Link -->: used to propagate the charged leptons that result from neutrino interactions. There have occasionally been issues with using `pip` for some operating systems, so you can optionally compile it at this stage, or install it later using the setup script. <!-- Link -->
+<!-- What is this step about? Install it using pip before running a setup script, or install it with alternative methods if pip doesn't work? -->
+2. (optional) [PROPOSAL](https://github.com/tudo-astroparticlephysics/PROPOSAL) - used to propagate the charged leptons that result from neutrino interactions. PROPOSAL installation is included in the setup script<!-- Link to setup script -->, but people have reported issues with it in some operation systems. Therefore you can preemptively compile it at this stage either using `pip` or alternative methods, outlined in PROPOSAL's [advanced installation guide](https://github.com/tudo-astroparticlephysics/PROPOSAL/blob/master/INSTALL.md).
 
-3. (for ice-based detectors simulation only) [Photon propagation code](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables) - d
+3. (optional) [Photon propagation code (PPC)](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables) - use it for ice-based detectors simulation. There are 2 versions available:
+    - regular version, runs on a CPU ([compilation instructions](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables/PPC))
+    - CUDA code version, runs on a GPU ([compilation instructions](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables/PPC_CUDA)).
 
-<!-- STOPPED HERE -->
+    Both of these use a modified version of the official [PPC code](https://github.com/icecube/ppc).
 
-Next, if one wishes to simulate ice-based detectors, it is necessary to compile the photon propagation code.
-The source code for this can be found in `/resources/PPC_executables/`.
-We provide two directories here, one containing code suitable for running on a CPU and one containing CUDA code that can run on a GPU.
-Details on compiling them can be found in those directories.
-These use a modified version of the official PPC code found [here](https://github.com/icecube/ppc).
+4. (optional) [LeptonWeighter](https://github.com/icecube/LeptonWeighter) - use it if you need to do event weighting. The source code and instructions on how to compile it can be found in the [project repo](https://github.com/icecube/LeptonWeighter?tab=readme-ov-file#installation).
 
-Lastly, if one wishes to do event weighting, one must compile `LeptonWeighter`.
-The source code and instructions on how to compile it can be found [here](https://github.com/icecube/LeptonWeighter).
+#### Compilation
 
-After this, one can install all the Python dependencies by running the setup script found in the base directory of the repo, _i.e._ by running `python setup.py install` from the base directory.
-There have been some issues with installing `PROPOSAL` via pip.
-If this is encoutered, please see instructions for installing from source above.
+After installing all of the prerequisites, install Python dependencies by running the setup script in your base directory:
+
+```sh
+python setup.py install
+```
+
+If you are having issues installing PROPOSAL with `pip`, see PROPOSAL's [advanced installation guide](https://github.com/tudo-astroparticlephysics/PROPOSAL/blob/master/INSTALL.md) for alternative options.
 
 ### Using Containers
 
