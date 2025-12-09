@@ -29,7 +29,7 @@ To work with Prometheus, you will need:
 - [pip](https://pip.pypa.io/en/stable/installation/) for Python package management
 <!-- TODO: complete list -->
 
-Additional prerequisites depend on your installation method and are detailed in the[Installation](#installation) section below.
+Additional prerequisites depend on your installation method and are detailed in the [Installation](#installation) section below.
 
 ## Installation
 
