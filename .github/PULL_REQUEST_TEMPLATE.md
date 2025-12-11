@@ -1,10 +1,10 @@
 # Pull Request Template
 
-## Changes
+## What changed
 
 <!-- What changes were made? Include links and screenshots as necessary -->
 
-## Motivation
+## Why
 
 <!-- Explain why these documentation changes are necessary. -->
 
