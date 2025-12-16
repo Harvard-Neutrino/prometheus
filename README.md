@@ -148,7 +148,7 @@ singularity shell <FILENAME>.sif
 
 Replace `<FILENAME>` with the actual name of your downloaded `.sif` file.
 
-#### Run the software in the container
+#### Source the Environment File
 
 > [!TIP]
 > The remaining setup steps and running the software should all be done within your container shell.
@@ -165,19 +165,21 @@ Once this is done, still in your container shell, navigate into the Prometheus d
 cd /home/myuser/prometheus
 ```
 
-After that, you should be able to start running simulation scripts:
+After that, you should be able to start running simulation scripts.
+
+## Running Simulations
+
+The [examples directory](https://github.com/Harvard-Neutrino/prometheus/tree/ana/update-readme/examples) contains example scripts for running simulations.
+
+As a first-time user, you will need `example_ppc.py` for ice-based simulations and `example_olympus.py` for water-based ones. Other scripts cover more specific use case scenarios.
+
+To execute a script, run:
 
 ```sh
 python <SCRIPT_NAME>.py
 ```
 
 Replace `<SCRIPT_NAME>` with the name of your simulation script.
-
-## Running simulations
-
-The [examples directory](https://github.com/Harvard-Neutrino/prometheus/tree/ana/update-readme/examples) contains example scripts for running simulations.
-
-As a first-time user, you will need `example_ppc.py` for ice-based simulations and `example_olympus.py` for water-based ones. Other scripts cover more specific use case scenarios.
 
 To learn more about how Prometheus scripts work, refer to the API documentation in the [docs directory](https://github.com/Harvard-Neutrino/prometheus/tree/main/docs/prometheus).
 
@@ -261,7 +263,7 @@ Please also consider citing the packages that Prometheus uses internally: Lepton
 
 </details>
 
-## Documentation
+## API Documentation
 
 Detailed API documentation on Prometheus' modules and classes is available in the [docs directory](https://github.com/Harvard-Neutrino/prometheus/tree/main/docs/prometheus).
 
