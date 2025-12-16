@@ -30,7 +30,7 @@ Prometheus is open-source. You are free to copy, modify, and distribute it with 
 To work with Prometheus, you will need:
 
 - [Python](https://realpython.com/installing-python/) 3.11 or higher
-- [pip](https://pip.pypa.io/en/stable/installation/) for Python package management
+- [pip](https://pip.pypa.io/en/stable/installation/) for Python package management. It usually comes with installing Python, so you should already have it.
 
 Additional prerequisites depend on your installation method and are detailed in the [Installation](#installation) section below.
 
@@ -57,9 +57,9 @@ To work with Prometheus, you need to install the following packages:
 
 1. **[LeptonInjector](https://github.com/icecube/LeptonInjector)** - Required for selecting neutrino interaction quantities. Installation instructions are available in the [project repository](https://github.com/icecube/LeptonInjector?tab=readme-ov-file#download-compilation-and-installation).
 
-2. **[PROPOSAL](https://github.com/tudo-astroparticlephysics/PROPOSAL)** (optional) - Used to propagate charged leptons resulting from neutrino interactions. PROPOSAL installation is included in the Prometheus setup script, but some users reported issues on certain operating systems. If needed, you can install it separately, following its [installation guide](https://github.com/tudo-astroparticlephysics/PROPOSAL/blob/master/INSTALL.md).
+2. **[PROPOSAL](https://github.com/tudo-astroparticlephysics/PROPOSAL)** - Used to propagate charged leptons resulting from neutrino interactions. PROPOSAL installation is included in the Prometheus setup script, but some users reported issues on certain operating systems. If needed, you can install it separately, following its [installation guide](https://github.com/tudo-astroparticlephysics/PROPOSAL/blob/master/INSTALL.md).
 
-3. **[Photon Propagation Code (PPC)](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables)** (optional) - Required for ice-based detector simulations. Two versions are available:
+3. **[Photon Propagation Code (PPC)](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables)** - Required for ice-based detector simulations. Two versions are available:
     - CPU version ([compilation instructions](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables/PPC))
     - GPU/CUDA version ([compilation instructions](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables/PPC_CUDA)).
 
@@ -75,7 +75,7 @@ To work with Prometheus, you need to install the following packages:
 After installing the prerequisites, run the setup script from the Prometheus base directory:
 
 ```sh
-python setup.py install
+python3 python -m pip setup.py install
 ```
 
 This will install all remaining dependencies needed to run simulations.
@@ -176,7 +176,7 @@ As a first-time user, you will need `example_ppc.py` for ice-based simulations a
 To execute a script, run:
 
 ```sh
-python <SCRIPT_NAME>.py
+python3 python -m pip <SCRIPT_NAME>.py
 ```
 
 Replace `<SCRIPT_NAME>` with the name of your simulation script.
