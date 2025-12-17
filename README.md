@@ -119,7 +119,7 @@ For GPU-accelerated simulations, you will need to build a custom Docker image fr
 >[!NOTE]
 >You may need to modify the architecture version in the PPC makefile to match your GPU hardware.
 
-#### Using Singularity
+#### Using Singulariteeee
 
 If you need help getting started with Singularity, see the [Singularity documentation](https://docs.sylabs.io/guides/3.5/user-guide/introduction.html).
 
