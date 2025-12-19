@@ -59,11 +59,11 @@ To work with Prometheus, you need to install the following packages:
 
 2. **[PROPOSAL](https://github.com/tudo-astroparticlephysics/PROPOSAL)** - Used to propagate charged leptons resulting from neutrino interactions. PROPOSAL installation is included in the Prometheus setup script, but some users reported issues on certain operating systems. If needed, you can install it separately, following its [installation guide](https://github.com/tudo-astroparticlephysics/PROPOSAL/blob/master/INSTALL.md).
 
-3. **[Photon Propagation Code (PPC)](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables)** - Required for ice-based detector simulations. Two versions are available:
-    - CPU version ([compilation instructions](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables/PPC))
-    - GPU/CUDA version ([compilation instructions](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables/PPC_CUDA)).
+3. **[Photon Propagation Code (ppc)](/resources/PPC_executables/README.md)** - Required for ice-based detector simulations. Two versions are available:
+    - [CPU version](/resources/PPC_executables/PPC/)
+    - [GPU/CUDA version](/resources/PPC_executables/PPC_CUDA).
 
-    Both of these use a modified version of the official [PPC code](https://github.com/icecube/ppc).
+    Both of these use a modified version of the official [ppc code](https://github.com/icecube/ppc). Prometheus-specific compilation instructions are available in the [ppc executables README](/resources/PPC_executables/README.md).
 
 4. **[LeptonWeighter](https://github.com/icecube/LeptonWeighter)** (optional) - Required for event weighting. Installation instructions are available in the [project repository](https://github.com/icecube/LeptonWeighter?tab=readme-ov-file#installation).
 
@@ -114,10 +114,10 @@ For more container running options, refer to the [Docker containers documentatio
 
 #### GPU Support with Docker
 
-For GPU-accelerated simulations, you will need to build a custom Docker image from the GPU Dockerfile [provided in the repository](https://github.com/Harvard-Neutrino/prometheus/tree/main/container). After building and starting the image, compile PPC with GPU support by running `make gpu` in the [PPC_CUDA](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables/PPC_CUDA) directory within the container.
+For GPU-accelerated simulations, you will need to build a custom Docker image from the GPU Dockerfile [provided in the repository](https://github.com/Harvard-Neutrino/prometheus/tree/main/container). After building and starting the image, compile ppc with GPU support by running `make gpu` in the [PPC_CUDA](https://github.com/Harvard-Neutrino/prometheus/tree/main/resources/PPC_executables/PPC_CUDA) directory within the container.
 
 >[!NOTE]
->You may need to modify the architecture version in the PPC makefile to match your GPU hardware.
+>You may need to modify the architecture version in the ppc makefile to match your GPU hardware.
 
 #### Using Singularity
 
@@ -199,7 +199,7 @@ Please cite Prometheus using this entry:
 }
 ```
 
-Please also consider citing the packages that Prometheus uses internally: LeptonInjector, PROPOSAL, PPC, and LeptonWeighter with the following citations:
+Please also consider citing the packages that Prometheus uses internally: LeptonInjector, PROPOSAL, ppc, and LeptonWeighter with the following citations:
 
 <details>
   <summary>LeptonInjector and LeptonWeighter</summary>
@@ -246,7 +246,7 @@ Please also consider citing the packages that Prometheus uses internally: Lepton
 </details>
 
 <details>
-  <summary>PPC</summary>
+  <summary>ppc</summary>
 
   ```bibtex
   @misc{chirkin2022kpl,
