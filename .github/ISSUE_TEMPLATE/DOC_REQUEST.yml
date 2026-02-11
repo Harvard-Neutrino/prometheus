@@ -1,17 +1,16 @@
-name: Enhancement or feature request
-description: Tell us what we can improve.
-title: "[Enhancement]: "
-labels: ["feature request", "enhancement"]
+name: Documentation requests
+description: Tell us what is missing from our docs.
+title: "[Docs]: "
+labels: ["documentation"]
 projects: ["prometheus"]
 assignees:
-  - MeighenBergerS
-  - jlazar17
-type: enhancement
+  - chivoi
+type: documentation
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to share your idea with us!
+        Thanks for taking the time to help improve our docs!
   - type: input
     id: contact
     attributes:
@@ -23,15 +22,15 @@ body:
   - type: textarea
     id: what
     attributes:
-      label: What enhancement or feature would you like to see in Prometheus?
-      description: A concise description of the enhancement.
+      label: What is missing from the docs?
+      description: A concise description of the information or process you would like described.
     validations:
       required: true
   - type: textarea
     id: why
     attributes:
       label: Why?
-      description: Why do you think this is necessary and how can it help?
+      description: Why do you think this change is necessary?
     validations:
       required: true
   - type: textarea
