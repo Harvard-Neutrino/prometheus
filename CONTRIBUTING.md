@@ -2,13 +2,11 @@
 
 Welcome and thank you for investing your time in contributing to Prometheus!
 
-## Report a bug
+## Issues
 
-Create an issue, label it as bug.
+Bug reports, feature requests or questions.
 
-## Feature requests
-
-Create an issue, label it as enhancement. Give as much info as possible.
+Go to issues and use the template that best suits what you want to tell us.
 
 ## Code changes
 
