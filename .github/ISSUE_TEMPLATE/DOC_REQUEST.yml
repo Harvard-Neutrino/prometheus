@@ -2,7 +2,7 @@ name: Documentation requests
 description: Tell us what is missing from our docs.
 title: "[Docs]: "
 labels: ["documentation"]
-projects: ["prometheus"]
+projects: ["Harvard-Neutrino/prometheus"]
 assignees:
   - chivoi
 type: documentation
@@ -10,7 +10,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to help improve our docs!
+        Thanks for taking the time to help us improve our docs!
   - type: input
     id: contact
     attributes:
@@ -23,7 +23,7 @@ body:
     id: what
     attributes:
       label: What is missing from the docs?
-      description: A concise description of the information or process you would like described.
+      description: A concise description of the change you would like to suggest.
     validations:
       required: true
   - type: textarea

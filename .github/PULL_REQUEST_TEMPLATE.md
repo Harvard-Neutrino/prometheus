@@ -2,19 +2,19 @@
 
 ## What changed
 
-<!-- What changes were made? Include links and screenshots as necessary -->
+<!-- What changes were made? Include links and screenshots as necessary. -->
 
 ## Why
 
-<!-- Explain why these documentation changes are necessary. -->
+<!-- Explain why these changes are necessary. -->
 
 ## Related Issues
 
-<!-- Mention any Issues this PR is related to -->
+<!-- Mention any Issues this PR is related to. -->
 
 ## Areas Affected
 
-<!-- List the sections or pages of the documentation that are updated. -->
+<!-- List the features or documentation sections that are being updated. -->
 
 ## Checklist
 
