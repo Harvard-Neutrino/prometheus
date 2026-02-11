@@ -1,0 +1,48 @@
+name: Enhancement or feature request
+description: Tell us what we can improve.
+title: "[Enhancement]: "
+labels: ["feature request", "enhancement"]
+projects: ["prometheus"]
+assignees:
+  - MeighenBergerS
+  - jlazar17
+type: enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to share your idea with us!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What enhancement or feature would you like to see in Prometheus?
+      description: A concise description of the enhancement.
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Why?
+      description: Why do you think this is necessary and how can it help?
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else?
+      description: |
+        Links? References? Anything that will give us more context about your suggestion.
+
+        Tip: You can attach images or files by clicking this area to highlight it and then dragging files in.
+    validations:
+      required: false
+
+    
