@@ -1,0 +1,38 @@
+name: Documentation requests
+description: Tell us what is missing from our docs
+title: "[Docs]: "
+labels: ["documentation"]
+projects: ["Harvard-Neutrino/prometheus"]
+assignees:
+  - chivoi
+body:
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      placeholder: ex. email@example.com
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: Suggested change
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Reasoning
+      description: Why is this change necessary?
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else?
+      description: |
+        Anything that will give us more context about your suggestion: links, references, etc.
+    validations:
+      required: false
+
+    
