@@ -1,28 +1,37 @@
 name: Bug Report
-description: File a bug report
+description: File a bug report.
 title: "[Bug]: "
 labels: ["bug"]
 projects: ["Harvard-Neutrino/prometheus"]
+assignees:
+  - MeighenBergerS
+  - jlazar17
+type: bug
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
   - type: input
     id: contact
     attributes:
       label: Contact Details
+      description: How can we get in touch with you if we need more info?
       placeholder: ex. email@example.com
     validations:
       required: true
   - type: textarea
-    id: current-behavior
+    id: current-behaviour
     attributes:
-      label: Current behavior
-      description: What happened?
+      label: What happened?
+      description: A concise description of what you're experiencing.
     validations:
       required: true
   - type: textarea
-    id: expected-behavior
+    id: expected-behaviour
     attributes:
-      label: Expected behavior
-      description: What did you expect to happen?
+      label: What did you expect to happen?
+      description: A concise description of what you expected to happen.
     validations:
       required: true
   - type: textarea
@@ -50,7 +59,9 @@ body:
     attributes:
       label: Anything else?
       description: |
-        Anything that will give us more context about the issue: links, references, files, etc.
+        Links? References? Anything that will give us more context about the issue.
+
+        Tip: You can attach images or files by clicking this area to highlight it and then dragging files in.
     validations:
       required: false
 
