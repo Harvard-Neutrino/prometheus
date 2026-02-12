@@ -1,4 +1,4 @@
-name: Documentation requests
+name: Documentation request
 description: Tell us what is missing from our docs
 title: "[Docs]: "
 labels: ["documentation"]
@@ -9,7 +9,7 @@ body:
   - type: input
     id: contact
     attributes:
-      label: Contact Details
+      label: Contact details
       placeholder: ex. email@example.com
     validations:
       required: true
