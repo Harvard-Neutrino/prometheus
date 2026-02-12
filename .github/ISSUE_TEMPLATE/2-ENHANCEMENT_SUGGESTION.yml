@@ -1,0 +1,36 @@
+name: Enhancement suggestion
+description: Tell us how we can improve the project
+title: "[Enhancement]: "
+labels: ["enhancement"]
+projects: ["Harvard-Neutrino/prometheus"]
+body:
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      placeholder: ex. email@example.com
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: Suggested change
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Reasoning
+      description: Why is this change necessary?
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else?
+      description: |
+        Anything that will give us more context about your suggestion: links, references, etc.
+    validations:
+      required: false
+
+    
