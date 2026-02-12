@@ -1,0 +1,25 @@
+name: Question
+description: Ask us a non-urgent question, and we'll get to it as soon as we can.
+title: "[Question]: "
+labels: ["question"]
+projects: ["Harvard-Neutrino/prometheus"]
+assignees:
+  - MeighenBergerS
+  - jlazar17
+type: question
+body:
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: How can we help?
+      description: Please include as much detail as possible, such as links, references, config details, anything else that is relevant.
+    validations:
+      required: true
