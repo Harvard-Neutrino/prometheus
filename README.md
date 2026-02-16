@@ -269,6 +269,8 @@ Detailed API documentation on Prometheus' modules and classes is available in th
 
 ## Getting Help
 
-If you encounter any issues with installation, setup, or bugs in this software, feel free to open a GitHub issue and we will address it as soon as we can.
+If you encounter any installation or setup issues, feel free to create a discussion in the [Discussions section](https://github.com/Harvard-Neutrino/prometheus/discussions) and we will address it as soon as we can.
 
-If you are completely blocked and we cannot get to your issue in time, or if you have questions or suggestions about the software, please feel free to contact the authors using the email addresses listed on Inspire-HEP.
+If you found a bug in this software or want to suggest a change, feel free to [open an issue](https://github.com/Harvard-Neutrino/prometheus/issues/new/choose).
+
+If you are completely blocked and we cannot get to your issue in time, please feel free to contact the authors using the email addresses listed on Inspire-HEP.
