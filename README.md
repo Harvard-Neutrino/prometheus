@@ -275,8 +275,8 @@ Read our [contribution guidelines](./CONTRIBUTING.md#issues) to learn more about
 
 ## Getting Help
 
-If you encounter any installation or setup issues, feel free to create a discussion in the [Discussions section](https://github.com/Harvard-Neutrino/prometheus/discussions) and we will address it as soon as we can.
+If you encounter any installation or setup issues, feel free to create [a discussion](https://github.com/Harvard-Neutrino/prometheus/discussions) and we will address it as soon as we can.
 
-If you found a bug in this software or want to suggest a change, feel free to [open an issue](https://github.com/Harvard-Neutrino/prometheus/issues/new/choose). More information on opening issues is available in our [contribution guidelines](./CONTRIBUTING.md#).
+If you found a bug in this software or want to suggest a change, feel free to [open an issue](https://github.com/Harvard-Neutrino/prometheus/issues/new/choose).
 
-If you are completely blocked and we cannot get to your issue in time, please feel free to contact the authors using the email addresses listed on Inspire-HEP.
+More information on opening issues and getting help is available in our [contribution guidelines](./CONTRIBUTING.md#).
