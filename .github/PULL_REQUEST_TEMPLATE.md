@@ -1,4 +1,4 @@
-# Pull Request Template
+# Describe your changes
 
 ## What changed
 
