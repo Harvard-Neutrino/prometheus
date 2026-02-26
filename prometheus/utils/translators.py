@@ -67,8 +67,8 @@ int_type_to_str = {
     1000000005:"hadr",
     1000000006:"mupair",
     1000000007:"hadr",
-    # What do we do with this ???????
-    1000000008:"delta",
+
+    1000000008:"amu-", # needs to be amu- for continuous energy loss, see PPC f2k.cxx file
     -2000001006:"hadr",
     2212:"hadr",
 }

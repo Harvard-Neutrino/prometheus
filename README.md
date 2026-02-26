@@ -1,4 +1,17 @@
-# Prometheus
+# Prometheus amu branch
+
+This fork/branch updates the interface to change the continuous loss type of muons from a series of stochastic delta emissions to the existing amu- case in PPC. The amu- case in PPC was designed for secondaries below an Ecut of 0.5 GeV, in addition to handling Cherenkov emission from the muon. PPC currently only has yield parameterisations for the 0.5 GeV Ecut (see Table C.3 https://www.sciencedirect.com/science/article/abs/pii/S0927650512001831 for source), so I have added a warning that adjusts the Ecut to 0.5 GeV and the vcut to 1 in new_proposal_lepton_propagator.py. 
+
+This is a preliminary attempt at encorporating amu- losses into Prometheus, but will be revised and cleaned over the coming month. It should also be said these changes were made specifically with the interface of PROPOSAL->PPC in mind, so I'm not sure how the water based-photon yield case works (or if it's any different from PPC).
+
+### Affected files from main branch:
+
+- loss.py: Added track length to Loss class
+- ppc_photon_propagator.py: Added 0m track length parameter to Loss creation to account for new Loss class type
+- new_proposal_lepton_propagator.py: Changed new_proposal_losses() to account for amu- muon loss type. Added debug logging option to verify new loss method works (need to uncomment code block at the top of file). Also added a warning and adjusted Ecut and vcut to reflect ppc parameterisations
+- translators.py: Added an amu- loss type
+- write_to_f2k.py: Added track length as an input to TR f2k lines
+
 
 Welcome to Prometheus, an open-source neutrino telescope simulation.
 
