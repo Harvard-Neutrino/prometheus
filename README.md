@@ -61,7 +61,7 @@ To work with Prometheus, you need to install the following packages:
 
 3. **[Photon Propagation Code (ppc)](/resources/PPC_executables/README.md)** - Required for ice-based detector simulations. Two versions are available:
     - [CPU version](/resources/PPC_executables/PPC/)
-    - [GPU/CUDA version](/resources/PPC_executables/PPC_CUDA).
+    - [GPU/CUDA version](/resources/PPC_executables/PPC_CUDA)
 
     Both of these use a modified version of the official [ppc code](https://github.com/icecube/ppc). Prometheus-specific compilation instructions are available in the [ppc executables README](/resources/PPC_executables/README.md).
 
