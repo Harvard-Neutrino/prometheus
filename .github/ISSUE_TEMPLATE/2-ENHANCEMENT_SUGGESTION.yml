@@ -10,7 +10,7 @@ body:
       label: Contact details
       placeholder: ex. email@example.com
     validations:
-      required: true
+      required: false
   - type: textarea
     id: what
     attributes:
