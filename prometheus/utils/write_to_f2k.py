@@ -2,6 +2,19 @@ import numpy as np
 from .convert_loss_name import convert_loss_name
 from .units import SpeedOfLight, s_to_ns
 
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+## !! uncomment following block if you wish to see logger line (TR f2k print line) in this file: !!
+
+# if not logger.handlers:
+#     stream_handler = logging.StreamHandler()
+#     stream_handler.setLevel(logging.DEBUG)  # Make sure handler allows DEBUG
+#     formatter = logging.Formatter('%(levelname)s: %(message)s')
+#     stream_handler.setFormatter(formatter)
+#     logger.addHandler(stream_handler)
+
 PPC_MAGIC_Z = 1948.07
 
 def serialize_particle(particle, output_f2k):
@@ -17,10 +30,12 @@ def serialize_loss(loss, parent, output_f2k):
     offpos = loss.position
     theta = np.arccos(parent.direction[2])
     phi = np.arctan2(parent.direction[1], parent.direction[0])
+    track_length = loss.track_length ## non zero track for amu- loss type
     c = SpeedOfLight
     c /= s_to_ns
     dt = d / c
-    line = f'TR 0 {0} {loss} {offpos[0]} {offpos[1]} {offpos[2] + PPC_MAGIC_Z} {theta} {phi} 0 {loss.e} {dt} \n'
+    line = f'TR 0 {0} {loss} {offpos[0]} {offpos[1]} {offpos[2] + PPC_MAGIC_Z} {theta} {phi} {track_length} {loss.e} {dt} \n'
+    logger.debug(f'TR 0 {0} {loss} {offpos[0]} {offpos[1]} {offpos[2] + PPC_MAGIC_Z} {theta} {phi} {track_length} {loss.e} {dt}') ## just for logging purposes
     output_f2k.write(line)
 
 # Create an f2k file from given events
