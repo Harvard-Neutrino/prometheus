@@ -1,3 +1,4 @@
+import os
 import h5py as h5
 import numpy as np
 
@@ -43,12 +44,17 @@ def make_new_LI_injection(
             import EarthModelService as em
             import LeptonInjector as LI
         except ImportError:
-            import sys
-            print('Trying custom path set in config')
-            print(f"The path is {path_dict['install location']}")
-            sys.path.append(path_dict['install location'])
-            import EarthModelService as em
-            import LeptonInjector as LI
+            try:
+                # pip-installed leptoninjector: EarthModelService is part of LeptonInjector
+                import LeptonInjector as LI
+                em = LI
+            except ImportError:
+                import sys
+                print('Trying custom path set in config')
+                print(f"The path is {path_dict['install location']}")
+                sys.path.append(path_dict['install location'])
+                import EarthModelService as em
+                import LeptonInjector as LI
     except ImportError:
         raise ImportError("LeptonInjector not found!")
     n_events = injection_specs["nevents"]
@@ -94,16 +100,28 @@ def make_new_LI_injection(
     )
     earth_model_dir = "/".join(path_dict["earth model location"].split("/")[:-2]) + "/"
     earth_model_name = path_dict["earth model location"].split("/")[-1].split(".")[0]
-    earth = em.EarthModelService(
-        "Zorg",
-        earth_model_dir,
-        [earth_model_name],
-        ["Standard"],
-        "NoIce",
-        0.0,
-        -detector_offset[2]
-    )
-    controller.SetEarthModelService(earth)
+    if hasattr(controller, 'SetEarthModelService'):
+        # Old API: compiled-from-source leptoninjector
+        earth = em.EarthModelService(
+            "Zorg",
+            earth_model_dir,
+            [earth_model_name],
+            ["Standard"],
+            "NoIce",
+            0.0,
+            -detector_offset[2]
+        )
+        controller.SetEarthModelService(earth)
+    else:
+        # New API: pip-installed leptoninjector >= 1.0
+        # SetEarthModel(name, tablepath): arg0 is the model name (without .dat),
+        # arg1 is the LI earthparams directory (must have densities/ and materials/
+        # subdirs, must end with '/').  PREM_south_pole.dat must be present in the
+        # densities/ subdir so LI uses the same rock+ice model as PROPOSAL.
+        li_earthparams_dir = (
+            os.path.join(os.path.dirname(LI.__file__), "resources", "earthparams") + "/"
+        )
+        controller.SetEarthModel(earth_model_name, li_earthparams_dir)
     controller.setSeed(injection_specs["random state seed"])
     controller.NameOutfile(path_dict["injection file"])
     controller.NameLicFile(path_dict["lic file"])

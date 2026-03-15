@@ -5,7 +5,7 @@ endif
 nvcc	=	nvcc ppc.cu -Xptxas=-v -arch=sm_$(arch) \
 		-O2 --use_fast_math --compiler-options=-O2,--fast-math
 
-gcpp	=	$(CXX) ppc.cxx -O2 --fast-math
+gcpp	=	$(CXX) ppc.cxx -O2 -ffast-math
 
 mlib	=	-fPIC -DXLIB -c -o ppc.o && $(CC) -shared \
 		-fPIC -Wl,-soname,xppc ppc.o -o libxppc.so
