@@ -218,3 +218,110 @@ confirm them within ~10%.
 | Birefringence / anisotropy | **Not applicable** | Ice-specific; irrelevant for water |
 | DOM angular acceptance in water | **Available** | QE vs angle characterised in lab; `as.dat` can be set from datasheet |
 | Tilt corrections | **Not needed** | Water has no ice-layer tilt; `tilt.dat`/`tilt.par` can be zeroed |
+
+---
+
+# PPC Parameter Fits to Water Data
+
+Fitted PPC `icemodel.par` equivalents from in-situ measurements using a
+Monte Carlo uncertainty approach: each measurement range is sampled uniformly
+50 000 times, the PPC model is fit to each sample, and the median and 16th/84th
+percentiles of the resulting parameter distributions are reported as the central
+value and 1σ interval.
+
+## Model
+
+**Absorption** (`icemodel.par` rows 3–4, applied in `ini.cxx:591`):
+
+```
+a(λ) = A · exp(−B/λ)    [dominant term; dust/CDOM neglected for clean deep water]
+```
+
+Note: B < 0 for water (UV-rising absorption), whereas B > 0 for ice (IR tail).
+The dust power-law term `a_dust · (λ/400)^(−κ)` is set to zero here because
+the Mediterranean and Pacific deep-water CDOM contribution is small at λ > 370 nm.
+For Baikal it is non-negligible but cannot be separated from the exponential
+with only two wavelength points.
+
+**Effective scattering** (`icemodel.par` rows 1, `cfg.txt` row 4, `ini.cxx:591`):
+
+```
+b_e(λ) = b_e(400) · (λ/400)^(−α)
+```
+
+where b_e = b · (1 − g). g is fixed from the literature for each site.
+
+## Results
+
+### Mediterranean (KM3NeT/ANTARES)
+
+Data: absorption at 375 nm (26 m) and 473 nm (60 m) from ANTARES; effective
+scattering at 375 nm (122 m) and 473 nm (265 m) from ANTARES optical beacons.
+
+| Parameter | Median | 1σ interval | Notes |
+|-----------|--------|-------------|-------|
+| A | 7.3 × 10⁻⁴ m⁻¹ | [4.0 × 10⁻⁴, 1.4 × 10⁻³] | Pure-water absorption amplitude |
+| B | −1484 nm | [−1737, −1227] | Negative = UV rising (opposite sign to ice) |
+| b_e(400) | 6.5 × 10⁻³ m⁻¹ | [5.9 × 10⁻³, 7.2 × 10⁻³] | Effective scattering at 400 nm |
+| α | 3.24 | [2.54, 3.94] | Scattering wavelength slope |
+| g | 0.92 (fixed) | — | Mie asymmetry; literature value |
+
+The α ≈ 3.2 is consistent with the KM3NeT Rayleigh/Mie decomposition
+(17% Rayleigh, 83% Mie): pure Rayleigh gives α ≈ 4.3, pure Mie gives α ≈ 1–2,
+so a weighted combination landing near 3 is physically reasonable.
+
+Consistency check (median fit vs data):
+
+| λ [nm] | Quantity | Measured | Fit |
+|--------|----------|----------|-----|
+| 375 | Absorption length [m] | 26.0 | 26.2 |
+| 473 | Absorption length [m] | 60.0 | 59.4 |
+| 375 | Eff. scattering length [m] | 122 | 125 |
+| 473 | Eff. scattering length [m] | 265 | 264 |
+
+### Baikal-GVD
+
+Data: absorption at 400 nm (8–12 m) and 488 nm (21–24 m) from ASP-15/Baikal-5D
+instruments (arXiv:2309.16300). No multi-wavelength scattering data available.
+
+| Parameter | Median | 1σ interval | Notes |
+|-----------|--------|-------------|-------|
+| A | 1.1 × 10⁻³ m⁻¹ | [5.7 × 10⁻⁴, 2.0 × 10⁻³] | Higher than Mediterranean; more CDOM |
+| B | −1798 nm | [−2123, −1513] | |
+| α | — | — | Insufficient scattering data |
+| g | 0.88 (fixed) | — | Midpoint of reported 0.86–0.90 |
+
+The larger A and more negative B compared to the Mediterranean reflect
+the higher CDOM/particulate load in Lake Baikal.
+
+### P-ONE/STRAW (Cascadia Basin)
+
+Data: absorption at 450 nm (~30 m) from STRAW; effective scattering at 450 nm
+derived from geometric scattering length 75 m with g = 0.92 (arXiv:2603.09495).
+Only one wavelength point per quantity — α is not meaningfully constrained.
+
+| Parameter | Median | 1σ interval | Notes |
+|-----------|--------|-------------|-------|
+| A | 2.3 × 10⁻³ m⁻¹ | [2.0 × 10⁻³, 2.5 × 10⁻³] | Tightly constrained by single point |
+| B | −1206 nm | unconstrained | Cannot separate A from B with one point |
+| b_e(400) | 2.9 × 10⁻³ m⁻¹ | [2.5 × 10⁻³, 3.8 × 10⁻³] | Long effective scattering length ~340 m |
+| α | 9.1 (boundary) | unconstrained | Unphysical; single-wavelength fit hits upper bound |
+| g | 0.92 (fixed) | — | |
+
+A second scattering wavelength (e.g. from a 405 nm POCAM source) is needed
+before α can be estimated for this site.
+
+## Mapping to PPC config files
+
+| PPC file | Parameter | Mediterranean value |
+|----------|-----------|---------------------|
+| `icemodel.par` row 1 | α (scattering slope) | 3.24 |
+| `icemodel.par` row 2 | κ (absorption dust slope) | set to 0 (no dust) |
+| `icemodel.par` row 3 | A (pure-water amplitude) | 7.3 × 10⁻⁴ |
+| `icemodel.par` row 4 | B (pure-water scale [nm]) | −1484 |
+| `icemodel.par` row 5 | D (temperature scattering) | 0 (unknown for water) |
+| `icemodel.par` row 6 | E (temperature absorption) | 0 (unknown for water) |
+| `cfg.txt` row 4 | g | 0.92 |
+| `icemodel.dat` col 1 | b_e(400) [m⁻¹] | 6.5 × 10⁻³ (depth-uniform) |
+| `icemodel.dat` col 2 | a_dust(400) [m⁻¹] | ~0 (set small, e.g. 1 × 10⁻⁴) |
+| `icemodel.dat` col 3 | Δτ | 0 (no depth dependence) |
