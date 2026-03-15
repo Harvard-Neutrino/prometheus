@@ -207,6 +207,8 @@ class Prometheus(object):
                 raise PpcTmpdirExistsError(
                     config['photon propagator']["PPC"]["paths"]["ppc_tmpdir"]
                 )
+            elif os.path.exists(config['photon propagator']["PPC"]["paths"]["ppc_tmpdir"]):
+                clean_ppc_tmpdir(config['photon propagator']["PPC"]["paths"]["ppc_tmpdir"])
             os.mkdir(config['photon propagator']["PPC"]["paths"]["ppc_tmpdir"])
             fs = glob(f"{config['photon propagator']['PPC']['paths']['ppctables']}/*")
             for f in fs:
