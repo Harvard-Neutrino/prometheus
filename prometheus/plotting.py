@@ -98,7 +98,6 @@ def plot_event(
 
     xyz = np.array([detector[om_id].pos for om_id in unique_ids])
     if len(xyz) > 0:
-        xyz += detector.offset
     
         reduced_times = np.zeros(len(unique_ids))
         lcharges = np.zeros(len(unique_ids))
@@ -131,7 +130,7 @@ def plot_event(
 
     # Plot IceCube DOM locations in the background, if requested
     if show_doms:
-        XYZ = np.array([m.pos for m in detector.modules]) + detector.offset
+        XYZ = np.array([m.pos for m in detector.modules])
         # Plot all DOMs
         ax.scatter(
             XYZ[:,0],
@@ -154,7 +153,9 @@ def plot_event(
     
     # Rotate the axes and update
     if azi_angle is None:
-        azi_angle = np.degrees(event.mc_truth.initial_azimuth+np.pi/2)
+        mc = event.mc_truth
+        azimuth = mc.initial_state_azimuth if hasattr(mc, "initial_state_azimuth") else mc.initial_azimuth
+        azi_angle = np.degrees(float(azimuth) + np.pi/2)
     ax.view_init(elevation_angle, azi_angle)
     plt.savefig(figname, bbox_inches='tight')
 

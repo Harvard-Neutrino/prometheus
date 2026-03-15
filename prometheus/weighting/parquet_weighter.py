@@ -41,7 +41,6 @@ class ParquetWeighter(Weighter):
             lic_file = exp_lic_file
 
         self._data = ak.from_parquet(parquet_file)
-        print(config)
         if offset is None:
             try:
                 self._offset = np.array(config["detector"]["offset"])
@@ -83,9 +82,9 @@ class ParquetWeighter(Weighter):
         initial_idxs = np.where(injection["final_state_parent"]==0)[0]
         final_state_1_idx = initial_idxs[0]
         final_state_2_idx = initial_idxs[1]
-        lw_event.final_state_particle_0 = LW.ParticleType(injection["final_state_type"][final_state_1_idx])
-        lw_event.final_state_particle_1 = LW.ParticleType(injection["final_state_type"][final_state_2_idx])
-        lw_event.primary_type = LW.ParticleType(injection["initial_state_type"])
+        lw_event.final_state_particle_0 = LW.ParticleType(int(injection["final_state_type"][final_state_1_idx]))
+        lw_event.final_state_particle_1 = LW.ParticleType(int(injection["final_state_type"][final_state_2_idx]))
+        lw_event.primary_type = LW.ParticleType(int(injection["initial_state_type"]))
         lw_event.total_column_depth = injection["column_depth"]
         lw_event.x = injection["initial_state_x"] - self._offset[0]
         lw_event.y = injection["initial_state_y"] - self._offset[1]
