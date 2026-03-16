@@ -22,6 +22,7 @@ When normalizing docstrings:
    - Do **not** change the high-level meaning or intent of the text.
    - Preserve informal or quirky phrasing where possible.
    - You may fix obviously broken grammar and typos only when doing so does not change tone or meaning.
+   - You may perform stylistic fixes based on rules defined in text-style-prometheus skill.
 
 2. **Structure docstrings in NumPy style**
    - Keep or add a short one-line summary, sentence-cased and ending with a period.
