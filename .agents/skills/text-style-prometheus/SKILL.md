@@ -19,7 +19,14 @@ Do **not** apply these rules to pure code identifiers unless explicitly allowed 
 
 ## Core Terminology Rules
 
-### 1. `ppc` Library Name
+### 1. `Prometheus` project name
+
+- Always spell as **`Prometheus`** (capitalized).
+- Do not change the form in prose:
+  - ✅ `Prometheus`
+  - ❌ `prometheus`, `PROMETHEUS`, `P.P.C.`, or other variants.
+
+### 2. `ppc` library name
 
 - Always spell the library name as **`ppc`** (all lowercase).
 - Do not change the form in prose:
@@ -30,7 +37,14 @@ If a code identifier already uses a different capitalization (e.g. a class named
 `PPCConfig`), **leave the code identifier as-is**, but still refer to the library as
 `ppc` in surrounding prose.
 
-### 2. `geo file` (Geometry File)
+### 3.`GENIE` neutrino event generator name
+
+- Always spell as **`GENIE`** (all uppercase).
+- Do not change the form in prose:
+  - ✅ `GENIE`
+  - ❌ `genie`, `Genie`, or other variants.
+
+### 4. `geo file` (Geometry File)
 
 - In prose, always write **`geo file`** (two words, lowercase).
 - Avoid: ❌ `geofile`, `GeoFile`, or other variants.
@@ -62,6 +76,9 @@ When editing or generating text:
    - Only adjust the *surrounding text* unless the user explicitly asks to rename code.
 3. **Be consistent**:
    - Use the chosen forms (`ppc`, `geo file`) uniformly within a document or docstring.
+
+If a code identifier already uses a different capitalization (e.g. a class named
+`PPCConfig`), **leave the code identifier as-is**, but still refer to the term/name in surrounding prose as defined by the above rules.
 
 ## Examples
 
