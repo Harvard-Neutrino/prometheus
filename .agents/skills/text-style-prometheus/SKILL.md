@@ -17,6 +17,15 @@ Use this skill whenever you:
 
 Do **not** apply these rules to pure code identifiers unless explicitly allowed below.
 
+## Wording Preferences
+
+### 1. `Create` or `build` VS `make` in code-related statements and comments.
+- When describing code (functions, methods, classes etc.), prefer the words `create` or `build` to the word `make`, since `make` is often used as a designated term related to build tools in programming.
+  - ❌ `Make a list of PROPOSAL density distributions`
+  - ✅ `Create a list of PROPOSAL density distributions`
+  - ❌ `Make a PROPOSAL propagator`
+  - ✅ `Build a PROPOSAL propagator` 
+
 ## Core Terminology Rules
 
 ### 1. `Prometheus` project name
@@ -44,7 +53,15 @@ If a code identifier already uses a different capitalization (e.g. a class named
   - ✅ `GENIE`
   - ❌ `genie`, `Genie`, or other variants.
 
-### 4. `geo file` (Geometry File)
+### 4.`PROPOSAL` tool / programme name
+
+- Always spell as **`PROPOSAL`** (all uppercase).
+- When referred to a tool, do not change the form in prose:
+  - ✅ `PROPOSAL`
+  - ❌ `proposal`, `Proposal`, or other variants.
+- If the word "proposal" used as a regular word meaning a plan or suggestion put forward for consideration or discussion by others, then there is no need to capitalize, style as you would any other word.
+
+### 5. `geo file` (Geometry File)
 
 - In prose, always write **`geo file`** (two words, lowercase).
 - Avoid: ❌ `geofile`, `GeoFile`, or other variants.
