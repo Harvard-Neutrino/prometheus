@@ -80,6 +80,9 @@ When normalizing docstrings:
      - `tuple of int`
      - `list of Module`
      - `Medium or None`
+   - When using the type coming from an imported library (e.g. `numpy`, `proposal`), use the full name of the library, instead of the "imported as" name, e.g. :
+     - `numpy.ndarray`, not `np.ndarray`
+     - `proposal.particle`, not `pp.particle`
 
 7. **What NOT to change**
    - Do **not** rename parameters or change function signatures.
