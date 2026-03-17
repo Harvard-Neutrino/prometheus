@@ -5,8 +5,7 @@ import proposal as pp
 from ..particle import Particle
 
 class LeptonPropagator:
-    '''Interface class to the different lepton propagators
-    '''
+    """Interface class for the different lepton propagators."""
     def __init__(self, config):
         self._prop_dict = {}
         self._pdef_dict = {}
@@ -16,12 +15,17 @@ class LeptonPropagator:
         self,
         particle: Particle
     ) -> Tuple[pp.particle.ParticleDef, pp.Propagator]:
-        """Retrieve the appropriate PROPOSAL ParticleDef and Propagator for a given 
-        Prometheus Particle
+        """Retrieve the PROPOSAL ``ParticleDef`` and ``Propagator`` for a particle.
 
-        params
-        ______
-        particle: Prometheus Particle you want stuff for
+        Parameters
+        ----------
+        particle : Particle
+            Prometheus particle you want definitions for.
+
+        Returns
+        -------
+        tuple
+            Tuple of ``(ParticleDef, Propagator)`` corresponding to the input particle.
         """
         if str(particle) not in self._pdef_dict.keys():
             self._pdef_dict[str(particle)] = self._make_particle_def(particle)
@@ -31,33 +35,27 @@ class LeptonPropagator:
 
     @property
     def config(self) -> dict:
-        """Get the configuration dictionary used to make this"""
+        """Get the configuration dictionary used to make this propagator."""
         return self._config
     
     @abstractmethod
     def _make_propagator(self, particle: Particle) -> pp.Propagator:
-        """Makes a PROPOSAL Propagator
-        params
-        ______
-        particle: Prometheus particle you want a particle def for
-        """
+        """Create a PROPOSAL propagator for a Prometheus particle."""
         pass
 
     @abstractmethod
     def _make_particle_def(self, particle: Particle) -> pp.particle.ParticleDef:
-        """Makes a PROPOSAL ParticleDef
-        
-        params
-        ______
-        particle: Prometheus particle you want a particle def for
-        """
+        """Creates a PROPOSAL ``ParticleDef`` for a Prometheus particle."""
         pass
 
     @abstractmethod
     def energy_losses(self, particle: Particle) -> None:
-        """Propagates particle with energy losses. The losses will be
-            stored in `particle.losses`
+        """Propagate particle with energy losses. The losses will be
+            stored in ``particle.losses``.
 
-        particle: Prometheus particle to propagate
+        Parameters
+        ----------
+        particle : Particle
+            Prometheus particle to propagate.
         """
         pass
