@@ -1,7 +1,7 @@
 import numpy as np
 
-# Find center of gravity of an event
 def find_cog(event_dict, detector):
+    """Find the center of gravity of an event."""
     keys = event_dict.keys()
     charges = np.array([len(event_dict[key]) for key in keys])
     xyz = np.array([detector[key].pos for key in keys])

@@ -4,27 +4,30 @@ description: Normalize existing Python docstrings to NumPy style while preservin
 ---
 
 # Normalize NumPy docstrings
-
+ 
 ## When to use this skill
-
+ 
 Use this skill whenever the user asks to:
-
+ 
 - "normalize docstrings", "convert docstrings to NumPy style", or otherwise clean up Python docstrings.
 - Apply the same normalization you previously used in `prometheus/detector` (this project).
-
+ 
 Assume the code may use informal, quirky wording, and that wording should generally be preserved unless explicitly asked to change it.
-
+ 
 ## Instructions
-
+ 
 When normalizing docstrings:
-
-1. **Preserve content and tone**
+ 
+1. **Do not generate new docstrings**
+  - If the object/class/method is missing a docstring entirely, do not generate one. This skill is only for normalizing existing docstrings.
+ 
+2. **Preserve content and tone**
    - Do **not** change the high-level meaning or intent of the text.
    - Preserve informal or quirky phrasing where possible.
    - You may fix obviously broken grammar and typos only when doing so does not change tone or meaning.
    - You may perform stylistic fixes based on rules defined in text-style-prometheus skill.
-
-2. **Structure docstrings in NumPy style**
+ 
+3. **Structure docstrings in NumPy style**
    - Keep or add a short one-line summary, sentence-cased and ending with a period.
    - Use these section headers when relevant:
      - `Parameters`
@@ -37,16 +40,16 @@ When normalizing docstrings:
        `-------`
      - `Raises`
        `------`
-
-3. **Summary**
+ 
+4. **Summary**
   - If the summary line exceeds the 79-character limit recommended by PEP 8, do not break the line with a new line. Keep the line long as is, otherwise the documentation generation tool will not render it correctly on the doc site.
   For example:
     - `Simulate the propagation of a particle and of any photons resulting from 
     the energy losses of this particle.` - the part after the line break does not render on the site.
     - `Simulate the propagation of a particle and of any photons resulting from the energy losses of this particle.` - the entire line renders on the site.
-
-
-4. **Parameter entries**
+ 
+ 
+5. **Parameter entries**
    - For each parameter, use the pattern:
      - `name : type` or `name : type, optional`
    - Put the description on the next indented line(s).
@@ -56,8 +59,8 @@ When normalizing docstrings:
    - Keep existing explanations; only adjust capitalization and punctuation as needed.
    - If the type is obvious from annotations or usage, include it (e.g. `list of Module`, `numpy.ndarray`, `str or None`).
    - For optional arguments already documented as optional (e.g. `rng` where default is set), add `, optional` to the type when appropriate.
-
-5. **Returns entries**
+ 
+6. **Returns entries**
    - If there is a single return value, use:
      - `name : type`
        `<indented sentence describing the value, starting with a capital letter and ending with a period.>`
@@ -66,8 +69,8 @@ When normalizing docstrings:
      - Example from this project:
        - `det : Detector`
        - `    A rhombus detector.`
-
-6. **Raises entries**
+ 
+7. **Raises entries**
    - For each exception, use:
      - `ExceptionType`
        `<indented sentence starting with "Raised if ..." or similar, capitalized and ending with a period.>`
@@ -77,8 +80,8 @@ When normalizing docstrings:
      - `IncompatibleMACIDsError`
        `    Raised if MAC IDs length doesn't match number of DOMs.`
    - Prefer "Raised if ..." or "Raised when ..." phrasing.
-
-7. **Consistency rules**
+ 
+8. **Consistency rules**
    - Within each `Parameters` / `Returns` / `Raises` block:
      - Ensure **every** description:
        - Starts with a capital letter.
@@ -91,20 +94,22 @@ When normalizing docstrings:
    - When using the type coming from an imported library (e.g. `numpy`, `proposal`), use the full name of the library, instead of the "imported as" name, e.g. :
      - `numpy.ndarray`, not `np.ndarray`
      - `proposal.particle`, not `pp.particle`
-
-8. **What NOT to change**
+ 
+9. **What NOT to change**
    - Do **not** rename parameters or change function signatures.
    - Do **not** rewrite long narrative text beyond light capitalization/punctuation/typos fixes.
    - Do **not** "formalize" jokes or intentionally informal comments unless the user asks you to.
-
+    - Do *not* generate docstrings for the objects that don't already have docstrings. 
+ 
+ 
 ## Examples from this project
-
+ 
 - Constructor example:
-
+ 
 ```python
 def __init__(self, modules: List[Module], medium: Union[Medium, None]):
     """Initialize detector.
-
+ 
     Parameters
     ----------
     modules : list of Module
@@ -113,13 +118,13 @@ def __init__(self, modules: List[Module], medium: Union[Medium, None]):
         Medium in which the detector is embedded.
     """
 ```
-
+ 
 - Function with parameters, returns, and raises:
-
+ 
 ```python
 def to_f2k(...):
     """Write detector corrdinates into f2k format.
-
+ 
     Parameters
     ----------
     geo_file : str
@@ -132,7 +137,7 @@ def to_f2k(...):
         MAC (I don't think this is actually what this is called) IDs
         for the DOMs. By default these will be randomly generated. This
         is probably what you want to do.
-
+ 
     Raises
     ------
     IncompatibleSerialNumbersError
@@ -141,6 +146,5 @@ def to_f2k(...):
         Raised if MAC IDs length doesn't match number of DOMs.
     """
 ```
-
+ 
 When asked to "normalize docstrings" in this repo in the future, follow the patterns and constraints above. If project-specific quirks appear (e.g. unconventional names or jokes), keep them, only wrapping them in consistent NumPy-style structure and capitalization. 
-
