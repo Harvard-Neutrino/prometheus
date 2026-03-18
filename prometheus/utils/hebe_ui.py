@@ -262,7 +262,7 @@ def misc_q():
     n_events.set_misc()
 
 def run_ui():
-    """Entry point for the user interface."""
+    """Run user interface."""
     print(f"""
 ——————————————————————————————————————————————————————————
 Welcome to
