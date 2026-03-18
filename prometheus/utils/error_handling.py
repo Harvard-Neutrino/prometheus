@@ -8,7 +8,7 @@ import inspect
 
 
 class NoTraceBackWithLineNumber(Exception):
-    """Custom error messages for exceptions"""
+    """Custom error messages for exceptions."""
     def __init__(self, msg):
         try:
 
@@ -24,30 +24,30 @@ class NoTraceBackWithLineNumber(Exception):
 
 
 class UnknownInjectorError(NoTraceBackWithLineNumber):
-    """ the injector defined in config isn't supported"""
+    """Injector defined in the config is not supported."""
     pass
 
 
 class UnknownLeptonPropagatorError(NoTraceBackWithLineNumber):
-    """ the lepton propagator defined in the config is not supported"""
+    """Lepton propagator defined in the config is not supported."""
     pass
 
 
 class UnknownPhotonPropagatorError(NoTraceBackWithLineNumber):
-    """ the photon propagator defined in the config is not supported"""
+    """Photon propagator defined in the config is not supported."""
     pass
 
 
 class NoInjectionError(NoTraceBackWithLineNumber):
-    """ the injection has not been set"""
+    """Injection has not been set."""
     pass
 
 
 class InjectorNotImplementedError(NoTraceBackWithLineNumber):
-    """ this type of injection has not been implemented"""
+    """Injection type has not been implemented."""
     pass
 
 
 class CannotLoadDetectorError(NoTraceBackWithLineNumber):
-    """Raised when detector not provided and cannot be determined from config"""
+    """Raised when detector not provided and cannot be determined from config."""
     pass
