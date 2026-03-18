@@ -2,7 +2,7 @@ import awkward as ak
 import numpy as np
 
 class IncompaticleFieldsError(Exception):
-    """Raised when two awkward.Array cannot be combined because fields don't match"""
+    """Error raised when two ``awkward.Array`` objects cannot be combined because fileds don't match."""
     def __init__(self, fields1, fields2):
         self.message = f"If `fields` not provided, array fields must fully overlap."
         super().__int__(self.message)
