@@ -41,7 +41,7 @@ def injfile_q():
         injfile_q()
 
 def detector_q():
-    """ Sets detector file, medium, and selection volume """
+    """Set detector file, medium, and selection volume."""
     dname = input(
     '''
 (0) User supplied geo file  (3) P-ONE
@@ -171,7 +171,7 @@ def interaction_q():
         interaction_q()
 
 def gr_q():
-    """ Additional question for glashow resonance """
+    """Additional question for Glashow resonance."""
     global state_key
     gr_final = input('Final type? (Hadron/E/Mu/Tau): ')
     if gr_final.lower() in ['hadron','e','mu','tau']:
@@ -262,7 +262,7 @@ def misc_q():
     n_events.set_misc()
 
 def run_ui():
-    """ Runs user interface """
+    """Entry point for the user interface."""
     print(f"""
 ——————————————————————————————————————————————————————————
 Welcome to
