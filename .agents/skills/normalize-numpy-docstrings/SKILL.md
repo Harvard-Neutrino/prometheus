@@ -38,7 +38,15 @@ When normalizing docstrings:
      - `Raises`
        `------`
 
-3. **Parameter entries**
+3. **Summary**
+  - If the summary line exceeds the 79-character limit recommended by PEP 8, do not break the line with a new line. Keep the line long as is, otherwise the documentation generation tool will not render it correctly on the doc site.
+  For example:
+    - `Simulate the propagation of a particle and of any photons resulting from 
+    the energy losses of this particle.` - the part after the line break does not render on the site.
+    - `Simulate the propagation of a particle and of any photons resulting from the energy losses of this particle.` - the entire line renders on the site.
+
+
+4. **Parameter entries**
    - For each parameter, use the pattern:
      - `name : type` or `name : type, optional`
    - Put the description on the next indented line(s).
@@ -49,7 +57,7 @@ When normalizing docstrings:
    - If the type is obvious from annotations or usage, include it (e.g. `list of Module`, `numpy.ndarray`, `str or None`).
    - For optional arguments already documented as optional (e.g. `rng` where default is set), add `, optional` to the type when appropriate.
 
-4. **Returns entries**
+5. **Returns entries**
    - If there is a single return value, use:
      - `name : type`
        `<indented sentence describing the value, starting with a capital letter and ending with a period.>`
@@ -59,7 +67,7 @@ When normalizing docstrings:
        - `det : Detector`
        - `    A rhombus detector.`
 
-5. **Raises entries**
+6. **Raises entries**
    - For each exception, use:
      - `ExceptionType`
        `<indented sentence starting with "Raised if ..." or similar, capitalized and ending with a period.>`
@@ -70,7 +78,7 @@ When normalizing docstrings:
        `    Raised if MAC IDs length doesn't match number of DOMs.`
    - Prefer "Raised if ..." or "Raised when ..." phrasing.
 
-6. **Consistency rules**
+7. **Consistency rules**
    - Within each `Parameters` / `Returns` / `Raises` block:
      - Ensure **every** description:
        - Starts with a capital letter.
@@ -84,7 +92,7 @@ When normalizing docstrings:
      - `numpy.ndarray`, not `np.ndarray`
      - `proposal.particle`, not `pp.particle`
 
-7. **What NOT to change**
+8. **What NOT to change**
    - Do **not** rename parameters or change function signatures.
    - Do **not** rewrite long narrative text beyond light capitalization/punctuation/typos fixes.
    - Do **not** "formalize" jokes or intentionally informal comments unless the user asks you to.

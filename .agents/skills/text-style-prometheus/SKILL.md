@@ -17,14 +17,23 @@ Use this skill whenever you:
 
 Do **not** apply these rules to pure code identifiers unless explicitly allowed below.
 
-## Wording Preferences
+## Wording and Grammar Preferences
 
-### 1. `Create` or `build` VS `make` in code-related statements and comments.
-- When describing code (functions, methods, classes etc.), prefer the words `create` or `build` to the word `make`, since `make` is often used as a designated term related to build tools in programming.
-  - ❌ `Make a list of PROPOSAL density distributions`
-  - ✅ `Create a list of PROPOSAL density distributions`
-  - ❌ `Make a PROPOSAL propagator`
-  - ✅ `Build a PROPOSAL propagator` 
+### 1. `Create` or `build` VS `make` in code-related statements and comments
+
+When describing code (functions, methods, classes etc.), prefer the words `create` or `build` to the word `make`, since `make` is often used as a designated term related to build tools in programming.
+
+- ❌ `Make a list of PROPOSAL density distributions`
+- ✅ `Create a list of PROPOSAL density distributions`
+- ❌ `Make a PROPOSAL propagator`
+- ✅ `Build a PROPOSAL propagator`
+
+### 2. Use present tense in code documentation and docstrings
+
+When describing what classes, methods and other pieces of code do, prefer present tense. For example:
+
+- ❌ `lepton_propagator: Prometheus LeptonPropagator object which will be used to generate losses from the particles.`
+- ✅ `lepton_propagator: Prometheus LeptonPropagator object which **is** used to generate losses from the particles.`
 
 ## Core Terminology Rules
 

@@ -4,23 +4,23 @@ from ..lepton_propagation import LeptonPropagator
 from ..detector import Detector
 
 class PhotonPropagator:
-    """Interface for handling different photon propagators"""
+    """Interface for handling different photon propagators."""
     def __init__(
         self,
         lepton_propagator: LeptonPropagator,
         detector: Detector,
         photon_prop_config: dict
     ):
-        """Initialize the PhotonPropagator object
-        
-        params
-        ______
-        lepton_propagator: Prometheus LeptonPropagator object which will be used
-            to generate losses from the particles
-        detector: Prometheus detector object in which the light will be
-            propagated
-        photon_prop_config: dictionary containing all the configuration settings
-            for photon propagation
+        """Initialize the photon propagator.
+
+        Parameters
+        ----------
+        lepton_propagator : LeptonPropagator
+            Prometheus lepton propagator object which is used to generate losses from the particles.
+        detector : Detector
+            Prometheus detector object in which the light is propagated.
+        photon_prop_config : dict
+            Dictionary containing the configuration settings for photon propagation.
         """
         self._lepton_propagator = lepton_propagator
         self._detector = detector
