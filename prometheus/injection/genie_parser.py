@@ -145,7 +145,7 @@ def genie_loader(filepath: str) -> pd.DataFrame:
 #     })
 
 def genie2prometheus(parsed_events: pd.DataFrame):
-   """Reformat parsed GENIE events into a usable format for Prometheus.
+    """Reformat parsed GENIE events into a usable format for Prometheus.
  
     NOTES: Create a standardized scheme function. This could then be used as an interface to Prometheus for any injector. E.g. a user would only need to create a function to translate their injector output to the scheme format.
  
