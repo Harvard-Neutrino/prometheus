@@ -3,18 +3,26 @@ from typing import Optional
 
 @dataclass
 class Hit:
-    """Dataclass for tracking a OM seeing light
-    
-    fields
-    ______
-    string_id: String index of the OM that was hit
-    om_id: OM index of the OM that was hit
-    time: time of photon arrival in ns
-    wavelength: photon wavelength in nm
-    om_zenith: zenith angle that the photon arrived at on the OM
-    om_azimuth: azimuthal angle that the photon arrived at
-    photon_zenith: zenith angle of the photon momentum
-    photon_azimuth: azimuthal angle of the photon momentum
+    """Dataclass for tracking an OM seeing light.
+
+    Attributes
+    ----------
+    string_id : int
+        String index of the OM that was hit.
+    om_id : int
+        OM index of the OM that was hit.
+    time : float
+        Time of photon arrival in ns.
+    wavelength : float, optional
+        Photon wavelength in nm.
+    om_zenith : float, optional
+        Zenith angle that the photon arrived at on the OM in radians.
+    om_azimuth : float, optional
+        Azimuthal angle that the photon arrived at on the OM in radians.
+    photon_zenith : float, optional
+        Zenith angle of the photon momentum in radians.
+    photon_azimuth : float, optional
+        Azimuthal angle of the photon momentum in radians.
     """
     string_id: int
     om_id: int

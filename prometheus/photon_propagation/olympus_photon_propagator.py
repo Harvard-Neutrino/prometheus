@@ -21,7 +21,7 @@ from hyperion.medium import medium_collections
 from hyperion.constants import Constants
 
 class OlympusPhotonPropagator(PhotonPropagator):
-    """PhotonPropagator the uses Olympus to propagate photons"""
+    """Photon propagator that uses Olympus to propagate photons."""
     def __init__(
         self,
         lepton_propagator: LeptonPropagator,
@@ -48,16 +48,12 @@ class OlympusPhotonPropagator(PhotonPropagator):
         )
 
     def propagate(self, particle: Particle):
-        """Simulate losses and propagate resulting photons for input particle
+        """Simulate losses and propagate resulting photons for an input particle.
 
-        params
-        ______
-        particle: Prometheus Particle object to simulate
-
-        returns
-        _______
-        res_event: PLEASE FILL THIS IN
-        res_record: PLEASE FILL THIS IN
+        Parameters
+        ----------
+        particle : Particle
+            Prometheus particle object to simulate.
         """
 
         # neutrinos don't produce light
@@ -135,6 +131,5 @@ class OlympusPhotonPropagator(PhotonPropagator):
 
 
     def _c_medium_f(self, wl):
-        """ Speed of light in medium for wl (nm)
-        """
+        """Speed of light in medium for a given wavelength in nm."""
         return Constants.BaseConstants.c_vac / self._ref_ix_f(wl)
