@@ -215,16 +215,10 @@ _baseconfig = {
 }
 
 class ConfigClass(dict):
-    """ The configuration class. This is used
-    by the package for all parameter settings. If something goes wrong
-    its usually here.
-    Parameters
-    ----------
-    config : dic
-        The config dictionary
-    Returns
-    -------
-    None
+    """Configuration container for Prometheus settings.
+
+    This is used by the package for all parameter settings. If something
+    goes wrong, it is usually here.
     """
 
     def __init__(self, *args, **kwargs):
@@ -232,28 +226,24 @@ class ConfigClass(dict):
 
     # TODO: Update this
     def from_yaml(self, yaml_file: str) -> None:
-        """ Update config with yaml file
+        """Update configuration with a YAML file.
+
         Parameters
         ----------
         yaml_file : str
-            path to yaml file
-        Returns
-        -------
-        None
+            Path to YAML file.
         """
         yaml_config = yaml.load(open(yaml_file), Loader=yaml.SafeLoader)
         self.update(yaml_config)
 
     # TODO: Update this
     def from_dict(self, user_dict: Dict[Any, Any]) -> None:
-        """ Creates a config from dictionary
+        """Update configuration from a dictionary.
+
         Parameters
         ----------
-        user_dict : dic
-            The user dictionary
-        Returns
-        -------
-        None
+        user_dict : dict
+            User-provided configuration dictionary.
         """
         self.update(user_dict)
 
