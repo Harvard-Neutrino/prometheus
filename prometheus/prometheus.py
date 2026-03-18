@@ -31,21 +31,23 @@ from .photon_propagation import (
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
 
 class PpcTmpdirExistsError(Exception):
-    """Raised if PPC tmpdir exists and force not specified"""
+    """Raised if ppc `tmpdir` exists and force not specified."""
     def __init__(self, path):
         self.message = f"{path} exists. Please remove it or specify force in the config"
         super().__init__(self.message)
 
 def regularize(s: str) -> str:
-    """Helper fnuction to regularize strings
+    """Helper function to regularize strings.
 
-    params
-    ______
-    s: string to regularize
+    Parameters
+    ----------
+    s : str
+        String to regularize.
 
-    returns
-    _______
-    s: regularized string
+    Returns
+    -------
+    s : str
+        Regularized string.
     """
     s = s.replace(" ", "")
     s = s.replace("_", "")
@@ -54,33 +56,34 @@ def regularize(s: str) -> str:
 
 
 class Prometheus(object):
-    """Class for unifying injection, energy loss calculation, and photon propagation"""
+    """Class for unifying injection, energy loss calculation, and photon propagation."""
     def __init__(
         self,
         userconfig: Union[None, dict, str] = None,
         detector: Union[None, Detector] = None
     ) -> None:
-        """Initializes the Prometheus class
+        """Initialize the Prometheus class.
 
-        params
-        ______
-        userconfig: Configuration dictionary or path to yaml file 
-            which specifies configuration
-        detector: Detector to be used or path to geo file to load detector file.
-            If this is left out, the path from the `userconfig["detector"]["geo file"]`
-            be loaded
+        Parameters
+        ----------
+        userconfig : dict or str or None
+            Configuration dictionary or path to YAML file which specifies configuration.
+        detector : Detector or None
+            Detector to be used or path to geo file to load detector file.
+            If this is left out, the path from the `userconfig["detector"]["geo file"]` will be loaded.
 
-        raises
-        ______
-        UnknownInjectorError: If we don't know how to handle the injector the config
-            is asking for
-        UnknownLeptonPropagatorError: If we don't know how to handle the lepton
-            propagator you are asking for
-        UnknownPhotonPropagatorError: If we don't know how to handle the photon
-            propagator you are asking for
-        CannotLoadDetectorError: When no detector provided and no
-            geo file path provided in config
-
+        Raises
+        ------
+        UnknownInjectorError
+            Raised if we don't know how to handle the injector specified in the config.
+        UnknownLeptonPropagatorError
+            Raised if we don't know how to handle the lepton
+            propagator specified in the config.
+        UnknownPhotonPropagatorError
+            Raised if we don't know how to handle the photon
+            propagator specified in the config.
+        CannotLoadDetectorError
+            Raised when no detector is provided and no geo file path is provided in config.
         """
         self._start_timing_misc = time()
         if userconfig is not None:
@@ -165,7 +168,7 @@ class Prometheus(object):
         return self._injection
 
     def inject(self):
-        """Determines initial neutrino and final particle states according to config"""
+        """Determine initial neutrino and final particle states according to config."""
         injection_config = config["injection"][config["injection"]["name"]]
         if injection_config["inject"]:
 
@@ -187,7 +190,7 @@ class Prometheus(object):
 
     # We should factor out generating losses and photon prop
     def propagate(self):
-        """Calculates energy losses, generates photon yields, and propagates photons"""
+        """Calculate energy losses, generate photon yields, and propagate photons."""
         if config["photon propagator"]["name"].lower()=="olympus":
             rstate = np.random.RandomState(config["run"]["random state seed"])
             rstate_jax = random.PRNGKey(config["run"]["random state seed"])
@@ -247,8 +250,7 @@ class Prometheus(object):
 
 
     def sim(self):
-        """Performs injection of precipitating interaction, calculates energy losses,
-        calculates photon yield, propagates photons, and save resultign photons"""
+        """Perform injection of precipitating interaction, calculate energy losses, calculate photon yield, propagate photons, and save resulting photons."""
         if "runtime" in config["photon propagator"].keys():
             config["photon propagator"]["runtime"] = None
         start_inj = time()
@@ -270,8 +272,10 @@ class Prometheus(object):
         ])
 
     def construct_output(self):
-        """Constructs a parquet file with metadata from the generated files.
-        Currently this still treats olympus and ppc output differently."""
+        """Construct a parquet file with metadata from the generated files.
+        
+        Currently this still treats olympus and ppc output differently.
+        """
         # sim_switch = config["photon propagator"]["name"]
 
         from .utils.serialization import serialize_particles_to_awkward, set_serialization_index
