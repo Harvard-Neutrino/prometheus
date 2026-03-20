@@ -18,10 +18,10 @@
 
 ## Checklist
 
-[ ] Code compiles without errors & works
-[ ] Code changes include relevant comments & unit tests
-[ ] All unit tests pass
-[ ] Documentation is updated
+- [ ] Code compiles without errors & works
+- [ ] Code changes include relevant comments & unit tests
+- [ ] All unit tests pass
+- [ ] Documentation is updated
 
 ## Additional Notes
 
