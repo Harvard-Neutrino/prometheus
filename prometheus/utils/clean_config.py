@@ -1,14 +1,13 @@
 
 def clean_config(config: dict) -> None:
-    """Removes extraneous fields from the config file
+    """Remove extraneous fields from config.
 
-    params
-    ______
-    config: Configuration dictionary
+    Config dictionary is modified in place.
 
-    returns
-    _______
-    config: Configuration dictionary with unused fields removed
+    Parameters
+    ----------
+    config : dict
+        Configuration dictionary.
     """
     # TODO move the actual config up a level
     for x in ["injection", "lepton propagator", "photon propagator"]:

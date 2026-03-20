@@ -11,16 +11,21 @@ from ..utils.translators import PDG_to_pstring
 
 @dataclass
 class Particle:
-    """Base dataclass for particle event structure
+    """Base dataclass for particle event structure.
 
-    fields
-    ______
-    pdg_code: PDG mc code
-    e: energy in GeV
-    position: particle position in meters
-    direction: unit vector pointing along particle momentum
-    serialization_idx: Index helper for serialization. This
-        will be overwritten at serialization time
+    Parameters
+    ----------
+    pdg_code : int
+        PDG MC code.
+    e : float
+        Energy in GeV.
+    position : numpy.ndarray
+        Particle position in meters.
+    direction : numpy.ndarray
+        Unit vector pointing along particle momentum.
+    serialization_idx : int
+        Index helper for serialization. This will be overwritten at
+        serialization time.
     """
     pdg_code: int
     e: float
@@ -45,14 +50,18 @@ class Particle:
 
 @dataclass
 class PropagatableParticle(Particle):
-    """Particle event structure with added feature to support propagation
-    
-    fields
-    ______
-    parent: Particle which created this particle
-    children: Particles that this one spawned
-    losses: energy losses created by this particle
-    hits: OM hits originating from this particle
+    """Particle event structure with added features to support propagation.
+
+    Parameters
+    ----------
+    parent : Particle
+        Particle which created this particle.
+    children : list of Particle
+        Particles that this one spawned.
+    losses : list
+        Energy losses created by this particle.
+    hits : list
+        OM hits originating from this particle.
     """
     parent: Particle
     children: List[Particle] = field(default_factory=list)

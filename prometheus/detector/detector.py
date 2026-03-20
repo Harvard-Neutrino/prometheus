@@ -13,25 +13,28 @@ from .medium import Medium
 from ..config import config
 
 class IncompatibleSerialNumbersError(Exception):
-    """Raised when serial numbers length doesn't match number of DOMs"""
+    """Raised when serial numbers length doesn't match number of DOMs."""
     def __init__(self):
         self.message = "Serial numbers incompatible with modules"
         super().__init__(self.message)
 
 class IncompatibleMACIDsError(Exception):
-    """Raised when MAC IDs length doesn't match number of DOMs"""
+    """Raised when MAC IDs length doesn't match number of DOMs."""
     def __init__(self):
         self.message = "MAC IDs incompatible with modules"
         super().__init__(self.message)
 
 class Detector(object):
-    """Prometheus detector object"""
+    """Prometheus detector object."""
     def __init__(self, modules: List[Module], medium: Union[Medium, None]):
         """Initialize detector.
-        params
-        ______
-        modules: List of all the modules in the detector
-        medium: Medium in which the detector is embedded
+
+        Parameters
+        ----------
+        modules : list of Module
+            List of all the modules in the detector.
+        medium : Medium or None
+            Medium in which the detector is embedded.
         """
         self._modules = modules
         self._medium = medium
@@ -92,19 +95,25 @@ class Detector(object):
     ) -> None:
         """Write detector corrdinates into f2k format.
         
-        params
-        ______
-        geo_file: file name of where to write it
-        serial_nos: serial numbers for the optical modules. These MUST be in hexadecimal
-            format, but there exact value does not matter. If nothing is provided, these
-            values will be randomly generated
-        mac_ids: MAC (I don't think this is actually what this is called) IDs for the DOMs.
-            By default these will be randomly generated. This is prbably what you want
-            to do.
+        Parameters
+        ----------
+        geo_file : str
+            Filepath of the output geometry file.
+        serial_nos : list of str, optional
+            Serial numbers for the optical modules. These MUST be in
+            hexadecimal format, but there exact value does not matter. If
+            nothing is provided, these values will be randomly generated.
+        mac_ids : list of str, optional
+            MAC (I don't think this is actually what this is called) IDs
+            for the DOMs. By default these will be randomly generated, which
+            is probably what you want to do.
 
-        raises
-        ______
-
+        Raises
+        ------
+        IncompatibleSerialNumbersError
+            Raised if serial numbers length doesn't match number of DOMs.
+        IncompatibleMACIDsError
+            Raised if MAC IDs length doesn't match number of DOMs.
         """
         if serial_nos and len(serial_nos)!=len(self.modules):
             raise IncompatibleSerialNumbersError()

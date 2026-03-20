@@ -13,7 +13,21 @@ ICE_PADDING = 200
 WATER_PADDING = 30
 
 def from_geo(fname):
-    """ Returns positions, keys, and medium from detector geometry file
+    """Read positions, keys, and medium from a detector geometry file.
+
+    Parameters
+    ----------
+    fname : str
+        Path to the geometry file.
+
+    Returns
+    -------
+    pos_out : numpy.ndarray
+        Array of module positions.
+    keys : list of tuple of int
+        List of module keys.
+    medium : str
+        Medium in which the detector is embedded.
     """
     pos = []; keys = []; meta_data = []
     with open(fname) as geo_in:
@@ -38,16 +52,20 @@ def from_geo(fname):
 
 def geo_from_coords(coords, out_path, tol = 0.5, medium = "ice", dom_radius = 30):
     """
-    Generates a detector geometry file
+    Generate a detector geometry file from an array of module coordinates.
+
     Parameters
-    __________
-    
-        coords:
-            nx3 array of modules coordinates
-        out_path:
-            File path to write to
-        tol:
-            Tolerance for grouping DOMs in a string
+    ----------
+    coords : numpy.ndarray
+        nx3 array of module coordinates.
+    out_path : str
+        File path to write to.
+    tol : float, optional
+        Tolerance for grouping DOMs into a string.
+    medium : str, optional
+        Medium in which the detector is embedded.
+    dom_radius : float, optional
+        DOM radius in centimeters.
     """
     coord_list = list(list(a) for a in coords)
     coord_list.sort()
@@ -74,7 +92,18 @@ def geo_from_coords(coords, out_path, tol = 0.5, medium = "ice", dom_radius = 30
             geo_out.write(f'{coord[0]}\t{coord[1]}\t{coord[2]}\t{coord[3]}\t{coord[4]}\n')
 
 def geo_from_f2k(fname, out_path, medium = "ice", dom_radius = 30):
-    """ Generates a detector geo file from an f2k
+    """ Generate a detector geo file from an f2k file.
+
+    Parameters
+    ----------
+    fname : str
+        Path to the f2k file.
+    out_path : str
+        File path to write to.
+    medium : str, optional
+        Medium in which the detector is embedded.
+    dom_radius : float, optional
+        DOM radius in centimeters.
     """
     positions, keys, sers = from_f2k(fname)
     with open(out_path, "w") as geo_out:

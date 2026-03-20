@@ -4,17 +4,24 @@ import LeptonWeighter as LW
 from abc import abstractmethod
 
 class Weighter:
+    """Base class for weighting injection events with LeptonWeighter.
 
-    """
-    Base class for weighting injection events with LeptonWeighter
-
-    params
-    ______
-    xs_dir: Path to differential cross sections. This can usually be found in 
-             `/LeptonWeighter/resources/data/`
-    lic_file: Path to lic_file created by LeptonInjector
-    nevents: (1) Events generated to rescale weight by. Helpful if you have non-uniform
-             events per file. 
+    Parameters
+    ----------
+    xs_prefix : str, optional
+        Path to differential cross sections. This can usually be found in `/LeptonWeighter/resources/data/`.
+    lic_file : str
+        Path to lic file created by LeptonInjector.
+    nu_cc_xs : str, optional
+        File name of the neutrino CC cross section spline.
+    nubar_cc_xs : str, optional
+        File name of the anti-neutrino CC cross section spline.
+    nu_nc_xs : str, optional
+        File name of the neutrino NC cross section spline.
+    nubar_nc_xs : str, optional
+        File name of the anti-neutrino NC cross section spline.
+    nevents : int, optional
+        Number of generated events to rescale weight by. Helpful if you have non-uniform events per file.
     """
     def __init__(
         self, 

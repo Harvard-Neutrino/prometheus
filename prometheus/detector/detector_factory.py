@@ -16,19 +16,22 @@ class InvalidRNGError(Exception):
         super.__init__(self.message)
 
 def parse_rng(rng: Union[None, int, np.random.RandomState]) -> np.random.RandomState:
-    """Helps determine random number generation state from input
+    """Helps determine random number generation state from input.
 
-    params
-    ______
-    rng: rng generator to make sense of
+    Parameters
+    ----------
+    rng : int, None or numpy.random.RandomState
+        rng generator to parse.
 
-    returns
-    _______
-    rng: np.random.RandomState
+    Returns
+    -------
+    rng : numpy.random.RandomState
+        Random state corresponding to the input.
 
-    raises
-    ______
-    InvalidRNGError: If we don't know how to handle the input rng
+    Raises
+    ------
+    InvalidRNGError
+        Raised if we don't know how to handle the input rng.
     """
     if not (
         isinstance(rng, int) or \
@@ -41,15 +44,17 @@ def parse_rng(rng: Union[None, int, np.random.RandomState]) -> np.random.RandomS
     return rng
 
 def read_medium(geofile) -> Union[Medium, None]:
-    """Figures out detector medium from geofile
+    """Figures out detector medium from geofile.
 
-    params
-    ______
-    geofile: Detector geometry file
+    Parameters
+    ----------
+    geofile : str
+        Detector geometry file.
     
-    returns
-    _______
-    medium: Medium for the detector
+    Returns
+    -------
+    medium : Medium or None
+        Medium for the detector.
     """
     medium_string = ""
     with open(geofile) as geo_in:
@@ -68,17 +73,21 @@ def detector_from_geo(
     efficiency: float=0.2,
     noise_rate: float=1
 ) -> Detector:
-    """Make a detector from a Prometheus geo file
+    """Make a detector from a Prometheus geofile.
     
-    params
-    ______
-    geofile: Geofile to read from
-    efficiency: Quantum efficiency of OMs
-    noise_rate: Noise rate of OMs in Hz
+    Parameters
+    ----------
+    geofile : str
+        Geofile to read from.
+    efficiency : float, optional
+        Quantum efficiency of OMs.
+    noise_rate : float, optional
+        Noise rate of OMs in Hz.
 
-    returns
-    _______
-    detector: Prometheus detector object
+    Returns
+    -------
+    detector : Detector
+        Prometheus detector object.
     """
     pos = []
     keys = []
@@ -123,26 +132,36 @@ def make_line(
     efficiency: float = 0.2
 ) -> List[Module]:
     """Make a line of detector modules. The modules share the same (x, y) coordinate and 
-    are spaced along the z-direction. This detector will be symetrically spaced about z=z_cent
+    are spaced along the z-direction. This detector will be symetrically spaced about z=z_cent.
 
-    params
-    ______
-    x: x-position of the line
-    y: y-position of the line
-    n_z: number of modules on the line
-    dist_z: vertical spacing between modules
-    z_cent: z-position of the center of the line
-    line_id: integer identifier of the line
-    [rng]: How to set numpy random state. If a np.random.RandomState instance is passed, 
-        that will be used. If int or None, random state will be 
-        np.random.RandomState(rng). Anything else will raise error
-    [baseline_noise_rate]: Baseline dark noise rate for the OMs in GHz
-    [efficiency]: quantum efficiency of the OMs
+    Parameters
+    ----------
+    x : float
+        X-position of the line.
+    y : float
+        Y-position of the line.
+    n_z : int
+        Number of modules on the line.
+    dist_z : float
+        Vertical spacing between modules.
+    z_cent : float
+        Z-position of the center of the line.
+    line_id : int
+        Integer identifier of the line.
+    rng : numpy.random.RandomState, int or None, optional
+        The way to set numpy random state. If a np.random.RandomState instance
+        is passed, that will be used. If int or None, random state will be
+        np.random.RandomState(rng). Anything else will raise error.
+    baseline_noise_rate : float, optional
+        Baseline dark noise rate for the OMs in GHz.
+    efficiency : float, optional
+        Quantum efficiency of the OMs.
 
-    returns
-    _______
-    modules: list of modules. This may be then be used to construct a Prometheus
-        Detector if a single line detector is desired
+    Returns
+    -------
+    modules : list of Module
+        A list of modules that can be used to construct a Prometheus detector object
+        if a single line detector is desired.
     """
     baseline_noise_rate *= 1e9
     rng = parse_rng(rng)
@@ -181,22 +200,31 @@ def make_grid(
     each module is randomly sampled from a gamma distribution. The random
     state may be set by input
 
-    params
-    ______
-    n_side: number of strings per side
-    dist: spacing between strings along principal axes
-    n_z: number of modules on the line
-    dist_z: vertical spacing between modules
-    z_cent: z-position of the center of the detector
-    [rng]: How to set numpy random state. If a np.random.RandomState instance is passed, 
-        that will be used. If int or None, random state will be 
-        np.random.RandomState(rng). Anything else will raise error
-    [baseline_noise_rate]: Baseline dark noise rate for the OMs in GHz
-    [efficiency]: quantum efficiency of the OMs
+    Parameters
+    ----------
+    n_side : int
+        Number of strings per side.
+    dist : float
+        Spacing between strings along principal axes.
+    n_z : int
+        Number of modules on the line.
+    dist_z : float
+        Vertical spacing between modules.
+    z_cent : float
+        Z-position of the center of the detector.
+    rng : numpy.random.RandomState, int or None, optional
+        The way to set numpy random state. If a np.random.RandomState instance
+        is passed, that will be used. If int or None, random state will be
+        np.random.RandomState(rng). Anything else will raise error.
+    baseline_noise_rate : float, optional
+        Baseline dark noise rate for the OMs in GHz.
+    efficiency : float, optional
+        quantum efficiency of the OMs.
 
-    returns
-    _______
-    det: Orthogonal Prometheus Detector
+    Returns
+    -------
+    det : Detector
+        Orthogonal Prometheus detector.
     """
     modules = []
     x_pos = np.linspace(-n_side / 2 * dist, n_side / 2 * dist, n_side)
@@ -235,23 +263,33 @@ def make_hex_grid(
     The vertical center of the detector is at z_cent.
     The noise rate for each module is randomöy sampled from a gamma distribution.
 
-    params
-    ______
-    n_side: number of strings per side of hexagon
-    dist: insterstring spacing in meters
-    n_z: number of modules on the line
-    dist_z: vertical spacing between modules
-    z_cent: z-position of the center of the line
-    line_id: integer identifier of the line
-    [rng]: How to set numpy random state. If a np.random.RandomState instance is passed, 
-        that will be used. If int or None, random state will be 
-        np.random.RandomState(rng). Anything else will raise error
-    [baseline_noise_rate]: Baseline dark noise rate for the OMs in GHz
-    [efficiency]: quantum efficiency of the OMs
+    Parameters
+    ----------
+    n_side : int
+        Number of strings per side of hexagon.
+    dist : float
+        Insterstring spacing in meters.
+    n_z : int
+        Number of modules on the line.
+    dist_z : float
+        Vertical spacing between modules.
+    z_cent : float
+        Z-position of the center of the line.
+    line_id : int
+        Integer identifier of the line.
+    rng : numpy.random.RandomState, int or None, optional
+        The way to set numpy random state. If a np.random.RandomState instance
+        is passed, that will be used. If int or None, random state will be
+        np.random.RandomState(rng). Anything else will raise error.
+    baseline_noise_rate : float, optional
+        Baseline dark noise rate for the OMs in GHz.
+    efficiency : float, optional
+        Quantum efficiency of the OMs.
 
-    returns
-    _______
-    det: Hexagonal Prometheus detector
+    Returns
+    -------
+    det : Detector
+        Hexagonal Prometheus detector.
     """
 
     modules = []
@@ -318,23 +356,31 @@ def make_triang(
     on a the corners of a equilateral triangle, with input side length,
     number of modules per string, and z-spacing on a string set by input.
     The noise rate for each module is randomly sampled from a gamma distribution. 
-    The random state may be set by input
+    The random state may be set by input.
 
-    params
-    ______
-    side_len: length of the triangle in meters
-    n_z: number of modules on the line
-    dist_z: vertical spacing between modules
-    z_cent: z-position of the center of the detector
-    [rng]: How to set numpy random state. If a np.random.RandomState instance is passed, 
-        that will be used. If int or None, random state will be 
-        np.random.RandomState(rng). Anything else will raise error
-    [baseline_noise_rate]: Baseline dark noise rate for the OMs in GHz
-    [efficiency]: quantum efficiency of the OMs
+    Parameters
+    ----------
+    side_len : float
+        Length of the triangle in meters.
+    n_z : int
+        Number of modules on the line.
+    dist_z : float
+        Vertical spacing between modules.
+    z_cent : float
+        Z-position of the center of the detector.
+    rng : numpy.random.RandomState, int or None, optional
+        The way to set numpy random state. If a np.random.RandomState instance
+        is passed, that will be used. If int or None, random state will be
+        np.random.RandomState(rng). Anything else will raise error.
+    baseline_noise_rate : float, optional
+        Baseline dark noise rate for the OMs in GHz.
+    efficiency : float, optional
+        Quantum efficiency of the OMs.
 
-    returns
-    _______
-    det: a triangular detector
+    Returns
+    -------
+    det : Detector
+        Triangular Prometheus detector.
     """
 
     height = np.sqrt(side_len ** 2 - (side_len / 2) ** 2)
@@ -387,23 +433,31 @@ def make_rhombus(
     baseline_noise_rate: float = 1.0e3,
     efficiency: float = 0.2
 ) -> Detector:
-    """Make a rhombus detector
+    """Make a rhombus detector.
 
-    params
-    ______
-    side_len: length of the rhombus in meters
-    n_z: number of modules on the line
-    dist_z: vertical spacing between modules in meters
-    z_cent: z-position of the center of the detector in meters
-    [rng]: How to set numpy random state. If a np.random.RandomState instance is passed, 
-        that will be used. If int or None, random state will be 
-        np.random.RandomState(rng). Anything else will raise error
-    [baseline_noise_rate]: Baseline dark noise rate for the OMs in GHz
-    [efficiency]: quantum efficiency of the OMs
+    Parameters
+    ----------
+    side_len : float
+        Length of the rhombus in meters.
+    n_z : int
+        Number of modules on the line.
+    dist_z : float
+        Vertical spacing between modules in meters.
+    z_cent : float
+        Z-position of the center of the detector in meters.
+    rng : numpy.random.RandomState, int or None, optional
+        The way to set numpy random state. If a np.random.RandomState instance
+        is passed, that will be used. If int or None, random state will be
+        np.random.RandomState(rng). Anything else will raise error.
+    baseline_noise_rate : float, optional
+        Baseline dark noise rate for the OMs in GHz.
+    efficiency : float, optional
+        quantum efficiency of the OMs.
 
-    returns
-    _______
-    det: A rhombus detector
+    Returns
+    -------
+    det : Detector
+        Rhombus Prometheus detector.
 
     """
 

@@ -7,15 +7,22 @@ from ..import Particle
 # TODO Why is vertex split up ? DTaSD
 @dataclass
 class InjectionEvent:
-    """Dataclass for handing injection events
-    
-    params
-    ______
-    initial_state: Incident neutrino
-    final_states: All particles which results from the interaction
-    vertex_x: x-position of the interaction vertex
-    vertex_y: x-position of the interaction vertex
-    vertex_z: x-position of the interaction vertex
+    """Dataclass for handling injection events.
+
+    Parameters
+    ----------
+    initial_state : Particle
+        Incident neutrino.
+    final_states : Iterable[Particle]
+        All particles that result from the interaction.
+    interaction : Interactions
+        Type of interaction.
+    vertex_x : float
+        X-position of the interaction vertex.
+    vertex_y : float
+        Y-position of the interaction vertex.
+    vertex_z : float
+        Z-position of the interaction vertex.
     """
     initial_state: Particle
     final_states: Iterable[Particle]

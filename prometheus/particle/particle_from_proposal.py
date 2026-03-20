@@ -8,15 +8,21 @@ def particle_from_proposal(
     coordinate_offset,
     parent: PropagatableParticle = None,
 ) -> PropagatableParticle:
-    """Creates a Prometheus particle from a PROPOSAL object
+    """Create a Prometheus particle from a PROPOSAL object.
 
-    params
-    ______
-    pp_particle: PROPOSAL particle
+    Parameters
+    ----------
+    pp_particle
+        PROPOSAL particle instance.
+    coordinate_offset : numpy.ndarray
+        Coordinate offset to subtract from the particle position.
+    parent : PropagatableParticle, optional
+        Parent particle that created this particle.
 
-    returns
-    _______
-    child: the new particle which is a child of parent
+    Returns
+    -------
+    child : PropagatableParticle
+        New particle which is a child of ``parent``.
     """
     pdg_code = pp_particle.type
     e = pp_particle.energy * MeV_to_GeV
