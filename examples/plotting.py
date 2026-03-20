@@ -7,7 +7,7 @@ import sys
 sys.path.append('../')
 from prometheus import Prometheus, config
 from prometheus.plotting import plot_brightest
-from prometheus.utils.geo_utils import 
+from prometheus.utils.geo_utils import from_geo
 
 def main():
     config["detector"]['detector specs file'] = '../prometheus/data/custom.txt'
