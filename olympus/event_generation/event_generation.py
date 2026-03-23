@@ -49,22 +49,22 @@ def generate_cascade(
     converter_func,
     splitter=100000,
 ):
-    """
-    Generate a single cascade with given amplitude and position and return time of detected photons.
-
-    Parameters:
-        det: Detector
-            Instance of Detector class
-        event_data: dict
-            Container of the event data
-        seed: int
-        pprop_func: function
-            Function to calculate the photon signal
-        converter_func: function
-            Function to calculate number of photons as function of energy
-        splitter: int
-            Subset of the modules to use per run. This is for memory
-
+    """Generate a single cascade with given amplitude and position and return time of detected photons.
+ 
+    Parameters
+    ----------
+    det : Detector
+        Instance of Detector class.
+    event_data : dict
+        Container of the event data.
+    seed : int
+        Random seed.
+    pprop_func : callable
+        Function to calculate the photon signal.
+    converter_func : callable
+        Function to calculate number of photons as function of energy.
+    splitter : int, optional
+        Subset of the modules to use per run. This is for memory.
     """
 
     k1, k2 = random.split(seed)
@@ -303,21 +303,22 @@ def generate_realistic_track(
     proposal_prop,
     splitter=100000
 ):
-    """
-    Generate a realistic track using energy losses from PROPOSAL.
-
-    Parameters:
-        det: Detector
-            Instance of Detector class
-        event_data: dict
-            Container of the event data
-        seed: PRNGKey
-        pprop_func: function
-            Function to calculate the photon signal
-        proposal_prop: function
-            Propoposal propagator
-        splitter: int
-            Splits the detector modules in splitter sized chunks for memory efficiency
+    """Generate a realistic track using energy losses from PROPOSAL.
+ 
+    Parameters
+    ----------
+    det : Detector
+        Instance of Detector class.
+    event_data : dict
+        Container of the event data.
+    key : PRNGKey
+        Random key.
+    pprop_func : callable
+        Function to calculate the photon signal.
+    proposal_prop : callable
+        PROPOSAL propagator.
+    splitter : int, optional
+        Splits the detector modules in ``splitter``-sized chunks for memory efficiency.
     """
 
     if proposal_prop is None:
