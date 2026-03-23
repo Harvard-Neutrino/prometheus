@@ -31,10 +31,9 @@ def sample_times(pdf_params, sources, module_coords, module_efficiencies, time_g
 
             all_samples = np.empty(n_ph_tot)
 
-            """
-            Can't use this with numba yet
-            expon_samples = sampler(*pars[:-2], size=n_indirect, rstate=rstate) + 2
-            """
+            # Can't use this with numba yet
+            # expon_samples = sampler(*pars[:-2], size=n_indirect, rstate=rstate) + 2
+
             expon_samples = (
                 exp_exp_exp_sampler(
                     pars[0], pars[1], pars[2], pars[3], pars[4], n_indirect
@@ -62,8 +61,7 @@ def sample_times(pdf_params, sources, module_coords, module_efficiencies, time_g
 
 
 def make_generate_photons_nn(model_func):
-    """
-    Build an arival time sampling function.
+    """Build an arrival time sampling function.
 
     This function uses a pytorch model to predict the pdf parameters
     of a triple-exponential mixture model fitted to the arrival time distributions.
@@ -118,16 +116,22 @@ def interpolate_hist(hist, x, x_eval):
 def make_generate_bin_amplitudes_nn(
     det, model_func, binning, c_medium_f, prediction=False
 ):
-    """
-    Build a binned arival time sampling function.
+    """Build a binned arrival time sampling function.
 
     This function uses a pytorch model to predict the bin contents of the arrival time distribution.
 
-    Parameters:
-        model_path: str
-            Path to pytorch model
-        prediction: bool
-            If True, return predicted amplitudes instead of poisson samples
+    Parameters
+    ----------
+    det : Detector
+        Detector instance.
+    model_func : callable
+        Pytorch model used for prediction.
+    binning : numpy.ndarray
+        Bin edges of the arrival time distribution.
+    c_medium_f : callable
+        Function returning the speed of light in the medium for wavelength in nm.
+    prediction : bool
+        If True, return predicted amplitudes instead of Poisson samples.
     """
 
     nbins = len(binning) - 1

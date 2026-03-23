@@ -40,10 +40,9 @@ def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_mediu
 
     counts_net = make_counts_net_fn(counts_config)
 
-    """
-    def sample_model(traf_params, key):
-        return sample_shape_model(dist_builder, traf_params, traf_params.shape[0], key)
-    """
+    # def sample_model(traf_params, key):
+    # return sample_shape_model(dist_builder, traf_params,
+    # traf_params.shape[0], key)
 
     @jax.jit
     def sample_model_inner(traf_params, key):
