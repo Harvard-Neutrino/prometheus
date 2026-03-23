@@ -1,8 +1,11 @@
-"""Physical Constants."""
+"""Physical constants.
+ 
+Notes
+-----
+Pandel: <https://www.sciencedirect.com/science/article/pii/S0927650507001260>.
+ 
+"""
 import numpy as np
-
-# Pandel: https://www.sciencedirect.com/science/article/pii/S0927650507001260
-
 
 class Constants(object):
     """Collection of useful constants."""
@@ -15,6 +18,9 @@ class Constants(object):
     lambda_abs = 98
     lambda_sca = 24
     theta_cherenkov = np.arccos(1 / n_ph)
-    # 1 GeV EM cascade corresponds to 5.3 m Cherenkov track length
-    # In the relevent wavelength interval, a single charged particle emmits 250 photons / cm
     photons_per_GeV = 5.3 * 250 * 1e2
+    """Number of photons per GeV of EM cascade energy.
+ 
+    1 GeV EM cascade corresponds to 5.3 m Cherenkov track length.
+    In the relevant wavelength interval, a single charged particle emits 250 photons / cm.
+    """
