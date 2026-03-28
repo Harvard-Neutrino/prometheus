@@ -64,9 +64,9 @@ def injection_from_prometheus(
     ):
         """Make an injection object from Prometheus output.
 
-        If the output was not generated from `LeptonInjector`, you will
+        If the output was not generated from ``LeptonInjector``, you will
         need to specify which kind of injection to use and how to
-        convert each item to the appropriate `InjectionEvent`.
+        convert each item to the appropriate ``InjectionEvent``.
 
         Parameters
         ----------

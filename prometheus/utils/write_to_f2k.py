@@ -43,20 +43,20 @@ def serialize_to_f2k(particle, fname):
 
     In a nutshell this format is as follows:
 
-    `TR int int name x y z theta phi length energy time`
+    ``TR int int name x y z theta phi length energy time``
 
-    - `TR` stands for track and is a character constant.
-    - The first two `int` values are not used by ppc and are just for book keeping.
-    - The `name` column specifies the track type.
+    - ``TR`` stands for track and is a character constant.
+    - The first two ``int`` values are not used by ppc and are just for book keeping.
+    - The ``name`` column specifies the track type.
         - Possible values are: "amu+," "amu-," and "amu" for muons,
         "delta," "brems," "epair," "e+,", "e-," and "e" for electromagnetic cascades,
         and "munu" and "hadr" for hadronic cascades.
-    - `x`, `y` and `z` are the vector components of the track's initial position in meters.
-    - The quantities `theta` and `phi` are the track's theta and phi angle in degrees, respectively.
-    - `length` is the length of the track in meters.
+    - ``x``, ``y`` and ``z`` are the vector components of the track's initial position in meters.
+    - The quantities ``theta`` and ``phi`` are the track's theta and phi angle in degrees, respectively.
+    - ``length`` is the length of the track in meters.
         - It is only required for muons because cascades are treated as point-like sources.
-    - `energy` is the track's initial energy in GeV.
-    - `time` is the track's initial time in nanoseconds.
+    - ``energy`` is the track's initial energy in GeV.
+    - ``time`` is the track's initial time in nanoseconds.
     
     """
     index = 0

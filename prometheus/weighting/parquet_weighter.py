@@ -74,7 +74,7 @@ class ParquetWeighter(Weighter):
         Returns
         -------
         oneweight : float
-            Oneweight for event `[GeV sr m^2]`.
+            Oneweight for event ``[GeV sr m^2]``.
         """
         lw_event = LW.Event()
         injection = event["mc_truth"]

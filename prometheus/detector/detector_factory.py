@@ -268,7 +268,7 @@ def make_hex_grid(
     n_side : int
         Number of strings per side of hexagon.
     dist : float
-        Insterstring spacing in meters.
+        Interstring spacing in meters.
     n_z : int
         Number of modules on the line.
     dist_z : float
