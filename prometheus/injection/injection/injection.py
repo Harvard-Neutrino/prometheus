@@ -54,7 +54,7 @@ def recursively_get_final_property(
 
     Returns
     -------
-    numpy.ndarray
+    l : np.ndarray
         A numpy array with the requested attribute for each particle. The shape
         of this array is equal to the length of the ``particles`` input parameter.
     """

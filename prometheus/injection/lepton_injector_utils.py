@@ -11,7 +11,7 @@ def apply_detector_offset(
     ----------
     injection_file : str
         File where the untranslated injection is saved.
-    detector_offset : numpy.ndarray
+    detector_offset : np.ndarray
         Center of the detector in meters.
     """
     with h5.File(injection_file, "r+") as h5f:
@@ -35,7 +35,7 @@ def make_new_LI_injection(
         Dictionary specifying necessary pathing information.
     injection_specs : dict
         Dictionary specifying injection configuration settings.
-    detector_offset : numpy.ndarray
+    detector_offset : np.ndarray
         Center of the detector in meters.
     """
     import os

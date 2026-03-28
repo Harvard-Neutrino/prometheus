@@ -50,7 +50,7 @@ def make_particle_definition(particle: Particle) -> pp.particle.ParticleDef:
  
     Returns
     -------
-    pdef : proposal.particle.ParticleDef
+    pdef : pp.particle.ParticleDef
         PROPOSAL particle definition object corresponding to input particle.
     """
     if str(particle) not in 'MuMinus MuPlus EMinus EPlus TauMinus TauPlus'.split():
@@ -77,7 +77,7 @@ def make_propagator(
  
     Returns
     -------
-    prop : proposal.Propagator
+    prop : pp.Propagator
         PROPOSAL propagator for input particle.
     """
 
@@ -104,7 +104,7 @@ def make_geometries(earth_file: str) -> List[pp.Cartesian3D]:
 
     Returns
     -------
-    geometries : list of proposal.Cartesian3D
+    geometries : list of pp.Cartesian3D
         List of PROPOSAL spherical shells that make up the Earth.
     """
     geometries = []
@@ -136,7 +136,7 @@ def make_density_distributions(earth_file: str) -> List[pp.density_distribution.
 
     Returns
     -------
-    density_distributions : list of proposal.density_distribution.density_distribution
+    density_distributions : list of pp.density_distribution.density_distribution
         Density distributions corresponding to the average density in
         each layer of the Earth model at linear order.
     """
@@ -169,7 +169,7 @@ def make_propagation_utilities(
 
     Parameters
     ----------
-    particle_def : proposal.particle.ParticleDef
+    particle_def : pp.particle.ParticleDef
         PROPOSAL particle definition.
     earth_file : str
         Data file where the parametrization of Earth is stored.
@@ -178,7 +178,7 @@ def make_propagation_utilities(
 
     Returns
     -------
-    utilities : list of proposal.PropagationUtility
+    utilities : list of pp.PropagationUtility
         List of PROPOSAL ``PropagationUtility`` objects.
     """
     cuts = pp.EnergyCutSettings(
@@ -236,14 +236,14 @@ def init_pp_particle(
     ----------
     particle : Particle
         Prometheus particle you want to create the PROPOSAL state for.
-    coordinate_shift : numpy.ndarray
+    coordinate_shift : np.ndarray
         Difference between the PROPOSAL coordinate system centered on
         the Earth's center and the Prometheus coordinate system in
         meters.
 
     Returns
     -------
-    init_state : proposal.particle.ParticleState
+    init_state : pp.particle.ParticleState
         PROPOSAL particle state with energy, position, and direction
         matching the input particle.
     """
@@ -270,7 +270,7 @@ def new_proposal_losses(
 
     Parameters
     ----------
-    prop : proposal.Propagator
+    prop : pp.Propagator
         PROPOSAL propagator corresponding to the input particle.
     particle : Particle
         Prometheus particle to propagate.
@@ -280,10 +280,10 @@ def new_proposal_losses(
         ``numpy.linalg.norm(particle.position - detector_center) + padding``.
     r_inice : float
         Distance from the center of the edge detector where losses should be recorded.
-    detector_center : numpy.ndarray
+    detector_center : np.ndarray
         Center of the detector in the Prometheus coordinate system in
         meters.
-    coordinate_shift : numpy.ndarray
+    coordinate_shift : np.ndarray
         Difference between the PROPOSAL coordinate system centered on
         the Earth's center and the Prometheus coordinate system in
         meters. The norm of this vector should be the radius

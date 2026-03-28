@@ -15,7 +15,7 @@ class Module:
 
         Parameters
         ----------
-        pos : numpy.ndarray
+        pos : np.ndarray
             Position of the optical module in meters.
         key : tuple of int
             Tuple to look up module by. (string index, om index) is the

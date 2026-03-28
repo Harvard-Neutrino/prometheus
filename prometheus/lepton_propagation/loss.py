@@ -13,7 +13,7 @@ class Loss:
         Interaction type.
     e : float
         Energy lost.
-    position : numpy.ndarray
+    position : np.ndarray
         Position of the loss in meters.
     """
     int_type: int
