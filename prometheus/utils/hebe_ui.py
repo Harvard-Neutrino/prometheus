@@ -44,7 +44,7 @@ def detector_q():
     """Set detector file, medium, and selection volume."""
     dname = input(
     '''
-(0) User supplied geo file  (3) P-ONE
+(0) User supplied geofile  (3) P-ONE
 (1) IceCube                 (4) GVD
 (2) IceCube-Gen2
 Which detector do you want to use? (0/1/2/3/4): '''
