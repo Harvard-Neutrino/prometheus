@@ -19,10 +19,11 @@ except AttributeError:
 def simple_cascade_light_yield(energy, *args):
     """
     Approximation for cascade light yield.
-
-    Parameters:
-        energy: float
-            Particle energy in GeV
+ 
+    Parameters
+    ----------
+    energy : float
+        Particle energy in GeV.
     """
     photons_per_GeV = 5.3 * 250 * 1e2
 
@@ -32,12 +33,15 @@ def simple_cascade_light_yield(energy, *args):
 def fennel_total_light_yield(energy, particle_id, wavelength_range):
     """
     Calculate total light yield using fennel.
-
-    Parameters:
-        energy: float
-            Particle energy in GeV
-        particle_id: int
-        wavelength_range: tuple
+ 
+    Parameters
+    ----------
+    energy : float
+        Particle energy in GeV.
+    particle_id : int
+        Particle type (PDG ID).
+    wavelength_range : tuple
+        Wavelength interval (nm).
     """
 
     # Patch to fix LI Hadrons treatment
@@ -55,16 +59,18 @@ def fennel_total_light_yield(energy, particle_id, wavelength_range):
 def fennel_frac_long_light_yield(energy, particle_id, resolution=0.2):
     """
     Calculate the longitudinal light yield contribution.
-
-    Integrate the longitudinal distribution in steps of `resolution` and
+ 
+    Integrate the longitudinal distribution in steps of ``resolution`` and
     return the relative contributions.
-
-    Parameters:
-        energy: float
-            Particle energy in GeV
-        particle_id: int
-        resolution: float
-            Step length in m for evaluating the longitudinal distribution
+ 
+    Parameters
+    ----------
+    energy : float
+        Particle energy in GeV.
+    particle_id : int
+        Particle type (PDG ID).
+    resolution : float, optional
+        Step length in m for evaluating the longitudinal distribution.
     """
     # Patch to fix LI Hadrons treatment
     if particle_id==-2000001006:
@@ -95,26 +101,27 @@ def make_pointlike_cascade_source(
     wavelength_range=[290, 700],
 ):
     """
-    Create a pointlike lightsource.
-
-    Parameters:
-        pos: float[3]
-            Cascade position
-        t0: float
-            Cascade time
-        dir: float[3]
-            Cascade direction
-        energy: float
-            Cascade energy
-        particle_id: int
-            Particle type (PDG ID)
-        wavelength_range: tuple
-            Wavelength interval (nm)
-
-
-    Returns:
-        List[PhotonSource]
-
+    Create a pointlike light source.
+ 
+    Parameters
+    ----------
+    pos : float[3]
+        Cascade position.
+    t0 : float
+        Cascade time.
+    dir : float[3]
+        Cascade direction.
+    energy : float
+        Cascade energy.
+    particle_id : int
+        Particle type (PDG ID).
+    wavelength_range : tuple, optional
+        Wavelength interval (nm).
+ 
+    Returns
+    -------
+    source_pos, source_dir, source_time, source_nphotons
+        Position, direction, time and photon count.
     """
     # Patch to fix LI Hadrons treatment
     if particle_id==-2000001006:
@@ -146,29 +153,30 @@ def make_realistic_cascade_source(
 ):
     """
     Create a realistic (elongated) particle cascade.
-
+ 
     The longitudinal profile is approximated by placing point-like light sources
-    every `resolution` steps.
-
-    Parameters:
-        pos: float[3]
-            Cascade position
-        t0: float
-            Cascade time
-        dir: float[3]
-            Cascade direction
-        energy: float
-            Cascade energy
-        particle_id: int
-            Particle type (PDG ID)
-        key: PRNGKey
-            Random key
-        resolution: float
-            Step size for point-like light sources
-        moliere_rand: bool
-            Switch moliere randomization
-        wavelength_range: tuple
-            Wavelength interval (nm)
+    every ``resolution`` steps.
+ 
+    Parameters
+    ----------
+    pos : float[3]
+        Cascade position.
+    t0 : float
+        Cascade time.
+    dir : float[3]
+        Cascade direction.
+    energy : float
+        Cascade energy.
+    particle_id : int
+        Particle type (PDG ID).
+    key : PRNGKey
+        Random key.
+    resolution : float, optional
+        Step size for point-like light sources.
+    moliere_rand : bool, optional
+        Switch Moliere randomization.
+    wavelength_range : tuple, optional
+        Wavelength interval (nm).
     """
     # Patch to fix LI Hadrons treatment
     if particle_id==-2000001006:

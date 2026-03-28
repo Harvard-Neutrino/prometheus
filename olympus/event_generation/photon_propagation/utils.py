@@ -8,16 +8,32 @@ from ..photon_source import PhotonSource, PhotonSourceType
 def source_to_model_input_per_module(
     module_coords, source_pos, source_dir, source_t0, c_medium
 ):
-    """
-    Convert photon source and module coordinates into neural net input.
-
+    """Convert photon source and module coordinates into neural net input.
+ 
     Calculates the distance and viewing angle between the source and the module.
     The viewing angle is the angle of the vector between module and source and the direction
     vector of the source.
-    Also calculates the geometric time (expected arrival time for a direct photon).
 
-    Returns the viewing angle and log10(distance) the geometric time.
-
+    Parameters
+    ----------
+    module_coords : jax.numpy.ndarray
+        Coordinates of the module.
+    source_pos : jax.numpy.ndarray
+        Position of the photon source.
+    source_dir : jax.numpy.ndarray
+        Direction vector of the photon source.
+    source_t0 : float
+        Emission time of the photon source.
+    c_medium : float
+        Speed of light in the medium.
+ 
+    Returns
+    -------
+    inp_pars : jax.numpy.ndarray
+        Array of ``[log10(distance), viewing_angle]``.
+    time_geo : float
+        Geometric time (expected arrival time for a direct photon).
+ 
     """
 
     source_targ_vec = module_coords - source_pos

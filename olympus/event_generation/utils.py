@@ -21,19 +21,18 @@ def sph_to_cart_jnp(theta, phi=0):
 
 def t_geo(x, t_0, direc, x_0):
     """
-    Calculate the expected arrival time of unscattered photons.
-
-    Calculate the expected arrival time of unscattered photons. at position `x`,
-    emitted by a muon with direction `direc` and time `t_0` at position `x_0`.
-
-    Parameters:
-      x: (3,1) np.ndarray
-        position of the sensor
-      t_0: float
-        time at which muon is at `x_0`
-      direc: (3,1) np.ndarray
-        normalized direction vector of the muon
-      x_0: (3, 1) np.ndarray
+    Calculate the expected arrival time of unscattered photons at position ``x``, emitted by a muon with direction ``direc`` and time ``t_0`` at position ``x_0``.
+ 
+    Parameters
+    ----------
+    x : (3,1) np.ndarray
+        Position of the sensor.
+    t_0 : float
+        Time at which the muon is at ``x_0``.
+    direc : (3,1) np.ndarray
+        Normalized direction vector of the muon.
+    x_0 : (3, 1) np.ndarray
+        Position of the muon at time ``t_0``.
     """
     q = np.linalg.norm(np.cross((x - x_0), direc))
     return t_0 + 1 / Constants.c_vac * (
@@ -43,7 +42,7 @@ def t_geo(x, t_0, direc, x_0):
 
 
 def proposal_setup():
-    """Set up a proposal propagator."""
+    """Set up a PROPOSAL propagator."""
     try:
         import proposal as pp
     except ImportError as e:
