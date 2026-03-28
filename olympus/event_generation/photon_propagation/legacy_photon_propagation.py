@@ -31,7 +31,7 @@ def sample_times(pdf_params, sources, module_coords, module_efficiencies, time_g
 
             all_samples = np.empty(n_ph_tot)
 
-            # Can't use this with numba yet
+            # TODO: Use jax
             # expon_samples = sampler(*pars[:-2], size=n_indirect, rstate=rstate) + 2
 
             expon_samples = (
