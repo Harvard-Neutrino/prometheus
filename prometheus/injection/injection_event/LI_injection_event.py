@@ -4,7 +4,7 @@ from .injection_event import InjectionEvent
 
 @dataclass
 class LIInjectionEvent(InjectionEvent):
-    """Injection event for `LeptonInjector` injection.
+    """Injection event for ``LeptonInjector`` injection.
 
     Parameters
     ----------

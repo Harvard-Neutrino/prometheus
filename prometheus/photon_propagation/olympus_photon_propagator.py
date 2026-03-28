@@ -50,6 +50,8 @@ class OlympusPhotonPropagator(PhotonPropagator):
     def propagate(self, particle: Particle):
         """Simulate losses and propagate resulting photons for an input particle.
 
+        Losses and resulting photon hits are stored within the input particle (which is modified in-place).
+
         Parameters
         ----------
         particle : Particle

@@ -31,7 +31,7 @@ from .photon_propagation import (
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
 
 class PpcTmpdirExistsError(Exception):
-    """Raised if ppc `tmpdir` exists and force not specified."""
+    """Raised if ppc ``tmpdir`` exists and force not specified."""
     def __init__(self, path):
         self.message = f"{path} exists. Please remove it or specify force in the config"
         super().__init__(self.message)
@@ -70,7 +70,7 @@ class Prometheus(object):
             Configuration dictionary or path to YAML file which specifies configuration.
         detector : Detector or None
             Detector to be used or path to geo file to load detector file.
-            If this is left out, the path from the `userconfig["detector"]["geo file"]` will be loaded.
+            If this is left out, the path from the ``userconfig["detector"]["geo file"]`` will be loaded.
 
         Raises
         ------
