@@ -20,12 +20,12 @@ def parse_rng(rng: Union[None, int, np.random.RandomState]) -> np.random.RandomS
 
     Parameters
     ----------
-    rng : int, None or numpy.random.RandomState
+    rng : int, None or np.random.RandomState
         rng generator to parse.
 
     Returns
     -------
-    rng : numpy.random.RandomState
+    rng : np.random.RandomState
         Random state corresponding to the input.
 
     Raises
@@ -148,7 +148,7 @@ def make_line(
         Z-position of the center of the line.
     line_id : int
         Integer identifier of the line.
-    rng : numpy.random.RandomState, int or None, optional
+    rng : np.random.RandomState, int or None, optional
         The way to set numpy random state. If a np.random.RandomState instance
         is passed, that will be used. If int or None, random state will be
         np.random.RandomState(rng). Anything else will raise error.
@@ -212,7 +212,7 @@ def make_grid(
         Vertical spacing between modules.
     z_cent : float
         Z-position of the center of the detector.
-    rng : numpy.random.RandomState, int or None, optional
+    rng : np.random.RandomState, int or None, optional
         The way to set numpy random state. If a np.random.RandomState instance
         is passed, that will be used. If int or None, random state will be
         np.random.RandomState(rng). Anything else will raise error.
@@ -277,7 +277,7 @@ def make_hex_grid(
         Z-position of the center of the line.
     line_id : int
         Integer identifier of the line.
-    rng : numpy.random.RandomState, int or None, optional
+    rng : np.random.RandomState, int or None, optional
         The way to set numpy random state. If a np.random.RandomState instance
         is passed, that will be used. If int or None, random state will be
         np.random.RandomState(rng). Anything else will raise error.
@@ -368,7 +368,7 @@ def make_triang(
         Vertical spacing between modules.
     z_cent : float
         Z-position of the center of the detector.
-    rng : numpy.random.RandomState, int or None, optional
+    rng : np.random.RandomState, int or None, optional
         The way to set numpy random state. If a np.random.RandomState instance
         is passed, that will be used. If int or None, random state will be
         np.random.RandomState(rng). Anything else will raise error.
@@ -445,7 +445,7 @@ def make_rhombus(
         Vertical spacing between modules in meters.
     z_cent : float
         Z-position of the center of the detector in meters.
-    rng : numpy.random.RandomState, int or None, optional
+    rng : np.random.RandomState, int or None, optional
         The way to set numpy random state. If a np.random.RandomState instance
         is passed, that will be used. If int or None, random state will be
         np.random.RandomState(rng). Anything else will raise error.

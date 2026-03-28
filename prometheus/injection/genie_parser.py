@@ -215,9 +215,9 @@ def angle(v1: np.array, v2: np.array) -> float:
  
     Parameters
     ----------
-    v1 : numpy.ndarray
+    v1 : np.ndarray
         Vector 1.
-    v2 : numpy.ndarray
+    v2 : np.ndarray
         Vector 2.
  
     Returns
@@ -233,7 +233,7 @@ def p2azimuthAndzenith(p: np.array):
  
     Parameters
     ----------
-    p : numpy.ndarray
+    p : np.ndarray
         The 3D momentum.
  
     Returns

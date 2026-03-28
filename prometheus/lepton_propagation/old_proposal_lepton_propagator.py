@@ -49,7 +49,7 @@ def make_particle_def(particle: Particle) -> pp.particle.ParticleDef:
  
     Returns
     -------
-    pdef : proposal.particle.ParticleDef
+    pdef : pp.particle.ParticleDef
         PROPOSAL particle definition.
     """
     if str(particle) not in 'MuMinus MuPlus EMinus EPlus TauMinus TauPlus'.split():
@@ -69,7 +69,7 @@ def make_detector(earth_file: str) -> pp.geometry.Sphere:
  
     Returns
     -------
-    detector : proposal.geometry.Sphere
+    detector : pp.geometry.Sphere
         PROPOSAL sphere.
     """
     with open(earth_file, "r") as f:
@@ -94,7 +94,7 @@ def make_sector_defs(earth_file: str, simulation_specs: dict) -> List[pp.SectorD
 
     Returns
     -------
-    sec_defs : list of proposal.SectorDefinition
+    sec_defs : list of pp.SectorDefinition
         List of PROPOSAL sector definitions.
     """
     inner_radius = 0
@@ -150,14 +150,14 @@ def init_dynamic_data(
     ----------
     particle : Particle
         Prometheus particle you want ``DynamicData`` for.
-    particle_definition : proposal.particle.ParticleDef
+    particle_definition : pp.particle.ParticleDef
         PROPOSAL particle definition.
-    coordinate_shift : numpy.ndarray
+    coordinate_shift : np.ndarray
         Coordinate shift to apply before converting to PROPOSAL coordinates.
  
     Returns
     -------
-    particle_dd : proposal.particle.DynamicData
+    particle_dd : pp.particle.DynamicData
         PROPOSAL ``DynamicData`` for the input particle.
     """
     particle_dd = pp.particle.DynamicData(particle_definition.particle_type)
@@ -184,7 +184,7 @@ def make_propagator(
  
     Returns
     -------
-    prop : proposal.Propagator
+    prop : pp.Propagator
         PROPOSAL propagator for the input particle.
     """
     pdef = make_particle_def(particle)
@@ -215,9 +215,9 @@ def old_proposal_losses(
  
     Parameters
     ----------
-    prop : proposal.Propagator
+    prop : pp.Propagator
         PROPOSAL propagator object for the charged lepton to be propagated.
-    pdef : proposal.particle.ParticleDef
+    pdef : pp.particle.ParticleDef
         PROPOSAL particle definition for the charged lepton.
     particle : Particle
         Prometheus particle object to be propagated.
@@ -226,9 +226,9 @@ def old_proposal_losses(
         center of the detector.
     r_inice : float
         Distance from the center of the edge detector where losses should be recorded.  This should be a few scattering lengths for accuracy, but not too much more because then you will propagate light which never makes it.
-    detector_center : numpy.ndarray
+    detector_center : np.ndarray
         Center of the detector in meters.
-    coordinate_shift : numpy.ndarray
+    coordinate_shift : np.ndarray
         Coordinate shift between Prometheus and PROPOSAL coordinates.
  
     Returns
