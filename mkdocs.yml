@@ -1,0 +1,48 @@
+site_name: Prometheus Documentation
+repo_url: https://github.com/Harvard-Neutrino/prometheus
+site_author: Ana Lastoviria
+copyright: © Prometheus
+theme:
+  name: readthedocs
+  features:
+    - navigation.indexes
+nav:
+  - 'Usage': './index.md'
+extra_css:
+  - css/custom_rules.css
+plugins:
+  - search
+  - gh-admonitions
+  - mkdocs-autoapi:
+      autoapi_add_nav_entry: false
+  - api-autonav:
+      modules: ['./prometheus', './olympus', './hyperion']
+      exclude_private: true
+      show_full_namespace: false
+      nav_item_prefix: ''
+      module_options:
+        package.submodule:
+          docstring_style: numpy
+          show_signature: false
+        ".*":
+          heading_level: 1
+          show_symbol_type_heading: false
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [.]
+          options:
+            docstring_options:
+              ignore_init_summary: true
+            docstring_style: numpy
+            docstring_section_style: list
+            filters: ["!^_"]
+            heading_level: 1
+            merge_init_into_class: true
+            parameter_headings: false
+            separate_signature: true
+            show_source: true
+            show_root_heading: true
+            show_signature_annotations: true
+            summary: true
