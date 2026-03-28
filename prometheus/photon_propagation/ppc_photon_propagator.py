@@ -16,15 +16,19 @@ def ppc_sim(
     lp: LeptonPropagator,
     ppc_config: dict
 ) -> None:
-    """Simulate the propagation of a particle and of any photons resulting from
-    the energy losses of this particle
+    """Simulate the propagation of a particle and of any photons resulting from the energy losses of this particle.
 
-    params
-    ______
-    particle: Particle to propagate
-    det: Detector object to simulate within
-    lp: Prometheus LeptonPropagator to imulate any charged leptons
-    ppc_config: dictionary containg the configuration settings for the photon propagation
+    Parameters
+    ----------
+    particle : Particle
+        Particle to propagate.
+    det : Detector
+        Detector object to simulate within.
+    lp : LeptonPropagator
+        Prometheus LeptonPropagator used to simulate any charged leptons.
+    ppc_config : dict
+        Dictionary containing the configuration settings for the photon
+        propagation.
     """
     # TODO I think this could be factored out into a separate energy loss section
     # But that is not a now problem
@@ -83,14 +87,15 @@ def ppc_sim(
         ppc_sim(child, det, lp, ppc_config)
 
 class PPCPhotonPropagator(PhotonPropagator):
-    """Interface for simulating energy losses and light propagation using PPC"""
+    """Interface for simulating energy losses and light propagation using ppc."""
     def propagate(self, particle: Particle) -> None:
-        """Propagate input particle using PPC. Instead it modifies the 
-        state of the input Particle. We should make this more consistent 
-        but that is a problem for another day...
-
-        params
-        ______
-        particle: Prometheus particle to propagate
+        """Propagate an input particle using ppc.
+ 
+        This modifies the state of the input particle in-place. We should make this more consistent, but that is a problem for another day.
+        
+        Parameters
+        ----------
+        particle : Particle
+            Prometheus particle to propagate.
         """
         return ppc_sim(particle, self.detector, self.lepton_propagator, self.config)

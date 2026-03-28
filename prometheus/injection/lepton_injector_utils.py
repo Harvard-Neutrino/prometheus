@@ -5,12 +5,14 @@ def apply_detector_offset(
     injection_file: str,
     detector_offset: np.ndarray
 ) -> None:
-    """Translate the injection to a detector-centered coordinate system
-
-    params
-    ______
-    injection_file: File where the untranslated injection is saved
-    detector_offset: Center of the detector in meters
+    """Translate the injection to a detector-centered coordinate system.
+ 
+    Parameters
+    ----------
+    injection_file : str
+        File where the untranslated injection is saved.
+    detector_offset : np.ndarray
+        Center of the detector in meters.
     """
     with h5.File(injection_file, "r+") as h5f:
         injection = h5f[list(h5f.keys())[0]]
@@ -25,15 +27,16 @@ def make_new_LI_injection(
     injection_specs: dict,
     detector_offset: np.ndarray
 ) -> None:
-    """Make a new injection with LeptonInjector
-
-    params
-    ______
-    path_dict: dictionary specifying all the necessary pathing information
-    injection_specs: dictionary specifying all the injection configuration
-        settings
-    detector_offset: Center of the detector in meters
-
+    """Make a new injection with LeptonInjector.
+ 
+    Parameters
+    ----------
+    path_dict : dict
+        Dictionary specifying necessary pathing information.
+    injection_specs : dict
+        Dictionary specifying injection configuration settings.
+    detector_offset : np.ndarray
+        Center of the detector in meters.
     """
     import os
     print('Importing LeptonInjector')

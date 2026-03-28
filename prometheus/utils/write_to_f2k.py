@@ -23,30 +23,42 @@ def serialize_loss(loss, parent, output_f2k):
     line = f'TR 0 {0} {loss} {offpos[0]} {offpos[1]} {offpos[2] + PPC_MAGIC_Z} {theta} {phi} 0 {loss.e} {dt} \n'
     output_f2k.write(line)
 
-# Create an f2k file from given events
 def serialize_to_f2k(particle, fname):
-    '''
-    output_f2k: file name where the data will be written to
-    This format output can be passed to PPC to propagate the photons.
-    Details of the format can be found here:
-    https://www.zeuthen.desy.de/~steffenp/f2000/
+    """Create an f2k file from given events.
+
+    The f2k file is modified in place, the output can be passed to ppc to propagate the photons.
+
+    Parameters
+    ----------
+    particle : particle
+        The particle to serialize.
+    fname : str
+        File name to write the data to.
+
+    Notes
+    -----
+
+    Details of the output format can be found here:
+    <https://www.zeuthen.desy.de/~steffenp/f2000/>.
+
     In a nutshell this format is as follows:
 
-    'TR int int name x y z theta phi length energy time.'
+    ``TR int int name x y z theta phi length energy time``
 
-    - TR stands for track and is a character constant.
-    - The first two integer values are not used by ppc and are just for book keeping.
-    - The name column specifies the track type.
-        Possible values are: "amu+," "amu-," and "amu" for muons,
+    - ``TR`` stands for track and is a character constant.
+    - The first two ``int`` values are not used by ppc and are just for book keeping.
+    - The ``name`` column specifies the track type.
+        - Possible values are: "amu+," "amu-," and "amu" for muons,
         "delta," "brems," "epair," "e+,", "e-," and "e" for electromagnetic cascades,
         and "munu" and "hadr" for hadronic cascades.
-    - x, y and z are the vector components of the track's initial position in meters.
-    - The quantities theta and phi are the track's theta and phi angle in degrees, respectively.
-        length is the length of the track in meter.
-        It is only required for muons because cascades are treated as point-like sources.
-        energy is the track's initial energy in GeV.
-    - Time is the track's initial time in nanoseconds.
-    '''
+    - ``x``, ``y`` and ``z`` are the vector components of the track's initial position in meters.
+    - The quantities ``theta`` and ``phi`` are the track's theta and phi angle in degrees, respectively.
+    - ``length`` is the length of the track in meters.
+        - It is only required for muons because cascades are treated as point-like sources.
+    - ``energy`` is the track's initial energy in GeV.
+    - ``time`` is the track's initial time in nanoseconds.
+    
+    """
     index = 0
     with open(fname, "w") as output_f2k:
         output_f2k.write(f'EM {index} 1 0 0 0 0 \n')

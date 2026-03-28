@@ -23,7 +23,18 @@ class LIInjection(Injection):
         return d
 
 def injection_from_LI_output(LI_file: str) -> LIInjection:
-    """Creates injection object from a saved LI file"""
+    """Create an injection object from a saved LI file.
+
+    Parameters
+    ----------
+    LI_file : str
+        Path to the LeptonInjector output file.
+
+    Returns
+    -------
+    LIInjection
+        Injection object constructed from the LIfile contents.
+    """
     with h5.File(LI_file, "r") as h5f:
         injectors = list(h5f.keys())
         if len(injectors) > 1:
@@ -74,16 +85,19 @@ INTERACTION_CONVERTER = {
 }
 
 def injection_event_from_LI(injection: h5.Group, idx: int) -> LIInjectionEvent:
-    """Create an injection event from LI h5 group and index
+    """Create an injection event from an LI H5 group and index.
 
-    params
-    ______
-    injection: Group from h5 file to make injection from
-    idx: index in that gorup to make event
+    Parameters
+    ----------
+    injection : h5.Group
+        Group from the H5 file to create the injection from.
+    idx : int
+        Index in that group to create the event from.
 
-    returns
-    _______
-    event: Prometheus LIInjectionEvent corresponding to input
+    Returns
+    -------
+    event : LIInjectionEvent
+        Prometheus LIInjectionEvent corresponding to input.
     """
     direction = injection["initial"]["Direction"][idx]
     theta = direction[0]

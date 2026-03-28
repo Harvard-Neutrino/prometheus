@@ -9,17 +9,17 @@ import uproot
 # from schema import Schema, And, Use, Optional, SchemaError
 
 def genie_parser(events) -> pd.DataFrame:
-    """ function to fetch the relevant information from genie events (in rootracker format)
-
+    """Fetch the relevant information from GENIE events (in rootracker format).
+ 
     Parameters
     ----------
     events : dict
-        The genie events
-
+        A dictionary of GENIE events.
+ 
     Returns
     -------
-    pd.DataFrame
-        Data frame containing the relevant information
+    df : pd.DataFrame
+        Data frame containing the relevant information.
     """
     dic = {}
     dic['event_description'] = events['EvtCode/fString'].array(library='np')  # String describing the event
@@ -54,17 +54,17 @@ def genie_parser(events) -> pd.DataFrame:
     return pd.DataFrame.from_dict(dic)
 
 def final_parser(parsed_events: pd.DataFrame) -> pd.DataFrame:
-    """ fetches the final states
-
+    """Fetch the final states.
+ 
     Parameters
     ----------
     parsed_events : pd.DataFrame
-        The parsed events
-
+        The parsed events.
+ 
     Returns
     -------
     pd.DataFrame
-        The inital + final state info
+        The initial and final state info.
     """
     inital_energies_inj = np.array([event[0][3] for event in parsed_events['event_momenta']])
     inital_momenta_inj = [np.array(event[0][:3]) for event in parsed_events['event_momenta']]
@@ -105,17 +105,17 @@ def final_parser(parsed_events: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame.from_dict(dic)
 
 def genie_loader(filepath: str) -> pd.DataFrame:
-    """ Loads and parses GENIE data
+    """Load and parse GENIE data.
 
     Parameters
     ----------
-    filepath: str
-        Path to the GENIE file
+    filepath : str
+        Path to the GENIE data file.
 
     Returns
     -------
     pd.DataFrame
-        The parsed genie data
+        The parsed GENIE data.
     """
     with uproot.open(filepath) as file:
         return final_parser(genie_parser(file['gRooTracker']))
@@ -145,21 +145,21 @@ def genie_loader(filepath: str) -> pd.DataFrame:
 #     })
 
 def genie2prometheus(parsed_events: pd.DataFrame):
-    """ reformats parsed GENIE events into a usable format for PROMETHEUS
-    NOTES: Create a standardized scheme function. This could then be used as an interface to PROMETHEUS
-    for any injector. E.g. a user would only need to create a function to translate their injector output to the scheme format.
-
+    """Reformat parsed GENIE events into a usable format for Prometheus.
+ 
+    NOTES: Create a standardized scheme function. This could then be used as an interface to Prometheus for any injector. E.g. a user would only need to create a function to translate their injector output to the scheme format.
+ 
     Parameters
     ----------
-    parsed_events: pd.DataFrame
-        Dataframe object containing all the relevant (and additional) information needed by PROMETHEUS
-
+    parsed_events : pd.DataFrame
+        Dataframe object containing all relevant (and additional) information needed by Prometheus.
+ 
     Returns
     -------
-    particles: pd.DataFrame
-        Fromatted data set with values which can be used directly.
-    injection: pd.Dataframe
-        The injected particle in the same format
+    particles : pd.DataFrame
+        Formatted data set with values which can be used directly.
+    injection : pd.DataFrame
+        The injected particle in the same format.
     """
     # TODO: Use a more elegant definition to couple to the particle class
     primaries = {}
@@ -211,34 +211,34 @@ def genie2prometheus(parsed_events: pd.DataFrame):
     return pd.DataFrame.from_dict(event_set, orient='index'), pd.DataFrame.from_dict(primaries, orient='index')
 
 def angle(v1: np.array, v2: np.array) -> float:
-    """ Calculates the angle between two vectors in radians
-
+    """Calculate the angle between two vectors in radians.
+ 
     Parameters
     ----------
-    v1: np.array
-        vector 1
-    v2: np.array
-        vector 2
-
+    v1 : np.ndarray
+        Vector 1.
+    v2 : np.ndarray
+        Vector 2.
+ 
     Returns
     -------
-    angle: float
-        The calculates angle in radians
+    angle : float
+        The calculated angle in radians.
     """
     angle = np.arccos(np.clip(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)), -1, 1))
     return angle
 
 def p2azimuthAndzenith(p: np.array):
-    """ converts a momentum vector to azimuth and zenith angles
-
+    """Convert a momentum vector to azimuth and zenith angles.
+ 
     Parameters
     ----------
-    p: np.array
-        The 3d momentum
-
+    p : np.ndarray
+        The 3D momentum.
+ 
     Returns
     -------
-    float, float:
+    azimuth, zenith : float, float
         The azimuth and zenith angles in radians.
     """
     azimuth = angle(p[:2], np.array([0, 1]))

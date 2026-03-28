@@ -2,7 +2,7 @@ import numpy as np
 from typing import Tuple
 
 class Module:
-    """Detector optical module"""
+    """Detector optical module."""
     def __init__(
         self,
         pos: np.ndarray, 
@@ -13,14 +13,20 @@ class Module:
     ):
         """Initialize a module.
 
-        params
-        ______
-        pos: position of the optical module in meters
-        key: tuple to look up module by. (string index, om index) is the convention
-        [noise_rate]: noise of the module in GHz
-        [efficiency]: quantum efficiency of module
-        [serial number]: Serial number for the OM. I don't think you ever need to
-            touch this, but I don't want to tickle a sleeping dragon
+        Parameters
+        ----------
+        pos : np.ndarray
+            Position of the optical module in meters.
+        key : tuple of int
+            Tuple to look up module by. (string index, om index) is the
+            convention.
+        noise_rate : float, optional
+            Noise of the module in GHz.
+        efficiency : float, optional
+            Quantum efficiency of module.
+        serial_no : str or None, optional
+            Serial number for the OM. I don't think you ever need to
+            touch this, but I don't want to tickle a sleeping dragon.
         """
         self.pos = pos
         self.noise_rate = noise_rate

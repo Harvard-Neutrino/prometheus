@@ -23,15 +23,17 @@ MEDIUM_DICT = {
 }
 
 def remove_comments(s: str) -> str:
-    """Helper for removing trailing comments
+    """Helper for removing trailing comments from a string.
 
-    params
-    ______
-    s: string you want to remove comments from
+    Parameters
+    ----------
+    s : str
+        String you want to remove comments from.
 
-    returns
-    _______
-    s: string without the comments
+    Returns
+    -------
+    s: str
+        String without the comments.
     """
     if "#" not in s:
         return s
@@ -39,18 +41,18 @@ def remove_comments(s: str) -> str:
     return s[:idx]
 
 def make_particle_definition(particle: Particle) -> pp.particle.ParticleDef:
-    '''
-    Builds a proposal particle definition
-
+    """Build a PROPOSAL particle definition.
+ 
     Parameters
     ----------
-    particle: Prometheus particle you want a ParticleDef for
-
+    particle : Particle
+        Prometheus particle you want a particle definition object for.
+ 
     Returns
     -------
-    pdef: PROPOSAL particle definition object corresponing
-        to input particle
-    '''
+    pdef : pp.particle.ParticleDef
+        PROPOSAL particle definition object corresponding to input particle.
+    """
     if str(particle) not in 'MuMinus MuPlus EMinus EPlus TauMinus TauPlus'.split():
         raise ValueError(f"Particle string {particle} not recognized")
     pdef = getattr(pp.particle, f'{particle}Def')()
@@ -62,17 +64,21 @@ def make_propagator(
     simulation_specs: dict,
     path_dict: dict
 ) -> pp.Propagator:
-    """Make a PROPOSAL propagator
-
-    params
-    ______
-    particle: Prometheus particle for which we want a PROPOSAL propagator
-    simulation_specs: Dictionary specifying the configuration settings
-    path_dict: Dictionary specifying any required path variables
-
-    returns
-    _______
-    prop: PROPOSAL propagator for input Particle
+    """Build a PROPOSAL propagator.
+ 
+    Parameters
+    ----------
+    particle : Particle
+        Prometheus particle you want a PROPOSAL propagator for.
+    simulation_specs : dict
+        Dictionary specifying the configuration settings.
+    path_dict : dict
+        Dictionary specifying any required path variables.
+ 
+    Returns
+    -------
+    prop : pp.Propagator
+        PROPOSAL propagator for input particle.
     """
 
     pp.InterpolationSettings.tables_path = path_dict["tables path"]
@@ -88,18 +94,18 @@ def make_propagator(
 
     return prop
 
-# Pydoc crashes if you remove the comment :-(
-def make_geometries(earth_file: str) -> List:
-#def make_geometries(earth_file: str) -> List[pp.Cartesian3D]:
-    """Make list of proposal geometries from earth datafile
+def make_geometries(earth_file: str) -> List[pp.Cartesian3D]:
+    """Build PROPOSAL geometries from an Earth data file.
 
-    params
-    ______
-    earth_file: data file where the parametrization of Earth is stored
-    
-    returns
-    _______
-    geometries: List of PROPOSAL spherical shells that make up the Earth
+    Parameters
+    ----------
+    earth_file : str
+        Data file where the parametrization of Earth is stored.
+
+    Returns
+    -------
+    geometries : list of pp.Cartesian3D
+        List of PROPOSAL spherical shells that make up the Earth.
     """
     geometries = []
     with open(earth_file, "r") as f:
@@ -120,20 +126,19 @@ def make_geometries(earth_file: str) -> List:
 
     return geometries
             
-# Once again, uncomment messes with pydoc :-(
-def make_density_distributions(earth_file: str) -> List:
-#def make_density_distributions(earth_file: str) -> List[pp.density_distribution.density_distribution]:
-    """Make list of proposal homogeneous density distributions from
-    Earth datafile
+def make_density_distributions(earth_file: str) -> List[pp.density_distribution.density_distribution]:
+    """Create a list of PROPOSAL homogeneous density distributions from an Earth data file.
 
-    params
-    ______
-    earth_file: data file where the parametrization of Earth is stored
+    Parameters
+    ----------
+    earth_file : str
+        Data file where the parametrization of Earth is stored.
 
-    returns
-    _______
-    density_distributions: Density distributions corresponding to the 
-        average density in each layer of the Earth model at linear order
+    Returns
+    -------
+    density_distributions : list of pp.density_distribution.density_distribution
+        Density distributions corresponding to the average density in
+        each layer of the Earth model at linear order.
     """
     with open(earth_file, "r") as f:
         inner_radius = 0
@@ -159,21 +164,22 @@ def make_propagation_utilities(
     particle_def: pp.particle.ParticleDef,
     earth_file: str,
     simulation_specs: dict
-):
-# Pydoc again. Once day we will triumph
-#) -> pp.PropagationUtility:
-    """Make a list of PROPOSAL propagation utilities from an earth file
-        for a particle given some simulation specifications
+) -> pp.PropagationUtility:
+    """Build PROPOSAL propagation utilities from an Earth file.
 
-    params
-    ______
-    particle_def: PROPOSAL particle definition
-    earth_file: data file where the parametrization of Earth is stored
-    simulation_specs: dictionary specifying all the simulation specifications
+    Parameters
+    ----------
+    particle_def : pp.particle.ParticleDef
+        PROPOSAL particle definition.
+    earth_file : str
+        Data file where the parametrization of Earth is stored.
+    simulation_specs : dict
+        Dictionary specifying all the simulation specifications.
 
-    returns
-    _______
-    utilities: List of PROPOSAL PropagationUtility objects
+    Returns
+    -------
+    utilities : list of pp.PropagationUtility
+        List of PROPOSAL ``PropagationUtility`` objects.
     """
     cuts = pp.EnergyCutSettings(
         simulation_specs["ecut"] * GeV_to_MeV,
@@ -223,24 +229,23 @@ def init_pp_particle(
     particle: Particle,
     #pdef: pp.particle.ParticleDef,
     coordinate_shift: np.ndarray
-):
-# Pydoc
-#) -> pp.particle.ParticleState:
-    """Initialize a PROPOSAL particle
+) -> pp.particle.ParticleState:
+    """Initialize a PROPOSAL particle.
 
-    params
-    ______
-    particle: Prometheus particle for which to make the PROPOSAL state
-    pdef: PROPOSAL particle definition
-    coordinate_shift: Difference between the PROPOSAL coordinate system
-        centered on the the Earth's center and Prometheus coordinate
-        system in meters. The norm of this vector should be the radius
-        between the center of the Earth and the start of the atmoshphere
+    Parameters
+    ----------
+    particle : Particle
+        Prometheus particle you want to create the PROPOSAL state for.
+    coordinate_shift : np.ndarray
+        Difference between the PROPOSAL coordinate system centered on
+        the Earth's center and the Prometheus coordinate system in
+        meters.
 
-    returns
-    _______
-    init_state: PROPOSAL particle state with energy, position, and direction
-        matching input particle
+    Returns
+    -------
+    init_state : pp.particle.ParticleState
+        PROPOSAL particle state with energy, position, and direction
+        matching the input particle.
     """
     init_state = pp.particle.ParticleState()
     init_state.position = pp.Cartesian3D(
@@ -259,21 +264,31 @@ def new_proposal_losses(
     detector_center: np.ndarray,
     coordinate_shift: np.ndarray
 ) -> None:
-    """Propagate a Prometheus particle using PROPOSAL, modifying the particle
-    losses in place
+    """Propagate a Prometheus particle using PROPOSAL.
 
-    params
-    ______
-    prop: Proposal propagator porresponding to the input particle
-    particle: Prometheus particle to propagate
-    padding: propagation padding in meters. The propagation distance is calcuated as:
-        np.linalg.norm(particle.position - detector_center) + padding
-    detector_center: Center of the detector in Prometheus coordinate system in meters
-    coordinate_shift: Difference between the PROPOSAL coordinate system
-        centered on the the Earth's center and Prometheus coordinate
-        system in meters. The norm of this vector should be the radius
-        between the center of the Earth and the start of the atmoshphere, and 
-        should usually only have a z-component
+    This modifies the particle losses in place.
+
+    Parameters
+    ----------
+    prop : pp.Propagator
+        PROPOSAL propagator corresponding to the input particle.
+    particle : Particle
+        Prometheus particle to propagate.
+    padding : float
+        Propagation padding in meters. The propagation distance is
+        calculated as
+        ``numpy.linalg.norm(particle.position - detector_center) + padding``.
+    r_inice : float
+        Distance from the center of the edge detector where losses should be recorded.
+    detector_center : np.ndarray
+        Center of the detector in the Prometheus coordinate system in
+        meters.
+    coordinate_shift : np.ndarray
+        Difference between the PROPOSAL coordinate system centered on
+        the Earth's center and the Prometheus coordinate system in
+        meters. The norm of this vector should be the radius
+        between the center of the Earth and the start of the atmosphere,
+        and should usually only have a z-component.
     """
     init_state = init_pp_particle(particle, coordinate_shift)
     propagation_length = np.linalg.norm(particle.position) + padding
@@ -313,7 +328,7 @@ def new_proposal_losses(
         )
 
 class NewProposalLeptonPropagator(LeptonPropagator):
-    """Class for propagating charged leptons with PROPOSAL versions >= 7"""
+    """Propagate charged leptons with PROPOSAL versions >= 7."""
     def __init__(self, config):
         with open(config["paths"]["earth model location"], "r") as f:
             for line in f:
@@ -329,16 +344,7 @@ class NewProposalLeptonPropagator(LeptonPropagator):
         super().__init__(config)
 
     def _make_propagator(self, particle: Particle) -> pp.Propagator:
-        """Make a PROPOSAL propagator
-
-        params
-        ______
-        particle: Prometheus Particle that you want a PROPOSAL propagator for
-
-        returns
-        _______
-        propagator: PROPOSAL propagator
-        """ 
+        """Create a PROPOSAL propagator for a Prometheus particle."""
         propagator = make_propagator(
             particle,
             self.config["simulation"],
@@ -347,16 +353,7 @@ class NewProposalLeptonPropagator(LeptonPropagator):
         return propagator
 
     def _make_particle_def(self, particle: Particle):
-        """Make a PROPOSAL ParticleDef
-
-        params
-        ______
-        particle: Prometheus Particle that you want a PROPOSAL ParticleDef for
-
-        returns
-        _______
-        pdef: PROPOSAL ParticleDef
-        """ 
+        """Create a PROPOSAL particle definition for a Prometheus particle."""
         pdef = make_particle_definition(particle)
         return pdef
 
@@ -365,17 +362,16 @@ class NewProposalLeptonPropagator(LeptonPropagator):
         particle: Particle,
         detector: Detector
     ) -> None:
-        """Propagate a particle and track the losses. Losses and children
-        are added in place
+        """Propagate a particle and track the losses.
 
-        params
-        ______
-        particle: Prometheus Particle that should be propagated
-        detector: Detector that this is being propagated within
+        Losses and children are added in place.
 
-        returns
-        _______
-        propped_particle: Prometheus Particle after propagation
+        Parameters
+        ----------
+        particle : Particle
+            Prometheus particle that should be propagated.
+        detector : Detector
+            Detector that this is being propagated within.
         """
         # TODO particle_def is not needed. DTaSD
         particle_def, propagator = self[particle]
