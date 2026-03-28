@@ -3,14 +3,16 @@
 
 class MCRecord(object):
     """
-    Stores MC Truth information.
+    Stores MC truth information.
 
-    Properties:
-    event_type: str
-    sources: List[PhotonSource_]
-        List of photon sources
-    mc_info: List[Dict[str, Any]]
-        List of dictionaries containing MCTruth information.
+    Attributes
+    ----------
+    event_type : str
+        Event type.
+    sources : list of PhotonSource_
+        List of photon sources.
+    mc_info : list of dict
+        List of dictionaries containing MC truth information.
     """
 
     def __init__(self, event_type, sources, mc_info):

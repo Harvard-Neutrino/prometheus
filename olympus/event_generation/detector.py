@@ -7,22 +7,21 @@ import scipy.stats
 
 
 class Module(object):
-    """
-    Detection module.
-
-    Attributes:
-        pos: np.ndarray
-            Module position (x, y, z)
-        noise_rate: float
-            Noise rate in 1/ns
-        efficiency: float
-            Module efficiency (0, 1]
-        self.key: collection
-            Module identifier
+    """Detection module.
+ 
+    Attributes
+    ----------
+    pos : np.ndarray
+        Module position (x, y, z).
+    noise_rate : float
+        Noise rate in 1/ns.
+    efficiency : float
+        Module efficiency (0, 1].
+    key : collection
+        Module identifier.
     """
 
     def __init__(self, pos, key, noise_rate=1, efficiency=0.2, serial_no=None):
-        """Initialize a module."""
         self.pos = pos
         self.noise_rate = noise_rate
         self.efficiency = efficiency
@@ -37,21 +36,20 @@ class Module(object):
 
 
 class Detector(object):
-    """
-    A collection of modules.
-
-    Attributes:
-        modules: List
-        module_coords: np.ndarray
-            N x 3 array of (x, y z) coordinates
-        module_coords_ak: ak.array
-            Awkward array representation of the module coordinates
-        module_efficiencies: np.ndarray
-            N array of the module efficiences
+    """A collection of modules.
+ 
+    Attributes
+    ----------
+    modules : list
+    module_coords : np.ndarray
+        N x 3 array of (x, y, z) coordinates.
+    module_coords_ak : ak.array
+        Awkward array representation of the module coordinates.
+    module_efficiencies : np.ndarray
+        N array of the module efficiencies.
     """
 
     def __init__(self, modules):
-        """Initialize detector."""
         self.modules = modules
         self.module_coords = np.vstack([m.pos for m in self.modules])
         self.module_coords_ak = ak.Array(self.module_coords)
@@ -85,27 +83,30 @@ class Detector(object):
 
 
 def make_line(x, y, n_z, dist_z, rng, baseline_noise_rate, line_id, efficiency=0.2):
-    """
-    Make a line of detector modules.
-
+   """Build a line of detector modules.
+ 
     The modules share the same (x, y) coordinate and are spaced along the z-direction.
-
-    Parameters:
-        x, y: float
-            (x, y) position of the line
-        n_z: int
-            Number of modules per line
-        dist_z: float
-            Spacing of the detector modules in z
-        rng: RandomState
-        baseline_noise_rate: float
-            Baseline noise rate in 1/ns. Will be multiplied to gamma(1, 0.25) distributed
-            random rates per module.
-        line_id: int
-            Identifier for this line
+ 
+    Parameters
+    ----------
+    x, y : float
+        (x, y) position of the line.
+    n_z : int
+        Number of modules per line.
+    dist_z : float
+        Spacing of the detector modules in z.
+    rng : RandomState
+        Random number generator.
+    baseline_noise_rate : float
+        Baseline noise rate in 1/ns. Will be multiplied to gamma(1, 0.25) distributed
+        random rates per module.
+    line_id : int
+        Identifier for this line.
+    efficiency : float, optional
+        Module efficiency.
     """
-    modules = []
-    for i, pos_z in enumerate(np.linspace(-dist_z * n_z / 2, dist_z * n_z / 2, n_z)):
+   modules = []
+   for i, pos_z in enumerate(np.linspace(-dist_z * n_z / 2, dist_z * n_z / 2, n_z)):
         pos = np.array([x, y, pos_z])
         noise_rate = (
             scipy.stats.gamma.rvs(1, 0.25, random_state=rng) * baseline_noise_rate
@@ -114,29 +115,31 @@ def make_line(x, y, n_z, dist_z, rng, baseline_noise_rate, line_id, efficiency=0
             pos, key=(line_id, i), noise_rate=noise_rate, efficiency=efficiency
         )
         modules.append(mod)
-    return modules
+        return modules
 
 
 def make_grid(
     n_side, dist, n_z, dist_z, baseline_noise_rate=1e-6, rng=np.random.RandomState(1337)
 ):
-    """
-    Build a square detector grid.
-
+    """Build a square detector grid.
+ 
     Strings of detector modules are placed on a square grid.
-    The noise rate for each module is randomöy sampled from a gamma distribution
-
-    Paramaters:
-      n_side
-        Number of detector strings per side
-      dist
-        Spacing between strings [m]
-      n_z
-        Number of detector modules per string
-      dist_z
-        Distance of modules on a string [m]
-      baseline_noise_rate
-        Baseline noise rate (default 1E-6Hz)
+    The noise rate for each module is randomly sampled from a gamma distribution.
+ 
+    Parameters
+    ----------
+    n_side : int
+        Number of detector strings per side.
+    dist : float
+        Spacing between strings [m].
+    n_z : int
+        Number of detector modules per string.
+    dist_z : float
+        Distance of modules on a string [m].
+    baseline_noise_rate : float, optional
+        Baseline noise rate (default 1E-6 Hz).
+    rng : RandomState, optional
+        Random number generator.
     """
     modules = []
     x_pos = np.linspace(-n_side / 2 * dist, n_side / 2 * dist, n_side)
@@ -151,23 +154,25 @@ def make_grid(
 def make_hex_grid(
     n_side, dist, n_z, dist_z, baseline_noise_rate=1e-6, rng=np.random.RandomState(1337)
 ):
-    """
-    Build a hex detector grid.
-
+    """Build a hex detector grid.
+ 
     Strings of detector modules are placed on a square grid.
-    The noise rate for each module is randomöy sampled from a gamma distribution
-
-    Paramaters:
-      n_side
-        Number of detector strings per side
-      dist
-        Spacing between strings [m]
-      n_z
-        Number of detector modules per string
-      dist_z
-        Distance of modules on a string [m]
-      baseline_noise_rate
-        Baseline noise rate (default 1E-6Hz)
+    The noise rate for each module is randomly sampled from a gamma distribution.
+ 
+    Parameters
+    ----------
+    n_side : int
+        Number of detector strings per side.
+    dist : float
+        Spacing between strings [m].
+    n_z : int
+        Number of detector modules per string.
+    dist_z : float
+        Distance of modules on a string [m].
+    baseline_noise_rate : float, optional
+        Baseline noise rate (default 1E-6 Hz).
+    rng : RandomState, optional
+        Random number generator.
     """
     modules = []
     line_id = 0
@@ -362,18 +367,20 @@ def generate_noise(det, time_range, rng=np.random.RandomState(1337)):
 
 
 def trigger(det, event_times, mod_thresh=8, phot_thres=5):
-    """
-    Check a simple multiplicity condition.
-
+    """Check a simple multiplicity condition.
+ 
     Trigger is true when at least `mod_thresh` modules have measured more than `phot_thres` photons.
-
-    Parameters:
-        det: Detector
-        event_times: ak.array
-        mod_thresh: int
-            Threshold for the number of modules which have detected `phot_thres` photons
-        phot_thres: int
-            Threshold for the number of photons per module
+ 
+    Parameters
+    ----------
+    det : Detector
+        Detector instance.
+    event_times : ak.array
+        Per-module photon arrival times.
+    mod_thresh : int, optional
+        Threshold for the number of modules which have detected ``phot_thres`` photons.
+    phot_thres : int, optional
+        Threshold for the number of photons per module.
     """
     hits_per_module = ak.count(event_times, axis=1)
     if ak.sum((hits_per_module > phot_thres)) > mod_thresh:
@@ -381,28 +388,26 @@ def trigger(det, event_times, mod_thresh=8, phot_thres=5):
     return False
 
 
-"""
-def local_coinc(hit_times, lc_links, pmt_t=50, lc_t=500, smt_t=1000):
+# def local_coinc(hit_times, lc_links, pmt_t=50, lc_t=500, smt_t=1000):
 
-    trigger_times = []
-    mod_ids = []
-    lc_c
-    for mid in range(len(hit_times)):
-        ts_l = ak.sort(ak.flatten(hit_times[lc_links[mid]]))
-        ts_mod = hit_times[mid]
+#     trigger_times = []
+#     mod_ids = []
+#     lc_c
+#     for mid in range(len(hit_times)):
+#         ts_l = ak.sort(ak.flatten(hit_times[lc_links[mid]]))
+#         ts_mod = hit_times[mid]
 
-        # More than two hits within 50 ns
-        valid = (ts_mod[1:] - ts_mod[:-1]) < pmt_t
+#         # More than two hits within 50 ns
+#         valid = (ts_mod[1:] - ts_mod[:-1]) < pmt_t
 
-        triggers = np.zeros(ak.sum(valid), dtype=np.bool)
-        for i, vhit in enumerate(ts_mod[valid]):
+#         triggers = np.zeros(ak.sum(valid), dtype=np.bool)
+#         for i, vhit in enumerate(ts_mod[valid]):
 
-            # At least one hit within 500ns on neighboring module
-            if np.any(np.abs(ts_l - vhit) < lc_t):
-                triggers[i] = True
-        trigger_times.append(ts_mod[valid][triggers])
-        mod_ids.append(np.ones(triggers.shape[0]) * mid)
+#             # At least one hit within 500ns on neighboring module
+#             if np.any(np.abs(ts_l - vhit) < lc_t):
+#                 triggers[i] = True
+#         trigger_times.append(ts_mod[valid][triggers])
+#         mod_ids.append(np.ones(triggers.shape[0]) * mid)
 
-    trigger_times = ak.concatenate(trigger_times)
-    return ak.sum((trigger_times[1:] - trigger_times[:-1]) < smt_t)
-"""
+#     trigger_times = ak.concatenate(trigger_times)
+#     return ak.sum((trigger_times[1:] - trigger_times[:-1]) < smt_t)
