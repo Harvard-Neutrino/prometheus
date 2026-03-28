@@ -616,7 +616,7 @@ def make_photon_trajectory_fun(
     Make a photon trajectory function.
 
     This function calls the photon step function multiple times until
-    some termination condition is reached (defined by ``stepping_mode``)
+    some termination condition is reached (defined by `stepping_mode`)
 
     step_function: function
         Function that updates the photon state
