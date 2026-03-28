@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # geo_utils.py
 # Authors: David Kim
-# Util functions for geo files
+# Util functions for geofiles
 
 import numpy as np
 from .f2k_utils import from_f2k
@@ -92,7 +92,7 @@ def geo_from_coords(coords, out_path, tol = 0.5, medium = "ice", dom_radius = 30
             geo_out.write(f'{coord[0]}\t{coord[1]}\t{coord[2]}\t{coord[3]}\t{coord[4]}\n')
 
 def geo_from_f2k(fname, out_path, medium = "ice", dom_radius = 30):
-    """ Generate a detector geo file from an f2k file.
+    """ Generate a detector geofile from an f2k file.
 
     Parameters
     ----------
