@@ -112,7 +112,7 @@ def calculate_min_number_steps(
 
     For a given refractive index function, scattering length function, distance to detector
     and maximum time_residual, calculate how many propagation steps have to be performed such that the probability
-    of a photon having propagated for less time than the maximum time residual is less then ``p_threshold``.
+    of a photon having propagated for less time than the maximum time residual is less then `p_threshold`.
 
     Parameters:
         scattering_length_function: function
