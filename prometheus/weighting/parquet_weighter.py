@@ -62,15 +62,19 @@ class ParquetWeighter(Weighter):
 
     def _get_event_oneweight(self, event:ak.Record) -> float:
         """
-        Function that returns oneweight for event. Oneweight * flux / n_gen_events = rate
+        Get oneweight for event.
+        
+        Oneweight * flux / n_gen_events = rate.
 
-        params
-        ______
-        event: Prometheus output event
+        Parameters
+        ----------
+        event : awkward.Record
+            Prometheus output event.
 
-        returns
-        _______
-        oneweight: Oneweight for event [GeV sr m^2]
+        Returns
+        -------
+        oneweight : float
+            Oneweight for event ``[GeV sr m^2]``.
         """
         lw_event = LW.Event()
         injection = event["mc_truth"]

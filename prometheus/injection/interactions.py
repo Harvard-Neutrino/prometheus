@@ -1,7 +1,7 @@
 from enum import Enum
 
 class Interactions(Enum):
-    """Enum of known interactions"""
+    """Enum of known interaction types."""
     GLASHOW_RESONANCE = 0
     CHARGED_CURRENT = 1
     NEUTRAL_CURRENT = 2

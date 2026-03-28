@@ -22,15 +22,17 @@ MEDIUM_DICT = {
     "WATER": pp.medium.Water
 }
 def remove_comments(s: str) -> str:
-    """Helper for removing trailing comments
-
-    params
-    ______
-    s: string you want to remove comments from
-
-    returns
-    _______
-    s: string without the comments
+    """Helper for removing trailing comments from a string.
+ 
+    Parameters
+    ----------
+    s : str
+        String you want to remove comments from.
+ 
+    Returns
+    -------
+    s : str
+        String without the comments.
     """
     if "#" not in s:
         return s
@@ -38,15 +40,17 @@ def remove_comments(s: str) -> str:
     return s[:idx]
 
 def make_particle_def(particle: Particle) -> pp.particle.ParticleDef:
-    """Makes a PROPOSAL particle definition
-
-    params
-    ______
-    particle: Prometheus particle for which we want a PROPOSAL ParticleDef
-
-    returns
-    _______
-    pdef: PROPOSAL particle definition
+    """Create a PROPOSAL particle definition.
+ 
+    Parameters
+    ----------
+    particle : Particle
+        Prometheus particle for which we want a PROPOSAL ``ParticleDef``.
+ 
+    Returns
+    -------
+    pdef : pp.particle.ParticleDef
+        PROPOSAL particle definition.
     """
     if str(particle) not in 'MuMinus MuPlus EMinus EPlus TauMinus TauPlus'.split():
         raise ValueError(f"Cannot propagate {str(particle)} with PROPOSAL")
@@ -54,16 +58,19 @@ def make_particle_def(particle: Particle) -> pp.particle.ParticleDef:
     return pdef
 
 def make_detector(earth_file: str) -> pp.geometry.Sphere:
-    """Make a PROPOSAL sphere with radius eqaul to the max radius
-    from an Earth data file
-
-    params
-    ______
-    earth_file: Earth datafile
-    
-    returns
-    _______
-    detector: PROPOSAL Sphere
+    """Build a PROPOSAL sphere from an Earth data file.
+ 
+    The sphere radius is equal to the maximum radius from the file.
+ 
+    Parameters
+    ----------
+    earth_file : str
+        Earth data file.
+ 
+    Returns
+    -------
+    detector : pp.geometry.Sphere
+        PROPOSAL sphere.
     """
     with open(earth_file, "r") as f:
         for line in f:
@@ -76,17 +83,19 @@ def make_detector(earth_file: str) -> pp.geometry.Sphere:
     return detector
 
 def make_sector_defs(earth_file: str, simulation_specs: dict) -> List[pp.SectorDefinition]:
-    """Make list of PROPOSAL sector definitions for an input Earth 
-    data file according to given simulation specifications
+    """Build PROPOSAL sector definitions from an Earth data file.
 
-    params
-    ______
-    earth_file: Earth datafile
-    simulation_specs: dictionary specifying simulation paramters
+    Parameters
+    ----------
+    earth_file : str
+        Earth data file.
+    simulation_specs : dict
+        Dictionary specifying simulation parameters.
 
-    returns
-    _______
-    sec_defs: list of PROPOSAL sector definitions
+    Returns
+    -------
+    sec_defs : list of pp.SectorDefinition
+        List of PROPOSAL sector definitions.
     """
     inner_radius = 0
     sec_defs = []
@@ -135,16 +144,21 @@ def init_dynamic_data(
     particle_definition: pp.particle.ParticleDef,
     coordinate_shift: np.ndarray
 ) -> pp.particle.DynamicData:
-    """Makes PROPOSAL DynamicData:
+    """Create PROPOSAL ``DynamicData``.
 
-    params
-    ______
-    particle: Prometheus you want DynamicData for
-    particle_definition: PROPOSAL particle definition
-
-    returns
-    _______
-    particle_dd: PROPOSAL DynamicData for input particle
+    Parameters
+    ----------
+    particle : Particle
+        Prometheus particle you want ``DynamicData`` for.
+    particle_definition : pp.particle.ParticleDef
+        PROPOSAL particle definition.
+    coordinate_shift : np.ndarray
+        Coordinate shift to apply before converting to PROPOSAL coordinates.
+ 
+    Returns
+    -------
+    particle_dd : pp.particle.DynamicData
+        PROPOSAL ``DynamicData`` for the input particle.
     """
     particle_dd = pp.particle.DynamicData(particle_definition.particle_type)
     particle_dd.position = pp.Vector3D(*(particle.position + coordinate_shift) * m_to_cm)
@@ -157,17 +171,21 @@ def make_propagator(
     simulation_specs: dict,
     path_dict: dict
 ) -> pp.Propagator:
-    """Make a PROPOSAL propagator
-
-    params
-    ______
-    particle: Prometheus particle for which we want a PROPOSAL propagator
-    simulation_specs: Dictionary specifying the configuration settings
-    path_dict: Dictionary specifying any required path variables
-
-    returns
-    _______
-    prop: PROPOSAL propagator for input Particle
+    """Build a PROPOSAL propagator.
+ 
+    Parameters
+    ----------
+    particle : str
+        Prometheus particle you want a PROPOSAL propagator for.
+    simulation_specs : dict
+        Dictionary specifying the configuration settings.
+    path_dict : dict
+        Dictionary specifying any required path variables.
+ 
+    Returns
+    -------
+    prop : pp.Propagator
+        PROPOSAL propagator for the input particle.
     """
     pdef = make_particle_def(particle)
     detector = make_detector(path_dict["earth model location"])
@@ -193,19 +211,30 @@ def old_proposal_losses(
     detector_center: np.ndarray,
     coordinate_shift: np.ndarray
 ) -> Particle:
-    """Propagates charged lepton using PROPOSAL version <= 6
-
-    params
-    ______
-    prop: PROPOSAL propagator object for the charged lepton to be propagated
-    pdef: PROPOSAL particle definition for the charged lepton
-    particle: Prometheus particle object to be propagated
-    padding: Distance to propagate the charged lepton beyond its distance from the
-        center of the detector
-    r_inice: Distance from the center of the edge detector where losses should be
-        recorded. This should be a few scattering lengths for accuracy, but not too
-        much more because then you will propagate light which never makes it
-    detector_center: Center of the detector in meters
+    """Propagate a charged lepton using PROPOSAL version <= 6.
+ 
+    Parameters
+    ----------
+    prop : pp.Propagator
+        PROPOSAL propagator object for the charged lepton to be propagated.
+    pdef : pp.particle.ParticleDef
+        PROPOSAL particle definition for the charged lepton.
+    particle : Particle
+        Prometheus particle object to be propagated.
+    padding : float
+        Distance to propagate the charged lepton beyond its distance from the
+        center of the detector.
+    r_inice : float
+        Distance from the center of the edge detector where losses should be recorded.  This should be a few scattering lengths for accuracy, but not too much more because then you will propagate light which never makes it.
+    detector_center : np.ndarray
+        Center of the detector in meters.
+    coordinate_shift : np.ndarray
+        Coordinate shift between Prometheus and PROPOSAL coordinates.
+ 
+    Returns
+    -------
+    particle : Particle
+        Propagated Prometheus particle.
     """
     particle_dd = init_dynamic_data(particle, pdef, coordinate_shift)
     propagation_length = np.linalg.norm(particle.position) + padding
@@ -228,7 +257,7 @@ def old_proposal_losses(
 
 
 class OldProposalLeptonPropagator(LeptonPropagator):
-    """Class for propagating charged leptons with PROPOSAL versions <= 6"""
+    """Propagate charged leptons with PROPOSAL versions <= 6."""
     def __init__(self, config: dict):
         with open(config["paths"]["earth model location"], "r") as f:
             for line in f:
@@ -244,16 +273,7 @@ class OldProposalLeptonPropagator(LeptonPropagator):
         super().__init__(config)
 
     def _make_propagator(self, particle: Particle) -> pp.Propagator:
-        """Make a PROPOSAL propagator
-
-        params
-        ______
-        particle: Prometheus Particle that you want a PROPOSAL propagator for
-
-        returns
-        _______
-        propagator: PROPOSAL propagator
-        """ 
+        """Build a PROPOSAL propagator for a Prometheus particle."""
         propagator = make_propagator(
             particle,
             self._config["simulation"],
@@ -262,16 +282,7 @@ class OldProposalLeptonPropagator(LeptonPropagator):
         return propagator
 
     def _make_particle_def(self, particle: Particle):
-        """Make a PROPOSAL ParticleDef
-
-        params
-        ______
-        particle: Prometheus Particle that you want a PROPOSAL ParticleDef for
-
-        returns
-        _______
-        pdef: PROPOSAL ParticleDef
-        """ 
+        """Create a PROPOSAL particle definition for a Prometheus particle."""
         pdef = make_particle_def(particle)
         return pdef
 
@@ -280,18 +291,16 @@ class OldProposalLeptonPropagator(LeptonPropagator):
         particle: Particle,
         detector: Detector
     ) -> None:
-        """Propagate a particle and track the losses. Losses and 
-        children are applied in place
+        """Propagate a particle and track the losses.
 
-        params
-        ______
-        particle: Prometheus Particle that should be propagated
-        detector: Detector that this is being propagated within
-            This is a temporary fix and will hopefully we solved soon :-)
-
-        returns
-        _______
-        propped_particle: Prometheus Particle after propagation
+        Losses and children are applied in place.
+ 
+        Parameters
+        ----------
+        particle : Particle
+            Prometheus particle that should be propagated.
+        detector : Detector
+            Detector that this is being propagated within.        
         """
         particle_def, propagator = self[particle]
         old_proposal_losses(

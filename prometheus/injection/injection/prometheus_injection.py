@@ -62,10 +62,26 @@ def injection_from_prometheus(
         injection_cls: Injection = LIInjection,
         event_converter: Callable = prometheus_inj_to_li_injection_event
     ):
-        """Make an Injection object from Prometheus output. If not using
-        output that was not generated from LeptonInjector, you will need
-        to tell this which kind of injection you want to use, and how to
-        convert each item to the appropriate InjectionEvent
+        """Make an injection object from Prometheus output.
+
+        If the output was not generated from ``LeptonInjector``, you will
+        need to specify which kind of injection to use and how to
+        convert each item to the appropriate ``InjectionEvent``.
+
+        Parameters
+        ----------
+        file : str
+            Path to the Prometheus parquet output file.
+        injection_cls : Injection, optional
+            Injection class to construct, by default ``LIInjection``.
+        event_converter : Callable, optional
+            Function that converts a truth record to an injection event,
+            by default ``prometheus_inj_to_li_injection_event``.
+
+        Returns
+        -------
+        Injection
+            Injection class instance built from the provided file.
         """
         a = ak.from_parquet(file)
         events = [event_converter(truth) for truth in a["mc_truth"]]

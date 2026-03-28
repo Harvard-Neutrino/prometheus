@@ -25,8 +25,13 @@ def from_f2k(fname):
     return pos_out, keys, sers
 
 def clean_icecube(fname):
-    ''' Removes IceTop modules from icecube-f2k
-    '''
+    """Remove IceTop modules from an IceCube f2k file.
+
+    Parameters
+    ----------
+    fname : str
+        Path to the f2k file to clean in-place.
+    """
     with open(fname,'r') as f2k_in:
         line_list = f2k_in.readlines()
     with open(fname,'w') as f2k_in:

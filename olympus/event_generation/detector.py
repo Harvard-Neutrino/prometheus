@@ -369,7 +369,7 @@ def generate_noise(det, time_range, rng=np.random.RandomState(1337)):
 def trigger(det, event_times, mod_thresh=8, phot_thres=5):
     """Check a simple multiplicity condition.
  
-    Trigger is true when at least `mod_thresh` modules have measured more than `phot_thres` photons.
+    Trigger is true when at least ``mod_thresh`` modules have measured more than ``phot_thres`` photons.
  
     Parameters
     ----------

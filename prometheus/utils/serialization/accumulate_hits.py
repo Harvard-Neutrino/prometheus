@@ -6,18 +6,18 @@ from prometheus.photon_propagation.hit import Hit
 def accumulate_hits(
     particles: Iterable[PropagatableParticle],
 ) -> Tuple[Hit, int]:
-    """Makes a list of all hits for a set of particles, including
-    any children. It also returns an string which identifies which
-    particle produced the hit
+    """Create a list of hits for a set of particles, including their children.
 
-    params
-    ______
-    particles: List of particles to make hits
-    id_prefix: Optional string to prepend to the identifier
+    Parameters
+    ----------
+    particles : Iterable[PropagatableParticle]
+        List of particles to collect hits for.
 
-    returns
-    _______
-    hits_ids: list of tuples with hits and ids
+    Returns
+    -------
+    list of tuple[Hit, int]
+        List of tuples ``(hit, serialization_idx)`` identifying which
+        particle produced each hit.
     """
 
     hits_ids = []

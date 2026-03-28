@@ -7,15 +7,19 @@ class H5Weighter(Weighter):
 
     def get_event_oneweight(self, event_properties:h5.Dataset) -> float:
         """
-        Function that returns oneweight for event. Oneweight * flux / n_gen_events = rate
+        Get oneweight for event.
+        
+        Oneweight * flux / n_gen_events = rate.
 
-        params
-        ______
-        event: Prometheus output event
+        Parameters
+        ----------
+        event_properties : h5py.Dataset
+            Prometheus output event.
 
-        returns
-        _______
-        oneweight: Oneweight for event [GeV sr m^2]
+        Returns
+        -------
+        oneweight : float
+            Oneweight for event ``[GeV sr m^2]``.
         """
         lw_event = LW.Event()
         lw_event.energy = event_properties["totalEnergy"]
