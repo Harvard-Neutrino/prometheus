@@ -13,23 +13,46 @@ from .constants import Constants
 def calc_tres(
     t: np.ndarray, det_radius: float, det_dist: float, c_medium: float
 ) -> np.ndarray:
-    """
-    Calculate time residual.
+    """Calculate time residual.
 
     The time residual is calculated by subtracting the expected (geometric)
-    time a photon takes to travel det_dist-det_radius from the measured arrival time
+    time a photon takes to travel ``det_dist``-``det_radius`` from the measured arrival time.
 
-    Parameters:
-        t:
+    Parameters
+    ----------
+    t : np.ndarray
+        Measured arrival times.
+    det_radius : float
+        Detector radius.
+    det_dist : float
+        Distance to the detector.
+    c_medium : float
+        Speed of light in the medium.
+
+    Returns
+    -------
+    tres : np.ndarray
+        Time residual.
     """
     return t - ((det_dist - det_radius) / c_medium)
 
 
 def cherenkov_ang_dist(costheta: np.ndarray, n_ph: float = 1.35) -> np.ndarray:
-    """
-    Angular distribution of cherenkov photons for EM cascades.
+    """Angular distribution of Cherenkov photons for EM cascades.
 
-    Taken from https://arxiv.org/pdf/1210.5140.pdf
+    Taken from <https://arxiv.org/pdf/1210.5140.pdf>.
+
+    Parameters
+    ----------
+    costheta : np.ndarray
+        Cosine of the angle.
+    n_ph : float, optional
+        Refractive index for photons.
+
+    Returns
+    -------
+    dist : np.ndarray
+        Angular distribution values.
     """
     # params for e-
 
@@ -42,8 +65,21 @@ def cherenkov_ang_dist(costheta: np.ndarray, n_ph: float = 1.35) -> np.ndarray:
 
 
 def cherenkov_ang_dist_int(n_ph, lower=-1, upper=1):
-    """
-    Integral of the cherenkov angular distribution function.
+    """Integral of the Cherenkov angular distribution function.
+
+    Parameters
+    ----------
+    n_ph : float
+        Refractive index for photons.
+    lower : float, optional
+        Lower bound of the integration interval.
+    upper : float, optional
+        Upper bound of the integration interval.
+
+    Returns
+    -------
+    result : np.ndarray
+        Definite integral of the angular distribution.
     """
 
     def incgamma(a, x):
@@ -107,26 +143,27 @@ def calculate_min_number_steps(
     wavelength,
     p_threshold,
 ):
-    """
-    Calculate the minimum number of steps required to satistfy p < p_thresh.
+    """Calculate the minimum number of steps required to satisfy ``p < p_threshold``.
 
-    For a given refractive index function, scattering length function, distance to detector
-    and maximum time_residual, calculate how many propagation steps have to be performed such that the probability
-    of a photon having propagated for less time than the maximum time residual is less then `p_threshold`.
+    For a given refractive index function, scattering length function, distance to detector,
+    and maximum time residual, calculate how many propagation steps have to be performed such
+    that the probability of a photon having propagated for less time than the maximum time
+    residual is less than ``p_threshold``.
 
-    Parameters:
-        scattering_length_function: function
-            function that returns scattering length as function of wavelength
-        ref_index_func: function
-            function that returns the refractive index as function of wavelength
-        det_dist: float
-            distance from emitter to detector
-        max_tres: float
-            maximum time residual
-        wavelength: float
-            photon wavelength
-        p_threshold: float
-            probability threshold
+    Parameters
+    ----------
+    ref_index_func : callable
+        Function that returns the refractive index as a function of wavelength.
+    scattering_length_function : callable
+        Function that returns the scattering length as a function of wavelength.
+    det_dist : float
+        Distance from emitter to detector.
+    max_tres : float
+        Maximum time residual.
+    wavelength : float
+        Photon wavelength.
+    p_threshold : float
+        Probability threshold.
     """
     c_medium_f = lambda wl: Constants.BaseConstants.c_vac / ref_index_func(  # noqa E731
         wl

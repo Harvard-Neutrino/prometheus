@@ -1,8 +1,7 @@
 import numpy as np
 
-
 class SimpleDataset(object):
-    """Simple Dataset subclass that returns a tuple (input, output)."""
+    """Simple Dataset subclass that returns a tuple of (input, output)."""
 
     def __init__(self, *arrays):
         super(SimpleDataset, self).__init__()
@@ -15,8 +14,6 @@ class SimpleDataset(object):
                 raise ValueError("Inputs and outputs must have same length.")
 
     def __getitem__(self, idx):
-        """Return tuple of input, output."""
-
         if isinstance(idx, int):
             idx = [idx]
 
@@ -76,7 +73,6 @@ def downsample_ds(dataset, fraction, rng, copy=False):
 
 
 class DataLoader(object):
-    """Dataloader"""
 
     def __init__(self, dataset, batch_size, rng, shuffle=False, infinite=False):
         self._dataset = dataset

@@ -6,15 +6,15 @@ import jax
 
 
 def make_conditioner(hidden_sizes, out_params_activ, init_zero=True):
-    """
-    Build a conditioner MLP.
+    """Build a conditioner MLP.
 
-    Parameters:
-        hidden_sizes: List
-            List of layer sizes
-        out_params_traf: List
-            List of activations applied to final layer.
-            Can be None, in which case no transformation is applied.
+    Parameters
+    ----------
+    hidden_sizes : list
+        List of layer sizes.
+    out_params_activ : list
+        List of activations applied to final layer.
+        Can be ``None``, in which case no transformation is applied.
     """
 
     def final_activation(x):
@@ -58,14 +58,14 @@ def make_shape_conditioner_fn(
 
 
 def make_spl_flow(spl_params, rmin, rmax):
-    """
-    Make multiple spline flows.
+    """Make multiple spline flows.
 
-    Paramaters:
-        spl_params: List
-            List of spline parameters per layer
-        rmin, rmax: float
-            Min and max range for spline
+    Parameters
+    ----------
+    spl_params : list
+        List of spline parameters per layer.
+    rmin, rmax : float
+        Min and max range for spline.
     """
     layers = []
     for spl_p in spl_params:

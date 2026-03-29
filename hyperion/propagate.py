@@ -26,18 +26,23 @@ def photon_sphere_intersection(
 ):
     """
     Calculate intersection.
-
+ 
     Given a photon origin, a photon direction, a step size, a target location and a target radius,
-    calculate whether the photon intersects the target and the intrsection point.
-
-    Parameters:
-        photon_x: float[3]
-        photon_p: float[3]
-        step_size: float
-
-    Returns:
-        tuple(bool, float[3])
-            True and intersection position if intersected.
+    calculate whether the photon intersects the target and the intersection point.
+ 
+    Parameters
+    ----------
+    photon_x : float[3]
+        Photon origin position.
+    photon_p : float[3]
+        Photon direction vector.
+    step_size : float
+        Step size.
+ 
+    Returns
+    -------
+    result : tuple of (bool, float[3])
+        ``True`` and intersection position if intersected.
     """
     p_normed = jnp.asarray(photon_p, dtype=dtype)  # assume normed
 
@@ -61,11 +66,14 @@ def photon_sphere_intersection(
 
 def make_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.float64):
     """
-    Make a function that calculates the intersection of a photon path with a sphere.
-
-    Parameters:
-        target_x: float[3]
-        target_r: float
+    Create a function that calculates the intersection of a photon path with a sphere.
+ 
+    Parameters
+    ----------
+    target_x : float[3]
+        Target sphere center position.
+    target_r : float
+        Target sphere radius.
     """
     target_x = jnp.asarray(target_x, dtype=dtype)
     target_r = dtype(target_r)
@@ -77,11 +85,14 @@ def make_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.float64):
 
 def make_multi_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.float64):
     """
-    Make a function that calculates the intersection of a photon path with multiple spheres.
-
-    Parameters:
-        target_x: float[N, 3]
-        target_r: float[N]
+    Create a function that calculates the intersection of a photon path with multiple spheres.
+ 
+    Parameters
+    ----------
+    target_x : float[N, 3]
+        Target sphere center positions.
+    target_r : float[N]
+        Target sphere radii.
     """
     target_x = jnp.asarray(target_x, dtype=dtype)
     target_r = jnp.asarray(target_r, dtype=dtype)
@@ -143,20 +154,28 @@ def make_photon_circle_intersection(
     def photon_circle_intersection(photon_x, photon_p, step_size):
         """
         Intersection of line and plane.
-
-        iven a photon origin, a photon direction, a step size, a target location and a target radius,
+ 
+        Given a photon origin, a photon direction, a step size, a target location and a target radius,
         calculate whether the photon intersects the target and the intersection point.
+ 
+        Parameters
+        ----------
+        photon_x : float[3]
+            Photon origin position.
+        photon_p : float[3]
+            Photon direction vector.
+        step_size : float
+            Step size.
+ 
+        Returns
+        -------
+        result : tuple of (bool, float[3])
+            ``True`` and intersection position if intersected.
 
-        Parameters:
-            photon_x: float[3]
-            photon_p: float[3]
-            step_size: float
-
-        Returns:
-            tuple(bool, float[3])
-                True and intersection position if intersected.
+        Notes
+        -----
+        Assume plane normal vector is e_z.
         """
-        # assume plane normal vector is e_z
 
         photon_p = jnp.asarray(photon_p, dtype=dtype)
         p_n = jnp.dot(photon_p, circle_normal)
@@ -182,7 +201,7 @@ def make_photon_circle_intersection(
 
 
 def frank_tamm(wavelength, ref_index_func):
-    """Frank Tamm Formula."""
+    """Frank-Tamm Formula."""
     return (
         4
         * np.pi ** 2
@@ -198,14 +217,16 @@ def frank_tamm(wavelength, ref_index_func):
 
 def make_cherenkov_spectral_sampling_func(wl_range, ref_index_func, dtype=jnp.float64):
     """
-    Make a sampling function that samples from the Frank-Tamm formula in a given wavelength range.
-
-    Parameters:
-        wl_range: Tuple
-            lower and upper wavelength range
-        ref_index_func: function
-            Function returning wavelength dependent refractive index
-
+    Create a sampling function that samples from the Frank-Tamm formula in a given wavelength range.
+ 
+    Parameters
+    ----------
+    wl_range : tuple
+        Lower and upper wavelength range.
+    ref_index_func : callable
+        Function returning wavelength-dependent refractive index.
+    dtype : jnp.float64 or jnp.float32, optional
+        Data type: how many digits to store.
     """
     wls = np.linspace(wl_range[0], wl_range[1], 1000)
 
@@ -227,7 +248,7 @@ def make_cherenkov_spectral_sampling_func(wl_range, ref_index_func, dtype=jnp.fl
 def calc_new_direction(keys, old_dir, scattering_function):
     """
     Calculate new direction after sampling a scattering angle.
-
+ 
     Scattering is calculated in a reference frame local
     to the photon (e_z) and then rotated back to the global coordinate system.
     """
@@ -285,20 +306,21 @@ def make_step_function(
     dtype=jnp.float64,
 ):
     """
-    Make a photon step function object.
-
-    Returns a function f(photon_state, key) that performs a photon step
+    Create a photon step function object.
+ 
+    Returns a function ``f(photon_state, key)`` that performs a photon step
     and returns the new photon state.
-
-    Parameters:
-        intersection_f: function
-            function used to calculate the intersection
-        scattering_function: function
-            rng function drawing angles from scattering function
-        scattering_length_function: function
-            function that returns scattering length as function of wavelength
-        ref_index_func: function
-            function that returns the refractive index as function of wavelength
+ 
+    Parameters
+    ----------
+    intersection_f : callable
+        Function used to calculate the intersection.
+    scattering_function : callable
+        RNG function drawing angles from scattering function.
+    scattering_length_function : callable
+        Function that returns scattering length as a function of wavelength.
+    ref_index_func : callable
+        Function that returns the refractive index as a function of wavelength.
     """
 
     def step(photon_state, rng_key):
@@ -422,7 +444,7 @@ def make_initialize_position_sphere(sphere_pos, sphere_radius):
 
 
 def make_monochromatic_initializer(wavelength):
-    """Make a monochromatic initializer function."""
+    """Create a monochromatic initializer function."""
 
     def initialize_monochromatic(rng_key):
         return wavelength
@@ -438,15 +460,19 @@ def make_fixed_pos_time_initializer(
 ):
     """
     Initialize with fixed position and time and sample for direction and wavelength.
-
-    initial_pos: float[3]
-        Position vector of the emitter
-    initial_time: float
-        Emitter time
-    dir_init: function
-        Emission direction initializer
-    wavelength_init: function
-        wavelength initializer
+ 
+    Parameters
+    ----------
+    initial_pos : float[3]
+        Position vector of the emitter.
+    initial_time : float
+        Emitter time.
+    dir_init : callable
+        Emission direction initializer.
+    wavelength_init : callable
+        Wavelength initializer.
+    dtype : jnp.float64 or jnp.float32, optional
+        Data type: how many digits to store.
     """
 
     def init(rng_key):
@@ -471,17 +497,19 @@ def make_fixed_time_initializer(
 ):
     """
     Initialize with a fixed time, sample for position, direction and wavelength.
-
-    initial_pos: float[3]
-        Position vector of the emitter
-    initial_time: float
-        Emitter time
-    pos_init: function
-        Position initializer
-    dir_init: function
-        Emission direction initializer
-    wavelength_init: function
-        wavelength initializer
+ 
+    Parameters
+    ----------
+    initial_time : float
+        Emitter time.
+    pos_init : callable
+        Position initializer.
+    dir_init : callable
+        Emission direction initializer.
+    wavelength_init : callable
+        Wavelength initializer.
+    dtype : jnp.float64 or jnp.float32, optional
+        Data type: how many digits to store.
     """
 
     def init(rng_key):
@@ -512,22 +540,26 @@ def make_track_segment_fixed_time_pos_dir_initializer(
 ):
     """
     Initialize a track segment with fixed time, position and direction.
-
+ 
     The photon emission position is sampled uniformly along the track (while adjusting the time).
     Emission angle is calculated from the wavelength.
-
-    initial_time: float
-        Track starting time
-    track_pos: float[3]
-        Track starting position
-    track_dir: float[3]
-        Track direction
-    wavelength_init: function
-        wavelength initializer
-    phase_velo_func: function
-        function that returns the phase velocity as function of wavelength
-    segment_length: float
-        length of the segment
+ 
+    Parameters
+    ----------
+    initial_time : float
+        Track starting time.
+    track_pos : float[3]
+        Track starting position.
+    track_dir : float[3]
+        Track direction.
+    wavelength_init : callable
+        Wavelength initializer.
+    phase_velo_func : callable
+        Function that returns the phase velocity as a function of wavelength.
+    segment_length : float
+        Length of the segment.
+    dtype : jnp.float64 or jnp.float32, optional
+        Data type: how many digits to store.
     """
 
     initial_time = dtype(initial_time)
@@ -569,7 +601,7 @@ def make_track_segment_fixed_time_pos_dir_initializer(
 
 
 def make_loop_until_isec_or_maxtime(max_time):
-    """Make function that will call the step_function until either the photon intersetcs or max_time is reached."""
+    """Create a function that calls the step function until either the photon intersects or ``max_time`` is reached."""
 
     def loop_until_isec_or_maxtime(step_function, initial_photon_state, rng_key):
         final_photon_state, _ = while_loop(
@@ -584,7 +616,7 @@ def make_loop_until_isec_or_maxtime(max_time):
 
 
 def make_loop_for_n_steps(n_steps):
-    """Make function that calls step_function n_steps times."""
+    """Create a function that calls step function ``n_steps`` times."""
 
     def loop_for_nsteps(step_function, initial_photon_state, rng_key):
         def noop_if_not_alive(state, rng_key):
@@ -613,31 +645,34 @@ def make_photon_trajectory_fun(
     loop_func,
 ):
     """
-    Make a photon trajectory function.
-
+    Create a photon trajectory function.
+ 
     This function calls the photon step function multiple times until
-    some termination condition is reached (defined by `stepping_mode`)
-
-    step_function: function
-        Function that updates the photon state
-
-    photon_init_function: function
-        Function that returns the initial photon state
-
-    loop_func: function
+    some termination condition is reached (defined by ``stepping_mode``).
+ 
+    Parameters
+    ----------
+    step_function : callable
+        Function that updates the photon state.
+    photon_init_function : callable
+        Function that returns the initial photon state.
+    loop_func : callable
         Looping function that calls the photon step function.
     """
 
     def make_steps(key):
         """
-        Make a function that steps a photon until it either intersects or  max length is reached.
-
-        Parameters:
-            key: PRNGKey
-
-        Returns:
-            photon_state: dict
-                Final photon state
+        Create a function that steps a photon until it either intersects or max length is reached.
+ 
+        Parameters
+        ----------
+        key : PRNGKey
+            Random key.
+ 
+        Returns
+        -------
+        result : tuple of (dict, dict)
+            Initial and final photon state.
         """
         k1, k2 = random.split(key, 2)
 
