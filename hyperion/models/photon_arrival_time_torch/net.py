@@ -4,10 +4,8 @@ import torch.nn.functional as F
 
 
 class PhotonArivalTimePars(nn.Module):
-    """
-    MLP for predicting the parameters of the photon arrival time distribution.
-    """
-
+    """MLP for predicting the parameters of the photon arrival time distribution."""
+    
     def __init__(
         self, n_per_layer, input_size, output_size, final_activations=None, dropout=0.5
     ):

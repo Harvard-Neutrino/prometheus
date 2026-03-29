@@ -11,16 +11,17 @@ def expon_pdf(x, a):
 
 
 def make_exp_exp(data, weights):
-    """
-    Create a two-exponential mixture model pdf.
+    """Create a two-exponential mixture model PDF.
 
     This functions returns the likelihood evaluated on data and weights, and
     the likelihood function.
 
-    Parameters:
-        data: ndarray
-        weights: ndarray
-
+    Parameters
+    ----------
+    data : ndarray
+        Data points.
+    weights : ndarray
+        Weights.
     """
 
     def func(xs, scale1, scale2, mix):
@@ -39,11 +40,12 @@ def make_exp_exp(data, weights):
 
 
 def make_obj_func(pdf, data, weights, nargs):
-    """
-    Build a likelihood from a PDF, data points and weights.
+    """Build a likelihood from a PDF, data points and weights.
 
-    Returns:
-    Objective function and gradient
+    Returns
+    -------
+    obj : callable
+        Objective function and gradient.
     """
 
     def obj(*pars):
@@ -54,9 +56,7 @@ def make_obj_func(pdf, data, weights, nargs):
 
 
 def sample_exp_exp_exp(scale1, scale2, scale3, w1, w2, size):
-    """
-    Sampling function. To ensure numba compatibility set random state before
-    """
+    """Sampling function. To ensure numba compatibility set random state before."""
     scales = np.array([scale1, scale2, scale3]) * 100
     scales = np.sort(scales)
 
@@ -79,9 +79,7 @@ def sample_exp_exp_exp(scale1, scale2, scale3, w1, w2, size):
 
 
 def make_exp_exp_exp():
-    """
-    Create a three-exponential mixture model pdf.
-    """
+    """Create a three-exponential mixture model PDF."""
 
     def to_three_par(w1, w2):
         three = (
@@ -111,16 +109,21 @@ def make_exp_exp_exp():
 
 
 def make_gamma_exponential(data, weights):
-    """
-    Create a gamma-exponential mixture model pdf.
+    """Create a gamma-exponential mixture model PDF.
 
-    This functions returns the likelihood evaluated on data and weights, and
-    the likelihood function.
+    Parameters
+    ----------
+    data : ndarray
+        Data points.
+    weights : ndarray
+        Weights.
 
-    Parameters:
-        data: ndarray
-        weights: ndarray
-
+    Returns
+    -------
+    obj : callable
+        The likelihood evaluated on data and weights.
+    func : callable
+        The likelihood function.
     """
 
     def func(xs, args):
@@ -144,13 +147,13 @@ def make_gamma_exponential(data, weights):
 
 
 def fb5_mle(xs, weights, warning="warn"):
-    """
-    Fits FB5 distribution to weighted data.
-    """
+    """Fits FB5 distribution to weighted data."""
 
-    # method that generates the minus L to be minimized
-    # x = theta phi psi kappa beta eta alpha rho
     def minus_log_likelihood(x):
+        """Generate the minus L to be minimized.
+
+        ``x = theta phi psi kappa beta eta alpha rho``
+        """
         if np.any(np.isnan(x)):
             return np.inf
         if x[3] < 0 or x[4] < 0:
