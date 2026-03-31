@@ -38,3 +38,15 @@ timings.npy
 timings_e.npy
 
 *pycache*
+
+.venv
+
+.prometheus_env
+
+bin
+
+.install_logs
+
+pkgs
+
+scripts

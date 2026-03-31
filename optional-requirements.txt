@@ -1,0 +1,10 @@
+# Optional / heavy dependencies (install only if needed)
+# `proposal` requires a native build (CMake + Conan) and Python dev headers.
+# Install system packages first (Debian/Ubuntu):
+#   sudo apt install -y build-essential cmake python3-dev
+proposal
+pyarrow
+photospline
+jax
+jaxlib
+torch-geometric
