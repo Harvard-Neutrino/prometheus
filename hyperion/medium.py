@@ -32,10 +32,11 @@ def rayleigh_scattering_angle(key):
 
 
 def liu_scattering_angle(key, g=0.95):
-    """
-    Simplified liu scattering.
+    """Simplified liu scattering.
 
-    https://arxiv.org/pdf/1301.5361.pdf
+    Notes
+    -----
+    <https://arxiv.org/pdf/1301.5361.pdf>
     """
     beta = (1 - g) / (1 + g)
     xi = random.uniform(key)
@@ -44,14 +45,14 @@ def liu_scattering_angle(key, g=0.95):
 
 
 def make_mixed_scattering_func(f1, f2, ratio):
-    """
-    Create a mixture model with two sampling functions.
+    """Create a mixture model with two sampling functions.
 
-    Paramaters:
-        f1, f2: functions
-            Sampling functions taking one argument (random key)
-        ratio: float
-            Fraction of samples drawn from f1
+    Parameters
+    ----------
+    f1, f2 : callable
+        Sampling functions taking one argument (random key).
+    ratio : float
+        Fraction of samples drawn from ``f1``.
     """
 
     def _f(key):
@@ -63,14 +64,14 @@ def make_mixed_scattering_func(f1, f2, ratio):
     return _f
 
 
-"""Mix of HG and Rayleigh. Distribution similar to ANTARES Petzold+Rayleigh."""
+# Mix of HG and Rayleigh. Distribution similar to ANTARES Petzold+Rayleigh.
 mixed_hg_rayleigh_antares = make_mixed_scattering_func(
     rayleigh_scattering_angle,
     lambda k: henyey_greenstein_scattering_angle(k, 0.97),
     0.15,
 )
 
-"""Mix of HG and Liu. IceCube"""
+# Mix of HG and Liu. IceCube.
 mixed_hg_liu_icecube = make_mixed_scattering_func(
     lambda k: liu_scattering_angle(k, 0.95),
     lambda k: henyey_greenstein_scattering_angle(k, 0.95),
@@ -79,14 +80,16 @@ mixed_hg_liu_icecube = make_mixed_scattering_func(
 
 
 def make_wl_dep_sca_len_func(vol_conc_small_part, vol_conc_large_part):
-    """
-    Make a function that calculates the scattering length based on particle concentrations.
+    """Create a function that calculates the scattering length based on particle concentrations.
+
     Copied from clsim.
 
-    Parameters:
-        vol_conc_small_part: Volumetric concentration of small particles (ppm)
-        vol_conc_small_part: Volumetric concentration of large particles (ppm)
-
+    Parameters
+    ----------
+    vol_conc_small_part : float
+        Volumetric concentration of small particles (ppm).
+    vol_conc_large_part : float
+        Volumetric concentration of large particles (ppm).
     """
 
     def sca_len(wavelength):
@@ -108,16 +111,16 @@ sca_len_func_antares = make_wl_dep_sca_len_func(0.0075, 0.0075)
 
 
 def make_ref_index_func(salinity, temperature, pressure):
-    """
-    Make function that returns refractive index as function of wavelength.
+    """Create a function that returns refractive index as function of wavelength.
 
-    Parameters:
-        salinity: float
-            Salinity in parts per thousand
-        temperature: float
-            Temperature in C
-        pressure: float
-            Pressure in bar
+    Parameters
+    ----------
+    salinity : float
+        Salinity in parts per thousand.
+    temperature : float
+        Temperature in C.
+    pressure : float
+        Pressure in bar.
     """
     n0 = 1.31405
     n1 = 1.45e-5
