@@ -1,0 +1,23 @@
+name: prometheus
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - numpy
+  - scipy
+  - matplotlib
+  - hdf5
+  - boost
+  - suitesparse
+  - cmake
+  - pkg-config
+  - photospline
+  - eigen
+  - gsl
+  - openblas
+  - pip
+  - pip:
+      - jax
+      - jaxlib
+      - cython
+      - git+https://github.com/MeighenBergerS/fennel.git
