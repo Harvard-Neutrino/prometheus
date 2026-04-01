@@ -59,16 +59,19 @@ fi
 if [ -z "$use_cmake" ]; then
   echo "Building CMake ${need_cmake} locally (this may take a few minutes)..."
   cd "$TMP_DIR"
-  wget -q https://github.com/Kitware/CMake/releases/download/v3.22.2/cmake-3.22.2.tar.gz
+  curl -fsSL -o cmake-3.22.2.tar.gz https://github.com/Kitware/CMake/releases/download/v3.22.2/cmake-3.22.2.tar.gz
   tar -zxvf cmake-3.22.2.tar.gz
   cd cmake-3.22.2
   ./bootstrap >/dev/null
-  make -j$(nproc) >/dev/null
+  NJOBS="$(nproc 2>/dev/null || sysctl -n hw.logicalcpu)"
+  make -j"$NJOBS" >/dev/null
   CMAKE_BIN="$PWD/bin/cmake"
   cd "$TMP_DIR/build"
 else
   CMAKE_BIN="$use_cmake"
 fi
+
+NJOBS="$(nproc 2>/dev/null || sysctl -n hw.logicalcpu)"
 
 "$CMAKE_BIN" \
   -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \
@@ -77,7 +80,7 @@ fi
   -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
   "$SRC_DIR"
 
-make -j$(nproc)
+make -j"$NJOBS"
 make install
 
 # -------------------------------
