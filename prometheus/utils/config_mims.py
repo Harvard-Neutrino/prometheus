@@ -51,6 +51,7 @@ def config_mims(config: dict, detector) -> None:
         run_config["random state seed"] = run_config["run number"]
 
     output_prefix = os.path.abspath(f"{config['run']['storage prefix']}/{config['run']['run number']}")
+    os.makedirs(os.path.dirname(output_prefix), exist_ok=True)
     if config["run"]["outfile"] is None:
         config["run"]["outfile"] = (
             f"{output_prefix}_photons.parquet"
@@ -82,7 +83,7 @@ def config_mims(config: dict, detector) -> None:
     )
 
     photon_prop_config_mims(
-        config["photon propagator"][config["photon propagator"]["name"]],
+        config["photon propagator"],
         output_prefix
     )
     check_consistency(config)
@@ -100,7 +101,27 @@ def check_consistency(config: dict) -> None:
     #    raise ValueError("Detector and lepton propagator have conflicting media")
 
 def photon_prop_config_mims(config: dict, output_prefix: str) -> None:
-    pass
+    name = config.get("name")
+    if name not in ("PPC", "PPC_CUDA"):
+        return
+    ppc_cfg = config[name]["paths"]
+    # Relative paths in the config are expressed relative to the prometheus
+    # package directory (prometheus/prometheus/). Resolve them to absolute paths
+    # so PPC works regardless of the current working directory.
+    _pkg_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    if not os.path.isabs(ppc_cfg["ppctables"]):
+        ppc_cfg["ppctables"] = os.path.abspath(
+            os.path.join(_pkg_dir, ppc_cfg["ppctables"])
+        )
+    if not os.path.isabs(ppc_cfg["ppc_exe"]):
+        ppc_cfg["ppc_exe"] = os.path.abspath(
+            os.path.join(_pkg_dir, ppc_cfg["ppc_exe"])
+        )
+    # Resolve ppc_tmpdir to an absolute path derived from output_prefix
+    if not os.path.isabs(ppc_cfg["ppc_tmpdir"]):
+        ppc_cfg["ppc_tmpdir"] = os.path.abspath(
+            os.path.join(os.path.dirname(output_prefix), ".ppc_tmp")
+        )
 
 
 def lepton_prop_config_mims(config: dict, detector, earth_model_file: str) -> None:

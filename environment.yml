@@ -9,7 +9,7 @@ dependencies:
   - hdf5
   - boost
   - suitesparse
-  - cmake
+  - cmake=3.22
   - pkg-config
   - photospline
   - eigen
@@ -20,4 +20,4 @@ dependencies:
       - jax
       - jaxlib
       - cython
-      - git+https://github.com/MeighenBergerS/fennel.git
+      - pybind11
