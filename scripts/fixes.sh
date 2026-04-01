@@ -17,8 +17,7 @@ fi
 echo "- Installing prometheus (editable) into environment..."
 "$PY" -m pip install -e "$REPO_ROOT"
 
-echo "- Installing fennel from GitHub (latest recommended branch)..."
-# The GitHub repository packages as 'fennel-seed' in its metadata; request that name.
-"$PY" -m pip install --upgrade "git+https://github.com/MeighenBergerS/fennel.git@master#egg=fennel-seed"
+echo "- Installing fennel from vendored source (MeighenBergerS/fennel@988bf2f)..."
+"$PY" -m pip install "$REPO_ROOT/resources/fennel"
 
 echo "Post-install fixes complete."

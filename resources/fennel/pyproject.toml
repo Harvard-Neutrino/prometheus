@@ -1,0 +1,157 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fennel_seed"
+version = "2.0.0"
+description = "Light-yields for tracks, and cascades"
+readme = "README.md"
+authors = [
+    {name = "Stephan Meighen-Berger", email = "stephan.meighenberger@gmail.com"}
+]
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+keywords = ["physics", "particle", "simulation", "cherenkov", "light-yield"]
+requires-python = ">=3.8"
+dependencies = [
+    "PyYAML",
+    "numpy>=1.20.0",
+    "scipy>=1.7.0",
+    "pandas>=1.3.0"
+]
+
+[project.optional-dependencies]
+interactive = [
+    "nbstripout",
+    "matplotlib",
+    "jupyter",
+    "tqdm"
+]
+jax = [
+    "jax",
+    "jaxlib"
+]
+cpu = [
+    "jax[cpu]"
+]
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=3.0.0",
+    "pytest-xdist>=2.5.0"
+]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.0.0",
+    "mkdocstrings[python]>=0.24.0",
+    "pymdown-extensions>=10.0"
+]
+dev = [
+    "fennel_seed[test]",
+    "fennel_seed[interactive]",
+    "fennel_seed[docs]",
+    "black>=22.0.0",
+    "flake8>=4.0.0",
+    "isort>=5.10.0",
+    "mypy>=0.950",
+    "pre-commit>=2.17.0"
+]
+all = [
+    "fennel_seed[interactive]",
+    "fennel_seed[jax]",
+    "fennel_seed[test]",
+    "fennel_seed[docs]",
+    "fennel_seed[dev]"
+]
+
+[project.urls]
+Homepage = "https://github.com/MeighenBergerS/fennel"
+Documentation = "https://meighenbergers.github.io/fennel/"
+Repository = "https://github.com/MeighenBergerS/fennel"
+"Bug Tracker" = "https://github.com/MeighenBergerS/fennel/issues"
+
+[tool.setuptools]
+packages = ["fennel"]
+
+[tool.setuptools.package-data]
+fennel = ["data/*.pkl"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short --strict-markers"
+markers = [
+    "unit: Unit tests for individual components",
+    "integration: Integration tests for full workflows",
+    "physics: Physics regression tests with reference values",
+    "slow: Tests that take significant time to run",
+    "jax: Tests that require JAX installation"
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["fennel"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__pycache__/*",
+    "*/site-packages/*"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if __name__ == .__main__.:",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if False:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod"
+]
