@@ -2,16 +2,12 @@
 
 ENV_DIR="$1"
 
-# Normalize to absolute path (works even if the path does not yet exist)
-if command -v realpath >/dev/null 2>&1; then
-	ENV_DIR="$(realpath -m "$ENV_DIR")"
-else
-	# Fallback: resolve relative paths; this fails if ENV_DIR doesn't exist.
-	case "$ENV_DIR" in
-		/*) ;;
-		*) ENV_DIR="$PWD/$ENV_DIR" ;;
-	esac
-fi
+# Normalize to absolute path without relying on any external binary.
+# realpath -m (GNU) does not exist on macOS; dirname/cd works everywhere.
+case "$ENV_DIR" in
+	/*) ;;
+	*) ENV_DIR="$PWD/$ENV_DIR" ;;
+esac
 
 # Prefer system micromamba if available, otherwise fall back to repository bin/micromamba
 if command -v micromamba >/dev/null 2>&1; then
@@ -29,11 +25,16 @@ else
 fi
 
 # The micromamba shell hook may reference variables not yet defined
-# (e.g. MAMBA_ROOT_PREFIX). When this script is sourced from a shell
-# with `set -u` enabled, those references cause an immediate failure.
-# Temporarily disable 'nounset' while evaluating the hook, then restore it.
+# (e.g. MAMBA_ROOT_PREFIX). Temporarily disable 'nounset' while evaluating
+# it, then restore. Also detect the calling shell: bash on Linux, zsh on macOS.
+_SHELL_NAME="$(basename "${SHELL:-bash}")"
+case "$_SHELL_NAME" in
+	zsh|bash) ;;
+	*) _SHELL_NAME=bash ;;
+esac
+
 set +u
-eval "$("$MICO" shell hook -s bash)"
+eval "$("$MICO" shell hook -s "$_SHELL_NAME")"
 set -u
 
 micromamba activate -p "$ENV_DIR"

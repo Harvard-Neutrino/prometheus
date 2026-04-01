@@ -1,12 +1,9 @@
 import numpy as np
 
-import sys
-sys.path.append("../")
-
 from prometheus.injection.injection.LI_injection import injection_from_LI_output
 
 def test_li_injection_loading() -> None:
-    injection = injection_from_LI_output("resources/MuMinus_Hadrons_seed_925_LI_output.h5")
+    injection = injection_from_LI_output("tests/resources/MuMinus_Hadrons_seed_925_LI_output.h5")
     assert(len(injection)==50)
     assert(all([len(event.final_states)==2 for event in injection]))
     assert(all([event.interaction.name=="CHARGED_CURRENT" for event in injection]))

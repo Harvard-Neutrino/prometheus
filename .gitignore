@@ -52,3 +52,9 @@ pkgs
 output
 
 /examples/output/
+
+PROPOSAL_tables/
+*.f2k
+*.ppc
+__pycache__/
+*.egg-info/

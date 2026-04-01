@@ -1,13 +1,10 @@
-import sys
-sys.path.append("..")
-
 import numpy as np
 from pytest import approx
 
 from prometheus.detector import detector_from_geo
 from prometheus.detector.medium import Medium
 
-PONE = detector_from_geo("../prometheus/data/pone_triangle-geo")
+PONE = detector_from_geo("resources/geofiles/pone_triangle.geo")
 
 TOL = 1e-5
 
