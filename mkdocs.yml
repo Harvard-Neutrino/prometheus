@@ -4,8 +4,6 @@ site_author: Ana Lastoviria
 copyright: © Prometheus
 theme:
   name: readthedocs
-  features:
-    - navigation.indexes
 nav:
   - Documentation:
     - 'Getting Started': './documentation/getting_started.md'
@@ -18,13 +16,14 @@ markdown_extensions:
   - admonition
 plugins:
   - search
-  - gh-admonitions
   - mkdocs-autoapi:
       autoapi_add_nav_entry: false
+      autoapi_generate_api_docs: false
   - api-autonav:
       modules: ['./prometheus', './olympus', './hyperion']
       exclude_private: true
       show_full_namespace: false
+      api_root_uri: "api-reference"
       nav_item_prefix: ''
       module_options:
         package.submodule:
