@@ -4,6 +4,48 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Fresh-install validation notes
+
+The following was observed when running `bash install.sh --with-ppc` from a
+fully clean state (no conda environment, no micromamba binary, no pre-built
+packages):
+
+**Step 1 — Environment creation (`setup_env.sh`)**
+Micromamba is downloaded by `setup_env.sh` and stored in `bin/`.  This requires
+an internet connection.  All 189 conda-forge packages are resolved and linked
+(~5 min on first run; subsequent runs use the local `pkgs/` cache and are
+near-instant).
+
+**Step 2 — PROPOSAL (`install_proposal.sh`)**
+Built from source via pip (~2 min).  This requires a working C++ tool-chain
+(`g++`).  Watch for pip backtracking warnings during the prometheus editable
+install step — they are harmless but can take several minutes while pip
+searches for compatible versions of `flax` / `orbax-checkpoint`.
+
+**Step 3 — LeptonInjector (`install_leptoninjector_legacy.sh`)**
+Built from the vendored source at `resources/LeptonInjector/` (no network
+access required). Compiled with CMake/GCC (~3 min). CMake emits a non-fatal
+warning about `PYTHON_EXECUTABLE` being ignored (use `Python_ROOT_DIR`
+instead) and two `CMP0074` policy warnings about `HDF5_ROOT`; these do
+**not** affect the build.
+
+**Step 4 — PPC (`install_ppc.sh`, requires `--with-ppc`)**
+The symlinks `ppc.cxx → ppc.cu` and `pro.cxx → pro.cu` already exist in the
+repo, so `ln -s` prints a "File exists" warning; this is harmless.
+
+**Step 5 — Prometheus pip install (`fixes.sh`)**
+Installs prometheus in editable mode and then installs `fennel-seed 2.0.0`
+from the vendored source at `resources/fennel/` (no network access required).
+Pip will downgrade `numpy` from 2.x to 1.26.4 and `jax`/`jaxlib` from 0.9.2
+to 0.4.35 to satisfy pinned versions in `pyproject.toml`.
+
+**First run of either example**
+PROPOSAL builds its cross-section/decay tables on the first simulation run
+and writes them to `resources/PROPOSAL_tables/`. This takes ~1–2 min and only
+happens once. A precision warning from the PROPOSAL integrator is printed but
+is purely informational. A `FutureWarning` from JAX about dtype promotion is
+also non-fatal.
+
 ---
 
 ## [Unreleased] — branch `smb-version2`
@@ -26,9 +68,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **`scripts/install_proposal.sh`** — installs the PROPOSAL lepton propagator
   via pip into the active environment.
 
-- **`scripts/install_leptoninjector_legacy.sh`** — clones the
-  `with_earth_py` branch of LeptonInjector from GitHub, applies source-level
-  compatibility patches (see Fixed below), and builds/installs it with CMake.
+- **`scripts/install_leptoninjector_legacy.sh`** — builds and installs
+  LeptonInjector from the vendored source at `resources/LeptonInjector/`
+  using CMake (no network access required).
 
 - **`scripts/install_ppc.sh`** — compiles the CPU-only PPC photon propagator
   binary (`resources/PPC_executables/PPC/ppc`) from source using `g++ -O2
@@ -39,7 +81,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   without errors after installation.
 
 - **`scripts/fixes.sh`** — runs `pip install -e .` to install prometheus in
-  editable mode and applies any remaining post-build fixups.
+  editable mode and installs fennel-seed 2.0.0 from the vendored source at
+  `resources/fennel/`.
+
+- **`resources/LeptonInjector/`** — vendored copy of the
+  `icecube/LeptonInjector` `with_earth_py` branch (commit `d203189b`,
+  Feb 2023, LGPL-3.0). All four GCC 13 / SuiteSparse 7.x compatibility
+  patches are baked in. Protects against upstream branch deletion and removes
+  the GitHub clone step from installation.
+
+- **`resources/fennel/`** — vendored copy of fennel-seed 2.0.0 (commit
+  `988bf2f`, MIT license). fennel-seed 2.0.0 is not published on PyPI;
+  previously installed from GitHub at install time. The `notebooks/` and
+  `seed/` directories are excluded as they are not needed at runtime.
 
 - **`resources/PPC_executables/PPC/ppc`** — compiled CPU PPC binary, produced
   by `scripts/install_ppc.sh`.
@@ -62,9 +116,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   repo-local micromamba binary (downloaded by `setup_env.sh`) is visible to
   all sub-scripts that are invoked as separate `bash` processes.
 
-- **`scripts/install_leptoninjector_legacy.sh`** — four source-level patches
-  applied at build time to make LeptonInjector compile against GCC 13 and
-  SuiteSparse 7.x:
+- **`scripts/install_leptoninjector_legacy.sh`** — rewritten to build from
+  `resources/LeptonInjector/` instead of cloning from GitHub. The four
+  source-level GCC 13 / SuiteSparse 7.x compatibility patches (originally
+  applied at build time) are now baked into the vendored tree:
   - `cmake/Packages/SuiteSparse.cmake`: replaced a `STRING(REGEX REPLACE)` on
     the entire header file content (which contains dots and newlines, breaking
     CMake 3.22 regex matching) with a `STRING(REGEX MATCH)` + conditional so
@@ -77,6 +132,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
     fix a missing declaration of `std::runtime_error` under GCC 13.
   - Fixed `$PYTHONPATH` unbound-variable error (triggered by `set -u`) by
     changing to `${PYTHONPATH:-}`.
+
+- **`scripts/fixes.sh`** — updated fennel install from
+  `git+https://github.com/MeighenBergerS/fennel.git@master` to the vendored
+  `resources/fennel/` path.
 
 - **`prometheus/utils/config_mims.py`** (`config_mims`): added
   `os.makedirs(os.path.dirname(output_prefix), exist_ok=True)` so that

@@ -1,0 +1,330 @@
+{
+  "track_muon_1GeV_total": {
+    "energy": 1.0,
+    "particle": 13,
+    "interaction": "total",
+    "wavelength": 400.0,
+    "expected_dcounts": 7.806113482299887,
+    "tolerance": 1e-10
+  },
+  "track_muon_10GeV_total": {
+    "energy": 10.0,
+    "particle": 13,
+    "interaction": "total",
+    "wavelength": 400.0,
+    "expected_dcounts": 8.117788023625147,
+    "tolerance": 1e-10
+  },
+  "track_muon_100GeV_total": {
+    "energy": 100.0,
+    "particle": 13,
+    "interaction": "total",
+    "wavelength": 400.0,
+    "expected_dcounts": 8.42946256495041,
+    "tolerance": 1e-10
+  },
+  "track_muon_1TeV_total": {
+    "energy": 1000.0,
+    "particle": 13,
+    "interaction": "total",
+    "wavelength": 400.0,
+    "expected_dcounts": 8.741137106275668,
+    "tolerance": 1e-10
+  },
+  "track_muon_10TeV_total": {
+    "energy": 10000.0,
+    "particle": 13,
+    "interaction": "total",
+    "wavelength": 400.0,
+    "expected_dcounts": 9.052811647600928,
+    "tolerance": 1e-10
+  },
+  "track_muon_100GeV_ionization": {
+    "energy": 100.0,
+    "particle": 13,
+    "interaction": "ionization",
+    "wavelength": 400.0,
+    "expected_dcounts": 8.297054352925684,
+    "tolerance": 1e-10
+  },
+  "track_muon_100GeV_brems": {
+    "energy": 100.0,
+    "particle": 13,
+    "interaction": "brems",
+    "wavelength": 400.0,
+    "expected_dcounts": 6.573430915566336,
+    "tolerance": 1e-10
+  },
+  "track_muon_100GeV_pair": {
+    "energy": 100.0,
+    "particle": 13,
+    "interaction": "pair",
+    "wavelength": 400.0,
+    "expected_dcounts": 6.689014475721918,
+    "tolerance": 1e-10
+  },
+  "track_antimuon_100GeV_total": {
+    "energy": 100.0,
+    "particle": -13,
+    "interaction": "total",
+    "wavelength": 400.0,
+    "expected_dcounts": 8.42946256495041,
+    "tolerance": 1e-10
+  },
+  "track_muon_100GeV_350nm": {
+    "energy": 100.0,
+    "particle": 13,
+    "interaction": "total",
+    "wavelength": 350.0,
+    "expected_dcounts": 10.998049357603348,
+    "tolerance": 1e-10
+  },
+  "track_muon_100GeV_450nm": {
+    "energy": 100.0,
+    "particle": 13,
+    "interaction": "total",
+    "wavelength": 450.0,
+    "expected_dcounts": 6.665904786086691,
+    "tolerance": 1e-10
+  },
+  "em_electron_1GeV": {
+    "energy": 1.0,
+    "particle": 11,
+    "wavelength": 400.0,
+    "expected_dcounts": 3496.1321195855867,
+    "expected_integral": 929967.7521215308,
+    "tolerance": 1e-10
+  },
+  "em_electron_10GeV": {
+    "energy": 10.0,
+    "particle": 11,
+    "wavelength": 400.0,
+    "expected_dcounts": 34961.4910542584,
+    "expected_integral": 9299722.7033856,
+    "tolerance": 1e-10
+  },
+  "em_electron_100GeV": {
+    "energy": 100.0,
+    "particle": 11,
+    "wavelength": 400.0,
+    "expected_dcounts": 349616.60913486185,
+    "expected_integral": 92997678.85775405,
+    "tolerance": 1e-10
+  },
+  "em_electron_1TeV": {
+    "energy": 1000.0,
+    "particle": 11,
+    "wavelength": 400.0,
+    "expected_dcounts": 3496183.077353922,
+    "expected_integral": 929981306.8384728,
+    "tolerance": 1e-10
+  },
+  "em_electron_10TeV": {
+    "energy": 10000.0,
+    "particle": 11,
+    "wavelength": 400.0,
+    "expected_dcounts": 34962000.634417534,
+    "expected_integral": 9299858251.213572,
+    "tolerance": 1e-10
+  },
+  "em_positron_100GeV": {
+    "energy": 100.0,
+    "particle": -11,
+    "wavelength": 400.0,
+    "expected_dcounts": 349629.07188102294,
+    "expected_integral": 93000993.9361425,
+    "tolerance": 1e-10
+  },
+  "em_positron_1TeV": {
+    "energy": 1000.0,
+    "particle": -11,
+    "wavelength": 400.0,
+    "expected_dcounts": 3496230.6625446347,
+    "expected_integral": 929993964.4530385,
+    "tolerance": 1e-10
+  },
+  "em_gamma_10GeV": {
+    "energy": 10.0,
+    "particle": 22,
+    "wavelength": 400.0,
+    "expected_dcounts": 34962.18284364162,
+    "expected_integral": 9299906.718690414,
+    "tolerance": 1e-10
+  },
+  "em_gamma_100GeV": {
+    "energy": 100.0,
+    "particle": 22,
+    "wavelength": 400.0,
+    "expected_dcounts": 349620.8382459857,
+    "expected_integral": 92998803.79721025,
+    "tolerance": 1e-10
+  },
+  "em_gamma_1TeV": {
+    "energy": 1000.0,
+    "particle": 22,
+    "wavelength": 400.0,
+    "expected_dcounts": 3496198.4805835956,
+    "expected_integral": 929985404.0826229,
+    "tolerance": 1e-10
+  },
+  "em_electron_100GeV_350nm": {
+    "energy": 100.0,
+    "particle": 11,
+    "wavelength": 350.0,
+    "expected_dcounts": 456150.1630591499,
+    "expected_integral": 92997678.85775405,
+    "tolerance": 1e-10
+  },
+  "em_electron_100GeV_500nm": {
+    "energy": 100.0,
+    "particle": 11,
+    "wavelength": 500.0,
+    "expected_dcounts": 222744.8321281724,
+    "expected_integral": 92997678.85775405,
+    "tolerance": 1e-10
+  },
+  "hadron_pion_plus_10GeV": {
+    "energy": 10.0,
+    "particle": 211,
+    "wavelength": 400.0,
+    "expected_dcounts": 23845.36167794975,
+    "expected_em_fraction": 0.6228665592213882,
+    "expected_integral": 6342843.073332248,
+    "tolerance": 1e-10
+  },
+  "hadron_pion_plus_100GeV": {
+    "energy": 100.0,
+    "particle": 211,
+    "wavelength": 400.0,
+    "expected_dcounts": 259433.5175105237,
+    "expected_em_fraction": 0.7377744267973156,
+    "expected_integral": 69009063.97463088,
+    "tolerance": 1e-10
+  },
+  "hadron_pion_plus_1TeV": {
+    "energy": 1000.0,
+    "particle": 211,
+    "wavelength": 400.0,
+    "expected_dcounts": 2822592.96029559,
+    "expected_em_fraction": 0.8176712966648805,
+    "expected_integral": 750806989.168159,
+    "tolerance": 1e-10
+  },
+  "hadron_pion_minus_10GeV": {
+    "energy": 10.0,
+    "particle": -211,
+    "wavelength": 400.0,
+    "expected_dcounts": 23966.30666834713,
+    "expected_em_fraction": 0.6322602988057882,
+    "expected_integral": 6375014.323446087,
+    "tolerance": 1e-10
+  },
+  "hadron_pion_minus_100GeV": {
+    "energy": 100.0,
+    "particle": -211,
+    "wavelength": 400.0,
+    "expected_dcounts": 260282.54956943358,
+    "expected_em_fraction": 0.7416963644119827,
+    "expected_integral": 69234905.67863293,
+    "tolerance": 1e-10
+  },
+  "hadron_pion_minus_1TeV": {
+    "energy": 1000.0,
+    "particle": -211,
+    "wavelength": 400.0,
+    "expected_dcounts": 2826760.357691647,
+    "expected_em_fraction": 0.8185652298587407,
+    "expected_integral": 751915512.83261,
+    "tolerance": 1e-10
+  },
+  "hadron_kaon_100GeV": {
+    "energy": 100.0,
+    "particle": 130,
+    "wavelength": 400.0,
+    "expected_dcounts": 256726.77298196417,
+    "expected_em_fraction": 0.732416453230917,
+    "expected_integral": 68289072.55591697,
+    "tolerance": 1e-10
+  },
+  "hadron_kaon_1TeV": {
+    "energy": 1000.0,
+    "particle": 130,
+    "wavelength": 400.0,
+    "expected_dcounts": 2810513.863062243,
+    "expected_em_fraction": 0.8164267461319068,
+    "expected_integral": 747593961.0223334,
+    "tolerance": 1e-10
+  },
+  "hadron_proton_10GeV": {
+    "energy": 10.0,
+    "particle": 2212,
+    "wavelength": 400.0,
+    "expected_dcounts": 21270.799184755084,
+    "expected_em_fraction": 0.5191710147501731,
+    "expected_integral": 5658011.94779216,
+    "tolerance": 1e-10
+  },
+  "hadron_proton_100GeV": {
+    "energy": 100.0,
+    "particle": 2212,
+    "wavelength": 400.0,
+    "expected_dcounts": 239610.02666720655,
+    "expected_em_fraction": 0.681741039573023,
+    "expected_integral": 63736034.64158991,
+    "tolerance": 1e-10
+  },
+  "hadron_proton_1TeV": {
+    "energy": 1000.0,
+    "particle": 2212,
+    "wavelength": 400.0,
+    "expected_dcounts": 2699144.699772619,
+    "expected_em_fraction": 0.7893455490429035,
+    "expected_integral": 717969871.6294005,
+    "tolerance": 1e-10
+  },
+  "hadron_proton_10TeV": {
+    "energy": 10000.0,
+    "particle": 2212,
+    "wavelength": 400.0,
+    "expected_dcounts": 30405163.8057253,
+    "expected_em_fraction": 0.8605685833683936,
+    "expected_integral": 8087744075.486759,
+    "tolerance": 1e-10
+  },
+  "hadron_antiproton_100GeV": {
+    "energy": 100.0,
+    "particle": -2212,
+    "wavelength": 400.0,
+    "expected_dcounts": 243208.62792424328,
+    "expected_em_fraction": 0.681741039573023,
+    "expected_integral": 64693259.084865496,
+    "tolerance": 1e-10
+  },
+  "hadron_antiproton_1TeV": {
+    "energy": 1000.0,
+    "particle": -2212,
+    "wavelength": 400.0,
+    "expected_dcounts": 2686587.796240017,
+    "expected_em_fraction": 0.7893455490429035,
+    "expected_integral": 714629747.4715053,
+    "tolerance": 1e-10
+  },
+  "hadron_neutron_100GeV": {
+    "energy": 100.0,
+    "particle": 2112,
+    "wavelength": 400.0,
+    "expected_dcounts": 236595.18290105168,
+    "expected_em_fraction": 0.6768437293133482,
+    "expected_integral": 62934089.124570675,
+    "tolerance": 1e-10
+  },
+  "hadron_neutron_1TeV": {
+    "energy": 1000.0,
+    "particle": 2112,
+    "wavelength": 400.0,
+    "expected_dcounts": 2690512.1531212246,
+    "expected_em_fraction": 0.7889610644889657,
+    "expected_integral": 715673622.5947864,
+    "tolerance": 1e-10
+  }
+}

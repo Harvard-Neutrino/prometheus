@@ -1,0 +1,60 @@
+# Editor files
+.*.sw*
+*.swp
+*~
+.vscode/
+.idea/
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# Logs
+fennel.log
+*.log
+
+# Jupyter
+.ipynb_checkpoints
+*.ipynb_checkpoints
+
+# Virtual environments
+venv/
+venv3/
+.venv/
+.venv_v2test/
+venv*/
+.venv*/
+env/
+ENV/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.hypothesis/
+
+# Data files (exclude all JSON except test references)
+*.json
+!tests/reference_values_v1.3.4.json
+
+# Build artifacts
+/fennel/generated.c
+*.csv
+
+# Documentation builds
+site/
+docs/_build/
+
+# OS files
+.DS_Store
+Thumbs.db

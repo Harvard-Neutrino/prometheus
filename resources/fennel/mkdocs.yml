@@ -1,0 +1,107 @@
+site_name: Fennel
+site_description: Cherenkov light yield simulation for particles and cascades
+site_author: Stephan Meighen-Berger
+site_url: https://github.com/MeighenBergerS/fennel
+
+repo_name: MeighenBergerS/fennel
+repo_url: https://github.com/MeighenBergerS/fennel
+edit_uri: edit/master/docs-mkdocs/
+
+# Specify the docs directory
+docs_dir: docs-mkdocs
+
+theme:
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            heading_level: 2
+            merge_init_into_class: true
+            show_signature_annotations: true
+            separate_signature: true
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.arithmatex:
+      generic: true
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Upgrade Guide: getting-started/upgrade-guide.md
+  - User Guide:
+    - Configuration: user-guide/configuration.md
+  - API Reference:
+    - Fennel: api/fennel.md
+    - Config: api/config.md
+    - Particle: api/particle.md
+    - Tracks: api/tracks.md
+    - EM Cascades: api/em_cascades.md
+    - Hadron Cascades: api/hadron_cascades.md
+    - Photons: api/photons.md
+  - Development:
+    - Contributing: development/contributing.md
+    - Testing: development/testing.md
+    - PR Guide: development/pr-guide.md
+    - Commit Guide: development/commit-guide.md
+  - About:
+    - Citation: about/citation.md
+    - License: about/license.md
+    - Changelog: about/changelog.md
