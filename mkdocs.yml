@@ -7,9 +7,15 @@ theme:
   features:
     - navigation.indexes
 nav:
-  - 'Usage': './index.md'
+  - Documentation:
+    - 'Getting Started': './documentation/getting_started.md'
+    - 'Installation': './documentation/installation.md'
+    - 'Usage': './documentation/usage.md'
+    - 'Citation': './documentation/citation.md'
 extra_css:
   - css/custom_rules.css
+markdown_extensions:
+  - admonition
 plugins:
   - search
   - gh-admonitions
