@@ -51,7 +51,7 @@ To avoid typing this every session, add it to your shell profile (`~/.zshrc` on 
 python examples/01_basic_water.py
 ```
 
-Runs one neutrino event through the water-Cherenkov simulation. Output is written to `examples/output/1_photons.parquet`. Expected output: several hundred photon hits on the detector modules.
+Runs one neutrino event through the water-Cherenkov simulation. Output is written to `output/` in the current directory (created automatically). Expected output: several hundred photon hits on the detector modules.
 
 **Example 02 — ice simulation (PPC, IceCube geometry):**
 
@@ -59,7 +59,7 @@ Runs one neutrino event through the water-Cherenkov simulation. Output is writte
 python examples/02_basic_ice.py
 ```
 
-Requires `--with-ppc` at install time and Linux (PPC is not available on macOS). Output is written to `examples/output/2_photons.parquet`.
+Requires `--with-ppc` at install time and Linux (PPC is not available on macOS). Output is written to `output/` in the current directory.
 
 ---
 
