@@ -49,4 +49,6 @@ bin
 
 pkgs
 
-scripts
+output
+
+/examples/output/
