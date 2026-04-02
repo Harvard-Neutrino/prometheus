@@ -6,10 +6,10 @@ theme:
   name: readthedocs
 nav:
   - Documentation:
-    - 'Getting Started': './documentation/getting_started.md'
-    - 'Installation': './documentation/installation.md'
-    - 'Usage': './documentation/usage.md'
-    - 'Citation': './documentation/citation.md'
+    - 'Getting Started': './index.md'
+    - 'Installation': './installation.md'
+    - 'Usage': './usage.md'
+    - 'Citation': './citation.md'
 extra_css:
   - css/custom_rules.css
 markdown_extensions:
