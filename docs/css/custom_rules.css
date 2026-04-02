@@ -2,6 +2,53 @@ details[class*="source"] {
   padding-bottom: 1em;
 }
 
+/* -------------- */
+/* Custom colour scheme */
+.wy-nav-side {
+    background: #343251 !important;
+}
+
+.wy-side-nav-search {
+    background: #e7298a;
+}
+
+.wy-menu-vertical li.current {
+    background: #d1ceff;
+}
+
+/* Links */
+/* Normal links in text */
+a {
+    color: #1b9e77;
+}
+
+a:hover{
+    color: #e7298a;
+}
+
+/* Site name link in the left menu panel */
+a.icon.icon-home:hover {
+    /* color: #343251 */
+    color: #47ffc8; 
+}
+
+/* Headings in nav */
+.caption-text {
+    color: #47ffc8; 
+    /* color: #ffa1d2; */
+}
+
+/* Links in the TOC-menu */
+a.reference.internal:hover {
+    background: #25243b;
+}
+
+a.reference.internal.current {
+    background: #e7e5fc;
+}
+
+/* -------------- */
+/* Copy to clipboard in code blocks support */
 .btn-clipboard {
     position: relative;
     top: .5rem;
@@ -29,3 +76,4 @@ details[class*="source"] {
   color: var(--md-accent-fg-color);
   transition: color 125ms;
 }
+/* -------------- */
