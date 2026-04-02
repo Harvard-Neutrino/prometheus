@@ -12,6 +12,11 @@ nav:
     - 'Citation': './citation.md'
 extra_css:
   - css/custom_rules.css
+extra_javascript:
+  - js/popper.min.js
+  - js/tippy-bundle.umd.js
+  - js/clipboard.js
+  - js/extra.js
 markdown_extensions:
   - admonition
 plugins:
