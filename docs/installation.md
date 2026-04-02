@@ -124,3 +124,7 @@ cd /home/myuser/prometheus
 ```
 
 After that, you should be able to start running simulation scripts.
+
+## Getting Help
+
+If you are having issues installing Prometheus, feel free to create [a discussion on GitHub](https://github.com/Harvard-Neutrino/prometheus/discussions) and we will get back to you as soon as we can.
