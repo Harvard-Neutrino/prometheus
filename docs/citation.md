@@ -4,7 +4,7 @@
 
 Please cite Prometheus using this entry:
 
-```bibtex
+```txt
 @article{Lazar:2023rol,
     author = {Lazar, Jeffrey and Meighen-Berger, Stephan and Haack, Christian and Kim, David and Giner, Santiago and Arg\"uelles, Carlos A.},
     title = "{Prometheus: An Open-Source Neutrino Telescope Simulation}",
@@ -22,7 +22,7 @@ Please also consider citing the packages that Prometheus uses internally: Lepton
 
 ### LeptonInjector and LeptonWeighter
 
-```bibtex
+```txt
 @article{IceCube:2020tcq,
     author = "Abbasi, R. and others",
     collaboration = "IceCube",
@@ -40,7 +40,7 @@ Please also consider citing the packages that Prometheus uses internally: Lepton
 
 ### PROPOSAL
 
-```bibtex
+```txt
 @article{koehne2013proposal,
     title     = {PROPOSAL: A tool for propagation of charged leptons},
     author    = {Koehne, Jan-Hendrik and
@@ -61,7 +61,7 @@ Please also consider citing the packages that Prometheus uses internally: Lepton
 
 ### ppc
 
-```bibtex
+```txt
 @misc{chirkin2022kpl,
     author = {D. Chirkin},
     title = {ppc},
