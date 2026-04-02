@@ -1,3 +1,31 @@
 details[class*="source"] {
   padding-bottom: 1em;
 }
+
+.btn-clipboard {
+    position: relative;
+    top: .5rem;
+    right: 1rem;
+    z-index: 10;
+    display: block;
+    padding: .25rem .5rem;
+    cursor: pointer;
+    width: fit-content;
+    height: fit-content;
+    border: none;
+    box-shadow: none;
+}
+
+.clipboard {
+    position: relative;
+    display: block;
+    float: right;
+    right: 18px;
+    line-height: 0px;
+    width: 0px;
+}
+
+.clipboard:hover {
+  color: var(--md-accent-fg-color);
+  transition: color 125ms;
+}
