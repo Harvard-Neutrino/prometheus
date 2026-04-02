@@ -16,20 +16,36 @@ details[class*="source"] {
     background: #d1ceff;
 }
 
+.wy-menu-vertical li[class*="toctree-l"].current li[class*="toctree-l"]>a {
+    background: #d1ceff;
+}
+
+.wy-menu-vertical li[class*="toctree-l"].current li[class*="toctree-l"] > a:hover {
+    background: #cac6fd;
+    color: #404040;
+}
+
+ul.wy-breadcrumbs a.icon.icon-home:hover {
+    color: #e7298a;
+}
+
 /* Links */
 /* Normal links in text */
 a {
     color: #1b9e77;
+    /* color: #e7298a; */
 }
 
 a:hover{
     color: #e7298a;
+    /* color: #1b9e77; */
 }
 
 /* Site name link in the left menu panel */
 a.icon.icon-home:hover {
     /* color: #343251 */
-    color: #47ffc8; 
+    /* color: #47ffc8;  */
+    color: #fcfcfc;
 }
 
 /* Headings in nav */
@@ -41,10 +57,16 @@ a.icon.icon-home:hover {
 /* Links in the TOC-menu */
 a.reference.internal:hover {
     background: #25243b;
+    color: #f985c1;
 }
 
 a.reference.internal.current {
     background: #e7e5fc;
+}
+
+a.reference.internal.current:hover {
+    background: #e7e5fc;
+    color: #e7298a; 
 }
 
 /* -------------- */
