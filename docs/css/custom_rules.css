@@ -1,3 +1,101 @@
 details[class*="source"] {
   padding-bottom: 1em;
 }
+
+/* -------------- */
+/* Custom colour scheme */
+.wy-nav-side {
+    background: #343251 !important;
+}
+
+.wy-side-nav-search {
+    background: #e7298a;
+}
+
+.wy-menu-vertical li.current {
+    background: #d1ceff;
+}
+
+.wy-menu-vertical li[class*="toctree-l"].current li[class*="toctree-l"]>a {
+    background: #d1ceff;
+}
+
+.wy-menu-vertical li[class*="toctree-l"].current li[class*="toctree-l"] > a:hover {
+    background: #cac6fd;
+    color: #404040;
+}
+
+ul.wy-breadcrumbs a.icon.icon-home:hover {
+    color: #e7298a;
+}
+
+/* Links */
+/* Normal links in text */
+a {
+    color: #1b9e77;
+    /* color: #e7298a; */
+}
+
+a:hover{
+    color: #e7298a;
+    /* color: #1b9e77; */
+}
+
+/* Site name link in the left menu panel */
+a.icon.icon-home:hover {
+    /* color: #343251 */
+    /* color: #47ffc8;  */
+    color: #fcfcfc;
+}
+
+/* Headings in nav */
+.caption-text {
+    color: #47ffc8; 
+    /* color: #ffa1d2; */
+}
+
+/* Links in the TOC-menu */
+a.reference.internal:hover {
+    background: #25243b;
+    color: #f985c1;
+}
+
+a.reference.internal.current {
+    background: #e7e5fc;
+}
+
+a.reference.internal.current:hover {
+    background: #e7e5fc;
+    color: #e7298a; 
+}
+
+/* -------------- */
+/* Copy to clipboard in code blocks support */
+.btn-clipboard {
+    position: relative;
+    top: .5rem;
+    right: 1rem;
+    z-index: 10;
+    display: block;
+    padding: .25rem .5rem;
+    cursor: pointer;
+    width: fit-content;
+    height: fit-content;
+    border: none;
+    box-shadow: none;
+}
+
+.clipboard {
+    position: relative;
+    display: block;
+    float: right;
+    right: 18px;
+    line-height: 0px;
+    width: 0px;
+}
+
+.clipboard:hover {
+  color: var(--md-accent-fg-color);
+  transition: color 125ms;
+}
+/* -------------- */
