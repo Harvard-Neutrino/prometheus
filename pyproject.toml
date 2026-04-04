@@ -24,6 +24,16 @@ h5py = "^3.10.0"
 name = "PyPI"
 priority = "primary"
 
+[tool.pydoclint]
+style = 'numpy'
+allow-init-docstring = true
+quiet = true
+
+[tool.autopep8]
+in-place = true
+recursive = true
+aggressive = 2
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
