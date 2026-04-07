@@ -63,7 +63,8 @@ COPY requirements.txt /tmp/requirements.txt
 RUN /opt/conda/envs/prometheus/bin/pip install --no-cache-dir -r /tmp/requirements.txt
 
 COPY container/build_proposal_tables.py /tmp/build_proposal_tables.py
-RUN /opt/conda/envs/prometheus/bin/python /tmp/build_proposal_tables.py
+RUN LD_LIBRARY_PATH=/opt/conda/envs/prometheus/lib \
+    /opt/conda/envs/prometheus/bin/python /tmp/build_proposal_tables.py
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 3: LeptonInjector from vendored source
@@ -83,8 +84,8 @@ RUN mkdir build install && cd build \
     && make -j"$(nproc)" \
     && make install
 
-ENV PYTHONPATH=/opt/LI/install/lib/python3.12/site-packages:${PYTHONPATH:-}
-ENV LD_LIBRARY_PATH=/opt/LI/install/lib:${LD_LIBRARY_PATH:-}
+ENV PYTHONPATH=/opt/LI/install/lib/python3.12/site-packages
+ENV LD_LIBRARY_PATH=/opt/LI/install/lib:/opt/conda/envs/prometheus/lib
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 4: PPC — compile both CPU fallback and GPU (nvcc) binaries
@@ -127,8 +128,8 @@ RUN /opt/conda/envs/prometheus/bin/pip install --no-cache-dir pytest \
 FROM prometheus_install AS final
 
 ENV PATH=/opt/conda/envs/prometheus/bin:/opt/PPC_CPU:/opt/PPC_CUDA:/usr/local/bin:${PATH}
-ENV PYTHONPATH=/opt/LI/install/lib/python3.12/site-packages:${PYTHONPATH:-}
-ENV LD_LIBRARY_PATH=/opt/LI/install/lib:/opt/conda/envs/prometheus/lib:${LD_LIBRARY_PATH:-}
+ENV PYTHONPATH=/opt/LI/install/lib/python3.12/site-packages
+ENV LD_LIBRARY_PATH=/opt/LI/install/lib:/opt/conda/envs/prometheus/lib
 ENV PPC=/opt/PPC_CPU/ppc
 ENV PPC_CUDA=/opt/PPC_CUDA/ppc
 ENV EARTH_PARAMS=/opt/LI/source/resources/earthparams/

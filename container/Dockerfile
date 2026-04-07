@@ -61,7 +61,8 @@ RUN /opt/conda/envs/prometheus/bin/pip install --no-cache-dir -r /tmp/requiremen
 # Build PROPOSAL tables at image-build time so the first simulation run
 # does not pay the ~2 minute table-generation penalty.
 COPY container/build_proposal_tables.py /tmp/build_proposal_tables.py
-RUN /opt/conda/envs/prometheus/bin/python /tmp/build_proposal_tables.py
+RUN LD_LIBRARY_PATH=/opt/conda/envs/prometheus/lib \
+    /opt/conda/envs/prometheus/bin/python /tmp/build_proposal_tables.py
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 3: build and install LeptonInjector from vendored source
@@ -81,8 +82,8 @@ RUN mkdir build install && cd build \
     && make -j"$(nproc)" \
     && make install
 
-ENV PYTHONPATH=/opt/LI/install/lib/python3.12/site-packages:${PYTHONPATH:-}
-ENV LD_LIBRARY_PATH=/opt/LI/install/lib:${LD_LIBRARY_PATH:-}
+ENV PYTHONPATH=/opt/LI/install/lib/python3.12/site-packages
+ENV LD_LIBRARY_PATH=/opt/LI/install/lib:/opt/conda/envs/prometheus/lib
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 4: build PPC CPU binary from vendored source
