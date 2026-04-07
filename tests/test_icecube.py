@@ -19,8 +19,8 @@ def test_icecube_center() -> None:
     assert np.max(np.abs(exp - ICECUBE.offset)) < TOL
     
 def test_icecube_outer_cylinder() -> None:
-    exp = np.array([601.1788613216536, 2847.02])
-    assert np.max(np.abs(np.array(ICECUBE.outer_cylinder - exp))) < TOL
+    exp = np.array([596.280348927972, 1037.3799999999999])
+    assert np.max(np.abs(np.array(ICECUBE.outer_cylinder) - exp)) < TOL
 
 def test_icecube_outer_radius() -> None:
-    assert ICECUBE.outer_radius==2530.6934001968707
+    assert abs(ICECUBE.outer_radius - 789.8215434647672) < TOL

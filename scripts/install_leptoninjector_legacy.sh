@@ -63,7 +63,7 @@ if [ -z "$use_cmake" ]; then
   tar -zxvf cmake-3.22.2.tar.gz
   cd cmake-3.22.2
   ./bootstrap >/dev/null
-  NJOBS="$(nproc 2>/dev/null || sysctl -n hw.logicalcpu)"
+  NJOBS="$(nproc)"
   make -j"$NJOBS" >/dev/null
   CMAKE_BIN="$PWD/bin/cmake"
   cd "$TMP_DIR/build"
@@ -71,7 +71,7 @@ else
   CMAKE_BIN="$use_cmake"
 fi
 
-NJOBS="$(nproc 2>/dev/null || sysctl -n hw.logicalcpu)"
+NJOBS="$(nproc)"
 
 "$CMAKE_BIN" \
   -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \

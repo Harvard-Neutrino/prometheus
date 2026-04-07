@@ -1,0 +1,140 @@
+# syntax=docker/dockerfile:1
+# Prometheus GPU image — CUDA 12.3 + ubuntu:22.04 base.
+#
+# Requires the NVIDIA Container Toolkit on the host:
+#   https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html
+#
+# Build:
+#   docker build -f container/Dockerfile.gpu -t prometheus:gpu .
+#
+# Run (GPU-enabled):
+#   docker run --rm -it --gpus all prometheus:gpu
+#
+# The GPU image is identical to the CPU image except:
+#   - CUDA 12.3 devel base provides nvcc + CUDA toolkit
+#   - PPC is compiled with `make gpu` (nvcc) instead of `make cpu` (g++)
+#   - The GPU PPC_CUDA variant is also compiled
+#   - PPC_CUDA env var points at the CUDA binary
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 1: system packages + micromamba environment
+# ─────────────────────────────────────────────────────────────────────────────
+FROM nvidia/cuda:12.3.2-devel-ubuntu22.04 AS base
+
+LABEL org.opencontainers.image.title="Prometheus GPU"
+LABEL org.opencontainers.image.description="Neutrino telescope simulation (GPU/CUDA)"
+LABEL org.opencontainers.image.source="https://github.com/Harvard-Neutrino/prometheus"
+LABEL org.opencontainers.image.licenses="LGPL-3.0"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        gcc \
+        g++ \
+        cmake \
+        curl \
+        ca-certificates \
+        pkg-config \
+        libhdf5-serial-dev \
+        libboost-all-dev \
+        libgsl-dev \
+        libsuitesparse-dev \
+        git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install micromamba
+RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest \
+        | tar -xvj -C /usr/local bin/micromamba
+
+ENV MAMBA_ROOT_PREFIX=/opt/conda
+ENV PATH=/opt/conda/envs/prometheus/bin:/usr/local/bin:${PATH}
+
+COPY environment.yml /tmp/environment.yml
+RUN micromamba create -y -n prometheus -f /tmp/environment.yml \
+    && micromamba clean -afy
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 2: PROPOSAL + pre-built tables
+# ─────────────────────────────────────────────────────────────────────────────
+FROM base AS proposal
+
+COPY requirements.txt /tmp/requirements.txt
+RUN /opt/conda/envs/prometheus/bin/pip install --no-cache-dir -r /tmp/requirements.txt
+
+COPY container/build_proposal_tables.py /tmp/build_proposal_tables.py
+RUN /opt/conda/envs/prometheus/bin/python /tmp/build_proposal_tables.py
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 3: LeptonInjector from vendored source
+# ─────────────────────────────────────────────────────────────────────────────
+FROM proposal AS leptoninjector
+
+COPY resources/LeptonInjector /opt/LI/source
+WORKDIR /opt/LI
+
+RUN mkdir build install && cd build \
+    && cmake \
+        -DCMAKE_INSTALL_PREFIX=/opt/LI/install \
+        -DPython_EXECUTABLE=/opt/conda/envs/prometheus/bin/python \
+        -DCMAKE_PREFIX_PATH=/opt/conda/envs/prometheus \
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    /opt/LI/source \
+    && make -j"$(nproc)" \
+    && make install
+
+ENV PYTHONPATH=/opt/LI/install/lib/python3.12/site-packages:${PYTHONPATH:-}
+ENV LD_LIBRARY_PATH=/opt/LI/install/lib:${LD_LIBRARY_PATH:-}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 4: PPC — compile both CPU fallback and GPU (nvcc) binaries
+# ─────────────────────────────────────────────────────────────────────────────
+FROM leptoninjector AS ppc
+
+# CPU PPC (fallback / ice-mode without GPU)
+COPY resources/PPC_executables/PPC /opt/PPC_CPU
+WORKDIR /opt/PPC_CPU
+RUN make cpu
+
+# GPU PPC (CUDA)
+# The default SM architecture is 89 (Ada Lovelace / RTX 40xx / H100 SXM).
+# Override at build time with: --build-arg SM_ARCH=80 for A100, 75 for Turing.
+ARG SM_ARCH=89
+COPY resources/PPC_executables/PPC_CUDA /opt/PPC_CUDA
+WORKDIR /opt/PPC_CUDA
+RUN make gpu arch=${SM_ARCH}
+
+ENV PPC=/opt/PPC_CPU/ppc
+ENV PPC_CUDA=/opt/PPC_CUDA/ppc
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 5: prometheus + fennel
+# ─────────────────────────────────────────────────────────────────────────────
+FROM ppc AS prometheus_install
+
+COPY resources/fennel /opt/fennel
+RUN /opt/conda/envs/prometheus/bin/pip install --no-cache-dir /opt/fennel
+
+COPY . /opt/prometheus
+WORKDIR /opt/prometheus
+
+RUN /opt/conda/envs/prometheus/bin/pip install --no-cache-dir pytest \
+    && /opt/conda/envs/prometheus/bin/pip install --no-cache-dir -e .
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 6: final image
+# ─────────────────────────────────────────────────────────────────────────────
+FROM prometheus_install AS final
+
+ENV PATH=/opt/conda/envs/prometheus/bin:/opt/PPC_CPU:/opt/PPC_CUDA:/usr/local/bin:${PATH}
+ENV PYTHONPATH=/opt/LI/install/lib/python3.12/site-packages:${PYTHONPATH:-}
+ENV LD_LIBRARY_PATH=/opt/LI/install/lib:/opt/conda/envs/prometheus/lib:${LD_LIBRARY_PATH:-}
+ENV PPC=/opt/PPC_CPU/ppc
+ENV PPC_CUDA=/opt/PPC_CUDA/ppc
+ENV EARTH_PARAMS=/opt/LI/source/resources/earthparams/
+
+WORKDIR /opt/prometheus
+
+RUN python -c "import proposal; import LeptonInjector; import prometheus; print('Image OK')"
+
+CMD ["bash"]

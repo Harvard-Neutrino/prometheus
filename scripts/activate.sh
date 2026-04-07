@@ -26,7 +26,7 @@ fi
 
 # The micromamba shell hook may reference variables not yet defined
 # (e.g. MAMBA_ROOT_PREFIX). Temporarily disable 'nounset' while evaluating
-# it, then restore. Also detect the calling shell: bash on Linux, zsh on macOS.
+# it, then restore. Detect the calling shell (bash or zsh).
 _SHELL_NAME="$(basename "${SHELL:-bash}")"
 case "$_SHELL_NAME" in
 	zsh|bash) ;;

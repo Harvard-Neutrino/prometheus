@@ -20,4 +20,7 @@ echo "- Installing prometheus (editable) into environment..."
 echo "- Installing fennel from vendored source (MeighenBergerS/fennel@988bf2f)..."
 "$PY" -m pip install "$REPO_ROOT/resources/fennel"
 
+echo "- Installing pytest..."
+"$PY" -m pip install pytest
+
 echo "Post-install fixes complete."

@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Prometheus
+        run: bash install.sh
+        # PPC requires a C++ build and is optional; skip in CI.
+        # The --with-ppc flag is intentionally omitted.
+
+      - name: Run test suite
+        # Activate the micromamba environment and run pytest.
+        # The shell hook must be evaluated before micromamba activate works.
+        shell: bash
+        run: |
+          eval "$(bin/micromamba shell hook -s bash)"
+          micromamba activate -p .prometheus_env
+          python -m pytest --tb=short -q
+        # Slow e2e tests (--run-slow) are excluded from CI runs because they
+        # require ~10 minutes per simulation. They should be run locally before
+        # merging changes that touch the simulation pipeline.
