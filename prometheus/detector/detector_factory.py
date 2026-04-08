@@ -13,7 +13,7 @@ class InvalidRNGError(Exception):
     """Raised when rng specification can't be parsed"""
     def __init__(self, rng):
         self.message = f"Unable to determine random state seeding from {rng}"
-        super.__init__(self.message)
+        super().__init__(self.message)
 
 def parse_rng(rng: Union[None, int, np.random.RandomState]) -> np.random.RandomState:
     """Helps determine random number generation state from input.

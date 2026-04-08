@@ -6,6 +6,7 @@ import numpy as np
 from scipy.integrate import quad
 
 from .constants import Constants
+from prometheus.utils.geo_utils import is_in_cylinder, get_zen_azi, track_isects_cyl
 
 logger = logging.getLogger(__name__)
 
@@ -73,79 +74,6 @@ def proposal_setup():
     )
     prop = pp.Propagator(args["particle_def"], [(detector, utility, density_distr)])
     return prop
-
-
-def is_in_cylinder(radius, height, pos):
-    """Test whether a position vector is inside a cylinder."""
-    return (np.sqrt(pos[0] ** 2 + pos[1] ** 2) < radius) & (np.abs(pos[2]) < height / 2)
-
-
-def get_zen_azi(direc):
-    """Convert a cartesian direction into zenith / azimuth (IC convention)."""
-    r = np.linalg.norm(direc)
-    theta = 0
-    if direc[2] / r <= 1:
-        theta = np.arccos(direc[2] / r)
-    else:
-        if direc[2] < 0:
-            theta = np.pi
-    if theta < 0:
-        theta += 2 * np.pi
-    phi = 0
-    if (direc[0] != 0) or (direc[1] != 0):
-        phi = np.arctan2(direc[1], direc[0])
-    if phi < 0:
-        phi += 2 * np.pi
-    zenith = np.pi - theta
-    azimuth = phi + np.pi
-    if zenith > np.pi:
-        zenith -= 2 * np.pi - zenith
-    azimuth -= int(azimuth / (2 * np.pi)) * (2 * np.pi)
-    return zenith, azimuth
-
-
-def track_isects_cyl(radius, height, pos, direc):
-    """Check if a track intersects a cylinder."""
-    x = pos[0]
-    y = pos[1]
-    z = pos[2]
-
-    theta, phi = get_zen_azi(direc)
-
-    sinph = np.sin(phi)
-    cosph = np.cos(phi)
-    sinth = np.sin(theta)
-    costh = np.cos(theta)
-
-    b = x * cosph + y * sinph
-    d = b * b + radius * radius - x * x - y * y
-    h = (np.nan, np.nan)
-    r = (np.nan, np.nan)
-
-    if d > 0:
-        d = np.sqrt(d)
-        # down-track distance to the endcaps
-        if costh != 0:
-            h = sorted(((z - height / 2) / costh, (z + height / 2) / costh))
-        # down-track distance to the side surfaces
-        if sinth != 0:
-            r = sorted(((b - d) / sinth, (b + d) / sinth))
-
-        if costh == 0:
-            if (z > -height / 2) & (z < height / 2):
-                h = r
-            else:
-                h = (np.nan, np.nan)
-        elif sinth == 0:
-            if np.sqrt(x ** 2 + y ** 2) >= radius:
-                h = (np.nan, np.nan)
-        else:
-
-            if (h[0] >= r[1]) or (h[1] <= r[0]):
-                h = (np.nan, np.nan)
-            else:
-                h = max(h[0], r[0]), min(h[1], r[1])
-    return h
 
 
 def deposited_energy(det, record):

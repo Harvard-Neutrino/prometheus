@@ -1,20 +1,8 @@
 import os
 
+from ..injection.interactions import INTERACTION_DICT
+
 RESOURCES_DIR = os.path.abspath(f"{os.path.dirname(__file__)}/../../resources/")
-INTERACTION_DICT = {
-    ("EMinus", "Hadrons"): "CC",
-    ("MuMinus", "Hadrons"): "CC",
-    ("TauMinus", "Hadrons"): "CC",
-    ("EPlus", "Hadrons"): "CC",
-    ("MuPlus", "Hadrons"): "CC",
-    ("TauPlus", "Hadrons"): "CC",
-    ("NuE", "Hadrons"): "NC",
-    ("NuMu", "Hadrons"): "NC",
-    ("NuTau", "Hadrons"): "NC",
-    ("NuEBar", "Hadrons"): "NC",
-    ("NuMuBar", "Hadrons"): "NC",
-    ("NuTauBar", "Hadrons"): "NC",
-}
 EARTH_MODEL_DICT = {
     "gvd.geo": "PREM_gvd.dat",
     "icecube.geo": "PREM_south_pole.dat",

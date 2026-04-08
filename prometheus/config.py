@@ -4,6 +4,7 @@
 # Config file for the pr_dformat package.
 
 from typing import Dict, Any
+import sys
 import yaml
 import os
 
@@ -44,7 +45,7 @@ _baseconfig = {
         'LeptonInjector': {
             'inject': True,
             'paths':{
-                'install location': '/opt/LI/install/lib/python3.9/site-packages',
+                'install location': f'{sys.prefix}/lib/python{sys.version_info.major}.{sys.version_info.minor}/site-packages',
                 'xsec dir': f'{RESOURCES_DIR}/cross_section_splines/',
                 # These fields will be set with output prefix and run number
                 "earth model location": None,
@@ -178,7 +179,7 @@ _baseconfig = {
             "paths":{
                 'location': f'{RESOURCES_DIR}/PPC_executables/PPC_CUDA/',
                 'force': False,
-                "ppc_tmpdir:": "./.ppc_tmp",
+                "ppc_tmpdir": "./.ppc_tmp",
                 'ppc_tmpfile':'.event_hits.ppc.tmp',
                 'f2k_tmpfile':'.event_losses.f2k.tmp',
                 'ppc_prefix':'',
@@ -214,6 +215,18 @@ _baseconfig = {
     }
 }
 
+
+def _deep_merge(base: dict, override: dict) -> dict:
+    """Recursively merge override into base, returning a new dict."""
+    result = dict(base)
+    for key, value in override.items():
+        if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+            result[key] = _deep_merge(result[key], value)
+        else:
+            result[key] = value
+    return result
+
+
 class ConfigClass(dict):
     """Configuration container for Prometheus settings.
 
@@ -234,7 +247,9 @@ class ConfigClass(dict):
             Path to YAML file.
         """
         yaml_config = yaml.load(open(yaml_file), Loader=yaml.SafeLoader)
-        self.update(yaml_config)
+        merged = _deep_merge(self, yaml_config)
+        self.clear()
+        self.update(merged)
 
     # TODO: Update this
     def from_dict(self, user_dict: Dict[Any, Any]) -> None:
@@ -245,7 +260,9 @@ class ConfigClass(dict):
         user_dict : dict
             User-provided configuration dictionary.
         """
-        self.update(user_dict)
+        merged = _deep_merge(self, user_dict)
+        self.clear()
+        self.update(merged)
 
 
 config = ConfigClass(_baseconfig)

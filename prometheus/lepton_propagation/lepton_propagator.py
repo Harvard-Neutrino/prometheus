@@ -1,10 +1,10 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import Tuple
 import proposal as pp
 
 from ..particle import Particle
 
-class LeptonPropagator:
+class LeptonPropagator(ABC):
     """Interface class for the different lepton propagators."""
     def __init__(self, config):
         self._prop_dict = {}

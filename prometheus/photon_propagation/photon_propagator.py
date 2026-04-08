@@ -1,9 +1,9 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 
 from ..lepton_propagation import LeptonPropagator
 from ..detector import Detector
 
-class PhotonPropagator:
+class PhotonPropagator(ABC):
     """Interface for handling different photon propagators."""
     def __init__(
         self,

@@ -15,14 +15,13 @@ from jax import random  # noqa: E402
 
 from .utils import (
     config_mims, clean_config,
-    UnknownInjectorError, UnknownLeptonPropagatorError,
+    UnknownInjectorError,
     UnknownPhotonPropagatorError, NoInjectionError,
     InjectorNotImplementedError, CannotLoadDetectorError
 )
 from .config import config
 from .detector import Detector
 from .injection import RegisteredInjectors, INJECTION_CONSTRUCTOR_DICT
-from .lepton_propagation import RegisteredLeptonPropagators
 from .photon_propagation import (
     get_photon_propagator,
     RegisteredPhotonPropagators
@@ -76,9 +75,6 @@ class Prometheus(object):
         ------
         UnknownInjectorError
             Raised if we don't know how to handle the injector specified in the config.
-        UnknownLeptonPropagatorError
-            Raised if we don't know how to handle the lepton
-            propagator specified in the config.
         UnknownPhotonPropagatorError
             Raised if we don't know how to handle the photon
             propagator specified in the config.
@@ -109,12 +105,8 @@ class Prometheus(object):
         # the type hinting will throw an error
         # We can probably hide this in MIMS
         import proposal as pp
-        if int(pp.__version__.split(".")[0]) <= 6:
-            from .lepton_propagation import OldProposalLeptonPropagator as LeptonPropagator
-            config["lepton propagator"]["name"] = "old proposal"
-        else:
-            from .lepton_propagation import NewProposalLeptonPropagator as LeptonPropagator
-            config["lepton propagator"]["name"] = "new proposal"
+        from .lepton_propagation.new_proposal_lepton_propagator import NewProposalLeptonPropagator as LeptonPropagator
+        config["lepton propagator"]["name"] = "new proposal"
         config["lepton propagator"]["version"] = pp.__version__
 
         config_mims(config, self.detector)
@@ -125,11 +117,6 @@ class Prometheus(object):
             regularize(config["injection"]["name"])
         )
 
-        self._lp = getattr(
-            RegisteredLeptonPropagators,
-            regularize(config["lepton propagator"]["name"])
-        )
-
         self._pp = getattr(
             RegisteredPhotonPropagators,
             regularize(config["photon propagator"]["name"])
@@ -137,9 +124,6 @@ class Prometheus(object):
 
         if regularize(config["injection"]["name"]) not in RegisteredInjectors.list():
             raise UnknownInjectorError(config["injection"]["name"] + "is not supported as an injector!")
-
-        if regularize(config["lepton propagator"]["name"]) not in RegisteredLeptonPropagators.list():
-            raise UnknownLeptonPropagatorError(config["lepton propagator"]["name"] + "is not a known lepton propagator")
 
         if regularize(config["photon propagator"]["name"]) not in RegisteredPhotonPropagators.list():
             raise UnknownPhotonPropagatorError(config["photon propagator"]["name"] + " is not a known photon propagator")
