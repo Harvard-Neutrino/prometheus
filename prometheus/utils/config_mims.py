@@ -77,16 +77,65 @@ def config_mims(config: dict, detector) -> None:
     check_consistency(config)
 
 def check_consistency(config: dict) -> None:
-    # TODO check whether medium is knowable
-    # TODO check if medium is consistent
-    
-    
-    pass
-    #if (
-    #    config["simulation"]["medium"] is not None and
-    #    config["simulation"]["medium"].upper()!=detector.medium.name
-    #):
-    #    raise ValueError("Detector and lepton propagator have conflicting media")
+    """Validate the configuration for obvious errors.
+
+    Raises
+    ------
+    KeyError
+        If a required top-level section is missing.
+    ValueError
+        If a numeric range is implausible or a required path does not exist.
+    """
+    # Required top-level sections
+    for section in ("run", "detector", "injection", "lepton propagator", "photon propagator"):
+        if section not in config:
+            raise KeyError(f"Config is missing required section: '{section}'")
+
+    run = config["run"]
+    if run.get("nevents", 0) <= 0:
+        raise ValueError(f"run.nevents must be > 0, got {run.get('nevents')}")
+    if run.get("random state seed") is not None and not isinstance(run["random state seed"], int):
+        raise ValueError("run.random state seed must be an integer or None")
+
+    # Photon propagator name must have been resolved by now
+    pp_name = config["photon propagator"].get("name")
+    if pp_name is None:
+        raise ValueError(
+            "photon propagator name has not been set. "
+            "Is the detector medium recognised?"
+        )
+
+    # Injection: if LeptonInjector is active and inject=True, cross-section files must exist
+    inj_name = config["injection"].get("name", "")
+    if inj_name in config["injection"]:
+        inj_cfg = config["injection"][inj_name]
+        if inj_cfg.get("inject", False):
+            sim = inj_cfg.get("simulation", {})
+            min_e = sim.get("minimal energy")
+            max_e = sim.get("maximal energy")
+            if min_e is not None and max_e is not None and min_e >= max_e:
+                raise ValueError(
+                    f"injection minimal energy ({min_e}) must be < maximal energy ({max_e})"
+                )
+            for path_key in ("diff xsec", "total xsec"):
+                path = inj_cfg.get("paths", {}).get(path_key)
+                if path is not None and not os.path.exists(path):
+                    raise ValueError(
+                        f"injection paths.{path_key} does not exist: {path}"
+                    )
+
+    # Lepton propagator tables path should exist if set
+    lp_name = config["lepton propagator"].get("name", "")
+    if lp_name in config["lepton propagator"]:
+        tables_path = (
+            config["lepton propagator"][lp_name]
+            .get("paths", {})
+            .get("tables path")
+        )
+        if tables_path is not None and not os.path.exists(tables_path):
+            raise ValueError(
+                f"lepton propagator tables path does not exist: {tables_path}"
+            )
 
 def photon_prop_config_mims(config: dict, output_prefix: str) -> None:
     name = config.get("name")
@@ -138,7 +187,9 @@ def injection_config_mims(
 ) -> None:
 
     if not config["inject"]:
-        del config["simulation"]
+        # Work on a shallow copy so the caller's dict is not permanently mutated.
+        config = dict(config)
+        config.pop("simulation", None)
         return
 
     if config["paths"]["earth model location"] is None:

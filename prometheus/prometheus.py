@@ -176,13 +176,7 @@ class Prometheus(object):
     def propagate(self):
         """Calculate energy losses, generate photon yields, and propagate photons."""
         if config["photon propagator"]["name"].lower()=="olympus":
-            rstate = np.random.RandomState(config["run"]["random state seed"])
-            rstate_jax = random.PRNGKey(config["run"]["random state seed"])
-            # TODO this feels like it shouldn't be in the config
-            config["photon propagator"]["olympus"]["runtime"] = {
-                "random state": rstate,
-                "random state jax": rstate_jax,
-            }
+            rng_key = random.PRNGKey(config["run"]["random state seed"])
         elif config["photon propagator"]["name"].lower()=="ppc":
             from glob import glob
             import shutil
@@ -224,9 +218,13 @@ class Prometheus(object):
                     break
                 for final_state in injection_event.final_states:
                     pbar.set_description(f"Propagating {final_state}")
-                    self._photon_propagator.propagate(final_state)
+                    if config["photon propagator"]["name"].lower() == "olympus":
+                        rng_key, subkey = random.split(rng_key)
+                    else:
+                        subkey = None
+                    self._photon_propagator.propagate(final_state, subkey)
         if config["photon propagator"]["name"].lower()=="olympus":
-            config["photon propagator"]["olympus"]["runtime"] = None
+            pass
         elif config["photon propagator"]["name"].lower()=="ppc":
             clean_ppc_tmpdir(config['photon propagator']['PPC']['paths']['ppc_tmpdir'])
         elif config["photon propagator"]["name"].lower()=="ppc_cuda":
@@ -236,7 +234,7 @@ class Prometheus(object):
     def sim(self):
         """Perform injection of precipitating interaction, calculate energy losses, calculate photon yield, propagate photons, and save resulting photons."""
         if "runtime" in config["photon propagator"].keys():
-            config["photon propagator"]["runtime"] = None
+            del config["photon propagator"]["runtime"]
         start_inj = time()
         self.inject()
         end_inj = time()

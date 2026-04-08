@@ -47,7 +47,7 @@ class OlympusPhotonPropagator(PhotonPropagator):
             c_medium=self._c_medium_f(self.config['simulation']['wavelength']) / 1E9
         )
 
-    def propagate(self, particle: Particle):
+    def propagate(self, particle: Particle, rng_key):
         """Simulate losses and propagate resulting photons for an input particle.
 
         Losses and resulting photon hits are stored within the input particle (which is modified in-place).
@@ -56,6 +56,8 @@ class OlympusPhotonPropagator(PhotonPropagator):
         ----------
         particle : Particle
             Prometheus particle object to simulate.
+        rng_key : jax.random.PRNGKey
+            JAX PRNG key for this particle's random draws.
         """
 
         # neutrinos don't produce light
@@ -89,7 +91,7 @@ class OlympusPhotonPropagator(PhotonPropagator):
                 generate_realistic_track(
                     self.detector,
                     injection_event,
-                    key=self.config['runtime']['random state jax'],
+                    key=rng_key,
                     pprop_func=self._gen_ph,
                     proposal_prop=proposal_prop,
                     splitter=self.config['simulation']['splitter']
@@ -101,7 +103,7 @@ class OlympusPhotonPropagator(PhotonPropagator):
             res_event, _ = generate_cascade(
                 self.detector,
                 injection_event,
-                seed = self.config['runtime']['random state jax'],
+                seed = rng_key,
                 converter_func = functools.partial(
                     make_realistic_cascade_source,
                     moliere_rand=True,
@@ -129,7 +131,7 @@ class OlympusPhotonPropagator(PhotonPropagator):
         for child in particle.children:
             if child.e < 1:
                 continue
-            self.propagate(child)
+            self.propagate(child, rng_key)
 
 
     def _c_medium_f(self, wl):

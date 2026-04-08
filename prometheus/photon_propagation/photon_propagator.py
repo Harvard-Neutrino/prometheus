@@ -1,4 +1,5 @@
 from abc import abstractmethod, ABC
+from typing import Optional
 
 from ..lepton_propagation import LeptonPropagator
 from ..detector import Detector
@@ -27,7 +28,7 @@ class PhotonPropagator(ABC):
         self._config = photon_prop_config
 
     @abstractmethod
-    def propagate(self, particle):
+    def propagate(self, particle, rng_key):
         pass
 
     @property
