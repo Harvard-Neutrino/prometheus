@@ -18,10 +18,10 @@ jobs:
         run: pip install --quiet nbstripout
 
       - name: Fail if any notebook contains output
-        # nbstripout --check exits non-zero when a notebook has stored output.
         run: |
-          find . -name '*.ipynb' -not -path '*/.git/*' \
-            | xargs nbstripout --check
+          # Strip all tracked notebooks in-place and fail if git sees any diff.
+          git ls-files '*.ipynb' | xargs nbstripout
+          git diff --exit-code || (echo 'Notebooks have stored outputs. Run nbstripout locally.' && exit 1)
 
   test:
     runs-on: ubuntu-latest
@@ -41,7 +41,7 @@ jobs:
         shell: bash
         run: |
           eval "$(bin/micromamba shell hook -s bash)"
-          micromamba activate -p .prometheus_env
+          micromamba activate -p ./.prometheus_env
           python -m pytest --tb=short -q
         # Slow e2e tests (--run-slow) are excluded from CI runs because they
         # require ~10 minutes per simulation. They should be run locally before
