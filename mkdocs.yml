@@ -1,4 +1,5 @@
 site_name: Prometheus Documentation
+site_description: Documentation for Prometheus, a Python-based package for simulating neutrino telescopes.
 repo_url: https://github.com/Harvard-Neutrino/prometheus
 site_author: Ana Lastoviria
 copyright: © Prometheus
