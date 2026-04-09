@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../../../img/favicon.ico" />
+    <title>ppc_photon_propagator - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "ppc_photon_propagator";
+        var mkdocs_page_input_path = "api-reference/prometheus/photon_propagation/ppc_photon_propagator.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../citation/">Citation</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="../../">prometheus</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../../config/">config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../detector/">detector</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/detector_factory/">detector_factory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../injection/">injection</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/genie_parser/">genie_parser</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/registered_injectors/">registered_injectors</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/old_proposal_lepton_propagator/">old_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="../">photon_propagation</a>
+    <ul class="current">
+                <li class="toctree-l3"><a class="reference internal" href="../hit/">hit</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">ppc_photon_propagator</a>
+    <ul class="current">
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.photon_propagation.ppc_photon_propagator.PPCPhotonPropagator">PPCPhotonPropagator</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.photon_propagation.ppc_photon_propagator.ppc_sim">ppc_sim</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../utils/">utils</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/f2k_utils/">f2k_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/hebe_ui/">hebe_ui</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../olympus/">olympus</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../olympus/event_generation/">event_generation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/event_generation/constants/">constants</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/event_generation/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/event_generation/event_generation/">event_generation</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/event_generation/lightyield/">lightyield</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/event_generation/mc_record/">mc_record</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/event_generation/photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../olympus/event_generation/photon_propagation/legacy_photon_propagation/">legacy_photon_propagation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../olympus/event_generation/photon_propagation/norm_flow_photons/">norm_flow_photons</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../olympus/event_generation/photon_propagation/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/event_generation/photon_source/">photon_source</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/event_generation/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../olympus/optimization/">optimization</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/optimization/fisher_information/">fisher_information</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../olympus/plotting/">plotting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/plotting/plotting/">plotting</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../olympus/utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../hyperion/">hyperion</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/medium/">medium</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/models/">models</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/">photon_arrival_time_nflow</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/net/">net</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_torch/">photon_arrival_time_torch</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_torch/net/">net</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_torch/pdf/">pdf</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/">photon_binned_amplitude</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/net/">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/propagate/">propagate</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item"><a href="../../">prometheus</a></li>
+          <li class="breadcrumb-item"><a href="../">photon_propagation</a></li>
+      <li class="breadcrumb-item active">ppc_photon_propagator</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="prometheus.photon_propagation.ppc_photon_propagator" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">prometheus.photon_propagation.ppc_photon_propagator</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="PPCPhotonPropagator (prometheus.photon_propagation.ppc_photon_propagator.PPCPhotonPropagator)" href="#prometheus.photon_propagation.ppc_photon_propagator.PPCPhotonPropagator">PPCPhotonPropagator</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Interface for simulating energy losses and light propagation using ppc.</p>
+          </div>
+        </li>
+    </ul>
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="ppc_sim (prometheus.photon_propagation.ppc_photon_propagator.ppc_sim)" href="#prometheus.photon_propagation.ppc_photon_propagator.ppc_sim">ppc_sim</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Simulate the propagation of a particle and of any photons resulting from the energy losses of this particle.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.photon_propagation.ppc_photon_propagator.PPCPhotonPropagator" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">PPCPhotonPropagator</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">PPCPhotonPropagator</span><span class="p">(</span>
+    <span class="n">lepton_propagator</span><span class="p">:</span> <span class="n">LeptonPropagator</span><span class="p">,</span>
+    <span class="n">detector</span><span class="p">:</span> <span class="n">Detector</span><span class="p">,</span>
+    <span class="n">photon_prop_config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="PhotonPropagator (prometheus.photon_propagation.photon_propagator.PhotonPropagator)" href="../photon_propagator/#prometheus.photon_propagation.photon_propagator.PhotonPropagator">PhotonPropagator</a></code></p>
+
+
+
+        <p>Interface for simulating energy losses and light propagation using ppc.</p>
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>lepton_propagator</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="LeptonPropagator (prometheus.lepton_propagation.LeptonPropagator)" href="../../lepton_propagation/lepton_propagator/#prometheus.lepton_propagation.lepton_propagator.LeptonPropagator">LeptonPropagator</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Prometheus lepton propagator object which is used to generate losses from the particles.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>detector</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Detector (prometheus.detector.Detector)" href="../../detector/detector/#prometheus.detector.detector.Detector">Detector</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Prometheus detector object in which the light is propagated.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>photon_prop_config</code></b>
+                  (<code><span title="dict">dict</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Dictionary containing the configuration settings for photon propagation.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="propagate (prometheus.photon_propagation.ppc_photon_propagator.PPCPhotonPropagator.propagate)" href="#prometheus.photon_propagation.ppc_photon_propagator.PPCPhotonPropagator.propagate">propagate</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Propagate an input particle using ppc.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+                  <details class="quote">
+                    <summary>Source code in <code>prometheus/photon_propagation/photon_propagator.py</code></summary>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">lepton_propagator</span><span class="p">:</span> <span class="n">LeptonPropagator</span><span class="p">,</span>
+    <span class="n">detector</span><span class="p">:</span> <span class="n">Detector</span><span class="p">,</span>
+    <span class="n">photon_prop_config</span><span class="p">:</span> <span class="nb">dict</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize the photon propagator.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lepton_propagator : LeptonPropagator</span>
+<span class="sd">        Prometheus lepton propagator object which is used to generate losses from the particles.</span>
+<span class="sd">    detector : Detector</span>
+<span class="sd">        Prometheus detector object in which the light is propagated.</span>
+<span class="sd">    photon_prop_config : dict</span>
+<span class="sd">        Dictionary containing the configuration settings for photon propagation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_lepton_propagator</span> <span class="o">=</span> <span class="n">lepton_propagator</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_detector</span> <span class="o">=</span> <span class="n">detector</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">photon_prop_config</span>
+</code></pre></div></td></tr></table></div>
+                  </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="prometheus.photon_propagation.ppc_photon_propagator.PPCPhotonPropagator.propagate" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">propagate</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">propagate</span><span class="p">(</span><span class="n">particle</span><span class="p">:</span> <span class="n">Particle</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Propagate an input particle using ppc.</p>
+<p>This modifies the state of the input particle in-place. We should make this more consistent, but that is a problem for another day.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>particle</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Particle
+
+
+  
+      dataclass
+   (prometheus.particle.Particle)" href="../../particle/particle/#prometheus.particle.particle.Particle">Particle</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Prometheus particle to propagate.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/photon_propagation/ppc_photon_propagator.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">propagate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">particle</span><span class="p">:</span> <span class="n">Particle</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Propagate an input particle using ppc.</span>
+
+<span class="sd">    This modifies the state of the input particle in-place. We should make this more consistent, but that is a problem for another day.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    particle : Particle</span>
+<span class="sd">        Prometheus particle to propagate.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">ppc_sim</span><span class="p">(</span><span class="n">particle</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">detector</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lepton_propagator</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.photon_propagation.ppc_photon_propagator.ppc_sim" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">ppc_sim</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">ppc_sim</span><span class="p">(</span>
+    <span class="n">particle</span><span class="p">:</span> <span class="n">Particle</span><span class="p">,</span>
+    <span class="n">det</span><span class="p">:</span> <span class="n">Detector</span><span class="p">,</span>
+    <span class="n">lp</span><span class="p">:</span> <span class="n">LeptonPropagator</span><span class="p">,</span>
+    <span class="n">ppc_config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Simulate the propagation of a particle and of any photons resulting from the energy losses of this particle.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>particle</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Particle
+
+
+  
+      dataclass
+   (prometheus.particle.Particle)" href="../../particle/particle/#prometheus.particle.particle.Particle">Particle</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Particle to propagate.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>det</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Detector (prometheus.detector.Detector)" href="../../detector/detector/#prometheus.detector.detector.Detector">Detector</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Detector object to simulate within.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>lp</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="LeptonPropagator (prometheus.lepton_propagation.LeptonPropagator)" href="../../lepton_propagation/lepton_propagator/#prometheus.lepton_propagation.lepton_propagator.LeptonPropagator">LeptonPropagator</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Prometheus LeptonPropagator used to simulate any charged leptons.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>ppc_config</code></b>
+                  (<code><span title="dict">dict</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Dictionary containing the configuration settings for the photon
+propagation.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/photon_propagation/ppc_photon_propagator.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">ppc_sim</span><span class="p">(</span>
+    <span class="n">particle</span><span class="p">:</span> <span class="n">Particle</span><span class="p">,</span>
+    <span class="n">det</span><span class="p">:</span> <span class="n">Detector</span><span class="p">,</span>
+    <span class="n">lp</span><span class="p">:</span> <span class="n">LeptonPropagator</span><span class="p">,</span>
+    <span class="n">ppc_config</span><span class="p">:</span> <span class="nb">dict</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulate the propagation of a particle and of any photons resulting from the energy losses of this particle.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    particle : Particle</span>
+<span class="sd">        Particle to propagate.</span>
+<span class="sd">    det : Detector</span>
+<span class="sd">        Detector object to simulate within.</span>
+<span class="sd">    lp : LeptonPropagator</span>
+<span class="sd">        Prometheus LeptonPropagator used to simulate any charged leptons.</span>
+<span class="sd">    ppc_config : dict</span>
+<span class="sd">        Dictionary containing the configuration settings for the photon</span>
+<span class="sd">        propagation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO I think this could be factored out into a separate energy loss section</span>
+    <span class="c1"># But that is not a now problem</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">particle</span><span class="p">))</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">16</span><span class="p">]:</span> <span class="c1"># It&#39;s a neutrino</span>
+        <span class="k">return</span>
+    <span class="c1"># TODO put this in config</span>
+    <span class="n">r_inice</span> <span class="o">=</span> <span class="n">det</span><span class="o">.</span><span class="n">outer_radius</span> <span class="o">+</span> <span class="mi">1000</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">particle</span><span class="p">))</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">15</span><span class="p">]:</span> <span class="c1"># It&#39;s a charged lepton</span>
+        <span class="n">lp</span><span class="o">.</span><span class="n">energy_losses</span><span class="p">(</span><span class="n">particle</span><span class="p">,</span> <span class="n">det</span><span class="p">)</span>
+    <span class="c1"># All of these we consider as point depositions</span>
+    <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">particle</span><span class="p">))</span><span class="o">==</span><span class="mi">111</span><span class="p">:</span> <span class="c1"># It&#39;s a neutral pion</span>
+        <span class="c1"># TODO handle this correctl by converting to photons after prop</span>
+        <span class="k">return</span>
+    <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">particle</span><span class="p">))</span><span class="o">==</span><span class="mi">211</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">particle</span><span class="p">))</span><span class="o">==</span><span class="mi">321</span><span class="p">:</span> <span class="c1"># It&#39;s a charged pion</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">particle</span><span class="o">.</span><span class="n">position</span><span class="o">-</span><span class="n">det</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">r_inice</span><span class="p">:</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">Loss</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">particle</span><span class="p">),</span> <span class="n">particle</span><span class="o">.</span><span class="n">e</span><span class="p">,</span> <span class="n">particle</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+            <span class="n">particle</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">particle</span><span class="p">))</span><span class="o">==</span><span class="mi">311</span><span class="p">:</span> <span class="c1"># It&#39;s a neutral kaon</span>
+        <span class="c1"># TODO handle this correctl by converting to photons after prop</span>
+        <span class="k">return</span>
+    <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="n">particle</span><span class="p">)</span><span class="o">==-</span><span class="mi">2000001006</span> <span class="ow">or</span> <span class="nb">int</span><span class="p">(</span><span class="n">particle</span><span class="p">)</span><span class="o">==</span><span class="mi">2212</span><span class="p">:</span> <span class="c1"># Hadrons</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">particle</span><span class="o">.</span><span class="n">position</span><span class="o">-</span><span class="n">det</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">r_inice</span><span class="p">:</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">Loss</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">particle</span><span class="p">),</span> <span class="n">particle</span><span class="o">.</span><span class="n">e</span><span class="p">,</span> <span class="n">particle</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+            <span class="n">particle</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># TODO make this into a custom error</span>
+        <span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">particle</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unrecognized particle&quot;</span><span class="p">)</span>
+    <span class="n">geo_tmpfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ppc_config</span><span class="p">[</span><span class="s1">&#39;paths&#39;</span><span class="p">][</span><span class="s1">&#39;ppc_tmpdir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/geo-f2k&quot;</span>
+    <span class="n">ppc_tmpfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ppc_config</span><span class="p">[</span><span class="s1">&#39;paths&#39;</span><span class="p">][</span><span class="s1">&#39;ppc_tmpdir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">ppc_config</span><span class="p">[</span><span class="s1">&#39;paths&#39;</span><span class="p">][</span><span class="s1">&#39;ppc_tmpfile&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">particle</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">f2k_tmpfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ppc_config</span><span class="p">[</span><span class="s1">&#39;paths&#39;</span><span class="p">][</span><span class="s1">&#39;ppc_tmpdir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">ppc_config</span><span class="p">[</span><span class="s1">&#39;paths&#39;</span><span class="p">][</span><span class="s1">&#39;f2k_tmpfile&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">particle</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">command</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ppc_config</span><span class="p">[</span><span class="s1">&#39;paths&#39;</span><span class="p">][</span><span class="s1">&#39;ppc_exe&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">ppc_config</span><span class="p">[</span><span class="s1">&#39;simulation&#39;</span><span class="p">][</span><span class="s1">&#39;device&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> &lt; </span><span class="si">{</span><span class="n">f2k_tmpfile</span><span class="si">}</span><span class="s2"> &gt; </span><span class="si">{</span><span class="n">ppc_tmpfile</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="n">ppc_config</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;supress_output&quot;</span><span class="p">]:</span>
+        <span class="n">command</span> <span class="o">+=</span> <span class="s2">&quot; 2&gt;/dev/null&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">should_propagate</span><span class="p">(</span><span class="n">particle</span><span class="p">):</span>
+        <span class="k">return</span> 
+    <span class="n">serialize_to_f2k</span><span class="p">(</span><span class="n">particle</span><span class="p">,</span> <span class="n">f2k_tmpfile</span><span class="p">)</span>
+    <span class="n">det</span><span class="o">.</span><span class="n">to_f2k</span><span class="p">(</span>
+        <span class="n">geo_tmpfile</span><span class="p">,</span>
+        <span class="n">serial_nos</span><span class="o">=</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">serial_no</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">det</span><span class="o">.</span><span class="n">modules</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">tenv</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">tenv</span><span class="p">[</span><span class="s2">&quot;PPCTABLESDIR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ppc_config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;ppc_tmpdir&quot;</span><span class="p">]</span>
+
+    <span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">tenv</span><span class="p">)</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="n">particle</span><span class="o">.</span><span class="n">hits</span> <span class="o">=</span> <span class="n">parse_ppc</span><span class="p">(</span><span class="n">ppc_tmpfile</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="n">geo_tmpfile</span><span class="p">,</span> <span class="n">f2k_tmpfile</span><span class="p">,</span> <span class="n">ppc_tmpfile</span><span class="p">]:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">particle</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+        <span class="c1"># TODO put this in config</span>
+        <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">e</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span> <span class="c1"># GeV</span>
+            <span class="k">continue</span>
+        <span class="n">ppc_sim</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span> <span class="n">lp</span><span class="p">,</span> <span class="n">ppc_config</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../photon_propagator/" class="btn btn-neutral float-left" title="photon_propagator"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../registered_propagators/" class="btn btn-neutral float-right" title="registered_propagators">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../photon_propagator/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../registered_propagators/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../../..";</script>
+    <script src="../../../../js/theme_extra.js"></script>
+    <script src="../../../../js/theme.js"></script>
+      <script src="../../../../js/popper.min.js"></script>
+      <script src="../../../../js/tippy-bundle.umd.js"></script>
+      <script src="../../../../js/clipboard.js"></script>
+      <script src="../../../../js/extra.js"></script>
+      <script src="../../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

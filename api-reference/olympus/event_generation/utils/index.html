@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../../../img/favicon.ico" />
+    <title>utils - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "utils";
+        var mkdocs_page_input_path = "api-reference/olympus/event_generation/utils.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../citation/">Citation</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../../../prometheus/">prometheus</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/config/">config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/detector/">detector</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/detector/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/detector/detector_factory/">detector_factory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/detector/medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/detector/module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/detector/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/injection/">injection</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/injection/genie_parser/">genie_parser</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/injection/injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/injection/injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/injection/injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/injection/injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/injection/injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/injection/injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/injection/injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/injection/interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/injection/lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/injection/registered_injectors/">registered_injectors</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/lepton_propagation/old_proposal_lepton_propagator/">old_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/lepton_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/photon_propagation/hit/">hit</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/photon_propagation/olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/photon_propagation/photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/photon_propagation/ppc_photon_propagator/">ppc_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/photon_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/photon_propagation/utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/photon_propagation/utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/photon_propagation/utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/utils/">utils</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/f2k_utils/">f2k_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/hebe_ui/">hebe_ui</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/utils/serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/utils/serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/utils/serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/utils/serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/utils/serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/utils/serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="../../">olympus</a>
+    <ul class="current">
+                <li class="toctree-l2 current"><a class="reference internal current" href="../">event_generation</a>
+    <ul class="current">
+                <li class="toctree-l3"><a class="reference internal" href="../constants/">constants</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../event_generation/">event_generation</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../lightyield/">lightyield</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../mc_record/">mc_record</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../photon_propagation/legacy_photon_propagation/">legacy_photon_propagation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../photon_propagation/norm_flow_photons/">norm_flow_photons</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../photon_propagation/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../photon_source/">photon_source</a>
+                </li>
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">utils</a>
+    <ul class="current">
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.utils.deposited_energy">deposited_energy</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.utils.get_zen_azi">get_zen_azi</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.utils.is_in_cylinder">is_in_cylinder</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.utils.proposal_setup">proposal_setup</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.utils.sph_to_cart_jnp">sph_to_cart_jnp</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.utils.t_geo">t_geo</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.utils.track_isects_cyl">track_isects_cyl</a>
+    </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../optimization/">optimization</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../optimization/fisher_information/">fisher_information</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../plotting/">plotting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../plotting/plotting/">plotting</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../hyperion/">hyperion</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/medium/">medium</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/models/">models</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/">photon_arrival_time_nflow</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/net/">net</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_torch/">photon_arrival_time_torch</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_torch/net/">net</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_torch/pdf/">pdf</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/">photon_binned_amplitude</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/net/">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/propagate/">propagate</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item"><a href="../../">olympus</a></li>
+          <li class="breadcrumb-item"><a href="../">event_generation</a></li>
+      <li class="breadcrumb-item active">utils</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="olympus.event_generation.utils" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">olympus.event_generation.utils</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+        <p>Utility functions.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="deposited_energy (olympus.event_generation.utils.deposited_energy)" href="#olympus.event_generation.utils.deposited_energy">deposited_energy</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Calculate the deposited energy inside the detector outer hull.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="get_zen_azi (olympus.event_generation.utils.get_zen_azi)" href="#olympus.event_generation.utils.get_zen_azi">get_zen_azi</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Convert a cartesian direction into zenith / azimuth (IC convention).</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="is_in_cylinder (olympus.event_generation.utils.is_in_cylinder)" href="#olympus.event_generation.utils.is_in_cylinder">is_in_cylinder</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Test whether a position vector is inside a cylinder.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="proposal_setup (olympus.event_generation.utils.proposal_setup)" href="#olympus.event_generation.utils.proposal_setup">proposal_setup</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Set up a PROPOSAL propagator.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="sph_to_cart_jnp (olympus.event_generation.utils.sph_to_cart_jnp)" href="#olympus.event_generation.utils.sph_to_cart_jnp">sph_to_cart_jnp</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Transform spherical to cartesian coordinates.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="t_geo (olympus.event_generation.utils.t_geo)" href="#olympus.event_generation.utils.t_geo">t_geo</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Calculate the expected arrival time of unscattered photons at position <code>x</code>, emitted by a muon with direction <code>direc</code> and time <code>t_0</code> at position <code>x_0</code>.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="track_isects_cyl (olympus.event_generation.utils.track_isects_cyl)" href="#olympus.event_generation.utils.track_isects_cyl">track_isects_cyl</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Check if a track intersects a cylinder.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="olympus.event_generation.utils.deposited_energy" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">deposited_energy</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">deposited_energy</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate the deposited energy inside the detector outer hull.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>olympus/event_generation/utils.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">deposited_energy</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the deposited energy inside the detector outer hull.&quot;&quot;&quot;</span>
+    <span class="n">dep_e</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">sources</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_in_cylinder</span><span class="p">(</span><span class="n">det</span><span class="o">.</span><span class="n">outer_cylinder</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">det</span><span class="o">.</span><span class="n">outer_cylinder</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">source</span><span class="o">.</span><span class="n">pos</span><span class="p">):</span>
+            <span class="n">dep_e</span> <span class="o">+=</span> <span class="n">source</span><span class="o">.</span><span class="n">amp</span>
+    <span class="k">return</span> <span class="n">dep_e</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="olympus.event_generation.utils.get_zen_azi" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_zen_azi</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_zen_azi</span><span class="p">(</span><span class="n">direc</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Convert a cartesian direction into zenith / azimuth (IC convention).</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>olympus/event_generation/utils.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_zen_azi</span><span class="p">(</span><span class="n">direc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a cartesian direction into zenith / azimuth (IC convention).&quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">direc</span><span class="p">)</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">direc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">r</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">direc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">r</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">direc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    <span class="k">if</span> <span class="n">theta</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">theta</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">direc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">direc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">direc</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">direc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">phi</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">phi</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    <span class="n">zenith</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">-</span> <span class="n">theta</span>
+    <span class="n">azimuth</span> <span class="o">=</span> <span class="n">phi</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    <span class="k">if</span> <span class="n">zenith</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">:</span>
+        <span class="n">zenith</span> <span class="o">-=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">-</span> <span class="n">zenith</span>
+    <span class="n">azimuth</span> <span class="o">-=</span> <span class="nb">int</span><span class="p">(</span><span class="n">azimuth</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">zenith</span><span class="p">,</span> <span class="n">azimuth</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="olympus.event_generation.utils.is_in_cylinder" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">is_in_cylinder</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">is_in_cylinder</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Test whether a position vector is inside a cylinder.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>olympus/event_generation/utils.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_in_cylinder</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test whether a position vector is inside a cylinder.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">radius</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="olympus.event_generation.utils.proposal_setup" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">proposal_setup</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">proposal_setup</span><span class="p">()</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Set up a PROPOSAL propagator.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>olympus/event_generation/utils.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">proposal_setup</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set up a PROPOSAL propagator.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">proposal</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pp</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Could not import proposal!&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">e</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;particle_def&quot;</span><span class="p">:</span> <span class="n">pp</span><span class="o">.</span><span class="n">particle</span><span class="o">.</span><span class="n">MuMinusDef</span><span class="p">(),</span>
+        <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">pp</span><span class="o">.</span><span class="n">medium</span><span class="o">.</span><span class="n">Water</span><span class="p">(),</span>
+        <span class="s2">&quot;interpolate&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;cuts&quot;</span><span class="p">:</span> <span class="n">pp</span><span class="o">.</span><span class="n">EnergyCutSettings</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="n">cross</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">crosssection</span><span class="o">.</span><span class="n">make_std_crosssection</span><span class="p">(</span>
+        <span class="o">**</span><span class="n">args</span>
+    <span class="p">)</span>  <span class="c1"># use the standard crosssections</span>
+    <span class="n">collection</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">PropagationUtilityCollection</span><span class="p">()</span>
+
+    <span class="n">collection</span><span class="o">.</span><span class="n">displacement</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">make_displacement</span><span class="p">(</span><span class="n">cross</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">collection</span><span class="o">.</span><span class="n">interaction</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">make_interaction</span><span class="p">(</span><span class="n">cross</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">collection</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">make_time</span><span class="p">(</span><span class="n">cross</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="s2">&quot;particle_def&quot;</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">utility</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">PropagationUtility</span><span class="p">(</span><span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">)</span>
+
+    <span class="n">detector</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">Cartesian3D</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mf">1e20</span><span class="p">)</span>
+    <span class="n">density_distr</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">density_distribution</span><span class="o">.</span><span class="n">density_homogeneous</span><span class="p">(</span>
+        <span class="n">args</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mass_density</span>
+    <span class="p">)</span>
+    <span class="n">prop</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">Propagator</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s2">&quot;particle_def&quot;</span><span class="p">],</span> <span class="p">[(</span><span class="n">detector</span><span class="p">,</span> <span class="n">utility</span><span class="p">,</span> <span class="n">density_distr</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="n">prop</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="olympus.event_generation.utils.sph_to_cart_jnp" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">sph_to_cart_jnp</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">sph_to_cart_jnp</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Transform spherical to cartesian coordinates.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>olympus/event_generation/utils.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sph_to_cart_jnp</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform spherical to cartesian coordinates.&quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="olympus.event_generation.utils.t_geo" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">t_geo</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">t_geo</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t_0</span><span class="p">,</span> <span class="n">direc</span><span class="p">,</span> <span class="n">x_0</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate the expected arrival time of unscattered photons at position <code>x</code>, emitted by a muon with direction <code>direc</code> and time <code>t_0</code> at position <code>x_0</code>.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>x</code></b>
+                  (<code>(3,1) np.ndarray</code>)
+              –
+              <div class="doc-md-description">
+                <p>Position of the sensor.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>t_0</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Time at which the muon is at <code>x_0</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>direc</code></b>
+                  (<code>(3,1) np.ndarray</code>)
+              –
+              <div class="doc-md-description">
+                <p>Normalized direction vector of the muon.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>x_0</code></b>
+                  (<code>(3, 1) np.ndarray</code>)
+              –
+              <div class="doc-md-description">
+                <p>Position of the muon at time <code>t_0</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>olympus/event_generation/utils.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">t_geo</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t_0</span><span class="p">,</span> <span class="n">direc</span><span class="p">,</span> <span class="n">x_0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the expected arrival time of unscattered photons at position ``x``, emitted by a muon with direction ``direc`` and time ``t_0`` at position ``x_0``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : (3,1) np.ndarray</span>
+<span class="sd">        Position of the sensor.</span>
+<span class="sd">    t_0 : float</span>
+<span class="sd">        Time at which the muon is at ``x_0``.</span>
+<span class="sd">    direc : (3,1) np.ndarray</span>
+<span class="sd">        Normalized direction vector of the muon.</span>
+<span class="sd">    x_0 : (3, 1) np.ndarray</span>
+<span class="sd">        Position of the muon at time ``t_0``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_0</span><span class="p">),</span> <span class="n">direc</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">t_0</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">Constants</span><span class="o">.</span><span class="n">c_vac</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">direc</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_0</span><span class="p">))</span>
+        <span class="o">+</span> <span class="n">q</span> <span class="o">*</span> <span class="p">(</span><span class="n">Constants</span><span class="o">.</span><span class="n">n_gr</span> <span class="o">*</span> <span class="n">Constants</span><span class="o">.</span><span class="n">n_ph</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">Constants</span><span class="o">.</span><span class="n">n_ph</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="olympus.event_generation.utils.track_isects_cyl" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">track_isects_cyl</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">track_isects_cyl</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">direc</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Check if a track intersects a cylinder.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>olympus/event_generation/utils.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">track_isects_cyl</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">direc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if a track intersects a cylinder.&quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">get_zen_azi</span><span class="p">(</span><span class="n">direc</span><span class="p">)</span>
+
+    <span class="n">sinph</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">cosph</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">sinth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="n">costh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+    <span class="n">b</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">cosph</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">sinph</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">b</span> <span class="o">+</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">radius</span> <span class="o">-</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span> <span class="o">*</span> <span class="n">y</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">d</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="c1"># down-track distance to the endcaps</span>
+        <span class="k">if</span> <span class="n">costh</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(((</span><span class="n">z</span> <span class="o">-</span> <span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">costh</span><span class="p">,</span> <span class="p">(</span><span class="n">z</span> <span class="o">+</span> <span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">costh</span><span class="p">))</span>
+        <span class="c1"># down-track distance to the side surfaces</span>
+        <span class="k">if</span> <span class="n">sinth</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(((</span><span class="n">b</span> <span class="o">-</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="n">sinth</span><span class="p">,</span> <span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="n">sinth</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">costh</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">z</span> <span class="o">&gt;</span> <span class="o">-</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">z</span> <span class="o">&lt;</span> <span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="n">r</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">sinth</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">y</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">radius</span><span class="p">:</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">min</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">h</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../photon_source/" class="btn btn-neutral float-left" title="photon_source"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../optimization/" class="btn btn-neutral float-right" title="optimization">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../photon_source/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../optimization/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../../..";</script>
+    <script src="../../../../js/theme_extra.js"></script>
+    <script src="../../../../js/theme.js"></script>
+      <script src="../../../../js/popper.min.js"></script>
+      <script src="../../../../js/tippy-bundle.umd.js"></script>
+      <script src="../../../../js/clipboard.js"></script>
+      <script src="../../../../js/extra.js"></script>
+      <script src="../../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

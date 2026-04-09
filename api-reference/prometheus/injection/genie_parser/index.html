@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../../../img/favicon.ico" />
+    <title>genie_parser - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "genie_parser";
+        var mkdocs_page_input_path = "api-reference/prometheus/injection/genie_parser.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../citation/">Citation</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="../../">prometheus</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../../config/">config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../detector/">detector</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/detector_factory/">detector_factory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="../">injection</a>
+    <ul class="current">
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">genie_parser</a>
+    <ul class="current">
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.injection.genie_parser.angle">angle</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.injection.genie_parser.final_parser">final_parser</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.injection.genie_parser.genie2prometheus">genie2prometheus</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.injection.genie_parser.genie_loader">genie_loader</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.injection.genie_parser.genie_parser">genie_parser</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.injection.genie_parser.p2azimuthAndzenith">p2azimuthAndzenith</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../registered_injectors/">registered_injectors</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/old_proposal_lepton_propagator/">old_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/hit/">hit</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/ppc_photon_propagator/">ppc_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../utils/">utils</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/f2k_utils/">f2k_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/hebe_ui/">hebe_ui</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../olympus/">olympus</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../olympus/event_generation/">event_generation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/event_generation/constants/">constants</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/event_generation/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/event_generation/event_generation/">event_generation</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/event_generation/lightyield/">lightyield</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/event_generation/mc_record/">mc_record</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/event_generation/photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../olympus/event_generation/photon_propagation/legacy_photon_propagation/">legacy_photon_propagation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../olympus/event_generation/photon_propagation/norm_flow_photons/">norm_flow_photons</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../olympus/event_generation/photon_propagation/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/event_generation/photon_source/">photon_source</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/event_generation/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../olympus/optimization/">optimization</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/optimization/fisher_information/">fisher_information</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../olympus/plotting/">plotting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus/plotting/plotting/">plotting</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../olympus/utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../hyperion/">hyperion</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/medium/">medium</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/models/">models</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/">photon_arrival_time_nflow</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/net/">net</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_torch/">photon_arrival_time_torch</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_torch/net/">net</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_torch/pdf/">pdf</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/">photon_binned_amplitude</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/net/">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/propagate/">propagate</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item"><a href="../../">prometheus</a></li>
+          <li class="breadcrumb-item"><a href="../">injection</a></li>
+      <li class="breadcrumb-item active">genie_parser</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="prometheus.injection.genie_parser" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">prometheus.injection.genie_parser</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="angle (prometheus.injection.genie_parser.angle)" href="#prometheus.injection.genie_parser.angle">angle</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Calculate the angle between two vectors in radians.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="final_parser (prometheus.injection.genie_parser.final_parser)" href="#prometheus.injection.genie_parser.final_parser">final_parser</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Fetch the final states.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="genie2prometheus (prometheus.injection.genie_parser.genie2prometheus)" href="#prometheus.injection.genie_parser.genie2prometheus">genie2prometheus</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Reformat parsed GENIE events into a usable format for Prometheus.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="genie_loader (prometheus.injection.genie_parser.genie_loader)" href="#prometheus.injection.genie_parser.genie_loader">genie_loader</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Load and parse GENIE data.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="genie_parser (prometheus.injection.genie_parser.genie_parser)" href="#prometheus.injection.genie_parser.genie_parser">genie_parser</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Fetch the relevant information from GENIE events (in rootracker format).</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="p2azimuthAndzenith (prometheus.injection.genie_parser.p2azimuthAndzenith)" href="#prometheus.injection.genie_parser.p2azimuthAndzenith">p2azimuthAndzenith</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Convert a momentum vector to azimuth and zenith angles.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.injection.genie_parser.angle" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">angle</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">angle</span><span class="p">(</span><span class="n">v1</span><span class="p">:</span> <span class="n">array</span><span class="p">,</span> <span class="n">v2</span><span class="p">:</span> <span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate the angle between two vectors in radians.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>v1</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Vector 1.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>v2</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Vector 2.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>angle</code></b>(                  <code><span title="float">float</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>The calculated angle in radians.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/injection/genie_parser.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">angle</span><span class="p">(</span><span class="n">v1</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">v2</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the angle between two vectors in radians.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    v1 : np.ndarray</span>
+<span class="sd">        Vector 1.</span>
+<span class="sd">    v2 : np.ndarray</span>
+<span class="sd">        Vector 2.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    angle : float</span>
+<span class="sd">        The calculated angle in radians.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v1</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v2</span><span class="p">)),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">angle</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.injection.genie_parser.final_parser" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">final_parser</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">final_parser</span><span class="p">(</span><span class="n">parsed_events</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Fetch the final states.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>parsed_events</code></b>
+                  (<code><span title="pandas.DataFrame">DataFrame</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The parsed events.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+              –
+              <div class="doc-md-description">
+                <p>The initial and final state info.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/injection/genie_parser.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">final_parser</span><span class="p">(</span><span class="n">parsed_events</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch the final states.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parsed_events : pd.DataFrame</span>
+<span class="sd">        The parsed events.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame</span>
+<span class="sd">        The initial and final state info.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">inital_energies_inj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">parsed_events</span><span class="p">[</span><span class="s1">&#39;event_momenta&#39;</span><span class="p">]])</span>
+    <span class="n">inital_momenta_inj</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="mi">3</span><span class="p">])</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">parsed_events</span><span class="p">[</span><span class="s1">&#39;event_momenta&#39;</span><span class="p">]]</span>
+    <span class="n">inital_energies_target</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">event</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">parsed_events</span><span class="p">[</span><span class="s1">&#39;event_momenta&#39;</span><span class="p">]])</span>
+    <span class="n">inital_id_inj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">parsed_events</span><span class="p">[</span><span class="s1">&#39;event_pdg_id&#39;</span><span class="p">]])</span>
+    <span class="n">inital_id_target</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">event</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">parsed_events</span><span class="p">[</span><span class="s1">&#39;event_pdg_id&#39;</span><span class="p">]])</span>
+    <span class="n">final_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">event</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;final&#39;</span><span class="p">),</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">parsed_events</span><span class="p">[</span><span class="s1">&#39;event_status&#39;</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">children_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="n">event</span><span class="p">[</span><span class="n">final_ids</span><span class="p">[</span><span class="n">id_event</span><span class="p">]]</span> <span class="k">for</span> <span class="n">id_event</span><span class="p">,</span> <span class="n">event</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parsed_events</span><span class="p">[</span><span class="s1">&#39;event_pdg_id&#39;</span><span class="p">])</span>
+    <span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">children_energy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="n">event</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">][</span><span class="n">final_ids</span><span class="p">[</span><span class="n">id_event</span><span class="p">]]</span> <span class="k">for</span> <span class="n">id_event</span><span class="p">,</span> <span class="n">event</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parsed_events</span><span class="p">[</span><span class="s1">&#39;event_momenta&#39;</span><span class="p">])</span>
+    <span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">children_momenta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="n">event</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">3</span><span class="p">][</span><span class="n">final_ids</span><span class="p">[</span><span class="n">id_event</span><span class="p">]]</span> <span class="k">for</span> <span class="n">id_event</span><span class="p">,</span> <span class="n">event</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parsed_events</span><span class="p">[</span><span class="s1">&#39;event_momenta&#39;</span><span class="p">])</span>
+    <span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">final_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">event</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;final nuclear&#39;</span><span class="p">),</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">parsed_events</span><span class="p">[</span><span class="s1">&#39;event_status&#39;</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">children_nuc_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="n">event</span><span class="p">[</span><span class="n">final_ids</span><span class="p">[</span><span class="n">id_event</span><span class="p">]]</span> <span class="k">for</span> <span class="n">id_event</span><span class="p">,</span> <span class="n">event</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parsed_events</span><span class="p">[</span><span class="s1">&#39;event_pdg_id&#39;</span><span class="p">])</span>
+    <span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">children_nuc_energy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="n">event</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">][</span><span class="n">final_ids</span><span class="p">[</span><span class="n">id_event</span><span class="p">]]</span> <span class="k">for</span> <span class="n">id_event</span><span class="p">,</span> <span class="n">event</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parsed_events</span><span class="p">[</span><span class="s1">&#39;event_momenta&#39;</span><span class="p">])</span>
+    <span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">dic</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;event_descr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parsed_events</span><span class="p">[</span><span class="s1">&#39;event_description&#39;</span><span class="p">]</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;event_xsec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parsed_events</span><span class="p">[</span><span class="s1">&#39;event_xsec&#39;</span><span class="p">]</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;event_vertex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parsed_events</span><span class="o">.</span><span class="n">event_vertex</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;init_inj_e&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inital_energies_inj</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;init_inj_p&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inital_momenta_inj</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;init_target_e&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inital_energies_target</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;init_inj_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inital_id_inj</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;init_target_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">inital_id_target</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;final_ids&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">children_ids</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;final_e&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">children_energy</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;final_p&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">children_momenta</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;final_nuc_ids&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">children_nuc_ids</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;final_nuc_e&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">children_nuc_energy</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.injection.genie_parser.genie2prometheus" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">genie2prometheus</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">genie2prometheus</span><span class="p">(</span><span class="n">parsed_events</span><span class="p">:</span> <span class="n">DataFrame</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Reformat parsed GENIE events into a usable format for Prometheus.</p>
+<p>NOTES: Create a standardized scheme function. This could then be used as an interface to Prometheus for any injector. E.g. a user would only need to create a function to translate their injector output to the scheme format.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>parsed_events</code></b>
+                  (<code><span title="pandas.DataFrame">DataFrame</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Dataframe object containing all relevant (and additional) information needed by Prometheus.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>particles</code></b>(                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Formatted data set with values which can be used directly.</p>
+              </div>
+            </li>
+            <li>
+<b><code>injection</code></b>(                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>The injected particle in the same format.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/injection/genie_parser.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">genie2prometheus</span><span class="p">(</span><span class="n">parsed_events</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reformat parsed GENIE events into a usable format for Prometheus.</span>
+
+<span class="sd">    NOTES: Create a standardized scheme function. This could then be used as an interface to Prometheus for any injector. E.g. a user would only need to create a function to translate their injector output to the scheme format.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parsed_events : pd.DataFrame</span>
+<span class="sd">        Dataframe object containing all relevant (and additional) information needed by Prometheus.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    particles : pd.DataFrame</span>
+<span class="sd">        Formatted data set with values which can be used directly.</span>
+<span class="sd">    injection : pd.DataFrame</span>
+<span class="sd">        The injected particle in the same format.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: Use a more elegant definition to couple to the particle class</span>
+    <span class="n">primaries</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">event_set</span>  <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">parsed_events</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s1">&#39;CC&#39;</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">event_descr</span><span class="p">:</span>
+            <span class="n">event_type</span> <span class="o">=</span> <span class="s1">&#39;CC&#39;</span>
+        <span class="k">elif</span> <span class="s1">&#39;NC&#39;</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">event_descr</span><span class="p">:</span>
+            <span class="n">event_type</span> <span class="o">=</span> <span class="s1">&#39;NC&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">event_type</span> <span class="o">=</span> <span class="s1">&#39;other&#39;</span>
+        <span class="n">azimuth</span><span class="p">,</span> <span class="n">zenith</span> <span class="o">=</span>  <span class="n">p2azimuthAndzenith</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">init_inj_p</span><span class="p">)</span>
+        <span class="n">primary_particle</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;primary&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>  <span class="c1"># If this thing is a primary particle</span>
+            <span class="s2">&quot;e&quot;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">init_inj_e</span><span class="p">,</span>  <span class="c1"># The energy in GeV,  # NOTE: Should this be kinetic energy?</span>
+            <span class="s2">&quot;pdg_code&quot;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">init_inj_id</span><span class="p">,</span>  <span class="c1"># The PDG id</span>
+            <span class="s2">&quot;interaction&quot;</span><span class="p">:</span> <span class="n">event_type</span><span class="p">,</span>  <span class="c1"># Should we use ints to define interactions or strings?</span>
+            <span class="s2">&quot;theta&quot;</span><span class="p">:</span> <span class="n">zenith</span><span class="p">,</span>  <span class="c1"># It&#39;s zenith angle</span>
+            <span class="s2">&quot;phi&quot;</span><span class="p">:</span> <span class="n">azimuth</span><span class="p">,</span>  <span class="c1"># It&#39;s azimuth angle</span>
+            <span class="s2">&quot;bjorken_x&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Bjorken x variable</span>
+            <span class="s2">&quot;bjorken_y&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Bjorken y variable</span>
+            <span class="s2">&quot;pos_x&quot;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">event_vertex</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>  <span class="c1"># position x (in detector coordinates)</span>
+            <span class="s2">&quot;pos_y&quot;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">event_vertex</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># position y (in detector coordinates)</span>
+            <span class="s2">&quot;pos_z&quot;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">event_vertex</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>  <span class="c1"># position z (in detector coordinates)</span>
+            <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">event_vertex</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span>  <span class="c1"># 3d position</span>
+            <span class="s2">&quot;column_depth&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Column depth where the interaction happened</span>
+            <span class="s1">&#39;custom_info&#39;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">event_descr</span>  <span class="c1"># Additional information the user can add as a string. # TODO: This should be handed to the propagators</span>
+        <span class="p">}</span>
+        <span class="c1"># TODO: Optimize</span>
+        <span class="n">angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p2azimuthAndzenith</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">event</span><span class="o">.</span><span class="n">final_p</span><span class="p">])</span>
+        <span class="n">particles</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;primary&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">final_ids</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">),</span>  <span class="c1"># If this thing is a primary particle</span>
+            <span class="s2">&quot;e&quot;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">final_e</span><span class="p">,</span>  <span class="c1"># The energy in GeV,  # NOTE: Should this be kinetic energy?</span>
+            <span class="s2">&quot;pdg_code&quot;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">final_ids</span><span class="p">,</span>  <span class="c1"># The PDG id</span>
+            <span class="s2">&quot;interaction&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">event_type</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">final_ids</span><span class="p">))]),</span>  <span class="c1"># Should we use ints to define interactions or strings?</span>
+            <span class="s2">&quot;theta&quot;</span><span class="p">:</span> <span class="n">angles</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>  <span class="c1"># It&#39;s zenith angle</span>
+            <span class="s2">&quot;phi&quot;</span><span class="p">:</span> <span class="n">angles</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>  <span class="c1"># It&#39;s azimuth angle</span>
+            <span class="s2">&quot;bjorken_x&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">final_ids</span><span class="p">))</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Bjorken x variable</span>
+            <span class="s2">&quot;bjorken_y&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">final_ids</span><span class="p">))</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Bjorken y variable</span>
+            <span class="s2">&quot;pos_x&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">final_ids</span><span class="p">))</span> <span class="o">*</span> <span class="n">event</span><span class="o">.</span><span class="n">event_vertex</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>  <span class="c1"># position x (in detector coordinates)</span>
+            <span class="s2">&quot;pos_y&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">final_ids</span><span class="p">))</span> <span class="o">*</span> <span class="n">event</span><span class="o">.</span><span class="n">event_vertex</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># position y (in detector coordinates)</span>
+            <span class="s2">&quot;pos_z&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">final_ids</span><span class="p">))</span> <span class="o">*</span> <span class="n">event</span><span class="o">.</span><span class="n">event_vertex</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>  <span class="c1"># position z (in detector coordinates)</span>
+            <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">event</span><span class="o">.</span><span class="n">event_vertex</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">final_ids</span><span class="p">))]),</span>  <span class="c1"># 3d position</span>
+            <span class="s2">&quot;column_depth&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">final_ids</span><span class="p">))</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Column depth where the interaction happened</span>
+            <span class="s1">&#39;custom_info&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;child&#39;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">final_ids</span><span class="p">))])</span>  <span class="c1"># Additional information the user can add as a string. # TODO: This should be handed to the propagators</span>
+        <span class="p">}</span>
+        <span class="n">event_set</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">particles</span>
+        <span class="n">primaries</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">primary_particle</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">event_set</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">),</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">primaries</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.injection.genie_parser.genie_loader" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">genie_loader</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">genie_loader</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Load and parse GENIE data.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>filepath</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Path to the GENIE data file.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+              –
+              <div class="doc-md-description">
+                <p>The parsed GENIE data.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/injection/genie_parser.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">genie_loader</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load and parse GENIE data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : str</span>
+<span class="sd">        Path to the GENIE data file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame</span>
+<span class="sd">        The parsed GENIE data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">uproot</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">final_parser</span><span class="p">(</span><span class="n">genie_parser</span><span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="s1">&#39;gRooTracker&#39;</span><span class="p">]))</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.injection.genie_parser.genie_parser" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">genie_parser</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">genie_parser</span><span class="p">(</span><span class="n">events</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Fetch the relevant information from GENIE events (in rootracker format).</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>events</code></b>
+                  (<code><span title="dict">dict</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>A dictionary of GENIE events.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>df</code></b>(                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Data frame containing the relevant information.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/injection/genie_parser.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">genie_parser</span><span class="p">(</span><span class="n">events</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch the relevant information from GENIE events (in rootracker format).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    events : dict</span>
+<span class="sd">        A dictionary of GENIE events.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    df : pd.DataFrame</span>
+<span class="sd">        Data frame containing the relevant information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dic</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;event_description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="s1">&#39;EvtCode/fString&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s1">&#39;np&#39;</span><span class="p">)</span>  <span class="c1"># String describing the event</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;event_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="s1">&#39;EvtNum&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s2">&quot;np&quot;</span><span class="p">)</span>  <span class="c1"># Number of the event</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;event_children&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="s1">&#39;StdHepN&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s2">&quot;np&quot;</span><span class="p">)</span>  <span class="c1"># NUmber of the generated sub-particles</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;event_prob&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="s1">&#39;EvtProb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s2">&quot;np&quot;</span><span class="p">)</span>  <span class="c1"># Probability of the event</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;event_xsec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="s1">&#39;EvtXSec&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s2">&quot;np&quot;</span><span class="p">)</span>  <span class="c1"># Total xsec of the event</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;event_pdg_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="s1">&#39;StdHepPdg&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s2">&quot;np&quot;</span><span class="p">)</span>  <span class="c1"># PDG ids of all produced particles</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;event_momenta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="s1">&#39;StdHepP4&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s2">&quot;np&quot;</span><span class="p">)</span>  <span class="c1"># Momenta of the particles</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="s1">&#39;EvtVtx&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s2">&quot;np&quot;</span><span class="p">)</span>  <span class="c1"># Position of the particles</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;event_vertex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vtx</span><span class="p">)</span> <span class="k">for</span> <span class="n">vtx</span> <span class="ow">in</span> <span class="n">tmp</span><span class="p">]</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;event_coords&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="s1">&#39;StdHepX4&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s2">&quot;np&quot;</span><span class="p">)</span>  <span class="c1"># Position of the particles</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;event_weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="s1">&#39;EvtWght&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s1">&#39;np&#39;</span><span class="p">)</span>  <span class="c1"># Weight of the events</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="s1">&#39;StdHepStatus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">library</span><span class="o">=</span><span class="s2">&quot;np&quot;</span><span class="p">)</span>  <span class="c1"># Status of the particle</span>
+    <span class="c1"># Converting the codes</span>
+    <span class="n">particle_dic</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;initial&#39;</span><span class="p">,</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;final&#39;</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;intermediate&#39;</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;decayed&#39;</span><span class="p">,</span>
+        <span class="mi">11</span><span class="p">:</span> <span class="s1">&#39;nucleon target&#39;</span><span class="p">,</span>
+        <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;DIS pre-frag hadronic state&#39;</span><span class="p">,</span>
+        <span class="mi">13</span><span class="p">:</span> <span class="s1">&#39;resonance&#39;</span><span class="p">,</span>
+        <span class="mi">14</span><span class="p">:</span> <span class="s1">&#39;hadron in nucleus&#39;</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">:</span> <span class="s1">&#39;final nuclear&#39;</span><span class="p">,</span>
+        <span class="mi">16</span><span class="p">:</span> <span class="s1">&#39;nucleon cluster target&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">new_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span>
+        <span class="n">particle_dic</span><span class="p">[</span><span class="n">particle</span><span class="p">]</span> <span class="k">for</span> <span class="n">particle</span> <span class="ow">in</span> <span class="n">event</span>
+    <span class="p">]</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">tmp</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;event_status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_arr</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.injection.genie_parser.p2azimuthAndzenith" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">p2azimuthAndzenith</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">p2azimuthAndzenith</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">array</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Convert a momentum vector to azimuth and zenith angles.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>p</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The 3D momentum.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>azimuth, zenith : float, float</code>
+              –
+              <div class="doc-md-description">
+                <p>The azimuth and zenith angles in radians.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/injection/genie_parser.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">p2azimuthAndzenith</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a momentum vector to azimuth and zenith angles.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    p : np.ndarray</span>
+<span class="sd">        The 3D momentum.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    azimuth, zenith : float, float</span>
+<span class="sd">        The azimuth and zenith angles in radians.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">azimuth</span> <span class="o">=</span> <span class="n">angle</span><span class="p">(</span><span class="n">p</span><span class="p">[:</span><span class="mi">2</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+    <span class="n">zenith</span> <span class="o">=</span> <span class="n">angle</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">azimuth</span><span class="p">,</span> <span class="n">zenith</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../" class="btn btn-neutral float-left" title="injection"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../injection/" class="btn btn-neutral float-right" title="injection">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../injection/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../../..";</script>
+    <script src="../../../../js/theme_extra.js"></script>
+    <script src="../../../../js/theme.js"></script>
+      <script src="../../../../js/popper.min.js"></script>
+      <script src="../../../../js/tippy-bundle.umd.js"></script>
+      <script src="../../../../js/clipboard.js"></script>
+      <script src="../../../../js/extra.js"></script>
+      <script src="../../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

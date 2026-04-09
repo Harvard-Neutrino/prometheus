@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../../../img/favicon.ico" />
+    <title>detector - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "detector";
+        var mkdocs_page_input_path = "api-reference/olympus/event_generation/detector.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../citation/">Citation</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../../../prometheus/">prometheus</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/config/">config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/detector/">detector</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/detector/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/detector/detector_factory/">detector_factory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/detector/medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/detector/module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/detector/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/injection/">injection</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/injection/genie_parser/">genie_parser</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/injection/injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/injection/injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/injection/injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/injection/injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/injection/injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/injection/injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/injection/injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/injection/interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/injection/lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/injection/registered_injectors/">registered_injectors</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/lepton_propagation/old_proposal_lepton_propagator/">old_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/lepton_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/photon_propagation/hit/">hit</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/photon_propagation/olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/photon_propagation/photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/photon_propagation/ppc_photon_propagator/">ppc_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/photon_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/photon_propagation/utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/photon_propagation/utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/photon_propagation/utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/utils/">utils</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/f2k_utils/">f2k_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/hebe_ui/">hebe_ui</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/utils/serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/utils/serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/utils/serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/utils/serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/utils/serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../prometheus/utils/serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/utils/write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../prometheus/weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../prometheus/weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="../../">olympus</a>
+    <ul class="current">
+                <li class="toctree-l2 current"><a class="reference internal current" href="../">event_generation</a>
+    <ul class="current">
+                <li class="toctree-l3"><a class="reference internal" href="../constants/">constants</a>
+                </li>
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">detector</a>
+    <ul class="current">
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.detector.Detector">Detector</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.detector.Module">Module</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.detector.generate_noise">generate_noise</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.detector.get_proj_area_for_zen">get_proj_area_for_zen</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.detector.make_grid">make_grid</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.detector.make_hex_grid">make_hex_grid</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.detector.make_line">make_line</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.detector.sample_cylinder_surface">sample_cylinder_surface</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.detector.sample_cylinder_volume">sample_cylinder_volume</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.detector.sample_direction">sample_direction</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#olympus.event_generation.detector.trigger">trigger</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../event_generation/">event_generation</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../lightyield/">lightyield</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../mc_record/">mc_record</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../photon_propagation/legacy_photon_propagation/">legacy_photon_propagation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../photon_propagation/norm_flow_photons/">norm_flow_photons</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../photon_propagation/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../photon_source/">photon_source</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../optimization/">optimization</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../optimization/fisher_information/">fisher_information</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../plotting/">plotting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../plotting/plotting/">plotting</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../hyperion/">hyperion</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/medium/">medium</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/models/">models</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/">photon_arrival_time_nflow</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/net/">net</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_torch/">photon_arrival_time_torch</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_torch/net/">net</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_torch/pdf/">pdf</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/">photon_binned_amplitude</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/net/">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/propagate/">propagate</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item"><a href="../../">olympus</a></li>
+          <li class="breadcrumb-item"><a href="../">event_generation</a></li>
+      <li class="breadcrumb-item active">detector</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="olympus.event_generation.detector" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">olympus.event_generation.detector</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+        <p>Collection of classes implementing a detector.</p>
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="Detector (olympus.event_generation.detector.Detector)" href="#olympus.event_generation.detector.Detector">Detector</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>A collection of modules.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="Module (olympus.event_generation.detector.Module)" href="#olympus.event_generation.detector.Module">Module</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Detection module.</p>
+          </div>
+        </li>
+    </ul>
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="generate_noise (olympus.event_generation.detector.generate_noise)" href="#olympus.event_generation.detector.generate_noise">generate_noise</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Generate detector noise in a time range.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="get_proj_area_for_zen (olympus.event_generation.detector.get_proj_area_for_zen)" href="#olympus.event_generation.detector.get_proj_area_for_zen">get_proj_area_for_zen</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Return projected area for cylinder.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_grid (olympus.event_generation.detector.make_grid)" href="#olympus.event_generation.detector.make_grid">make_grid</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Build a square detector grid.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_hex_grid (olympus.event_generation.detector.make_hex_grid)" href="#olympus.event_generation.detector.make_hex_grid">make_hex_grid</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Build a hex detector grid.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_line (olympus.event_generation.detector.make_line)" href="#olympus.event_generation.detector.make_line">make_line</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Build a line of detector modules.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="sample_cylinder_surface (olympus.event_generation.detector.sample_cylinder_surface)" href="#olympus.event_generation.detector.sample_cylinder_surface">sample_cylinder_surface</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Sample points on a cylinder surface.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="sample_cylinder_volume (olympus.event_generation.detector.sample_cylinder_volume)" href="#olympus.event_generation.detector.sample_cylinder_volume">sample_cylinder_volume</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Sample points in cylinder volume.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="sample_direction (olympus.event_generation.detector.sample_direction)" href="#olympus.event_generation.detector.sample_direction">sample_direction</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Sample uniform directions.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="trigger (olympus.event_generation.detector.trigger)" href="#olympus.event_generation.detector.trigger">trigger</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Check a simple multiplicity condition.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="olympus.event_generation.detector.Detector" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Detector</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">Detector</span><span class="p">(</span><span class="n">modules</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="object">object</span></code></p>
+
+
+
+        <p>A collection of modules.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Attributes:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>modules</code></b>
+                  (<code><span title="list">list</span></code>)
+              –
+              <div class="doc-md-description">
+                
+              </div>
+            </li>
+            <li>
+              <b><code>module_coords</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>N x 3 array of (x, y, z) coordinates.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>module_coords_ak</code></b>
+                  (<code><span title="awkward.array">array</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Awkward array representation of the module coordinates.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>module_efficiencies</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>N array of the module efficiencies.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+                  <details class="quote">
+                    <summary>Source code in <code>olympus/event_generation/detector.py</code></summary>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modules</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">modules</span> <span class="o">=</span> <span class="n">modules</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">module_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">m</span><span class="o">.</span><span class="n">pos</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">module_coords_ak</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module_coords</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">module_efficiencies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">m</span><span class="o">.</span><span class="n">efficiency</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">module_noise_rates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">m</span><span class="o">.</span><span class="n">noise_rate</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules</span><span class="p">])</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_outer_radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module_coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_outer_cylinder</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module_coords</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
+        <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module_coords</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_n_modules</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">modules</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_om_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">om</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">om</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+                  </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="olympus.event_generation.detector.Module" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Module</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">Module</span><span class="p">(</span>
+    <span class="n">pos</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">noise_rate</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">efficiency</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">serial_no</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="object">object</span></code></p>
+
+
+
+        <p>Detection module.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Attributes:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>pos</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Module position (x, y, z).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>noise_rate</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Noise rate in 1/ns.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>efficiency</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Module efficiency (0, 1].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>key</code></b>
+                  (<code><span title="collection">collection</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Module identifier.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+                  <details class="quote">
+                    <summary>Source code in <code>olympus/event_generation/detector.py</code></summary>
+                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">noise_rate</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">efficiency</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">serial_no</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">pos</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">noise_rate</span> <span class="o">=</span> <span class="n">noise_rate</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span> <span class="o">=</span> <span class="n">efficiency</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">serial_no</span> <span class="o">=</span> <span class="n">serial_no</span>
+</code></pre></div></td></tr></table></div>
+                  </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="olympus.event_generation.detector.generate_noise" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">generate_noise</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">generate_noise</span><span class="p">(</span>
+    <span class="n">det</span><span class="p">,</span> <span class="n">time_range</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">1337</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Generate detector noise in a time range.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>olympus/event_generation/detector.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_noise</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">time_range</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">1337</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate detector noise in a time range.&quot;&quot;&quot;</span>
+    <span class="n">all_times_det</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">dT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">time_range</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">idom</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">det</span><span class="o">.</span><span class="n">modules</span><span class="p">)):</span>
+        <span class="n">noise_amp</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">det</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">idom</span><span class="p">]</span><span class="o">.</span><span class="n">noise_rate</span> <span class="o">*</span> <span class="n">dT</span><span class="p">)</span>
+        <span class="n">times_det</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">*</span><span class="n">time_range</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">noise_amp</span><span class="p">)</span>
+        <span class="n">all_times_det</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">times_det</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ak</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">Array</span><span class="p">(</span><span class="n">all_times_det</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="olympus.event_generation.detector.get_proj_area_for_zen" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_proj_area_for_zen</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_proj_area_for_zen</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">coszen</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Return projected area for cylinder.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>olympus/event_generation/detector.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_proj_area_for_zen</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">coszen</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return projected area for cylinder.&quot;&quot;&quot;</span>
+    <span class="n">cap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">radius</span>
+    <span class="n">sides</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">height</span>
+    <span class="k">return</span> <span class="n">cap</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">coszen</span><span class="p">)</span> <span class="o">+</span> <span class="n">sides</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">coszen</span> <span class="o">*</span> <span class="n">coszen</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="olympus.event_generation.detector.make_grid" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_grid</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">make_grid</span><span class="p">(</span>
+    <span class="n">n_side</span><span class="p">,</span>
+    <span class="n">dist</span><span class="p">,</span>
+    <span class="n">n_z</span><span class="p">,</span>
+    <span class="n">dist_z</span><span class="p">,</span>
+    <span class="n">baseline_noise_rate</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span>
+    <span class="n">rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">1337</span><span class="p">),</span>
+<span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Build a square detector grid.</p>
+<p>Strings of detector modules are placed on a square grid.
+The noise rate for each module is randomly sampled from a gamma distribution.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>n_side</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of detector strings per side.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dist</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Spacing between strings [m].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>n_z</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of detector modules per string.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dist_z</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Distance of modules on a string [m].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>baseline_noise_rate</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>1e-06</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Baseline noise rate (default 1E-6 Hz).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>rng</code></b>
+                  (<code><span title="RandomState">RandomState</span></code>, default:
+                      <code><span title="numpy.random.RandomState">RandomState</span>(1337)</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Random number generator.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>olympus/event_generation/detector.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">make_grid</span><span class="p">(</span>
+    <span class="n">n_side</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">n_z</span><span class="p">,</span> <span class="n">dist_z</span><span class="p">,</span> <span class="n">baseline_noise_rate</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">1337</span><span class="p">)</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a square detector grid.</span>
+
+<span class="sd">    Strings of detector modules are placed on a square grid.</span>
+<span class="sd">    The noise rate for each module is randomly sampled from a gamma distribution.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_side : int</span>
+<span class="sd">        Number of detector strings per side.</span>
+<span class="sd">    dist : float</span>
+<span class="sd">        Spacing between strings [m].</span>
+<span class="sd">    n_z : int</span>
+<span class="sd">        Number of detector modules per string.</span>
+<span class="sd">    dist_z : float</span>
+<span class="sd">        Distance of modules on a string [m].</span>
+<span class="sd">    baseline_noise_rate : float, optional</span>
+<span class="sd">        Baseline noise rate (default 1E-6 Hz).</span>
+<span class="sd">    rng : RandomState, optional</span>
+<span class="sd">        Random number generator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">modules</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">x_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">n_side</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dist</span><span class="p">,</span> <span class="n">n_side</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dist</span><span class="p">,</span> <span class="n">n_side</span><span class="p">)</span>
+    <span class="n">y_pos</span> <span class="o">=</span> <span class="n">x_pos</span>
+
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">):</span>
+        <span class="n">modules</span> <span class="o">+=</span> <span class="n">make_line</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">n_z</span><span class="p">,</span> <span class="n">dist_z</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">baseline_noise_rate</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">modules</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="olympus.event_generation.detector.make_hex_grid" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_hex_grid</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">make_hex_grid</span><span class="p">(</span>
+    <span class="n">n_side</span><span class="p">,</span>
+    <span class="n">dist</span><span class="p">,</span>
+    <span class="n">n_z</span><span class="p">,</span>
+    <span class="n">dist_z</span><span class="p">,</span>
+    <span class="n">baseline_noise_rate</span><span class="o">=</span><span class="mf">1e-06</span><span class="p">,</span>
+    <span class="n">rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">1337</span><span class="p">),</span>
+<span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Build a hex detector grid.</p>
+<p>Strings of detector modules are placed on a square grid.
+The noise rate for each module is randomly sampled from a gamma distribution.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>n_side</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of detector strings per side.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dist</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Spacing between strings [m].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>n_z</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of detector modules per string.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dist_z</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Distance of modules on a string [m].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>baseline_noise_rate</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>1e-06</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Baseline noise rate (default 1E-6 Hz).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>rng</code></b>
+                  (<code><span title="RandomState">RandomState</span></code>, default:
+                      <code><span title="numpy.random.RandomState">RandomState</span>(1337)</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Random number generator.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>olympus/event_generation/detector.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">make_hex_grid</span><span class="p">(</span>
+    <span class="n">n_side</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">n_z</span><span class="p">,</span> <span class="n">dist_z</span><span class="p">,</span> <span class="n">baseline_noise_rate</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">1337</span><span class="p">)</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a hex detector grid.</span>
+
+<span class="sd">    Strings of detector modules are placed on a square grid.</span>
+<span class="sd">    The noise rate for each module is randomly sampled from a gamma distribution.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_side : int</span>
+<span class="sd">        Number of detector strings per side.</span>
+<span class="sd">    dist : float</span>
+<span class="sd">        Spacing between strings [m].</span>
+<span class="sd">    n_z : int</span>
+<span class="sd">        Number of detector modules per string.</span>
+<span class="sd">    dist_z : float</span>
+<span class="sd">        Distance of modules on a string [m].</span>
+<span class="sd">    baseline_noise_rate : float, optional</span>
+<span class="sd">        Baseline noise rate (default 1E-6 Hz).</span>
+<span class="sd">    rng : RandomState, optional</span>
+<span class="sd">        Random number generator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">modules</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">line_id</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">irow</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_side</span><span class="p">):</span>
+        <span class="n">i_this_row</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_side</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">irow</span>
+        <span class="n">x_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+            <span class="o">-</span><span class="p">(</span><span class="n">i_this_row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dist</span><span class="p">,</span> <span class="p">(</span><span class="n">i_this_row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dist</span><span class="p">,</span> <span class="n">i_this_row</span>
+        <span class="p">)</span>
+        <span class="n">y_pos</span> <span class="o">=</span> <span class="n">irow</span> <span class="o">*</span> <span class="n">dist</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_pos</span><span class="p">:</span>
+            <span class="n">modules</span> <span class="o">+=</span> <span class="n">make_line</span><span class="p">(</span>
+                <span class="n">x</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">,</span> <span class="n">n_z</span><span class="p">,</span> <span class="n">dist_z</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">baseline_noise_rate</span><span class="p">,</span> <span class="n">line_id</span>
+            <span class="p">)</span>
+            <span class="n">line_id</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">irow</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">x_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+                <span class="o">-</span><span class="p">(</span><span class="n">i_this_row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dist</span><span class="p">,</span> <span class="p">(</span><span class="n">i_this_row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dist</span><span class="p">,</span> <span class="n">i_this_row</span>
+            <span class="p">)</span>
+            <span class="n">y_pos</span> <span class="o">=</span> <span class="o">-</span><span class="n">irow</span> <span class="o">*</span> <span class="n">dist</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x_pos</span><span class="p">:</span>
+                <span class="n">modules</span> <span class="o">+=</span> <span class="n">make_line</span><span class="p">(</span>
+                    <span class="n">x</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">,</span> <span class="n">n_z</span><span class="p">,</span> <span class="n">dist_z</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">baseline_noise_rate</span><span class="p">,</span> <span class="n">line_id</span>
+                <span class="p">)</span>
+                <span class="n">line_id</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">modules</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="olympus.event_generation.detector.make_line" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_line</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">make_line</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span>
+    <span class="n">y</span><span class="p">,</span>
+    <span class="n">n_z</span><span class="p">,</span>
+    <span class="n">dist_z</span><span class="p">,</span>
+    <span class="n">rng</span><span class="p">,</span>
+    <span class="n">baseline_noise_rate</span><span class="p">,</span>
+    <span class="n">line_id</span><span class="p">,</span>
+    <span class="n">efficiency</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Build a line of detector modules.</p>
+<p>The modules share the same (x, y) coordinate and are spaced along the z-direction.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>x</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>(x, y) position of the line.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>y</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>(x, y) position of the line.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>n_z</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of modules per line.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dist_z</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Spacing of the detector modules in z.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>rng</code></b>
+                  (<code><span title="RandomState">RandomState</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Random number generator.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>baseline_noise_rate</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Baseline noise rate in 1/ns. Will be multiplied to gamma(1, 0.25) distributed
+random rates per module.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>line_id</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Identifier for this line.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>efficiency</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.2</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Module efficiency.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>olympus/event_generation/detector.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">make_line</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">n_z</span><span class="p">,</span> <span class="n">dist_z</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">baseline_noise_rate</span><span class="p">,</span> <span class="n">line_id</span><span class="p">,</span> <span class="n">efficiency</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
+<span class="w">   </span><span class="sd">&quot;&quot;&quot;Build a line of detector modules.</span>
+
+<span class="sd">    The modules share the same (x, y) coordinate and are spaced along the z-direction.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x, y : float</span>
+<span class="sd">        (x, y) position of the line.</span>
+<span class="sd">    n_z : int</span>
+<span class="sd">        Number of modules per line.</span>
+<span class="sd">    dist_z : float</span>
+<span class="sd">        Spacing of the detector modules in z.</span>
+<span class="sd">    rng : RandomState</span>
+<span class="sd">        Random number generator.</span>
+<span class="sd">    baseline_noise_rate : float</span>
+<span class="sd">        Baseline noise rate in 1/ns. Will be multiplied to gamma(1, 0.25) distributed</span>
+<span class="sd">        random rates per module.</span>
+<span class="sd">    line_id : int</span>
+<span class="sd">        Identifier for this line.</span>
+<span class="sd">    efficiency : float, optional</span>
+<span class="sd">        Module efficiency.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+   <span class="n">modules</span> <span class="o">=</span> <span class="p">[]</span>
+   <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pos_z</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">dist_z</span> <span class="o">*</span> <span class="n">n_z</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dist_z</span> <span class="o">*</span> <span class="n">n_z</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n_z</span><span class="p">)):</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">pos_z</span><span class="p">])</span>
+        <span class="n">noise_rate</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">gamma</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span> <span class="o">*</span> <span class="n">baseline_noise_rate</span>
+        <span class="p">)</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="n">Module</span><span class="p">(</span>
+            <span class="n">pos</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="p">(</span><span class="n">line_id</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">noise_rate</span><span class="o">=</span><span class="n">noise_rate</span><span class="p">,</span> <span class="n">efficiency</span><span class="o">=</span><span class="n">efficiency</span>
+        <span class="p">)</span>
+        <span class="n">modules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">modules</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="olympus.event_generation.detector.sample_cylinder_surface" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">sample_cylinder_surface</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">sample_cylinder_surface</span><span class="p">(</span>
+    <span class="n">height</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">1337</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Sample points on a cylinder surface.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>olympus/event_generation/detector.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sample_cylinder_surface</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">1337</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sample points on a cylinder surface.&quot;&quot;&quot;</span>
+    <span class="n">side_area</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">height</span>
+    <span class="n">top_area</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">radius</span> <span class="o">**</span> <span class="mi">2</span>
+
+    <span class="n">ratio</span> <span class="o">=</span> <span class="n">top_area</span> <span class="o">/</span> <span class="p">(</span><span class="n">top_area</span> <span class="o">+</span> <span class="n">side_area</span><span class="p">)</span>
+
+    <span class="n">is_top</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">ratio</span>
+    <span class="n">n_is_top</span> <span class="o">=</span> <span class="n">is_top</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+
+    <span class="c1"># top / bottom points</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_is_top</span><span class="p">))</span>
+
+    <span class="n">samples</span><span class="p">[</span><span class="n">is_top</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="n">is_top</span><span class="p">])</span>
+    <span class="n">samples</span><span class="p">[</span><span class="n">is_top</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="n">is_top</span><span class="p">])</span>
+    <span class="n">samples</span><span class="p">[</span><span class="n">is_top</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+        <span class="p">[</span><span class="o">-</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_is_top</span>
+    <span class="p">)</span>
+
+    <span class="c1"># side points</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">radius</span>
+    <span class="n">samples</span><span class="p">[</span><span class="o">~</span><span class="n">is_top</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="o">~</span><span class="n">is_top</span><span class="p">])</span>
+    <span class="n">samples</span><span class="p">[</span><span class="o">~</span><span class="n">is_top</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="o">~</span><span class="n">is_top</span><span class="p">])</span>
+    <span class="n">samples</span><span class="p">[</span><span class="o">~</span><span class="n">is_top</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span> <span class="o">-</span> <span class="n">n_is_top</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">samples</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="olympus.event_generation.detector.sample_cylinder_volume" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">sample_cylinder_volume</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">sample_cylinder_volume</span><span class="p">(</span>
+    <span class="n">height</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">1337</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Sample points in cylinder volume.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>olympus/event_generation/detector.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sample_cylinder_volume</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">1337</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sample points in cylinder volume.&quot;&quot;&quot;</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">))</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="n">samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="n">samples</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">samples</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="olympus.event_generation.detector.sample_direction" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">sample_direction</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">sample_direction</span><span class="p">(</span>
+    <span class="n">n_samples</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">1337</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Sample uniform directions.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>olympus/event_generation/detector.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sample_direction</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">1337</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sample uniform directions.&quot;&quot;&quot;</span>
+    <span class="n">cos_theta</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_samples</span><span class="p">)</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">cos_theta</span><span class="p">)</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+    <span class="n">samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_samples</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">samples</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">samples</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">samples</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">samples</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="olympus.event_generation.detector.trigger" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">trigger</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">trigger</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">event_times</span><span class="p">,</span> <span class="n">mod_thresh</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">phot_thres</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Check a simple multiplicity condition.</p>
+<p>Trigger is true when at least <code>mod_thresh</code> modules have measured more than <code>phot_thres</code> photons.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>det</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Detector (olympus.event_generation.detector.Detector)" href="#olympus.event_generation.detector.Detector">Detector</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Detector instance.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>event_times</code></b>
+                  (<code><span title="awkward.array">array</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Per-module photon arrival times.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>mod_thresh</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>8</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Threshold for the number of modules which have detected <code>phot_thres</code> photons.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>phot_thres</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>5</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Threshold for the number of photons per module.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>olympus/event_generation/detector.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">trigger</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">event_times</span><span class="p">,</span> <span class="n">mod_thresh</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">phot_thres</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check a simple multiplicity condition.</span>
+
+<span class="sd">    Trigger is true when at least ``mod_thresh`` modules have measured more than ``phot_thres`` photons.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    det : Detector</span>
+<span class="sd">        Detector instance.</span>
+<span class="sd">    event_times : ak.array</span>
+<span class="sd">        Per-module photon arrival times.</span>
+<span class="sd">    mod_thresh : int, optional</span>
+<span class="sd">        Threshold for the number of modules which have detected ``phot_thres`` photons.</span>
+<span class="sd">    phot_thres : int, optional</span>
+<span class="sd">        Threshold for the number of photons per module.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hits_per_module</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">event_times</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ak</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">hits_per_module</span> <span class="o">&gt;</span> <span class="n">phot_thres</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">mod_thresh</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../constants/" class="btn btn-neutral float-left" title="constants"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../event_generation/" class="btn btn-neutral float-right" title="event_generation">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../constants/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../event_generation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../../..";</script>
+    <script src="../../../../js/theme_extra.js"></script>
+    <script src="../../../../js/theme.js"></script>
+      <script src="../../../../js/popper.min.js"></script>
+      <script src="../../../../js/tippy-bundle.umd.js"></script>
+      <script src="../../../../js/clipboard.js"></script>
+      <script src="../../../../js/extra.js"></script>
+      <script src="../../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
