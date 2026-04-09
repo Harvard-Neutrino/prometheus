@@ -6,13 +6,16 @@ Please cite Prometheus using this entry:
 
 ```txt
 @article{Lazar:2023rol,
-    author = {Lazar, Jeffrey and Meighen-Berger, Stephan and Haack, Christian and Kim, David and Giner, Santiago and Arg\"uelles, Carlos A.},
-    title = "{Prometheus: An Open-Source Neutrino Telescope Simulation}",
+    author = {Lazar, Jeffrey and Meighen-Berger, Stephan and Haack, Christian and Kim, David and Giner, Santiago and Arg{\"u}elles, Carlos A.},
+    title = "{Prometheus: An open-source neutrino telescope simulation}",
     eprint = "2304.14526",
     archivePrefix = "arXiv",
     primaryClass = "hep-ex",
-    month = "4",
-    year = "2023"
+    doi = "10.1016/j.cpc.2024.109298",
+    journal = "Comput. Phys. Commun.",
+    volume = "304",
+    pages = "109298",
+    year = "2024"
 }
 ```
 
