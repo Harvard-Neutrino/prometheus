@@ -1,0 +1,26 @@
+name: Deploy MkDocs site via GitHub Pages
+on:
+  push:
+    branches:
+      - master
+      - ana/site-deploy-action
+
+jobs:
+  build:
+    name: Deploy docs site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13' 
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+ 
+      - name: Deploy docs
+        run: mkdocs gh-deploy --force
