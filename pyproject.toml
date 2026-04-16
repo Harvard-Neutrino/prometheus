@@ -15,6 +15,7 @@ pyyaml = "^6.0.1"
 proposal = "7.6.2"
 jaxlib = "0.4.35"
 jax = "0.4.35"
+optax = "^0.2.5"
 # Allow fennel-seed 2.x releases while still requiring >=1.3.4
 fennel-seed = ">=1.3.4,<3.0.0"
 h5py = "^3.10.0"
