@@ -40,6 +40,11 @@ class Particle:
     def __int__(self):
         return int(self.pdg_code)
 
+    def clone(self) -> "Particle":
+        """Return a deep copy with independent mutable state."""
+        import copy
+        return copy.deepcopy(self)
+
     @property
     def theta(self):
         return np.arccos(self.direction[2])
@@ -67,3 +72,8 @@ class PropagatableParticle(Particle):
     children: List[Particle] = field(default_factory=list)
     losses: List = field(default_factory=list)
     hits: List = field(default_factory=list)
+
+    def clone(self) -> "PropagatableParticle":
+        """Return a deep copy with independent children, losses, and hits lists."""
+        import copy
+        return copy.deepcopy(self)
