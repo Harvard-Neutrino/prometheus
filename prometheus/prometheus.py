@@ -86,7 +86,11 @@ class Prometheus(object):
         """
         self._start_timing_misc = time()
         if userconfig is not None:
-            if isinstance(userconfig, dict):
+            from .config_types import PrometheusConfig
+            if isinstance(userconfig, PrometheusConfig):
+                # Caller passed a pre-built config object; use it directly.
+                config.__dict__.update(userconfig.__dict__)
+            elif isinstance(userconfig, dict):
                 config.from_dict(userconfig)
             else:
                 config.from_yaml(userconfig)
