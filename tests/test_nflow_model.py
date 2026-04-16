@@ -23,6 +23,7 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import pytest
+from prometheus.compat.haiku_unpickler import load as haiku_load
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -45,13 +46,13 @@ ATOL = 1e-4
 
 @pytest.fixture(scope="module")
 def shape_model():
-    config, params = pickle.load(open(SHAPE_PICKLE, "rb"))
+    config, params = haiku_load(SHAPE_PICKLE)
     return config, params
 
 
 @pytest.fixture(scope="module")
 def counts_model():
-    config, params = pickle.load(open(COUNTS_PICKLE, "rb"))
+    config, params = haiku_load(COUNTS_PICKLE)
     return config, params
 
 
@@ -60,13 +61,13 @@ def counts_model():
 # ---------------------------------------------------------------------------
 
 def test_shape_pickle_loads():
-    config, params = pickle.load(open(SHAPE_PICKLE, "rb"))
+    config, params = haiku_load(SHAPE_PICKLE)
     assert isinstance(config, dict)
     assert isinstance(params, dict)
 
 
 def test_counts_pickle_loads():
-    config, params = pickle.load(open(COUNTS_PICKLE, "rb"))
+    config, params = haiku_load(COUNTS_PICKLE)
     assert isinstance(config, dict)
     assert isinstance(params, dict)
 
