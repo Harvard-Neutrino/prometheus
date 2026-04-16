@@ -23,9 +23,12 @@ from .config import config
 from .detector import Detector
 from .injection import RegisteredInjectors, INJECTION_CONSTRUCTOR_DICT
 from .photon_propagation import (
-    get_photon_propagator,
-    RegisteredPhotonPropagators
+    get_propagator,
+    RegisteredPhotonPropagators,
 )
+
+# Legacy alias used in this file.
+get_photon_propagator = get_propagator
 
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
 

@@ -4,15 +4,16 @@ from ..lepton_propagation import LeptonPropagator
 from ..particle import Particle
 from ..detector import Detector
 from .photon_propagator import PhotonPropagator
+from .registry import register_propagator
 from .hit import Hit
 
-from olympus.event_generation.lightyield import make_realistic_cascade_source
-from olympus.event_generation.utils import sph_to_cart_jnp
+from .olympus.event_generation.lightyield import make_realistic_cascade_source
+from .olympus.event_generation.utils import sph_to_cart_jnp
 
-from olympus.event_generation.photon_propagation.norm_flow_photons import (
+from .olympus.event_generation.photon_propagation.norm_flow_photons import (
     make_generate_norm_flow_photons
 )
-from olympus.event_generation.event_generation import (
+from .olympus.event_generation.event_generation import (
     generate_cascade,
     generate_realistic_track,
     simulate_noise,
@@ -20,6 +21,8 @@ from olympus.event_generation.event_generation import (
 from hyperion.medium import medium_collections
 from hyperion.constants import Constants
 
+
+@register_propagator("olympus")
 class OlympusPhotonPropagator(PhotonPropagator):
     """Photon propagator that uses Olympus to propagate photons."""
     def __init__(

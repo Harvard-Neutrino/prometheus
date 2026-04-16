@@ -86,6 +86,11 @@ def ppc_sim(
             continue
         ppc_sim(child, det, lp, ppc_config)
 
+from .registry import register_propagator
+
+
+@register_propagator("ppc")
+@register_propagator("ppc_cuda")
 class PPCPhotonPropagator(PhotonPropagator):
     """Interface for simulating energy losses and light propagation using ppc."""
     def propagate(self, particle: Particle, rng_key=None) -> None:

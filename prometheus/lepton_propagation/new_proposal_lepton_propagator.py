@@ -11,6 +11,7 @@ from ..detector import Detector
 from ..utils.units import GeV_to_MeV, MeV_to_GeV, cm_to_m, m_to_cm
 from .loss import Loss
 from .lepton_propagator import LeptonPropagator
+from .registry import register_lepton_propagator
 
 MEDIUM_DICT = {
     "INNERCORE": pp.medium.StandardRock,
@@ -327,6 +328,7 @@ def new_proposal_losses(
             particle_from_proposal(child, coordinate_shift, parent=particle)
         )
 
+@register_lepton_propagator("new proposal")
 class NewProposalLeptonPropagator(LeptonPropagator):
     """Propagate charged leptons with PROPOSAL versions >= 7."""
     def __init__(self, config):
