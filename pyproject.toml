@@ -17,8 +17,6 @@ jaxlib = "0.4.35"
 jax = "0.4.35"
 # Allow fennel-seed 2.x releases while still requiring >=1.3.4
 fennel-seed = ">=1.3.4,<3.0.0"
-distrax = "^0.1.5"
-dm-haiku = "^0.0.11"
 h5py = "^3.10.0"
 
 [[tool.poetry.source]]

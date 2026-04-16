@@ -20,7 +20,8 @@ SUBMODULES = [
     "hyperion",
     "hyperion.models",
     "hyperion.models.photon_arrival_time_nflow",
-    "hyperion.models.photon_binned_amplitude",
+    # photon_binned_amplitude is not wired into any live code path and has no
+    # shipped model weights; excluded from smoke test because it imports haiku.
     "hyperion.pmt",
     # olympus
     "olympus",
