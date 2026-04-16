@@ -29,6 +29,25 @@ _WATER_MEDIUM_MAP: dict = {
     Medium.WATER: "pone",
 }
 
+# Map medium_collections keys to (flow_filename, counts_filename) pairs.
+# Add entries here when new model files are trained and committed to
+# resources/olympus_resources/.  The user can always override both filenames
+# explicitly via config.photon_propagator.olympus.paths.flow / .counts.
+_FLOW_MODEL_MAP: dict[str, tuple[str, str]] = {
+    "pone": (
+        "photon_arrival_time_nflow_params.pickle",
+        "photon_arrival_time_counts_params.pickle",
+    ),
+    # "antares": (
+    #     "antares_nflow_params.pickle",
+    #     "antares_counts_params.pickle",
+    # ),
+}
+
+# Default filenames used to detect whether the user has overridden them.
+_DEFAULT_FLOW_FILE = "photon_arrival_time_nflow_params.pickle"
+_DEFAULT_COUNTS_FILE = "photon_arrival_time_counts_params.pickle"
+
 
 @register_propagator("olympus")
 class OlympusPhotonPropagator(PhotonPropagator):
@@ -57,9 +76,31 @@ class OlympusPhotonPropagator(PhotonPropagator):
             medium_key = "pone"
         self._ref_ix_f, self._sca_a_f, self._sca_l_f = medium_collections[medium_key]
 
+        # Select flow / counts model files.  If the user has explicitly set
+        # non-default filenames in their config those take precedence; otherwise
+        # auto-select based on the resolved medium key, falling back to P-ONE
+        # with a warning when no dedicated model is registered yet.
+        cfg_flow = self.config['paths']['flow']
+        cfg_counts = self.config['paths']['counts']
+        if cfg_flow != _DEFAULT_FLOW_FILE or cfg_counts != _DEFAULT_COUNTS_FILE:
+            # User override — use exactly what the config says.
+            flow_file, counts_file = cfg_flow, cfg_counts
+        elif medium_key in _FLOW_MODEL_MAP:
+            flow_file, counts_file = _FLOW_MODEL_MAP[medium_key]
+        else:
+            warnings.warn(
+                f"No dedicated flow model is registered for medium '{medium_key}'. "
+                f"Falling back to the P-ONE model files. "
+                f"Timing predictions may not accurately reflect '{medium_key}' optical properties.",
+                UserWarning,
+                stacklevel=2,
+            )
+            flow_file, counts_file = _FLOW_MODEL_MAP["pone"]
+
+        location = self.config['paths']['location']
         self._gen_ph = make_generate_norm_flow_photons(
-            f"{self.config['paths']['location']}{self.config['paths']['flow']}",
-            f"{self.config['paths']['location']}{self.config['paths']['counts']}",
+            f"{location}{flow_file}",
+            f"{location}{counts_file}",
             c_medium=self._c_medium_f(self.config['simulation']['wavelength']) / 1E9
         )
 

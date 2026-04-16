@@ -1,10 +1,15 @@
-"""Tests for water medium model registration (Phase 6)."""
+"""Tests for water medium model registration (Phase 6) and flow model selection."""
 import warnings
 import pytest
 
 from hyperion.medium import medium_collections
 from prometheus.detector.medium import Medium
-from prometheus.photon_propagation.olympus_photon_propagator import _WATER_MEDIUM_MAP
+from prometheus.photon_propagation.olympus_photon_propagator import (
+    _WATER_MEDIUM_MAP,
+    _FLOW_MODEL_MAP,
+    _DEFAULT_FLOW_FILE,
+    _DEFAULT_COUNTS_FILE,
+)
 
 
 def test_pone_medium_registered():
@@ -52,3 +57,52 @@ def test_unknown_medium_falls_back_with_warning():
     assert "ATLANTIS" in str(caught[0].message)
     assert "P-ONE" in str(caught[0].message)
     assert medium_key == "pone"
+
+
+# ---------------------------------------------------------------------------
+# Flow model map tests
+# ---------------------------------------------------------------------------
+
+def test_flow_model_map_has_pone():
+    assert "pone" in _FLOW_MODEL_MAP
+    flow, counts = _FLOW_MODEL_MAP["pone"]
+    assert flow == _DEFAULT_FLOW_FILE
+    assert counts == _DEFAULT_COUNTS_FILE
+
+
+def test_flow_model_map_tuples():
+    for key, entry in _FLOW_MODEL_MAP.items():
+        assert len(entry) == 2, f"_FLOW_MODEL_MAP['{key}'] must be a (flow, counts) tuple"
+
+
+def test_flow_model_pone_matches_defaults():
+    """The P-ONE entry must match the config defaults so auto-selection is stable."""
+    flow, counts = _FLOW_MODEL_MAP["pone"]
+    assert flow == _DEFAULT_FLOW_FILE
+    assert counts == _DEFAULT_COUNTS_FILE
+
+
+def test_flow_model_unknown_medium_falls_back():
+    """An unregistered medium_key must fall back to pone with a UserWarning."""
+    unknown_key = "baikal"
+    assert unknown_key not in _FLOW_MODEL_MAP
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        if unknown_key in _FLOW_MODEL_MAP:
+            flow_file, counts_file = _FLOW_MODEL_MAP[unknown_key]
+        else:
+            warnings.warn(
+                f"No dedicated flow model is registered for medium '{unknown_key}'. "
+                f"Falling back to the P-ONE model files. "
+                f"Timing predictions may not accurately reflect '{unknown_key}' optical properties.",
+                UserWarning,
+                stacklevel=1,
+            )
+            flow_file, counts_file = _FLOW_MODEL_MAP["pone"]
+
+    assert len(caught) == 1
+    assert issubclass(caught[0].category, UserWarning)
+    assert "baikal" in str(caught[0].message)
+    assert flow_file == _DEFAULT_FLOW_FILE
+    assert counts_file == _DEFAULT_COUNTS_FILE
