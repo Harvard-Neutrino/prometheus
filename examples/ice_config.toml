@@ -1,0 +1,27 @@
+# Prometheus TOML configuration — ice (PPC) example
+# Load with: PrometheusConfig.from_toml("examples/ice_config.toml")
+
+[run]
+run_number = 2
+random_state_seed = 2
+nevents = 3
+storage_prefix = "./output/"
+
+[detector]
+geo_file = "resources/geofiles/demo_ice.geo"
+
+[injection]
+name = "LeptonInjector"
+
+[injection.lepton_injector.simulation]
+is_ranged = false
+final_state_1 = "MuMinus"
+final_state_2 = "Hadrons"
+minimal_energy = 1000.0
+maximal_energy = 1000000.0
+
+[photon_propagator]
+name = "PPC"
+
+[photon_propagator.ppc.paths]
+force = true

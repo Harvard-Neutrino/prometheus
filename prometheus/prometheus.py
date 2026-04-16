@@ -89,12 +89,12 @@ class Prometheus(object):
                 config.from_yaml(userconfig)
 
 
-        if detector is None and config["detector"]["geo file"] is None:
+        if detector is None and config.detector.geo_file is None:
             raise CannotLoadDetectorError("No Detector provided and no geo file path given in config")
 
         if detector is None:
             from .detector import detector_from_geo
-            detector = detector_from_geo(config["detector"]["geo file"])
+            detector = detector_from_geo(config.detector.geo_file)
 
         
         self._detector = detector
@@ -106,34 +106,34 @@ class Prometheus(object):
         # We can probably hide this in MIMS
         import proposal as pp
         from .lepton_propagation.new_proposal_lepton_propagator import NewProposalLeptonPropagator as LeptonPropagator
-        config["lepton propagator"]["name"] = "new proposal"
-        config["lepton propagator"]["version"] = pp.__version__
+        config.lepton_propagator.name = "new proposal"
+        config.lepton_propagator.version = pp.__version__
 
         config_mims(config, self.detector)
         clean_config(config)
 
         self._injector = getattr(
             RegisteredInjectors,
-            regularize(config["injection"]["name"])
+            regularize(config.injection.name)
         )
 
         self._pp = getattr(
             RegisteredPhotonPropagators,
-            regularize(config["photon propagator"]["name"])
+            regularize(config.photon_propagator.name)
         )
 
-        if regularize(config["injection"]["name"]) not in RegisteredInjectors.list():
-            raise UnknownInjectorError(config["injection"]["name"] + "is not supported as an injector!")
+        if regularize(config.injection.name) not in RegisteredInjectors.list():
+            raise UnknownInjectorError(config.injection.name + "is not supported as an injector!")
 
-        if regularize(config["photon propagator"]["name"]) not in RegisteredPhotonPropagators.list():
-            raise UnknownPhotonPropagatorError(config["photon propagator"]["name"] + " is not a known photon propagator")
+        if regularize(config.photon_propagator.name) not in RegisteredPhotonPropagators.list():
+            raise UnknownPhotonPropagatorError(config.photon_propagator.name + " is not a known photon propagator")
 
-        pp.RandomGenerator.get().set_seed(config["run"]["random state seed"])
-        lepton_prop_config = config["lepton propagator"][config["lepton propagator"]["name"]]
+        pp.RandomGenerator.get().set_seed(config.run.random_state_seed)
+        lepton_prop_config = config.lepton_propagator[config.lepton_propagator.name]
         self._lepton_propagator = LeptonPropagator(lepton_prop_config)
 
-        pp_config = config["photon propagator"][config["photon propagator"]["name"]]
-        self._photon_propagator = get_photon_propagator(config["photon propagator"]["name"])(
+        pp_config = config.photon_propagator[config.photon_propagator.name]
+        self._photon_propagator = get_photon_propagator(config.photon_propagator.name)(
             self._lepton_propagator,
             self.detector,
             pp_config
@@ -153,62 +153,57 @@ class Prometheus(object):
 
     def inject(self):
         """Determine initial neutrino and final particle states according to config."""
-        injection_config = config["injection"][config["injection"]["name"]]
-        if injection_config["inject"]:
+        injection_config = config.injection[config.injection.name]
+        if injection_config.inject:
 
             from .injection import INJECTOR_DICT
             if self._injector not in INJECTOR_DICT.keys():
                 raise InjectorNotImplementedError(str(self._injector) + " is not a registered injector" )
 
-            injection_config["simulation"]["random state seed"] = (
-                config["run"]["random state seed"]
-            )
+            injection_config.simulation.random_state_seed = config.run.random_state_seed
             INJECTOR_DICT[self._injector](
-                injection_config["paths"],
-                injection_config["simulation"],
+                injection_config.paths,
+                injection_config.simulation,
                 detector_offset=self.detector.offset
             )
         self._injection = INJECTION_CONSTRUCTOR_DICT[self._injector](
-            injection_config["paths"]["injection file"]
+            injection_config.paths.injection_file
         )
 
     # We should factor out generating losses and photon prop
     def propagate(self):
         """Calculate energy losses, generate photon yields, and propagate photons."""
-        if config["photon propagator"]["name"].lower()=="olympus":
-            rng_key = random.PRNGKey(config["run"]["random state seed"])
-        elif config["photon propagator"]["name"].lower()=="ppc":
+        pp_name = config.photon_propagator.name.lower()
+        if pp_name == "olympus":
+            rng_key = random.PRNGKey(config.run.random_state_seed)
+        elif pp_name == "ppc":
             from glob import glob
             import shutil
             from .utils.clean_ppc_tmpdir import clean_ppc_tmpdir
             if (
-                os.path.exists(config['photon propagator']["PPC"]["paths"]["ppc_tmpdir"]) and \
-                not config["photon propagator"]["PPC"]["paths"]["force"]
+                os.path.exists(config.photon_propagator.ppc.paths.ppc_tmpdir) and
+                not config.photon_propagator.ppc.paths.force
             ):
-                raise PpcTmpdirExistsError(
-                    config['photon propagator']["PPC"]["paths"]["ppc_tmpdir"]
-                )
-            os.mkdir(config['photon propagator']["PPC"]["paths"]["ppc_tmpdir"])
-            fs = glob(f"{config['photon propagator']['PPC']['paths']['ppctables']}/*")
+                raise PpcTmpdirExistsError(config.photon_propagator.ppc.paths.ppc_tmpdir)
+            os.mkdir(config.photon_propagator.ppc.paths.ppc_tmpdir)
+            fs = glob(f"{config.photon_propagator.ppc.paths.ppctables}/*")
             for f in fs:
-                shutil.copy(f, config['photon propagator']["PPC"]["paths"]["ppc_tmpdir"])
-        elif config["photon propagator"]["name"].lower()=="ppc_cuda":
+                shutil.copy(f, config.photon_propagator.ppc.paths.ppc_tmpdir)
+        elif pp_name == "ppc_cuda":
             from glob import glob
             import shutil
             from .utils.clean_ppc_tmpdir import clean_ppc_tmpdir
             if (
-                os.path.exists(config['photon propagator']["PPC_CUDA"]["paths"]["ppc_tmpdir"]) and \
-                not config["photon propagator"]["PPC_CUDA"]["paths"]["force"]
+                os.path.exists(config.photon_propagator.ppc_cuda.paths.ppc_tmpdir) and
+                not config.photon_propagator.ppc_cuda.paths.force
             ):
-                raise PpcTmpdirExistsError(
-                    config['photon propagator']["PPC_CUDA"]["paths"]["ppc_tmpdir"]
-                )
-            elif os.path.exists(config['photon propagator']["PPC_CUDA"]["paths"]["ppc_tmpdir"]):
-                clean_ppc_tmpdir(config['photon propagator']["PPC_CUDA"]["paths"]["ppc_tmpdir"])
-            os.mkdir(config['photon propagator']["PPC_CUDA"]["paths"]["ppc_tmpdir"])
-            fs = glob(f"{config['photon propagator']['PPC_CUDA']['paths']['ppctables']}/*")
+                raise PpcTmpdirExistsError(config.photon_propagator.ppc_cuda.paths.ppc_tmpdir)
+            elif os.path.exists(config.photon_propagator.ppc_cuda.paths.ppc_tmpdir):
+                clean_ppc_tmpdir(config.photon_propagator.ppc_cuda.paths.ppc_tmpdir)
+            os.mkdir(config.photon_propagator.ppc_cuda.paths.ppc_tmpdir)
+            fs = glob(f"{config.photon_propagator.ppc_cuda.paths.ppctables}/*")
             for f in fs:
-                shutil.copy(f, config['photon propagator']["PPC_CUDA"]["paths"]["ppc_tmpdir"])
+                shutil.copy(f, config.photon_propagator.ppc_cuda.paths.ppc_tmpdir)
 
         nevents = len(self.injection)
 
@@ -218,23 +213,21 @@ class Prometheus(object):
                     break
                 for final_state in injection_event.final_states:
                     pbar.set_description(f"Propagating {final_state}")
-                    if config["photon propagator"]["name"].lower() == "olympus":
+                    if pp_name == "olympus":
                         rng_key, subkey = random.split(rng_key)
                     else:
                         subkey = None
                     self._photon_propagator.propagate(final_state, subkey)
-        if config["photon propagator"]["name"].lower()=="olympus":
+        if pp_name == "olympus":
             pass
-        elif config["photon propagator"]["name"].lower()=="ppc":
-            clean_ppc_tmpdir(config['photon propagator']['PPC']['paths']['ppc_tmpdir'])
-        elif config["photon propagator"]["name"].lower()=="ppc_cuda":
-            clean_ppc_tmpdir(config['photon propagator']['PPC_CUDA']['paths']['ppc_tmpdir'])
+        elif pp_name == "ppc":
+            clean_ppc_tmpdir(config.photon_propagator.ppc.paths.ppc_tmpdir)
+        elif pp_name == "ppc_cuda":
+            clean_ppc_tmpdir(config.photon_propagator.ppc_cuda.paths.ppc_tmpdir)
 
 
     def sim(self):
         """Perform injection of precipitating interaction, calculate energy losses, calculate photon yield, propagate photons, and save resulting photons."""
-        if "runtime" in config["photon propagator"].keys():
-            del config["photon propagator"]["runtime"]
         start_inj = time()
         self.inject()
         end_inj = time()
@@ -262,24 +255,18 @@ class Prometheus(object):
 
         from .utils.serialization import serialize_particles_to_awkward, set_serialization_index
         set_serialization_index(self.injection)
-        json_config = json.dumps(config)
-        # builder = ak.ArrayBuilder()
-        # with builder.record('config'):
-        #     builder.field('config').append(json_config)
-        # outarr = builder.snapshot()
-        # outarr = ak.Record({"config": json_config})
-        # outarr['mc_truth'] = self.injection.to_awkward()
+        json_config = json.dumps(config.to_dict())
         test_arr = serialize_particles_to_awkward(self.detector, self.injection)
         if test_arr is not None:
             outarr = ak.Array({
                 'mc_truth': self.injection.to_awkward(),
-                config["photon propagator"]["photon field name"]: test_arr
+                config.photon_propagator.photon_field_name: test_arr
             })
         else:
             outarr = ak.Array({
                 'mc_truth': self.injection.to_awkward()
             })
-        outfile = config["run"]['outfile']
+        outfile = config.run.outfile
         # Converting to pyarrow table
         outarr = ak.to_arrow_table(outarr)
         custom_meta_data_key = "config_prometheus"

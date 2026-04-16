@@ -45,15 +45,15 @@ def test_e2e_water(tmp_path):
     from prometheus import Prometheus, config as _config
 
     cfg = copy.deepcopy(_config)
-    cfg["run"]["run number"] = 9901
-    cfg["run"]["random state seed"] = 42
-    cfg["run"]["nevents"] = 100
-    cfg["run"]["storage prefix"] = str(tmp_path) + "/"
-    cfg["injection"]["name"] = "LeptonInjector"
-    cfg["injection"]["LeptonInjector"]["simulation"]["is ranged"] = False
-    cfg["injection"]["LeptonInjector"]["simulation"]["minimal energy"] = 1e3
-    cfg["injection"]["LeptonInjector"]["simulation"]["maximal energy"] = 1e4
-    cfg["detector"]["geo file"] = "resources/geofiles/demo_water.geo"
+    cfg.run.run_number = 9901
+    cfg.run.random_state_seed = 42
+    cfg.run.nevents = 100
+    cfg.run.storage_prefix = str(tmp_path) + "/"
+    cfg.injection.name = "LeptonInjector"
+    cfg.injection.lepton_injector.simulation.is_ranged = False
+    cfg.injection.lepton_injector.simulation.minimal_energy = 1e3
+    cfg.injection.lepton_injector.simulation.maximal_energy = 1e4
+    cfg.detector.geo_file = "resources/geofiles/demo_water.geo"
 
     prom = Prometheus(cfg)
     prom.sim()

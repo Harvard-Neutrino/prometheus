@@ -125,20 +125,17 @@ INNER_SCRIPT = textwrap.dedent(
 
     from prometheus import Prometheus, config
 
-    config['run']['run number']      = 1
-    config['run']['random state seed'] = int(os.environ['PROM_SEED'])
-    config['run']['nevents']         = int(os.environ['PROM_NEVENTS'])
-    config['run']['storage prefix']  = '/output/'
+    config.run.run_number = 1
+    config.run.random_state_seed = int(os.environ['PROM_SEED'])
+    config.run.nevents = int(os.environ['PROM_NEVENTS'])
+    config.run.storage_prefix = '/output/'
 
-    config['injection']['name'] = 'LeptonInjector'
-    try:
-        config['injection']['LeptonInjector']['simulation']['is ranged']      = os.environ['PROM_RANGED'] == '1'
-        config['injection']['LeptonInjector']['simulation']['minimal energy'] = float(os.environ['PROM_MIN_ENERGY'])
-        config['injection']['LeptonInjector']['simulation']['maximal energy'] = float(os.environ['PROM_MAX_ENERGY'])
-    except Exception:
-        pass
+    config.injection.name = 'LeptonInjector'
+    config.injection.lepton_injector.simulation.is_ranged = os.environ['PROM_RANGED'] == '1'
+    config.injection.lepton_injector.simulation.minimal_energy = float(os.environ['PROM_MIN_ENERGY'])
+    config.injection.lepton_injector.simulation.maximal_energy = float(os.environ['PROM_MAX_ENERGY'])
 
-    config['detector']['geo file'] = os.environ['PROM_GEO']
+    config.detector.geo_file = os.environ['PROM_GEO']
 
     print('Initializing Prometheus')
     prom = Prometheus()

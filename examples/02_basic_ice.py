@@ -27,24 +27,24 @@ except Exception:
 
 def main():
     # Minimal runtime configuration
-    config["run"]["run number"] = 2
-    config["run"]["random state seed"] = 2
-    config["run"]["nevents"] = 3
+    config.run.run_number = 2
+    config.run.random_state_seed = 2
+    config.run.nevents = 3
 
     # Injection: volume (non-ranged) — vertex placed inside the detector volume
-    config["injection"]["name"] = "LeptonInjector"
-    config["injection"]["LeptonInjector"]["simulation"]["is ranged"] = False
-    config["injection"]["LeptonInjector"]["simulation"]["final state 1"] = "MuMinus"
-    config["injection"]["LeptonInjector"]["simulation"]["final state 2"] = "Hadrons"
-    config["injection"]["LeptonInjector"]["simulation"]["minimal energy"] = 1e3
-    config["injection"]["LeptonInjector"]["simulation"]["maximal energy"] = 1e4
+    config.injection.name = "LeptonInjector"
+    config.injection.lepton_injector.simulation.is_ranged = False
+    config.injection.lepton_injector.simulation.final_state_1 = "MuMinus"
+    config.injection.lepton_injector.simulation.final_state_2 = "Hadrons"
+    config.injection.lepton_injector.simulation.minimal_energy = 1e3
+    config.injection.lepton_injector.simulation.maximal_energy = 1e4
 
     # Use the demo ice geo shipped in resources/
-    config["detector"]["geo file"] = "resources/geofiles/demo_ice.geo"
+    config.detector.geo_file = "resources/geofiles/demo_ice.geo"
 
     # Force PPC as the photon propagator and allow re-use of a stale tmp dir
-    config["photon propagator"]["name"] = "PPC"
-    config["photon propagator"]["PPC"]["paths"]["force"] = True
+    config.photon_propagator.name = "PPC"
+    config.photon_propagator.ppc.paths.force = True
 
     print("Initializing Prometheus (ice / PPC)")
     prom = Prometheus()

@@ -27,22 +27,18 @@ except Exception:
 
 def main():
     # Minimal runtime configuration
-    config['run']['run number'] = 1
-    config['run']['random state seed'] = 1
-    config['run']['nevents'] = 1
+    config.run.run_number = 1
+    config.run.random_state_seed = 1
+    config.run.nevents = 1
 
-    # Injection: minimal LeptonInjector settings (may be skipped if missing)
-    config['injection']['name'] = 'LeptonInjector'
-    try:
-        config['injection']['LeptonInjector']['simulation']['is ranged'] = False
-        config['injection']['LeptonInjector']['simulation']['minimal energy'] = 1e3
-        config['injection']['LeptonInjector']['simulation']['maximal energy'] = 1e4
-    except Exception:
-        # ensure keys exist in older/newer configs
-        pass
+    # Injection: minimal LeptonInjector settings
+    config.injection.name = 'LeptonInjector'
+    config.injection.lepton_injector.simulation.is_ranged = False
+    config.injection.lepton_injector.simulation.minimal_energy = 1e3
+    config.injection.lepton_injector.simulation.maximal_energy = 1e4
 
     # Use the demo water geo shipped in resources (repo root path)
-    config['detector']['geo file'] = 'resources/geofiles/demo_water.geo'
+    config.detector.geo_file = 'resources/geofiles/demo_water.geo'
 
     print('Initializing Prometheus (minimal)')
     prom = Prometheus()
