@@ -1,8 +1,9 @@
 import numpy as np
+import warnings
 
 from ..lepton_propagation import LeptonPropagator
 from ..particle import Particle
-from ..detector import Detector
+from ..detector import Detector, Medium
 from .photon_propagator import PhotonPropagator
 from .registry import register_propagator
 from .hit import Hit
@@ -21,6 +22,13 @@ from .olympus.event_generation.event_generation import (
 from hyperion.medium import medium_collections
 from hyperion.constants import Constants
 
+# Map Medium enum values to registered medium_collections keys.
+# When a detector's medium has no dedicated model registered, the propagator
+# falls back to the Cascadia Basin (P-ONE) water model and emits a warning.
+_WATER_MEDIUM_MAP: dict = {
+    Medium.WATER: "pone",
+}
+
 
 @register_propagator("olympus")
 class OlympusPhotonPropagator(PhotonPropagator):
@@ -36,13 +44,18 @@ class OlympusPhotonPropagator(PhotonPropagator):
         if not self.config['simulation']['files']:
             ValueError('Currently only file runs for olympus are supported!')
 
-        #self._pprop_path = f"{self.config['location']}{self.config['photon model']}"
-        # TODO This is reeeeeeeally bad I think
-        medium_collections[detector.medium] = medium_collections["pone"]
-        # The medium
-        self._ref_ix_f, self._sca_a_f, self._sca_l_f = (
-            medium_collections[detector.medium]
-        )
+        medium_key = _WATER_MEDIUM_MAP.get(detector.medium)
+        if medium_key is None:
+            warnings.warn(
+                f"No dedicated optical model is registered for medium "
+                f"'{detector.medium.name}'. Falling back to the Cascadia Basin "
+                f"(P-ONE) water model. Simulation results may not accurately "
+                f"reflect '{detector.medium.name}' optical properties.",
+                UserWarning,
+                stacklevel=2,
+            )
+            medium_key = "pone"
+        self._ref_ix_f, self._sca_a_f, self._sca_l_f = medium_collections[medium_key]
 
         self._gen_ph = make_generate_norm_flow_photons(
             f"{self.config['paths']['location']}{self.config['paths']['flow']}",

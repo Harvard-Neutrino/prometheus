@@ -161,5 +161,6 @@ cascadia_ref_index_func = make_ref_index_func(
 )
 
 medium_collections = {
-    "pone": (cascadia_ref_index_func, mixed_hg_rayleigh_antares, sca_len_func_antares)
+    "pone": (cascadia_ref_index_func, mixed_hg_rayleigh_antares, sca_len_func_antares),
+    "antares": (antares_ref_index_func, mixed_hg_rayleigh_antares, sca_len_func_antares),
 }
