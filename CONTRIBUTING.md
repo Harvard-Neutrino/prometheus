@@ -96,9 +96,9 @@ Our documentation is publicly available on the website <https://harvard-neutrino
 
 It uses [MkDocs](https://www.mkdocs.org/) with readthedocs theme and some plugins that help with auto-generating the API reference (full list of plugins is available in [requirements.txt](./requirements.txt)).
 
-Setup guides and general docs from the `Documentation` section of the website are built from [./docs directory](./docs/). To contribute to those, amend / add files in `./docs` directory. If your changes relate to citation, terms of use, or project summary, please make sure the repo [README](./README.md) is up to date as well.
+Setup guides and general docs from the `Documentation` section of the website are built from [./docs directory](./docs/). To contribute to those, amend/add files in `./docs` directory. If your changes relate to citation, terms of use, or project summary, please make sure the repo [README](./README.md) is up to date as well.
 
-API reference docs are auto-generated directly from docstrings in code. The docstings are formatted in [NumPy style](https://numpy.org/doc/1.19/docs/howto_document.html#docstring-standard).
+API reference docs are auto-generated directly from docstrings in code. The docstrings are formatted in [NumPy style](https://numpy.org/doc/1.19/docs/howto_document.html#docstring-standard).
 
 ### Style guides, checks and best practices
 
@@ -113,7 +113,7 @@ API reference docs are auto-generated directly from docstrings in code. The docs
 To see what your changes look like on the documentation website, install everything listed in `requirements.txt` file:
 
 ```sh
-pip install -r requirements.txt # or use pip3 if you're using Python 3
+pip install -r requirements.txt
 ```
 
 After that, you should be able to run `mkdocs serve` to view the local version on the website. The output of the command will contain the website address. For more details, refer to [MkDocs documentation](https://www.mkdocs.org/getting-started/).
