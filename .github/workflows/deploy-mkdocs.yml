@@ -1,16 +1,15 @@
-name: Deploy MkDocs site via GitHub Pages
+name: deploy-docsite
 on:
   push:
     branches:
-      - master
-      - ana/site-deploy-action
+      - main
 
 jobs:
   build:
     name: Deploy docs site
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout master
+      - name: Checkout main branch
         uses: actions/checkout@v6
 
       - name: Setup Python
