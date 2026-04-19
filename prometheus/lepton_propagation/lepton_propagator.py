@@ -50,8 +50,7 @@ class LeptonPropagator:
 
     @abstractmethod
     def energy_losses(self, particle: Particle) -> None:
-        """Propagate particle with energy losses. The losses will be
-            stored in ``particle.losses``.
+        """Propagate particle with energy losses. The losses are stored in ``particle.losses``.
 
         Parameters
         ----------
