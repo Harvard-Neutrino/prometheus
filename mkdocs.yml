@@ -43,8 +43,6 @@ plugins:
       handlers:
         python:
           paths: [.]
-          inventories:
-              - https://numpy.org/doc/stable/objects.inv
           options:
             docstring_options:
               ignore_init_summary: true
