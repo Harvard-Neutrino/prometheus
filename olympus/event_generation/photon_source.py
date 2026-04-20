@@ -2,7 +2,12 @@ from enum import Enum, auto
 
 
 class PhotonSourceType(Enum):
-    """Enum for photon source types."""
+    """Enum for photon source types.
+
+    Notes
+    -----
+    Members: ``STANDARD_CHERENKOV``, ``ISOTROPIC``.
+    """
 
     STANDARD_CHERENKOV = auto()
     ISOTROPIC = auto()
