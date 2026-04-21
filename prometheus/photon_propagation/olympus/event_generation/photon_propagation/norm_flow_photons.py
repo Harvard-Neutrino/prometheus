@@ -1,4 +1,5 @@
 import pickle
+from prometheus.compat.haiku_unpickler import load as haiku_load
 
 import awkward as ak
 import jax
@@ -18,8 +19,8 @@ from .utils import sources_to_model_input, sources_to_model_input_per_module
 
 # @profile
 def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_medium):
-    shape_config, shape_params = pickle.load(open(shape_model_path, "rb"))
-    counts_config, counts_params = pickle.load(open(counts_model_path, "rb"))
+    shape_config, shape_params = haiku_load(shape_model_path)
+    counts_config, counts_params = haiku_load(counts_model_path)
 
     shape_conditioner = make_shape_conditioner_fn(
         shape_config["mlp_hidden_size"],
@@ -161,8 +162,8 @@ def make_nflow_photon_likelihood_per_module(
     counts_model_path,
     mode="full",
 ):
-    shape_config, shape_params = pickle.load(open(shape_model_path, "rb"))
-    counts_config, counts_params = pickle.load(open(counts_model_path, "rb"))
+    shape_config, shape_params = haiku_load(shape_model_path)
+    counts_config, counts_params = haiku_load(counts_model_path)
 
     shape_conditioner = make_shape_conditioner_fn(
         shape_config["mlp_hidden_size"],

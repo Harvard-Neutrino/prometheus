@@ -40,8 +40,10 @@ timings_e.npy
 *pycache*
 
 .venv
+.venv*
 
 .prometheus_env
+.prometheus_env*
 
 bin
 
