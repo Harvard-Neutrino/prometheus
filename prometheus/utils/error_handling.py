@@ -5,6 +5,9 @@
 
 import sys
 import inspect
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class NoTraceBackWithLineNumber(Exception):
@@ -18,7 +21,7 @@ class NoTraceBackWithLineNumber(Exception):
             stack = inspect.stack()
             the_class = stack[1][0].f_locals["self"].__class__.__name__
             the_method = stack[1][0].f_code.co_name
-            print("An error was raised in {}.{}()".format(the_class, the_method))
+            logger.error("An error was raised in %s.%s()", the_class, the_method)
         self.args = "{0.__name__} (line {1}): {2}".format(type(self), ln, msg),
         sys.exit(self)
 

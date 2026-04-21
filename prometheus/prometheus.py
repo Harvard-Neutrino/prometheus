@@ -12,6 +12,7 @@ from typing import Union
 from tqdm import tqdm
 from time import time
 from jax import random  # noqa: E402
+import logging
 
 from .utils import (
     config_mims, clean_config,
@@ -26,11 +27,15 @@ from .photon_propagation import (
     get_propagator,
     RegisteredPhotonPropagators,
 )
+from .logging_config import configure_logging
+from .utils.timing import time_block
 
 # Legacy alias used in this file.
 get_photon_propagator = get_propagator
 
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
+
+logger = logging.getLogger(__name__)
 
 class PpcTmpdirExistsError(Exception):
     """Raised if ppc ``tmpdir`` exists and force not specified."""
@@ -119,6 +124,13 @@ class Prometheus(object):
         config_mims(config, self.detector)
         clean_config(config)
 
+        # Configure logging centrally from the config
+        try:
+            configure_logging(config)
+        except Exception:
+            # Fallback to basic config if configuration fails
+            logging.basicConfig(level=logging.WARNING)
+
         self._injector = getattr(
             RegisteredInjectors,
             regularize(config.injection.name)
@@ -147,6 +159,21 @@ class Prometheus(object):
         )
         self._end_timing_misc = time()
 
+        # High-level initialization summary
+        logger.info(
+            "Prometheus initialized: run=%s nevents=%s injector=%s propagator=%s modules=%d",
+            config.run.run_number,
+            config.run.nevents,
+            config.injection.name,
+            config.photon_propagator.name,
+            getattr(self.detector, "n_modules", len(getattr(self.detector, "modules", [])))
+        )
+        if logger.isEnabledFor(logging.DEBUG):
+            try:
+                logger.debug("Resolved config: %s", config.to_dict())
+            except Exception:
+                logger.debug("Resolved config: <unserializable>")
+
 
     @property
     def detector(self):
@@ -161,26 +188,49 @@ class Prometheus(object):
     def inject(self):
         """Determine initial neutrino and final particle states according to config."""
         injection_config = config.injection[config.injection.name]
-        if injection_config.inject:
-
-            from .injection import INJECTOR_DICT
-            if self._injector not in INJECTOR_DICT.keys():
-                raise InjectorNotImplementedError(str(self._injector) + " is not a registered injector" )
-
-            injection_config.simulation.random_state_seed = config.run.random_state_seed
-            INJECTOR_DICT[self._injector](
-                injection_config.paths,
-                injection_config.simulation,
-                detector_offset=self.detector.offset
-            )
-        self._injection = INJECTION_CONSTRUCTOR_DICT[self._injector](
-            injection_config.paths.injection_file
+        logger.info(
+            "Starting injection: mode=%s inject=%s",
+            config.injection.name,
+            injection_config.inject,
         )
+        with time_block("injection", logger):
+            if injection_config.inject:
+                from .injection import INJECTOR_DICT
+                if self._injector not in INJECTOR_DICT.keys():
+                    raise InjectorNotImplementedError(
+                        str(self._injector) + " is not a registered injector"
+                    )
+
+                injection_config.simulation.random_state_seed = config.run.random_state_seed
+                INJECTOR_DICT[self._injector](
+                    injection_config.paths,
+                    injection_config.simulation,
+                    detector_offset=self.detector.offset,
+                )
+            try:
+                self._injection = INJECTION_CONSTRUCTOR_DICT[self._injector](
+                    injection_config.paths.injection_file
+                )
+            except Exception:
+                logger.exception("Failed to construct injection from %s", injection_config.paths.injection_file)
+                raise
+        try:
+            n_inj = len(self._injection)
+        except Exception:
+            n_inj = None
+        logger.info("Injection complete: loaded %s events from %s", n_inj, injection_config.paths.injection_file)
 
     # We should factor out generating losses and photon prop
     def propagate(self):
         """Calculate energy losses, generate photon yields, and propagate photons."""
         pp_name = config.photon_propagator.name.lower()
+        logger.info("Starting propagation: propagator=%s", config.photon_propagator.name)
+        try:
+            total_events = len(self.injection)
+        except Exception:
+            total_events = None
+        if total_events is not None:
+            logger.info("Propagating %d events", total_events)
         if pp_name == "olympus":
             rng_key = random.PRNGKey(config.run.random_state_seed)
         elif pp_name == "ppc":
@@ -214,17 +264,23 @@ class Prometheus(object):
 
         nevents = len(self.injection)
 
-        with tqdm(enumerate(self.injection), total=len(self.injection)) as pbar:
-            for idx, injection_event in pbar:
-                if idx == nevents:
-                    break
-                for final_state in injection_event.final_states:
-                    pbar.set_description(f"Propagating {final_state}")
-                    if pp_name == "olympus":
-                        rng_key, subkey = random.split(rng_key)
-                    else:
-                        subkey = None
-                    self._photon_propagator.propagate(final_state, subkey)
+        with time_block("propagation", logger):
+            with tqdm(enumerate(self.injection), total=len(self.injection)) as pbar:
+                for idx, injection_event in pbar:
+                    if idx == nevents:
+                        break
+                    for final_state in injection_event.final_states:
+                        pbar.set_description(f"Propagating {final_state}")
+                        if pp_name == "olympus":
+                            rng_key, subkey = random.split(rng_key)
+                        else:
+                            subkey = None
+                        try:
+                            self._photon_propagator.propagate(final_state, subkey)
+                        except Exception:
+                            logger.exception("Error propagating event %s final_state=%s", idx, final_state)
+                            raise
+        logger.info("Propagation complete")
         if pp_name == "olympus":
             pass
         elif pp_name == "ppc":
@@ -235,6 +291,7 @@ class Prometheus(object):
 
     def sim(self):
         """Perform injection of precipitating interaction, calculate energy losses, calculate photon yield, propagate photons, and save resulting photons."""
+        logger.info("Starting full simulation run %s", config.run.run_number)
         start_inj = time()
         self.inject()
         end_inj = time()
@@ -244,6 +301,7 @@ class Prometheus(object):
         start_out = time()
         self.construct_output()
         end_out = time()
+        logger.info("Simulation run complete")
         # Timing stuff
         # TODO: remove this?
         self._timing_arr = np.array([
@@ -252,6 +310,16 @@ class Prometheus(object):
             end_prop - start_prop,
             end_out - start_out,
         ])
+        try:
+            logger.info(
+                "Timings (s): misc=%.3f inj=%.3f prop=%.3f out=%.3f",
+                float(self._timing_arr[0]),
+                float(self._timing_arr[1]),
+                float(self._timing_arr[2]),
+                float(self._timing_arr[3]),
+            )
+        except Exception:
+            pass
 
     def construct_output(self):
         """Construct a parquet file with metadata from the generated files.
@@ -279,10 +347,16 @@ class Prometheus(object):
         custom_meta_data_key = "config_prometheus"
         combined_meta = {custom_meta_data_key.encode() : json_config.encode()}
         outarr = outarr.replace_schema_metadata(combined_meta)
-        pq.write_table(outarr, outfile)
+        with time_block("write_output", logger):
+            pq.write_table(outarr, outfile)
+        try:
+            size = os.path.getsize(outfile)
+            logger.info("Wrote output to %s (%d bytes)", outfile, size)
+        except Exception:
+            logger.info("Wrote output to %s", outfile)
 
     def __del__(self):
         """What to do when the Prometheus instance is deleted
         """
-        print("I am melting.... AHHHHHH!!!!")
+        logger.debug("Prometheus instance finalised.")
 

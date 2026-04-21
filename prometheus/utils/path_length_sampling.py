@@ -3,6 +3,9 @@
 # Quick and dirty sampling function for injected hadrons (their offset from the interaction vertex if not given)
 
 import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def path_length_sampling(E: float, pdg_id: int) -> float:
@@ -27,8 +30,7 @@ def path_length_sampling(E: float, pdg_id: int) -> float:
     elif pdg_id in (211, 111, -211, 130, 310, 311, 321, -321):
         lamd = 115.2 / dens_water  # in cm
     else:
-        print("Unknown particle")
-        print("Assuming it travels like a pion")
+        logger.warning("Unknown particle — assuming it travels like a pion")
         lamd = 115.2 / dens_water
     if type(E) is np.ndarray:
         return np.random.exponential(scale=lamd, size=E.shape)

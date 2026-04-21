@@ -3,10 +3,13 @@ import numpy as np
 import awkward as ak
 import LeptonWeighter as LW
 import pyarrow.parquet as pq
+import logging
 
 from typing import Optional
 
 from .weighter import Weighter
+
+logger = logging.getLogger(__name__)
 
 WARNMSG = "It looks like the lic file provided does not match that in the Parquet file. You may want to check this."
 
@@ -41,7 +44,7 @@ class ParquetWeighter(Weighter):
             lic_file = exp_lic_file
 
         self._data = ak.from_parquet(parquet_file)
-        print(config)
+        logger.debug("Parquet config: %s", config)
         if offset is None:
             try:
                 self._offset = np.array(config["detector"]["offset"])

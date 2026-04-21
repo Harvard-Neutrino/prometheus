@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import subprocess
+import logging
 
 from .photon_propagator import PhotonPropagator
 from .utils import should_propagate, parse_ppc
@@ -8,6 +9,8 @@ from ..lepton_propagation import LeptonPropagator, Loss
 from ..detector import Detector
 from ..particle import Particle
 from ..utils import serialize_to_f2k, PDG_to_f2k
+
+logger = logging.getLogger(__name__)
 
 
 def ppc_sim(
@@ -55,7 +58,7 @@ def ppc_sim(
             particle.losses.append(loss)
     else:
         # TODO make this into a custom error
-        print(repr(particle))
+        logger.error("Unrecognized particle: %r", particle)
         raise ValueError("Unrecognized particle")
     geo_tmpfile = f"{ppc_config['paths']['ppc_tmpdir']}/geo-f2k"
     ppc_tmpfile = f"{ppc_config['paths']['ppc_tmpdir']}/{ppc_config['paths']['ppc_tmpfile']}_{str(particle)}"

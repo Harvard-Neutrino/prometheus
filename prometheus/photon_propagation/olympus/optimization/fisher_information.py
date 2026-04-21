@@ -3,6 +3,9 @@ import jax
 import numpy as np
 from jax import numpy as jnp
 from jax import random
+import logging
+
+logger = logging.getLogger(__name__)
 
 from ..event_generation.event_generation import (
     generate_cascade,
@@ -47,7 +50,7 @@ def calc_fisher_info_cascades(
         x, y, z, theta, phi, t, log10e, times, mod_coords, noise_rate, key
     ):
 
-        print("Retracing")
+        logger.debug("Retracing")
 
         pos = jnp.asarray([x, y, z])
         dir = sph_to_cart_jnp(theta, phi)

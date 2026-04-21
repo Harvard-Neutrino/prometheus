@@ -85,6 +85,9 @@ class ConfigBase:
 class RunConfig(ConfigBase):
     run_number: int = 1337
     nevents: int = 10
+    verbosity: str = "WARNING"
+    logfile: Optional[str] = None
+    log_format: Optional[str] = None
     storage_prefix: str = "./output/"
     outfile: Optional[str] = None
     random_state_seed: Optional[int] = None
@@ -93,6 +96,8 @@ class RunConfig(ConfigBase):
         "run number": "run_number",
         "storage prefix": "storage_prefix",
         "random state seed": "random_state_seed",
+        "log file": "logfile",
+        "log format": "log_format",
     }
 
     def __post_init__(self):

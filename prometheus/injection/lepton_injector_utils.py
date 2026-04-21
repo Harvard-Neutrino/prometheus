@@ -1,5 +1,8 @@
 import h5py as h5
 import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
 
 def apply_detector_offset(
     injection_file: str,
@@ -39,16 +42,16 @@ def make_new_LI_injection(
         Center of the detector in meters.
     """
     import os
-    print('Importing LeptonInjector')
+    logger.info('Importing LeptonInjector')
     try:
         try:
-            print('Trying default pythonpath')
+            logger.debug('Trying default pythonpath')
             import EarthModelService as em
             import LeptonInjector as LI
         except ImportError:
             import sys
-            print('Trying custom path set in config')
-            print(f"The path is {path_dict['install location']}")
+            logger.debug('Trying custom path set in config')
+            logger.debug(f"The path is {path_dict['install location']}")
             sys.path.append(path_dict['install location'])
             import EarthModelService as em
             import LeptonInjector as LI
