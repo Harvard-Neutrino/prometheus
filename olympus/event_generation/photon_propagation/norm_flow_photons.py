@@ -118,7 +118,7 @@ def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_mediu
         key, subkey = random.split(key)
         n_photons_masked = random.poisson(
             subkey, n_photons_masked, shape=n_photons_masked.shape
-        ).squeeze()
+        ).squeeze().astype(jnp.int32)
 
         if jnp.all(n_photons_masked == 0):
             times = [] * module_coords.shape[0]

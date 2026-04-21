@@ -12,6 +12,9 @@ from ..utils import serialize_to_f2k, PDG_to_f2k
 
 logger = logging.getLogger(__name__)
 
+# Collect subprocess statuses for run summaries
+subprocess_statuses = []
+
 
 def ppc_sim(
     particle: Particle,
@@ -79,6 +82,11 @@ def ppc_sim(
 
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
     process.wait()
+    try:
+        rc = process.returncode
+        subprocess_statuses.append({"cmd": command, "returncode": rc})
+    except Exception:
+        pass
     particle.hits = parse_ppc(ppc_tmpfile)
     for f in [geo_tmpfile, f2k_tmpfile, ppc_tmpfile]:
         os.remove(f)

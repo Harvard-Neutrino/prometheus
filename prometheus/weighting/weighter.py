@@ -36,10 +36,10 @@ class Weighter:
             Number of generated events to rescale weight by. Helpful if you have non-uniform events per file.
         """
         if xs_prefix is None:
-            import os
+            from pathlib import Path
             import prometheus
-            path = os.path.dirname(prometheus.__file__)
-            xs_prefix = os.path.abspath(f"{path}/../resources/cross_section_splines/")
+            path = Path(prometheus.__file__).resolve().parent
+            xs_prefix = str((path.parent / "resources" / "cross_section_splines").resolve())
 
 
         self._lic_file = lic_file

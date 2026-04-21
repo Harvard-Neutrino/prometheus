@@ -5,7 +5,6 @@
 import pandas as pd
 import numpy as np
 import uproot
-import uproot
 # from schema import Schema, And, Use, Optional, SchemaError
 
 def genie_parser(events) -> pd.DataFrame:

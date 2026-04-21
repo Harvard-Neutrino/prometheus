@@ -10,12 +10,12 @@
 
 from __future__ import annotations
 
-import os
+from pathlib import Path
 import sys
 from dataclasses import dataclass, field, fields, asdict
 from typing import ClassVar, Optional
 
-RESOURCES_DIR = os.path.abspath(f"{os.path.dirname(__file__)}/../resources/")
+RESOURCES_DIR = Path(__file__).resolve().parent.parent / "resources"
 
 
 # ---------------------------------------------------------------------------
@@ -83,6 +83,37 @@ class ConfigBase:
 
 @dataclass
 class RunConfig(ConfigBase):
+    """Run-related configuration.
+
+    Fields
+    ------
+    run_number (int): Unique run identifier.
+    nevents (int): Number of events to simulate (must be > 0).
+    verbosity (str|int): Logging verbosity. Allowed string values: 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL' (case-insensitive) or a numeric logging level.
+    logfile (Optional[str]): Path to a file to write logs. If ``None`` logs go to console.
+    log_format (Optional[str]): Logging format string for handlers.
+    storage_prefix (str): Base directory for output files.
+    outfile (Optional[str]): Explicit output file path (parquet). If ``None`` a path under ``storage_prefix`` will be used.
+    random_state_seed (Optional[int]): Seed for RNGs used in injection/propagation.
+    summary_mode (str): Reporting mode. Allowed values: 'user' (default) and 'debug'.
+        - 'user': user-friendly, compact summary printed to the console and noisy third-party output collapsed.
+        - 'debug': developer-oriented summary emitted at DEBUG level; captured warnings and native prints are logged verbosely.
+    banner (bool): Show ASCII banner from assets when ``True``.
+    compact (bool): Emit a compact single-line summary for batch runs when ``True``.
+    summary_json (bool): If ``True``, write a machine-readable JSON summary alongside the output file.
+    summary_json_path (Optional[str]): Explicit path for JSON summary (overrides default outfile + '.summary.json').
+    progress_threshold (int): Minimum number of events required to display progress bars (tqdm).
+
+    Notes
+    -----
+    - To enable the debug summary when running examples that do not expose CLI flags, set::
+
+          from prometheus import config
+          config.run.summary_mode = 'debug'
+          config.run.verbosity = 'DEBUG'  # optional: enable logger DEBUG-level output
+
+    - ``verbosity`` accepts either standard logging level names or integers (see Python's ``logging`` module).
+    """
     run_number: int = 1337
     nevents: int = 10
     verbosity: str = "WARNING"
@@ -91,6 +122,12 @@ class RunConfig(ConfigBase):
     storage_prefix: str = "./output/"
     outfile: Optional[str] = None
     random_state_seed: Optional[int] = None
+    summary_mode: str = "user"
+    banner: bool = False
+    compact: bool = False
+    summary_json: bool = False
+    summary_json_path: Optional[str] = None
+    progress_threshold: int = 10
 
     _KEY_MAP: ClassVar[dict[str, str]] = {
         "run number": "run_number",
@@ -98,6 +135,12 @@ class RunConfig(ConfigBase):
         "random state seed": "random_state_seed",
         "log file": "logfile",
         "log format": "log_format",
+        "summary mode": "summary_mode",
+        "banner": "banner",
+        "compact": "compact",
+        "summary json": "summary_json",
+        "summary json path": "summary_json_path",
+        "progress threshold": "progress_threshold",
     }
 
     def __post_init__(self):
@@ -133,7 +176,7 @@ class LIPathsConfig(ConfigBase):
         )
     )
     xsec_dir: str = field(
-        default_factory=lambda: f"{RESOURCES_DIR}/cross_section_splines/"
+        default_factory=lambda: str(RESOURCES_DIR / "cross_section_splines")
     )
     earth_model_location: Optional[str] = None
     injection_file: Optional[str] = None
@@ -234,7 +277,7 @@ class InjectionConfig(ConfigBase):
 @dataclass
 class ProposalPathsConfig(ConfigBase):
     tables_path: str = field(
-        default_factory=lambda: f"{RESOURCES_DIR}/PROPOSAL_tables/"
+        default_factory=lambda: str(RESOURCES_DIR / "PROPOSAL_tables")
     )
     earth_model_location: Optional[str] = None
 
@@ -331,7 +374,7 @@ class LeptonPropagatorConfig(ConfigBase):
 @dataclass
 class OlympusPathsConfig(ConfigBase):
     location: str = field(
-        default_factory=lambda: f"{RESOURCES_DIR}/olympus_resources/"
+        default_factory=lambda: str(RESOURCES_DIR / "olympus_resources")
     )
     photon_model: str = "pone_config.json"
     flow: str = "photon_arrival_time_nflow_params.pickle"

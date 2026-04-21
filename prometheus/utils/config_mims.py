@@ -1,8 +1,8 @@
-import os
+from pathlib import Path
 
 from ..injection.interactions import INTERACTION_DICT
 
-RESOURCES_DIR = os.path.abspath(f"{os.path.dirname(__file__)}/../../resources/")
+RESOURCES_DIR = Path(__file__).resolve().parents[2] / "resources"
 EARTH_MODEL_DICT = {
     "gvd.geo": "PREM_gvd.dat",
     "icecube.geo": "PREM_south_pole.dat",
@@ -35,15 +35,14 @@ def config_mims(config, detector) -> None:
     if config.run.random_state_seed is None:
         config.run.random_state_seed = config.run.run_number
 
-    output_prefix = os.path.abspath(
-        f"{config.run.storage_prefix}/{config.run.run_number}"
-    )
-    os.makedirs(os.path.dirname(output_prefix), exist_ok=True)
+    output_prefix_path = Path(config.run.storage_prefix) / str(config.run.run_number)
+    output_prefix_path.parent.mkdir(parents=True, exist_ok=True)
+    output_prefix = str(output_prefix_path)
     if config.run.outfile is None:
         config.run.outfile = f"{output_prefix}_photons.parquet"
 
     # Find which earth model to use
-    base_geofile = os.path.basename(config.detector.geo_file)
+    base_geofile = Path(str(config.detector.geo_file)).name
     if base_geofile in EARTH_MODEL_DICT:
         earth_model_file = EARTH_MODEL_DICT[base_geofile]
     else:
@@ -102,14 +101,14 @@ def check_consistency(config) -> None:
             )
         for attr, label in (("diff_xsec", "diff xsec"), ("total_xsec", "total xsec")):
             path = getattr(inj_cfg.paths, attr, None)
-            if path is not None and not os.path.exists(path):
+            if path is not None and not Path(path).exists():
                 raise ValueError(
                     f"injection paths.{label} does not exist: {path}"
                 )
 
     lp_cfg = config.lepton_propagator[config.lepton_propagator.name]
     tables_path = lp_cfg.paths.tables_path
-    if tables_path is not None and not os.path.exists(tables_path):
+    if tables_path is not None and not Path(tables_path).exists():
         raise ValueError(
             f"lepton propagator tables path does not exist: {tables_path}"
         )
@@ -121,19 +120,13 @@ def photon_prop_config_mims(config, output_prefix: str) -> None:
     if name not in ("PPC", "PPC_CUDA"):
         return
     ppc_cfg = config[name].paths
-    _pkg_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    if not os.path.isabs(ppc_cfg.ppctables):
-        ppc_cfg.ppctables = os.path.abspath(
-            os.path.join(_pkg_dir, ppc_cfg.ppctables)
-        )
-    if not os.path.isabs(ppc_cfg.ppc_exe):
-        ppc_cfg.ppc_exe = os.path.abspath(
-            os.path.join(_pkg_dir, ppc_cfg.ppc_exe)
-        )
-    if not os.path.isabs(ppc_cfg.ppc_tmpdir):
-        ppc_cfg.ppc_tmpdir = os.path.abspath(
-            os.path.join(os.path.dirname(output_prefix), ".ppc_tmp")
-        )
+    _pkg_dir = Path(__file__).resolve().parent.parent
+    if not Path(str(ppc_cfg.ppctables)).is_absolute():
+        ppc_cfg.ppctables = str((_pkg_dir / ppc_cfg.ppctables).resolve())
+    if not Path(str(ppc_cfg.ppc_exe)).is_absolute():
+        ppc_cfg.ppc_exe = str((_pkg_dir / ppc_cfg.ppc_exe).resolve())
+    if not Path(str(ppc_cfg.ppc_tmpdir)).is_absolute():
+        ppc_cfg.ppc_tmpdir = str((Path(output_prefix).parent / ".ppc_tmp").resolve())
 
 
 def lepton_prop_config_mims(config, detector, earth_model_file: str) -> None:
@@ -147,8 +140,8 @@ def lepton_prop_config_mims(config, detector, earth_model_file: str) -> None:
             config.simulation.propagation_padding += 200
 
     if config.paths.earth_model_location is None:
-        config.paths.earth_model_location = (
-            f"{RESOURCES_DIR}/earthparams/densities/{earth_model_file}"
+        config.paths.earth_model_location = str(
+            RESOURCES_DIR / "earthparams" / "densities" / earth_model_file
         )
 
 
@@ -165,8 +158,8 @@ def injection_config_mims(
         return
 
     if config.paths.earth_model_location is None:
-        config.paths.earth_model_location = os.path.abspath(
-            f"{RESOURCES_DIR}/earthparams/densities/{earth_model_file}"
+        config.paths.earth_model_location = str(
+            RESOURCES_DIR / "earthparams" / "densities" / earth_model_file
         )
 
     if config.simulation.is_ranged is None:
@@ -213,10 +206,10 @@ def injection_config_mims(
         ):
             nutype = "nu"
         if config.paths.diff_xsec is None:
-            config.paths.diff_xsec = os.path.abspath(
-                f"{config.paths.xsec_dir}/dsdxdy_{nutype}_{int_str}_iso.fits"
+            config.paths.diff_xsec = str(
+                Path(str(config.paths.xsec_dir)) / f"dsdxdy_{nutype}_{int_str}_iso.fits"
             )
         if config.paths.total_xsec is None:
-            config.paths.total_xsec = os.path.abspath(
-                f"{config.paths.xsec_dir}/sigma_{nutype}_{int_str}_iso.fits"
+            config.paths.total_xsec = str(
+                Path(str(config.paths.xsec_dir)) / f"sigma_{nutype}_{int_str}_iso.fits"
             )

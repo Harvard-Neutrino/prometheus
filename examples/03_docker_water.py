@@ -27,10 +27,14 @@ python examples/03_docker_water.py \\
 """
 import argparse
 import os
+from pathlib import Path
 import shutil
 import subprocess
 import sys
 import textwrap
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # ── Available geo files (relative to repo root / mounted at /opt/prometheus) ──
@@ -150,11 +154,12 @@ def main() -> None:
     args = parse_args()
 
     if not shutil.which("docker"):
-        print("ERROR: 'docker' not found on PATH.", file=sys.stderr)
+        logger.error("'docker' not found on PATH. Install Docker or add it to PATH.")
+        logger.info("Hint: https://docs.docker.com/get-docker/")
         sys.exit(1)
 
-    output_dir = os.path.abspath(args.output_dir)
-    os.makedirs(output_dir, exist_ok=True)
+    output_dir = Path(args.output_dir).resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     cmd = [
         "docker", "run", "--rm",

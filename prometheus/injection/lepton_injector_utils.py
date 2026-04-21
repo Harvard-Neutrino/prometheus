@@ -90,13 +90,13 @@ def make_new_LI_injection(
     max_azimuth = np.radians(injection_specs["max azimuth"])
     inject_radius = injection_specs["injection radius"]
     endcap_length = injection_specs["endcap length"]
-    cyinder_radius = injection_specs["cylinder radius"]
-    cyinder_height = injection_specs["cylinder height"]
+    cylinder_radius = injection_specs["cylinder radius"]
+    cylinder_height = injection_specs["cylinder height"]
     # construct the controller
     controller = LI.Controller(
         the_injector, min_E, max_E, gamma, min_azimuth,
         max_azimuth, min_zenith, max_zenith, 
-        inject_radius, endcap_length, cyinder_radius, cyinder_height
+        inject_radius, endcap_length, cylinder_radius, cylinder_height
     )
     earth_model_dir = "/".join(path_dict["earth model location"].split("/")[:-2]) + "/"
     earth_model_name = path_dict["earth model location"].split("/")[-1].split(".")[0]

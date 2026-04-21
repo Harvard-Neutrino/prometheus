@@ -1,11 +1,20 @@
-import os
-from glob import glob
+from pathlib import Path
 
 def clean_ppc_tmpdir(path):
-    if os.path.isdir(path):
-        fs = glob(f"{path}/*")
-        for f in fs:
-            os.remove(f)
-        os.rmdir(path)
+    p = Path(path)
+    if p.is_dir():
+        for f in p.glob("*"):
+            try:
+                if f.is_file():
+                    f.unlink()
+            except Exception:
+                pass
+        try:
+            p.rmdir()
+        except Exception:
+            pass
     else:
-        os.remove(path)
+        try:
+            p.unlink()
+        except Exception:
+            pass

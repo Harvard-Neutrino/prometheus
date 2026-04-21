@@ -6,14 +6,17 @@ Runs a single-event CPU-only simulation using the demo geo file.
 """
 import sys
 import traceback
+import logging
+
+logger = logging.getLogger(__name__)
 
 try:
     from prometheus import Prometheus, config
 except Exception as e:
-    print("Error importing Prometheus:", e)
-    print("Ensure you activated the venv and installed core requirements:")
-    print("  source .venv/bin/activate")
-    print("  pip install -r requirements.txt")
+    logger.exception(
+        "Error importing Prometheus. Ensure the environment is activated and requirements are installed."
+    )
+    logger.info("Hint: source scripts/activate.sh .prometheus_env && pip install -r requirements.txt")
     sys.exit(1)
 
 # Prefer CPU JAX when available
@@ -42,13 +45,12 @@ def main():
 
     print('Initializing Prometheus (minimal)')
     prom = Prometheus()
-    print('Prometheus initialized')
 
     try:
         prom.sim()
     except Exception as e:
-        print('Simulation error:', e)
-        traceback.print_exc()
+        logger.exception('Simulation error during prom.sim()')
+        logger.info("Hint: ensure resources (LeptonInjector, model files) are available and config is correct.")
         sys.exit(1)
 
     print('Simulation completed successfully')

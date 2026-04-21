@@ -25,6 +25,9 @@ python examples/04_event_view.py examples/output/1_photons.parquet \\
 """
 import argparse
 import sys
+import logging
+
+logger = logging.getLogger(__name__)
 
 import matplotlib
 import matplotlib.colors as mcolors
@@ -107,7 +110,7 @@ def load_parquet(path: str) -> pd.DataFrame:
     try:
         return pd.read_parquet(path)
     except Exception as e:
-        print(f"ERROR: cannot read {path}: {e}", file=sys.stderr)
+        logger.exception("Cannot read parquet file %s", path)
         sys.exit(1)
 
 
@@ -142,7 +145,7 @@ def load_detector(geo_path: str):
         medium_str = str(det.medium).lower()   # e.g. 'medium.water'
         return det.module_coords, medium_str
     except Exception as e:
-        print(f"WARNING: could not load geo file ({e}).  Unhit OMs hidden.", file=sys.stderr)
+        logger.warning("Could not load geo file %s: %s. Unhit OMs hidden.", geo_path, e)
         return None, None
 
 
@@ -283,15 +286,15 @@ def main() -> None:
 
     df = load_parquet(args.parquet)
     if df.empty:
-        print("ERROR: parquet file contains no events.", file=sys.stderr)
+        logger.error("Parquet file %s contains no events.", args.parquet)
         sys.exit(1)
 
     event_idx = args.event if args.event is not None else brightest_event(df)
     if event_idx < 0 or event_idx >= len(df):
-        print(f"ERROR: --event {event_idx} out of range (0–{len(df)-1}).", file=sys.stderr)
+        logger.error("--event %s out of range (0–%s).", event_idx, len(df)-1)
         sys.exit(1)
 
-    print(f"Visualising event {event_idx}  ({len(df)} events in file)")
+    logger.info("Visualising event %s (%s events in file)", event_idx, len(df))
 
     row = df.iloc[event_idx]
     hit_oms = aggregate_hits(row["photons"])
@@ -310,7 +313,7 @@ def main() -> None:
 
     if args.out:
         fig.savefig(args.out, dpi=args.dpi, bbox_inches="tight")
-        print(f"Saved: {args.out}")
+        logger.info("Saved: %s", args.out)
 
     if args.show:
         plt.show()

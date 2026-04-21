@@ -48,3 +48,15 @@ def configure_logging(config) -> None:
         config_dict["root"]["handlers"].append("file")
 
     logging.config.dictConfig(config_dict)
+
+    # In user-focused summary mode, silence noisy third-party loggers
+    try:
+        if run_cfg is not None and getattr(run_cfg, "summary_mode", "user") == "user":
+            noisy_loggers = ["jax", "jaxlib", "jax._src.xla_bridge", "absl", "importlib._bootstrap"]
+            for name in noisy_loggers:
+                try:
+                    logging.getLogger(name).setLevel(logging.ERROR)
+                except Exception:
+                    pass
+    except Exception:
+        pass

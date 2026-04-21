@@ -7,13 +7,17 @@ and the south-pole PPC ice tables bundled in resources/.
 """
 import sys
 import traceback
+import logging
+
+logger = logging.getLogger(__name__)
 
 try:
     from prometheus import Prometheus, config
 except Exception as e:
-    print("Error importing Prometheus:", e)
-    print("Ensure you activated the environment:")
-    print("  source scripts/activate.sh .prometheus_env")
+    logger.exception(
+        "Error importing Prometheus. Ensure the environment is activated and requirements are installed."
+    )
+    logger.info("Hint: source scripts/activate.sh .prometheus_env && pip install -r requirements.txt")
     sys.exit(1)
 
 # Use CPU-only JAX
@@ -53,8 +57,8 @@ def main():
     try:
         prom.sim()
     except Exception as e:
-        print("Simulation error:", e)
-        traceback.print_exc()
+        logger.exception('Simulation error during prom.sim()')
+        logger.info("Hint: check PPC binaries, tables, and that config.photon_propagator is set correctly.")
         sys.exit(1)
 
     print("Simulation completed successfully")

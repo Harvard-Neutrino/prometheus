@@ -1,8 +1,8 @@
 import numpy as np
 from glob import glob
 import matplotlib.pyplot as plt
-import os
-plt.style.use(os.path.abspath("../paper.mplstyle"))
+from pathlib import Path
+plt.style.use(str(Path(__file__).resolve().parent.parent / "paper.mplstyle"))
 
 MAXNREADLINES = 3
 

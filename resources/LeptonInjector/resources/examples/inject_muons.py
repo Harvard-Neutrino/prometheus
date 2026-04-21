@@ -9,14 +9,15 @@
 import LeptonInjector as LI
 import EarthModelService as em
 from math import pi
-import os 
+from pathlib import Path
+
 
 # use this if you are on the Cobalt testbed 
 #xs_folder = "/cvmfs/icecube.opensciencegrid.org/data/neutrino-generator/cross_section_data/csms_differential_v1.0"
 
 # for now, just use the example cross sections that come pre-installed. 
 # this looks in the parent folder to this file's containing folder 
-xs_folder = os.path.join( os.path.dirname(__file__), '..' )
+xs_folder = str(Path(__file__).resolve().parent.parent)
 
 # Now, we'll make a new injector for muon tracks 
 n_events    = 55000
@@ -44,7 +45,7 @@ maxAzimuth  = 180.*deg
 controller  = LI.Controller( the_injector, minE, maxE, gamma, minAzimuth, maxAzimuth, minZenith, maxZenith)  
 
 # specify the output, earth model
-earth_params = os.path.abspath(os.path.join(os.path.dirname(__file__), "..","earthparams")) +"/"
+earth_params = str(Path(__file__).resolve().parent.parent / "earthparams") + "/"
 earth = em.EarthModelService("earth", earth_params, ["PREM_mmc"],["Standard"],"SimpleIceCap", 20*LI.Constants.degrees, 3500*LI.Constants.m)
 
 controller.SetEarthModelService(earth)
