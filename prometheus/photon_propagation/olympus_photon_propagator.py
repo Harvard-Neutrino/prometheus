@@ -21,6 +21,7 @@ from .olympus.event_generation.event_generation import (
 )
 from hyperion.medium import medium_collections
 from hyperion.constants import Constants
+from pathlib import Path
 
 # Map Medium enum values to registered medium_collections keys.
 # When a detector's medium has no dedicated model registered, the propagator
@@ -98,10 +99,13 @@ class OlympusPhotonPropagator(PhotonPropagator):
             flow_file, counts_file = _FLOW_MODEL_MAP["pone"]
 
         location = self.config['paths']['location']
+        # Ensure robust path joining whether `location` ends with a slash or not
+        flow_path = str(Path(location) / flow_file)
+        counts_path = str(Path(location) / counts_file)
         self._gen_ph = make_generate_norm_flow_photons(
-            f"{location}{flow_file}",
-            f"{location}{counts_file}",
-            c_medium=self._c_medium_f(self.config['simulation']['wavelength']) / 1E9
+            flow_path,
+            counts_path,
+            c_medium=self._c_medium_f(self.config['simulation']['wavelength']) / 1E9,
         )
 
     def propagate(self, particle: Particle, rng_key):
