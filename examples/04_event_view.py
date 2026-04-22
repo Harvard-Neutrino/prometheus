@@ -325,5 +325,13 @@ def main() -> None:
 # display-dependent import.
 args = parse_args()
 
+# Resolve geo path relative to the repo root when a relative path isn't found
+from pathlib import Path
+if args.geo:
+    _g = Path(args.geo)
+    if not _g.is_absolute() and not _g.exists():
+        REPO_ROOT = Path(__file__).resolve().parent.parent
+        args.geo = str(REPO_ROOT / args.geo)
+
 if __name__ == "__main__":
     main()

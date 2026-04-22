@@ -60,3 +60,5 @@ PROPOSAL_tables/
 *.ppc
 __pycache__/
 *.egg-info/
+
+event_view.png

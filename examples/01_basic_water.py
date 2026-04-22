@@ -41,7 +41,9 @@ def main():
     config.injection.lepton_injector.simulation.maximal_energy = 1e4
 
     # Use the demo water geo shipped in resources (repo root path)
-    config.detector.geo_file = 'resources/geofiles/demo_water.geo'
+    from pathlib import Path
+    REPO_ROOT = Path(__file__).resolve().parent.parent
+    config.detector.geo_file = str(REPO_ROOT / 'resources' / 'geofiles' / 'demo_water.geo')
 
     print('Initializing Prometheus (minimal)')
     prom = Prometheus()
