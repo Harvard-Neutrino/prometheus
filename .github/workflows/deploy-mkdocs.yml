@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - ana/site-deploy-action
 
 jobs:
   build:
@@ -19,7 +20,7 @@ jobs:
           cache: 'pip'
       
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r ./docs/requirements.txt
  
       - name: Deploy docs
         run: mkdocs gh-deploy --force
