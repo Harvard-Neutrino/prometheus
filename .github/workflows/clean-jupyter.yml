@@ -1,0 +1,22 @@
+name: Clean Jupyter Notebooks
+
+on:
+  push:
+    branches: ["**"]
+
+jobs:
+  notebook-output-check:
+    name: Check notebook outputs are cleared
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install nbstripout
+        run: pip install --quiet nbstripout
+
+      - name: Fail if any notebook contains output
+        run: |
+          # Strip all tracked notebooks in-place and fail if git sees any diff.
+          git ls-files '*.ipynb' | xargs nbstripout
+          git diff --exit-code || (echo 'Notebooks have stored outputs. Run nbstripout locally.' && exit 1)
