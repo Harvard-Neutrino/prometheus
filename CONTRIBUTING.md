@@ -76,10 +76,12 @@ Bad examples:
 Our pull request template includes a handy checklist:
 
 ```md
-[ ] Code compiles without errors & works
-[ ] Code changes include relevant comments & unit tests
-[ ] All unit tests pass
-[ ] Documentation is updated
+- [ ] My branch is up to date with the main branch
+- [ ] Code compiles without errors and works
+- [ ] Code changes include relevant comments, docstrings, and unit tests
+- [ ] All unit tests pass
+- [ ] Documentation is updated in line with style standards
+- [ ] Changes to the documentation were manually tested on the documentation site
 ```
 
 You don't have to follow it to a T, but it's there to make sure your proposed change adheres to good coding practices: doesn't break anything, is tested and documented, etc.
