@@ -1,9 +1,8 @@
 """Backward-compatibility shim.
 
-The olympus implementation now lives in
-``prometheus.photon_propagation.olympus``.  This shim pre-populates
-``sys.modules`` so that existing code using ``import olympus.X`` continues to
-work without modification.
+The olympus implementation now lives in ``prometheus.photon_propagation.olympus``.
+This shim pre-populates ``sys.modules`` so that existing code using
+``import olympus.X`` continues to work without modification.
 """
 import importlib
 import sys

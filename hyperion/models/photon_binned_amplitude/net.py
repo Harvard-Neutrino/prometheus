@@ -39,6 +39,20 @@ class HistMLP(hk.Module):
 
 
 def make_forward_fn(conf):
+    """Create a Haiku forward function for the histogram MLP.
+
+    Parameters
+    ----------
+    conf : dict
+        Configuration dictionary containing model parameters such as
+        ``n_neurons`` and ``n_out``.
+
+    Returns
+    -------
+    callable
+        Forward function with signature ``(batch, is_training)``.
+    """
+
     layers = [conf["n_neurons"], conf["n_neurons"], conf["n_neurons"]]
 
     def forward_fn(batch, is_training):
@@ -49,6 +63,19 @@ def make_forward_fn(conf):
 
 
 def make_eval_forward_fn(conf):
+    """Create an evaluation forward function (non-training) for the MLP.
+
+    Parameters
+    ----------
+    conf : dict
+        Configuration dictionary containing model parameters.
+
+    Returns
+    -------
+    callable
+        Forward function with signature ``(inp)``.
+    """
+
     layers = [conf["n_neurons"], conf["n_neurons"], conf["n_neurons"]]
 
     def forward_fn(inp):
@@ -58,6 +85,19 @@ def make_eval_forward_fn(conf):
 
 
 def make_logp1_trafo(scale):
+    """Create log(1 + x*scale) forward and inverse transformers.
+
+    Parameters
+    ----------
+    scale : float
+        Scaling applied before the log transform.
+
+    Returns
+    -------
+    tuple
+        ``(trafo, rev_trafo)`` functions for forward and reverse transforms.
+    """
+
     def trafo(data):
         return np.log(data * scale + 1)
 
@@ -68,6 +108,20 @@ def make_logp1_trafo(scale):
 
 
 def make_net_eval_from_pickle(path):
+    """Load network parameters from a pickle and build an evaluation function.
+
+    Parameters
+    ----------
+    path : str
+        Path to the pickle file containing ``(params, state, conf, binning, trafo_scale)``.
+
+    Returns
+    -------
+    tuple
+        ``(net_eval_fn, binning)`` where ``net_eval_fn`` is a JIT-compiled callable
+        that maps inputs to model outputs and ``binning`` is the histogram binning.
+    """
+
     (params, state, conf, binning, trafo_scale) = pickle.load(open(path, "rb"))
     forward_fn = make_eval_forward_fn(conf)
     net = hk.transform_with_state(forward_fn)
@@ -82,6 +136,27 @@ def make_net_eval_from_pickle(path):
 
 
 def train_net(conf, train_data, test_data, writer, rng):
+    """Train the histogram MLP network.
+
+    Parameters
+    ----------
+    conf : dict
+        Model and training configuration.
+    train_data : dataset-like
+        Training dataset.
+    test_data : dataset-like
+        Test dataset.
+    writer : SummaryWriter or None
+        Optional writer for logging metrics.
+    rng : numpy.random.Generator
+        Random number generator.
+
+    Returns
+    -------
+    tuple
+        ``(net_eval_fn, avg_params, state)`` where ``net_eval_fn`` is a callable
+        for model evaluation and ``avg_params``/``state`` are the trained params.
+    """
 
     train_loader = DataLoader(
         train_data,

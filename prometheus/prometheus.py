@@ -47,13 +47,21 @@ os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
 logger = logging.getLogger(__name__)
 
 class PpcTmpdirExistsError(Exception):
-    """Raised if ppc ``tmpdir`` exists and force not specified."""
+    """
+    Raised if ppc ``tmpdir`` exists and force not specified.
+
+    Parameters
+    ----------
+    path : str
+        Path to the tmpdir.
+    """
     def __init__(self, path):
         self.message = f"{path} exists. Please remove it or specify force in the config"
         super().__init__(self.message)
 
 def regularize(s: str) -> str:
-    """Helper function to regularize strings.
+    """
+    Helper function to regularize strings.
 
     Parameters
     ----------
@@ -62,7 +70,7 @@ def regularize(s: str) -> str:
 
     Returns
     -------
-    s : str
+    str
         Regularized string.
     """
     s = s.replace(" ", "")
@@ -78,31 +86,32 @@ def regularize(s: str) -> str:
 
 
 class Prometheus(object):
-    """Class for unifying injection, energy loss calculation, and photon propagation."""
+    """
+    Class for unifying injection, energy loss calculation, and photon propagation.
+    """
     def __init__(
         self,
         userconfig: Union[None, dict, str] = None,
         detector: Union[None, Detector] = None
     ) -> None:
-        """Initialize the Prometheus class.
+        """
+        Initialize the Prometheus class.
 
         Parameters
         ----------
         userconfig : dict or str or None
-            Configuration dictionary or path to YAML file which specifies configuration.
+            Configuration dictionary or path to YAML file specifying configuration.
         detector : Detector or None
-            Detector to be used or path to geofile to load detector file.
-            If this is left out, the path from the ``userconfig["detector"]["geo file"]`` will be loaded.
+            Detector to be used or path to geofile to load detector file. If omitted, the path from ``userconfig["detector"]["geo file"]`` will be loaded.
 
         Raises
         ------
         UnknownInjectorError
-            Raised if we don't know how to handle the injector specified in the config.
+            If the injector specified in the config is unknown.
         UnknownPhotonPropagatorError
-            Raised if we don't know how to handle the photon
-            propagator specified in the config.
+            If the photon propagator specified in the config is unknown.
         CannotLoadDetectorError
-            Raised when no detector is provided and no geofile path is provided in config.
+            If no detector is provided and no geofile path is provided in config.
         """
         self._start_timing_misc = time()
         if userconfig is not None:
@@ -298,7 +307,9 @@ class Prometheus(object):
         return self._injection
 
     def inject(self):
-        """Determine initial neutrino and final particle states according to config."""
+        """
+        Determine initial neutrino and final particle states according to config.
+        """
         injection_config = config.injection[config.injection.name]
         logger.info(
             "Starting injection: mode=%s inject=%s",
@@ -334,7 +345,8 @@ class Prometheus(object):
 
     # We should factor out generating losses and photon prop
     def propagate(self, capture: bool = False):
-        """Calculate energy losses, generate photon yields, and propagate photons.
+        """
+        Calculate energy losses, generate photon yields, and propagate photons.
 
         Parameters
         ----------

@@ -1,4 +1,6 @@
-"""This module hosts a collection of functions related to the optical properties of a medium."""
+"""
+Collection of functions related to the optical properties of a medium.
+"""
 import jax.numpy as jnp
 from jax import random
 import jax
@@ -6,7 +8,21 @@ from jax.lax import cond
 
 
 def henyey_greenstein_scattering_angle(key, g=0.9):
-    """Henyey-Greenstein scattering in one plane."""
+    """
+    Henyey-Greenstein scattering in one plane.
+
+    Parameters
+    ----------
+    key : jax.random.PRNGKey
+        Random key for sampling.
+    g : float, optional
+        Asymmetry parameter (default is 0.9).
+
+    Returns
+    -------
+    float
+        Scattering angle in radians.
+    """
     eta = random.uniform(key)
     costheta = (
         1 / (2 * g) * (1 + g ** 2 - ((1 - g ** 2) / (1 + g * (2 * eta - 1))) ** 2)
@@ -15,7 +31,19 @@ def henyey_greenstein_scattering_angle(key, g=0.9):
 
 
 def rayleigh_scattering_angle(key):
-    """Rayleigh scattering. Adapted from clsim."""
+    """
+    Rayleigh scattering. Adapted from clsim.
+
+    Parameters
+    ----------
+    key : jax.random.PRNGKey
+        Random key for sampling.
+
+    Returns
+    -------
+    float
+        Scattering angle in radians.
+    """
     b = 0.835
     p = 1.0 / 0.835
 
@@ -32,11 +60,24 @@ def rayleigh_scattering_angle(key):
 
 
 def liu_scattering_angle(key, g=0.95):
-    """Simplified liu scattering.
+    """
+    Simplified Liu scattering.
+
+    Parameters
+    ----------
+    key : jax.random.PRNGKey
+        Random key for sampling.
+    g : float, optional
+        Asymmetry parameter (default is 0.95).
+
+    Returns
+    -------
+    float
+        Scattering angle in radians.
 
     Notes
     -----
-    <https://arxiv.org/pdf/1301.5361.pdf>
+    See: https://arxiv.org/pdf/1301.5361.pdf
     """
     beta = (1 - g) / (1 + g)
     xi = random.uniform(key)
@@ -45,14 +86,22 @@ def liu_scattering_angle(key, g=0.95):
 
 
 def make_mixed_scattering_func(f1, f2, ratio):
-    """Create a mixture model with two sampling functions.
+    """
+    Create a mixture model with two sampling functions.
 
     Parameters
     ----------
-    f1, f2 : callable
-        Sampling functions taking one argument (random key).
+    f1 : callable
+        Sampling function taking one argument (random key).
+    f2 : callable
+        Sampling function taking one argument (random key).
     ratio : float
         Fraction of samples drawn from ``f1``.
+
+    Returns
+    -------
+    callable
+        Mixture sampling function.
     """
 
     def _f(key):
@@ -90,6 +139,11 @@ def make_wl_dep_sca_len_func(vol_conc_small_part, vol_conc_large_part):
         Volumetric concentration of small particles (ppm).
     vol_conc_large_part : float
         Volumetric concentration of large particles (ppm).
+
+    Returns
+    -------
+    callable
+        Function that maps wavelength (nm) to scattering length.
     """
 
     def sca_len(wavelength):

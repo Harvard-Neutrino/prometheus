@@ -1,4 +1,6 @@
-"""Plotting functions."""
+"""
+Plotting utilities for event visualization.
+"""
 import awkward as ak
 import matplotlib
 import matplotlib.pyplot as plt
@@ -7,6 +9,27 @@ import plotly.graph_objects as go
 
 
 def plot_event(det, hit_times, record=None, plot_tfirst=False, plot_hull=False):
+    """
+    Plot a single event in 3D.
+
+    Parameters
+    ----------
+    det : object
+        Detector object providing `module_coords` (Nx3 array) and `outer_cylinder`.
+    hit_times : awkward.Array
+        Hit times per module as an ``awkward.Array``.
+    record : object, optional
+        Optional event record containing `sources` with `position` and photon counts.
+    plot_tfirst : bool, optional
+        If True, plot first-hit times; otherwise plot hit counts.
+    plot_hull : bool, optional
+        If True, draw the detector hull.
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+        Interactive 3D figure showing detector modules and optional sources.
+    """
 
     if plot_tfirst:
         plot_target = ak.fill_none(ak.firsts(hit_times, axis=1), np.nan)
@@ -102,6 +125,29 @@ def plot_event(det, hit_times, record=None, plot_tfirst=False, plot_hull=False):
 def plot_events(
     det, events, labels=None, records=None, plot_tfirst=False, plot_hull=False
 ):
+    """
+    Plot multiple events as subplots.
+
+    Parameters
+    ----------
+    det : object
+        Detector object providing `module_coords` and `outer_cylinder`.
+    events : sequence
+        Sequence of hit-time arrays for each event.
+    labels : sequence of str, optional
+        Titles for each subplot.
+    records : sequence, optional
+        Optional sequence of event records matching `events`.
+    plot_tfirst : bool, optional
+        If True, plot first-hit times; otherwise plot hit counts.
+    plot_hull : bool, optional
+        If True, draw the detector hull on each subplot.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        Matplotlib figure with 3D subplots for each event.
+    """
     nplt = int(np.ceil(np.sqrt(len(events))))
     fig = plt.figure(figsize=(nplt * 4, nplt * 4))
 

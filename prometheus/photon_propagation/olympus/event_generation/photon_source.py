@@ -10,7 +10,20 @@ class PhotonSourceType(Enum):
 
 class PhotonSource(object):
     """
-    This class represents a single (pointlike) source of photons.
+    Representation of a single point-like photon source.
+
+    Parameters
+    ----------
+    position : numpy.ndarray
+        Position vector (shape (3,)).
+    n_photons : int
+        Number of photons emitted by the source.
+    time : float
+        Emission time.
+    direction : numpy.ndarray
+        Direction vector (shape (3,)).
+    type : PhotonSourceType, optional
+        Source type (default is ``PhotonSourceType.STANDARD_CHERENKOV``).
     """
 
     def __init__(
@@ -21,7 +34,10 @@ class PhotonSource(object):
         direction,
         type=PhotonSourceType.STANDARD_CHERENKOV,
     ):
-        """Initialize PhotonSource_."""
+        """Initialize the PhotonSource instance.
+
+        Parameters are stored as instance attributes.
+        """
         self.position = position
         self.n_photons = n_photons
         self.time = time

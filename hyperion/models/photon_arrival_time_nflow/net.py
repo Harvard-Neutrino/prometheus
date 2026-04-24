@@ -34,6 +34,22 @@ import optax
 # ---------------------------------------------------------------------------
 
 def _mlp_apply(params, x, n_hidden_layers):
+    """Apply a simple MLP using parameters in haiku-style dicts.
+
+    Parameters
+    ----------
+    params : dict
+        Parameter dictionary following the haiku naming scheme (weights and biases).
+    x : jax.numpy.ndarray
+        Input array of shape (..., in_dim).
+    n_hidden_layers : int
+        Number of hidden layers to apply.
+
+    Returns
+    -------
+    jax.numpy.ndarray
+        Network output array.
+    """
     for i in range(n_hidden_layers):
         w = params[f"mlp/~/linear_{i}"]["w"]
         b = params[f"mlp/~/linear_{i}"]["b"]
@@ -50,30 +66,74 @@ def _mlp_apply(params, x, n_hidden_layers):
 # ---------------------------------------------------------------------------
 
 def _normalize_bin_sizes(unnormalized, total_size, min_bin_size=1e-4):
-    """Softmax-normalise bin sizes; each bin >= min_bin_size, sum = total_size."""
+    """
+    Softmax-normalise bin sizes.
+
+    Each bin >= min_bin_size, sum = total_size.
+
+    Parameters
+    ----------
+    unnormalized : jax.numpy.ndarray
+        Unnormalized bin sizes.
+    total_size : float
+        Total size to normalize to.
+    min_bin_size : float, optional
+        Minimum bin size (default is 1e-4).
+
+    Returns
+    -------
+    jax.numpy.ndarray
+        Normalized bin sizes.
+    """
     num_bins = unnormalized.shape[-1]
     bin_sizes = jax.nn.softmax(unnormalized, axis=-1)
     return bin_sizes * (total_size - num_bins * min_bin_size) + min_bin_size
 
 
 def _normalize_knot_slopes(unnormalized, min_knot_slope=1e-4):
-    """Softplus-normalise knot slopes; each slope >= min_knot_slope."""
+    """
+    Softplus-normalise knot slopes.
+
+    Each slope >= min_knot_slope.
+
+    Parameters
+    ----------
+    unnormalized : jax.numpy.ndarray
+        Unnormalized knot slopes.
+    min_knot_slope : float, optional
+        Minimum knot slope (default is 1e-4).
+
+    Returns
+    -------
+    jax.numpy.ndarray
+        Normalized knot slopes.
+    """
     # Offset chosen so that unnormalized=0 → normalized slope = 1.
     offset = jnp.log(jnp.exp(1.0 - min_knot_slope) - 1.0)
     return jax.nn.softplus(unnormalized + offset) + min_knot_slope
 
 
 def _build_rqs_knots_1d(spl_p, rmin, rmax):
-    """Build knot arrays from a 1-D (unbatched) spline parameter vector.
+    """
+    Build knot arrays from a 1-D (unbatched) spline parameter vector.
 
     Parameters
     ----------
-    spl_p : array, shape (3*num_bins + 1,)
-    rmin, rmax : float
+    spl_p : jax.numpy.ndarray
+        Spline parameters, shape (3*num_bins + 1,).
+    rmin : float
+        Minimum range value.
+    rmax : float
+        Maximum range value.
 
     Returns
     -------
-    x_pos, y_pos, knot_slopes : arrays of shape (num_bins + 1,)
+    x_pos : jax.numpy.ndarray
+        Knot positions in x, shape (num_bins + 1,).
+    y_pos : jax.numpy.ndarray
+        Knot positions in y, shape (num_bins + 1,).
+    knot_slopes : jax.numpy.ndarray
+        Knot slopes, shape (num_bins + 1,).
     """
     num_bins = (spl_p.shape[0] - 1) // 3
     range_size = rmax - rmin
@@ -95,16 +155,23 @@ def _build_rqs_knots_1d(spl_p, rmin, rmax):
 
 
 def _build_rqs_knots_batched(spl_params, rmin, rmax):
-    """Build knot arrays from a batched spline parameter matrix.
+    """
+    Build knot arrays from a batched spline parameter matrix.
 
     Parameters
     ----------
-    spl_params : array, shape (batch, 3*num_bins + 1)
-    rmin, rmax : float
+    spl_params : jax.numpy.ndarray
+        Array with shape (batch, 3*num_bins + 1).
+    rmin : float
+        Minimum range value.
+    rmax : float
+        Maximum range value.
 
     Returns
     -------
-    x_pos, y_pos, knot_slopes : arrays of shape (batch, num_bins + 1)
+    tuple
+        Tuple of arrays ``(x_pos, y_pos, knot_slopes)`` each with shape
+        (batch, num_bins + 1).
     """
     num_bins = (spl_params.shape[-1] - 1) // 3
     range_size = rmax - rmin
@@ -128,17 +195,21 @@ def _build_rqs_knots_batched(spl_params, rmin, rmax):
 
 
 def _rqs_fwd(x, x_pos, y_pos, knot_slopes):
-    """Rational-quadratic spline forward pass for a single scalar x.
+    """
+    Rational-quadratic spline forward pass for a single scalar x.
 
     Parameters
     ----------
-    x : scalar
-    x_pos, y_pos, knot_slopes : 1-D arrays of shape (num_bins + 1,)
+    x : float
+        Input scalar.
+    x_pos, y_pos, knot_slopes : jax.numpy.ndarray
+        1-D arrays of shape (num_bins + 1,).
 
     Returns
     -------
-    y : scalar
-    log_det : scalar  (log |dy/dx|)
+    tuple
+        ``(y, log_det)`` where ``y`` is the transformed scalar and ``log_det`` is
+        the log absolute derivative ``log|dy/dx|``.
     """
     below_range = x <= x_pos[0]
     above_range = x >= x_pos[-1]
@@ -184,7 +255,22 @@ def _rqs_fwd(x, x_pos, y_pos, knot_slopes):
 
 
 def _safe_quadratic_root(a, b, c):
-    """Numerically stable root of az² + bz + c = 0 for z ∈ [0,1]."""
+    """Numerically stable root of az² + bz + c = 0 for z ∈ [0,1].
+
+    Parameters
+    ----------
+    a : float or jax.numpy.ndarray
+        Quadratic coefficient.
+    b : float or jax.numpy.ndarray
+        Linear coefficient.
+    c : float or jax.numpy.ndarray
+        Constant term.
+
+    Returns
+    -------
+    jax.numpy.ndarray
+        Numerically stable root value (intended for z in [0, 1]).
+    """
     sqrt_diff = b ** 2 - 4.0 * a * c
     safe_sqrt = jnp.sqrt(jnp.clip(sqrt_diff, jnp.finfo(sqrt_diff.dtype).tiny))
     safe_sqrt = jnp.where(sqrt_diff > 0.0, safe_sqrt, 0.0)
@@ -194,17 +280,21 @@ def _safe_quadratic_root(a, b, c):
 
 
 def _rqs_inv(y, x_pos, y_pos, knot_slopes):
-    """Rational-quadratic spline inverse pass for a single scalar y.
+    """
+    Rational-quadratic spline inverse pass for a single scalar y.
 
     Parameters
     ----------
-    y : scalar
-    x_pos, y_pos, knot_slopes : 1-D arrays of shape (num_bins + 1,)
+    y : float
+        Input scalar in the target space.
+    x_pos, y_pos, knot_slopes : jax.numpy.ndarray
+        1-D arrays of shape (num_bins + 1,).
 
     Returns
     -------
-    x : scalar
-    log_det : scalar  (log |dx/dy|)
+    tuple
+        ``(x, log_det)`` where ``x`` is the inverse-transformed scalar and
+        ``log_det`` is the log absolute derivative ``log|dx/dy|``.
     """
     below_range = y <= y_pos[0]
     above_range = y >= y_pos[-1]
@@ -255,7 +345,22 @@ def _rqs_inv(y, x_pos, y_pos, knot_slopes):
 # ---------------------------------------------------------------------------
 
 def _gamma_log_prob(x, concentration=1.5, rate=0.1):
-    """Log probability of x under Gamma(concentration, rate)."""
+    """Log probability of x under Gamma(concentration, rate).
+
+    Parameters
+    ----------
+    x : float or jax.numpy.ndarray
+        Value(s) at which to evaluate the log-probability.
+    concentration : float, optional
+        Shape (concentration) parameter (default is 1.5).
+    rate : float, optional
+        Rate parameter (default is 0.1).
+
+    Returns
+    -------
+    jax.numpy.ndarray
+        Log-probability evaluated at ``x``.
+    """
     return (
         (concentration - 1.0) * jnp.log(x)
         - rate * x
@@ -265,7 +370,24 @@ def _gamma_log_prob(x, concentration=1.5, rate=0.1):
 
 
 def _gamma_sample(key, concentration=1.5, rate=0.1, shape=()):
-    """Sample from Gamma(concentration, rate)."""
+    """Sample from Gamma(concentration, rate).
+
+    Parameters
+    ----------
+    key : jax.random.PRNGKey
+        PRNG key for sampling.
+    concentration : float, optional
+        Shape parameter of the Gamma distribution.
+    rate : float, optional
+        Rate parameter of the Gamma distribution.
+    shape : tuple, optional
+        Output sample shape.
+
+    Returns
+    -------
+    jax.numpy.ndarray
+        Samples from the Gamma distribution scaled by ``1 / rate``.
+    """
     return jax.random.gamma(key, a=concentration, shape=shape) / rate
 
 
@@ -284,22 +406,66 @@ class _ConditionerFn:
 
 
 def make_conditioner(hidden_sizes, out_params_activ, init_zero=True):
-    """Conditioner MLP factory (kept for training API compatibility)."""
+    """Conditioner MLP factory (kept for training API compatibility).
+
+    Parameters
+    ----------
+    hidden_sizes : sequence
+        Hidden layer sizes for the MLP.
+    out_params_activ : callable or None
+        Activation applied to output parameters (kept for API compatibility).
+    init_zero : bool, optional
+        If True, initialise output parameters to zero.
+
+    Returns
+    -------
+    _ConditionerFn
+        Callable conditioner object with an ``.apply(params, x)`` method.
+    """
     return _ConditionerFn(n_hidden_layers=len(hidden_sizes))
 
 
 def make_shape_conditioner_fn(
     mlp_hidden_size, mlp_num_layers, flow_num_bins, flow_num_layers
 ):
-    """Build the shape-model conditioner (MLP)."""
+    """Build the shape-model conditioner (MLP).
+
+    Parameters
+    ----------
+    mlp_hidden_size : int
+        Hidden layer size for the MLP.
+    mlp_num_layers : int
+        Number of hidden layers.
+    flow_num_bins : int
+        Number of bins used in the flow (kept for API compatibility).
+    flow_num_layers : int
+        Number of flow layers (kept for API compatibility).
+
+    Returns
+    -------
+    _ConditionerFn
+        Conditioner callable.
+    """
     return _ConditionerFn(n_hidden_layers=mlp_num_layers)
 
 
 def make_spl_flow(spl_params_list, rmin, rmax):
     """Convert a list of raw spline parameter arrays into knot-tuple lists.
 
-    Each element of spl_params_list has shape (batch, 3*K+1).
-    Returns a list of (x_pos, y_pos, knot_slopes) tuples with shape (batch, K+1).
+    Parameters
+    ----------
+    spl_params_list : sequence of jax.numpy.ndarray
+        List of spline parameter arrays; each element has shape (batch, 3*num_bins + 1).
+    rmin : float
+        Minimum range value for the spline.
+    rmax : float
+        Maximum range value for the spline.
+
+    Returns
+    -------
+    list
+        List of tuples ``(x_pos, y_pos, knot_slopes)`` each with shape
+        (batch, num_bins + 1).
     """
     return [_build_rqs_knots_batched(sp, float(rmin), float(rmax))
             for sp in spl_params_list]
@@ -391,19 +557,23 @@ class _TrafDistBuilder:
 
 
 def traf_dist_builder(flow_num_layers, flow_range, return_base=False):
-    """Return a callable that builds the transformed distribution.
+    """
+    Return a callable that builds the transformed distribution.
 
     Parameters
     ----------
     flow_num_layers : int
-    flow_range : (rmin, rmax)
-    return_base : bool
-        If True, calling the returned object returns (base_dist, flow).
-        If False, returns a dist-like object with .log_prob().
+        Number of spline layers in the flow.
+    flow_range : tuple
+        ``(rmin, rmax)`` range for the spline.
+    return_base : bool, optional
+        If True, calling the returned object returns ``(base_dist, flow)``.
+        If False, returns a dist-like object with ``.log_prob()``.
 
     Returns
     -------
-    _TrafDistBuilder instance
+    _TrafDistBuilder
+        Builder callable for the transformed distribution.
     """
     return _TrafDistBuilder(
         flow_num_layers=flow_num_layers,
@@ -414,17 +584,22 @@ def traf_dist_builder(flow_num_layers, flow_range, return_base=False):
 
 
 def eval_log_prob(dist_builder, traf_params, samples):
-    """Compute log p(samples | traf_params) under the flow.
+    """
+    Compute log p(samples | traf_params) under the flow.
 
     Parameters
     ----------
-    dist_builder : _TrafDistBuilder returned by traf_dist_builder()
-    traf_params  : array, shape (batch, total_flow_params)
-    samples      : array, shape (batch,)
+    dist_builder : _TrafDistBuilder or callable
+        Object returned by :func:`traf_dist_builder`.
+    traf_params : jax.numpy.ndarray
+        Array with shape (batch, total_flow_params).
+    samples : jax.numpy.ndarray
+        Array with shape (batch,) of sample values.
 
     Returns
     -------
-    log_probs : array, shape (batch,)
+    jax.numpy.ndarray
+        Log-probabilities with shape (batch,).
     """
     if isinstance(dist_builder, _TrafDistBuilder):
         return dist_builder.log_prob(traf_params, samples)
@@ -433,18 +608,24 @@ def eval_log_prob(dist_builder, traf_params, samples):
 
 
 def sample_shape_model(dist_builder, traf_params, n_photons, seed):
-    """Sample from the shape model.
+    """
+    Sample from the shape model.
 
     Parameters
     ----------
-    dist_builder : _TrafDistBuilder with return_base=True
-    traf_params  : array, shape (batch, total_flow_params)
-    n_photons    : int or shape tuple — number of base samples to draw
-    seed         : JAX PRNG key
+    dist_builder : callable
+        Builder returned by :func:`traf_dist_builder` with ``return_base=True``.
+    traf_params : jax.numpy.ndarray
+        Array with shape (batch, total_flow_params).
+    n_photons : int or tuple
+        Number of base samples to draw or sample shape.
+    seed : jax.random.PRNGKey
+        JAX PRNG key.
 
     Returns
     -------
-    samples : array, shape (n_photons,)
+    jax.numpy.ndarray
+        Samples drawn from the transformed shape model.
     """
     base_dist, trafo = dist_builder(traf_params)
     base_samples = base_dist.sample(seed=seed, sample_shape=n_photons)
@@ -461,7 +642,18 @@ def make_counts_net_fn(config):
 # ---------------------------------------------------------------------------
 
 def _prng_seq(seed):
-    """Infinite generator of fresh JAX PRNG keys."""
+    """Infinite generator of fresh JAX PRNG keys.
+
+    Parameters
+    ----------
+    seed : int
+        Integer seed used to initialise the JAX PRNG.
+
+    Yields
+    ------
+    jax.random.PRNGKey
+        Infinite sequence of JAX PRNG subkeys.
+    """
     key = jax.random.PRNGKey(seed)
     while True:
         key, subkey = jax.random.split(key)
@@ -469,7 +661,26 @@ def _prng_seq(seed):
 
 
 def _init_mlp_params(in_dim, hidden_size, n_hidden, out_dim, seed):
-    """He-initialised param dict matching the haiku key scheme."""
+    """He-initialised param dict matching the haiku key scheme.
+
+    Parameters
+    ----------
+    in_dim : int
+        Input dimensionality.
+    hidden_size : int
+        Width of hidden layers.
+    n_hidden : int
+        Number of hidden layers.
+    out_dim : int
+        Output dimensionality.
+    seed : int
+        Random seed for parameter initialisation.
+
+    Returns
+    -------
+    dict
+        Parameter dictionary following the haiku naming/key convention.
+    """
     import numpy as np
     rng = np.random.default_rng(seed)
     params = {}

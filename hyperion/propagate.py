@@ -1,4 +1,8 @@
-"""Implementation of the photon propagation code."""
+"""
+Photon propagation utilities.
+
+Provides geometric intersection helpers and Cherenkov spectral sampling.
+"""
 import functools
 
 import jax
@@ -13,7 +17,23 @@ from .utils import rotate_to_new_direc
 
 
 def sph_to_cart(theta, phi=0, r=1):
-    """Transform spherical to cartesian coordinates."""
+    """
+    Transform spherical to cartesian coordinates.
+
+    Parameters
+    ----------
+    theta : float
+        Polar angle in radians.
+    phi : float, optional
+        Azimuthal angle in radians (default is 0).
+    r : float, optional
+        Radius (default is 1).
+
+    Returns
+    -------
+    jax.numpy.ndarray
+        Cartesian coordinates as a 3-element array.
+    """
     x = r * jnp.sin(theta) * jnp.cos(phi)
     y = r * jnp.sin(theta) * jnp.sin(phi)
     z = r * jnp.cos(theta)
@@ -25,24 +45,33 @@ def photon_sphere_intersection(
     photon_x, photon_p, target_x, target_r, step_size, dtype=jnp.float64
 ):
     """
-    Calculate intersection.
- 
-    Given a photon origin, a photon direction, a step size, a target location and a target radius,
-    calculate whether the photon intersects the target and the intersection point.
- 
+    Calculate photon-sphere intersection.
+
+    Given a photon origin, a photon direction, a step size, a target location, and a
+    target radius, determine whether the photon intersects the target and compute
+    the intersection point.
+
     Parameters
     ----------
-    photon_x : float[3]
-        Photon origin position.
-    photon_p : float[3]
-        Photon direction vector.
+    photon_x : jax.numpy.ndarray
+        Photon origin position (shape (3,)).
+    photon_p : jax.numpy.ndarray
+        Photon direction vector (shape (3,)).
+    target_x : jax.numpy.ndarray
+        Target center position (shape (3,)).
+    target_r : float
+        Target radius.
     step_size : float
         Step size.
- 
+    dtype : jax.numpy.dtype, optional
+        Data type for computations (default is ``jax.numpy.float64``).
+
     Returns
     -------
-    result : tuple of (bool, float[3])
-        ``True`` and intersection position if intersected.
+    tuple
+        Tuple ``(is_intersected, position)`` where ``is_intersected`` is a boolean
+        indicating whether an intersection occurred and ``position`` is the
+        intersection point as a JAX array when intersected; otherwise a sentinel array.
     """
     p_normed = jnp.asarray(photon_p, dtype=dtype)  # assume normed
 
@@ -67,13 +96,21 @@ def photon_sphere_intersection(
 def make_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.float64):
     """
     Create a function that calculates the intersection of a photon path with a sphere.
- 
+
     Parameters
     ----------
-    target_x : float[3]
-        Target sphere center position.
+    target_x : jax.numpy.ndarray
+        Target sphere center position (shape (3,)).
     target_r : float
         Target sphere radius.
+    dtype : jax.numpy.dtype, optional
+        Data type for computations (default is ``jax.numpy.float64``).
+
+    Returns
+    -------
+    callable
+        A function with signature ``(photon_x, photon_p, step_size)`` returning
+        ``(is_intersected, position)``.
     """
     target_x = jnp.asarray(target_x, dtype=dtype)
     target_r = dtype(target_r)
@@ -86,13 +123,21 @@ def make_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.float64):
 def make_multi_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.float64):
     """
     Create a function that calculates the intersection of a photon path with multiple spheres.
- 
+
     Parameters
     ----------
-    target_x : float[N, 3]
-        Target sphere center positions.
-    target_r : float[N]
-        Target sphere radii.
+    target_x : jax.numpy.ndarray
+        Target sphere center positions, shape (N, 3).
+    target_r : jax.numpy.ndarray
+        Target sphere radii, shape (N,).
+    dtype : jax.numpy.dtype, optional
+        Data type for computations (default is ``jax.numpy.float64``).
+
+    Returns
+    -------
+    callable
+        A function with signature ``(photon_x, photon_p, step_size)`` returning
+        ``(is_intersected, position)`` for the nearest intersection.
     """
     target_x = jnp.asarray(target_x, dtype=dtype)
     target_r = jnp.asarray(target_r, dtype=dtype)
@@ -154,23 +199,24 @@ def make_photon_circle_intersection(
     def photon_circle_intersection(photon_x, photon_p, step_size):
         """
         Intersection of line and plane.
- 
-        Given a photon origin, a photon direction, a step size, a target location and a target radius,
-        calculate whether the photon intersects the target and the intersection point.
- 
+
+        Given a photon origin, a photon direction, a step size, a target location and a
+        target radius, calculate whether the photon intersects the target and the intersection point.
+
         Parameters
         ----------
-        photon_x : float[3]
-            Photon origin position.
-        photon_p : float[3]
-            Photon direction vector.
+        photon_x : jax.numpy.ndarray
+            Photon origin position (shape (3,)).
+        photon_p : jax.numpy.ndarray
+            Photon direction vector (shape (3,)).
         step_size : float
             Step size.
- 
+
         Returns
         -------
-        result : tuple of (bool, float[3])
-            ``True`` and intersection position if intersected.
+        tuple
+            Tuple ``(is_intersected, position)`` where ``is_intersected`` is a boolean
+            and ``position`` is the intersection point when intersected.
 
         Notes
         -----
@@ -201,7 +247,21 @@ def make_photon_circle_intersection(
 
 
 def frank_tamm(wavelength, ref_index_func):
-    """Frank-Tamm Formula."""
+    """
+    Frank–Tamm formula for Cherenkov emission.
+
+    Parameters
+    ----------
+    wavelength : float
+        Wavelength in nanometres.
+    ref_index_func : callable
+        Function returning the refractive index for a given wavelength.
+
+    Returns
+    -------
+    float
+        Spectral emission factor proportional to photon yield.
+    """
     return (
         4
         * np.pi ** 2
@@ -217,16 +277,21 @@ def frank_tamm(wavelength, ref_index_func):
 
 def make_cherenkov_spectral_sampling_func(wl_range, ref_index_func, dtype=jnp.float64):
     """
-    Create a sampling function that samples from the Frank-Tamm formula in a given wavelength range.
- 
+    Create a sampling function that samples from the Frank–Tamm formula over a wavelength range.
+
     Parameters
     ----------
-    wl_range : tuple
-        Lower and upper wavelength range.
+    wl_range : tuple of float
+        Lower and upper wavelength range (in nanometres).
     ref_index_func : callable
         Function returning wavelength-dependent refractive index.
-    dtype : jnp.float64 or jnp.float32, optional
-        Data type: how many digits to store.
+    dtype : jax.numpy.dtype, optional
+        Data type for computations (default is ``jax.numpy.float64``).
+
+    Returns
+    -------
+    callable
+        Sampling function returning wavelengths sampled according to the Frank–Tamm distribution.
     """
     wls = np.linspace(wl_range[0], wl_range[1], 1000)
 
@@ -248,9 +313,23 @@ def make_cherenkov_spectral_sampling_func(wl_range, ref_index_func, dtype=jnp.fl
 def calc_new_direction(keys, old_dir, scattering_function):
     """
     Calculate new direction after sampling a scattering angle.
- 
-    Scattering is calculated in a reference frame local
-    to the photon (e_z) and then rotated back to the global coordinate system.
+
+    Scattering is calculated in a reference frame local to the photon (e_z)
+    and then rotated back to the global coordinate system.
+
+    Parameters
+    ----------
+    keys : sequence
+        Sequence of PRNG keys used for sampling.
+    old_dir : jax.numpy.ndarray
+        Incoming direction vector (shape (3,)).
+    scattering_function : callable
+        Function that returns a scattering angle when given a PRNG key.
+
+    Returns
+    -------
+    jax.numpy.ndarray
+        New direction vector (shape (3,)).
     """
 
     theta = scattering_function(keys[0])
@@ -307,10 +386,10 @@ def make_step_function(
 ):
     """
     Create a photon step function object.
- 
+
     Returns a function ``f(photon_state, key)`` that performs a photon step
     and returns the new photon state.
- 
+
     Parameters
     ----------
     intersection_f : callable
@@ -321,10 +400,32 @@ def make_step_function(
         Function that returns scattering length as a function of wavelength.
     ref_index_func : callable
         Function that returns the refractive index as a function of wavelength.
+
+    Returns
+    -------
+    callable
+        Function with signature ``(photon_state, rng_key)`` returning
+        ``(new_photon_state, next_key)``.
     """
 
     def step(photon_state, rng_key):
-        """Single photon step."""
+        """Single photon step.
+
+        Parameters
+        ----------
+        photon_state : dict
+            Photon state mapping containing keys ``pos``, ``dir``, ``time``,
+            ``isec``, ``stepcnt``, and ``wavelength``.
+        rng_key : jax.random.PRNGKey
+            PRNG key used for sampling during the step.
+
+        Returns
+        -------
+        tuple
+            Tuple ``(new_photon_state, next_key)`` where ``new_photon_state`` is
+            a dict with the same keys as the input state and ``next_key`` is a
+            PRNG subkey.
+        """
         pos = photon_state["pos"]
         dir = photon_state["dir"]
         time = photon_state["time"]
@@ -393,7 +494,19 @@ def make_step_function(
 
 
 def unpack_args(f):
-    """Wrap a function by unpacking a single argument tuple."""
+    """Wrap a function by unpacking a single argument tuple.
+
+    Parameters
+    ----------
+    f : callable
+        Function that accepts positional arguments; the wrapper will accept a
+        single tuple and unpack it into ``f``.
+
+    Returns
+    -------
+    callable
+        Wrapper function accepting a single tuple argument.
+    """
 
     def _f(args):
         return f(*args)
@@ -405,7 +518,18 @@ def unpack_args(f):
     jax.profiler.annotate_function, name="initialize_direction_isotropic"
 )
 def initialize_direction_isotropic(rng_key):
-    """Draw direction uniformly on a sphere."""
+    """Draw direction uniformly on a sphere.
+
+    Parameters
+    ----------
+    rng_key : jax.random.PRNGKey
+        PRNG key for sampling.
+
+    Returns
+    -------
+    jax.numpy.ndarray
+        Unit direction vector sampled uniformly on the sphere (shape (3,)).
+    """
     k1, k2 = random.split(rng_key, 2)
     theta = jnp.arccos(random.uniform(k1, minval=-1, maxval=1))
     phi = random.uniform(k2, minval=0, maxval=2 * np.pi)
@@ -426,7 +550,18 @@ def initialize_direction_led(rng_key):
 
 def make_initialize_direction_laser(direction):
     def initialize_direction_laser(rng_key):
-        """Return e_z."""
+        """Return the fixed laser direction.
+
+        Parameters
+        ----------
+        rng_key : jax.random.PRNGKey
+            PRNG key (unused).
+
+        Returns
+        -------
+        jax.numpy.ndarray
+            The configured direction vector.
+        """
         return direction
 
     return initialize_direction_laser
@@ -447,6 +582,19 @@ def make_monochromatic_initializer(wavelength):
     """Create a monochromatic initializer function."""
 
     def initialize_monochromatic(rng_key):
+        """Return the fixed wavelength value.
+
+        Parameters
+        ----------
+        rng_key : jax.random.PRNGKey
+            PRNG key (unused for monochromatic initialiser).
+
+        Returns
+        -------
+        float
+            The fixed wavelength (in nm) provided to the initializer factory.
+        """
+
         return wavelength
 
     return initialize_monochromatic
@@ -663,16 +811,16 @@ def make_photon_trajectory_fun(
     def make_steps(key):
         """
         Create a function that steps a photon until it either intersects or max length is reached.
- 
+
         Parameters
         ----------
-        key : PRNGKey
+        key : jax.random.PRNGKey
             Random key.
- 
+
         Returns
         -------
-        result : tuple of (dict, dict)
-            Initial and final photon state.
+        tuple
+            Tuple ``(initial_photon_state, final_photon_state)`` with photon state dicts.
         """
         k1, k2 = random.split(key, 2)
 

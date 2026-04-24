@@ -148,7 +148,7 @@ def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_mediu
             ix = np.argwhere(n_ph_per_mod).squeeze()
             times = [[] if i != ix else times for i in range(module_coords.shape[0])]
         else:
-            # Split per module and covnert to awkward array
+            # Split per module and convert to awkward.Array
             times = np.split(times, np.cumsum(n_ph_per_mod)[:-1])
 
         return ak.Array(times)

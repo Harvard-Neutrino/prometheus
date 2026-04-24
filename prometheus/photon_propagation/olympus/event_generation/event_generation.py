@@ -1,4 +1,6 @@
-"""Event Generators."""
+"""
+Event generation helpers.
+"""
 import functools
 import logging
 
@@ -49,22 +51,31 @@ def generate_cascade(
     converter_func,
     splitter=100000,
 ):
-    """Generate a single cascade with given amplitude and position and return time of detected photons.
- 
+    """
+    Generate a single cascade and return detected photon times.
+
     Parameters
     ----------
     det : Detector
         Instance of Detector class.
     event_data : dict
-        Container of the event data.
+        Container with event parameters (position, energy, direction, time, etc.).
     seed : int
         Random seed.
     pprop_func : callable
-        Function to calculate the photon signal.
+        Function that computes the photon propagation signal.
     converter_func : callable
-        Function to calculate number of photons as function of energy.
+        Callable that converts event energy and metadata to source positions,
+        directions, times and photon counts.
     splitter : int, optional
-        Subset of the modules to use per run. This is for memory.
+        Number of modules per subset for memory-efficient propagation.
+
+    Returns
+    -------
+    tuple
+        Tuple ``(propagation_result, record)`` where ``propagation_result`` is an
+        ``awkward.Array`` of detected photon times and ``record`` is an
+        ``MCRecord`` instance.
     """
 
     k1, k2 = random.split(seed)
@@ -133,7 +144,41 @@ def generate_cascades(
     converter_func,
     noise_function=simulate_noise,
 ):
-    """Generate a sample of cascades, randomly sampling the positions in a cylinder of given radius and length."""
+    """
+    Generate a sample of cascades sampled uniformly in a cylinder.
+
+    Parameters
+    ----------
+    det : Detector
+        Detector instance used for propagation.
+    cylinder_height : float
+        Cylinder height for source sampling.
+    cylinder_radius : float
+        Cylinder radius for source sampling.
+    nsamples : int
+        Number of cascades to generate.
+    seed : int
+        RNG seed.
+    log_emin : float
+        Log10 of minimum energy.
+    log_emax : float
+        Log10 of maximum energy.
+    particle_id : int
+        PDG particle id used by the converter.
+    pprop_func : callable
+        Photon propagation function.
+    converter_func : callable
+        Function converting event parameters to source descriptions.
+    noise_function : callable, optional
+        Function used to simulate detector noise (default is ``simulate_noise``).
+
+    Returns
+    -------
+    tuple
+        Tuple ``(events, records)`` where ``events`` is a list of per-event
+        ``awkward.Array`` objects and ``records`` is a list of corresponding
+        ``MCRecord`` objects.
+    """
     rng = np.random.RandomState(seed)
     key = random.PRNGKey(seed)
 
@@ -303,22 +348,30 @@ def generate_realistic_track(
     proposal_prop,
     splitter=100000
 ):
-    """Generate a realistic track using energy losses from PROPOSAL.
- 
+    """
+    Generate a realistic muon track using energy losses from PROPOSAL.
+
     Parameters
     ----------
     det : Detector
-        Instance of Detector class.
+        Detector instance used for propagation.
     event_data : dict
-        Container of the event data.
-    key : PRNGKey
-        Random key.
+        Event parameters including position, direction, energy and length.
+    key : jax.random.PRNGKey
+        Random key for stochastic sampling.
     pprop_func : callable
-        Function to calculate the photon signal.
+        Photon propagation function.
     proposal_prop : callable
-        PROPOSAL propagator.
+        PROPOSAL propagator instance.
     splitter : int, optional
-        Splits the detector modules in ``splitter``-sized chunks for memory efficiency.
+        Split size for detector modules to reduce memory usage.
+
+    Returns
+    -------
+    tuple
+        Tuple ``(propagation_result, record)`` where ``propagation_result`` is an
+        ``awkward.Array`` of detected photon times and ``record`` is an
+        ``MCRecord`` instance, or ``(None, None)`` when no sources remain.
     """
 
     if proposal_prop is None:
@@ -407,7 +460,37 @@ def generate_realistic_tracks(
     pprop_func,
     proposal_prop=None,
 ):
-    """Generate realistic muon tracks."""
+    """
+    Generate realistic muon tracks sampled from the cylinder surface.
+
+    Parameters
+    ----------
+    det : Detector
+        Detector instance used for propagation.
+    cylinder_height : float
+        Cylinder height for source sampling.
+    cylinder_radius : float
+        Cylinder radius for source sampling.
+    nsamples : int
+        Number of tracks to generate.
+    seed : int
+        RNG seed.
+    log_emin : float
+        Log10 of minimum energy.
+    log_emax : float
+        Log10 of maximum energy.
+    pprop_func : callable
+        Photon propagation function.
+    proposal_prop : callable, optional
+        PROPOSAL propagator instance.
+
+    Returns
+    -------
+    tuple
+        Tuple ``(events, records)`` where ``events`` is a list of per-event
+        ``awkward.Array`` objects and ``records`` is a list of corresponding
+        ``MCRecord`` objects.
+    """
     rng = np.random.RandomState(seed)
     key = random.PRNGKey(seed)
 
@@ -486,7 +569,37 @@ def generate_realistic_starting_tracks(
     pprop_func,
     proposal_prop=None,
 ):
-    """Generate realistic starting tracks (cascade + track)."""
+    """
+    Generate realistic starting tracks (cascade + track).
+
+    Parameters
+    ----------
+    det : Detector
+        Detector instance used for propagation.
+    cylinder_height : float
+        Cylinder height for source sampling.
+    cylinder_radius : float
+        Cylinder radius for source sampling.
+    nsamples : int
+        Number of tracks to generate.
+    seed : int
+        RNG seed.
+    log_emin : float
+        Log10 of minimum energy.
+    log_emax : float
+        Log10 of maximum energy.
+    pprop_func : callable
+        Photon propagation function.
+    proposal_prop : callable, optional
+        PROPOSAL propagator instance.
+
+    Returns
+    -------
+    tuple
+        Tuple ``(events, records)`` where ``events`` is a list of per-event
+        ``awkward.Array`` objects and ``records`` is a list of corresponding
+        ``MCRecord`` objects.
+    """
     rng = np.random.RandomState(seed)
     key, subkey = random.split(random.PRNGKey(seed))
     # Safe length to that tracks will appear infinite

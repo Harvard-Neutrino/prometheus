@@ -9,7 +9,7 @@ class MCRecord(object):
     ----------
     event_type : str
         Event type.
-    sources : list of PhotonSource_
+    sources : list of PhotonSource
         List of photon sources.
     mc_info : list of dict
         List of dictionaries containing MC truth information.

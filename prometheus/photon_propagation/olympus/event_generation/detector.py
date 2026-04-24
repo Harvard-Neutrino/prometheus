@@ -1,4 +1,9 @@
-"""Collection of classes implementing a detector."""
+"""
+Detector helpers and re-exports.
+
+This module re-exports canonical detector classes from ``prometheus.detector``
+and provides sampling utilities used by event generators.
+"""
 # Re-export shared symbols from the canonical prometheus.detector package.
 from prometheus.detector import (
     Module,
@@ -16,7 +21,25 @@ import numpy as np
 
 
 def sample_cylinder_surface(height, radius, n, rng=np.random.RandomState(1337)):
-    """Sample points on a cylinder surface."""
+    """
+    Sample points on a cylinder surface.
+
+    Parameters
+    ----------
+    height : float
+        Cylinder height.
+    radius : float
+        Cylinder radius.
+    n : int
+        Number of samples to draw.
+    rng : numpy.random.RandomState, optional
+        Random number generator (default seeded RandomState(1337)).
+
+    Returns
+    -------
+    numpy.ndarray
+        Array of shape (n, 3) with sampled Cartesian coordinates on the cylinder surface.
+    """
     side_area = 2 * np.pi * radius * height
     top_area = 2 * np.pi * radius ** 2
 
@@ -48,7 +71,25 @@ def sample_cylinder_surface(height, radius, n, rng=np.random.RandomState(1337)):
 
 
 def sample_cylinder_volume(height, radius, n, rng=np.random.RandomState(1337)):
-    """Sample points in cylinder volume."""
+    """
+    Sample points uniformly inside a cylinder volume.
+
+    Parameters
+    ----------
+    height : float
+        Cylinder height.
+    radius : float
+        Cylinder radius.
+    n : int
+        Number of samples.
+    rng : numpy.random.RandomState, optional
+        Random number generator (default seeded RandomState(1337)).
+
+    Returns
+    -------
+    numpy.ndarray
+        Array of shape (n, 3) with sampled Cartesian coordinates inside the cylinder.
+    """
     theta = rng.uniform(0, 2 * np.pi, size=n)
     r = radius * np.sqrt(rng.uniform(0, 1, size=n))
     samples = np.empty((n, 3))
@@ -59,7 +100,21 @@ def sample_cylinder_volume(height, radius, n, rng=np.random.RandomState(1337)):
 
 
 def sample_direction(n_samples, rng=np.random.RandomState(1337)):
-    """Sample uniform directions."""
+    """
+    Sample uniform unit directions on the sphere.
+
+    Parameters
+    ----------
+    n_samples : int
+        Number of direction samples to draw.
+    rng : numpy.random.RandomState, optional
+        Random number generator (default seeded RandomState(1337)).
+
+    Returns
+    -------
+    numpy.ndarray
+        Array of shape (n_samples, 3) with unit direction vectors.
+    """
     cos_theta = rng.uniform(-1, 1, size=n_samples)
     theta = np.arccos(cos_theta)
     phi = rng.uniform(0, 2 * np.pi)
@@ -73,14 +128,46 @@ def sample_direction(n_samples, rng=np.random.RandomState(1337)):
 
 
 def get_proj_area_for_zen(height, radius, coszen):
-    """Return projected area for cylinder."""
+    """
+    Return projected area of a cylinder for a given zenith cosine.
+
+    Parameters
+    ----------
+    height : float
+        Cylinder height.
+    radius : float
+        Cylinder radius.
+    coszen : float
+        Cosine of the zenith angle.
+
+    Returns
+    -------
+    float
+        Projected area.
+    """
     cap = np.pi * radius * radius
     sides = 2 * radius * height
     return cap * np.abs(coszen) + sides * np.sqrt(1.0 - coszen * coszen)
 
 
 def generate_noise(det, time_range, rng=np.random.RandomState(1337)):
-    """Generate detector noise in a time range."""
+    """
+    Generate detector noise within a time range for each module.
+
+    Parameters
+    ----------
+    det : Detector
+        Detector instance providing `modules` with `noise_rate`.
+    time_range : sequence
+        Two-element sequence specifying start and end time.
+    rng : numpy.random.RandomState, optional
+        Random number generator (default seeded RandomState(1337)).
+
+    Returns
+    -------
+    awkward.Array
+        Sorted per-module noise hit times.
+    """
     all_times_det = []
     dT = np.diff(time_range)
     for idom in range(len(det.modules)):
@@ -92,20 +179,27 @@ def generate_noise(det, time_range, rng=np.random.RandomState(1337)):
 
 
 def trigger(det, event_times, mod_thresh=8, phot_thres=5):
-    """Check a simple multiplicity condition.
- 
-    Trigger is true when at least ``mod_thresh`` modules have measured more than ``phot_thres`` photons.
- 
+    """
+    Check a simple multiplicity trigger condition.
+
+    Trigger is true when at least ``mod_thresh`` modules have measured more than
+    ``phot_thres`` photons.
+
     Parameters
     ----------
     det : Detector
         Detector instance.
-    event_times : ak.array
+    event_times : awkward.Array
         Per-module photon arrival times.
     mod_thresh : int, optional
         Threshold for the number of modules which have detected ``phot_thres`` photons.
     phot_thres : int, optional
         Threshold for the number of photons per module.
+
+    Returns
+    -------
+    bool
+        ``True`` when the multiplicity condition is met, otherwise ``False``.
     """
     hits_per_module = ak.count(event_times, axis=1)
     if ak.sum((hits_per_module > phot_thres)) > mod_thresh:

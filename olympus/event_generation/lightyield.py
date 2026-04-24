@@ -1,4 +1,6 @@
-"""Light yield calculation."""
+"""
+Light-yield calculations and source factories.
+"""
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -24,6 +26,11 @@ def simple_cascade_light_yield(energy, *args):
     ----------
     energy : float
         Particle energy in GeV.
+    
+    Returns
+    -------
+    float
+        Approximate number of photons produced by the cascade.
     """
     photons_per_GeV = 5.3 * 250 * 1e2
 
@@ -42,6 +49,11 @@ def fennel_total_light_yield(energy, particle_id, wavelength_range):
         Particle type (PDG ID).
     wavelength_range : tuple
         Wavelength interval (nm).
+    
+    Returns
+    -------
+    float
+        Total light yield (number of photons) in the given wavelength range.
     """
 
     # Patch to fix LI Hadrons treatment
@@ -54,6 +66,8 @@ def fennel_total_light_yield(energy, particle_id, wavelength_range):
     light_yield = jax_trapz(counts_func(energy, wavelengths).ravel(), wavelengths)
 
     return light_yield
+
+    
 
 
 def fennel_frac_long_light_yield(energy, particle_id, resolution=0.2):
@@ -71,6 +85,12 @@ def fennel_frac_long_light_yield(energy, particle_id, resolution=0.2):
         Particle type (PDG ID).
     resolution : float, optional
         Step length in m for evaluating the longitudinal distribution.
+    
+    Returns
+    -------
+    tuple
+        Tuple ``(frac_yields, int_grid)`` where ``frac_yields`` is an array of
+        relative contributions and ``int_grid`` is the grid used for integration.
     """
     # Patch to fix LI Hadrons treatment
     if particle_id==-2000001006:
@@ -105,23 +125,24 @@ def make_pointlike_cascade_source(
  
     Parameters
     ----------
-    pos : float[3]
-        Cascade position.
+    pos : numpy.ndarray
+        Cascade position (shape (3,)).
     t0 : float
         Cascade time.
-    dir : float[3]
-        Cascade direction.
+    dir : numpy.ndarray
+        Cascade direction (shape (3,)).
     energy : float
         Cascade energy.
     particle_id : int
         Particle type (PDG ID).
     wavelength_range : tuple, optional
         Wavelength interval (nm).
- 
+
     Returns
     -------
-    source_pos, source_dir, source_time, source_nphotons
-        Position, direction, time and photon count.
+    tuple
+        Tuple ``(source_pos, source_dir, source_time, source_nphotons)`` where
+        arrays are returned in JAX-friendly form for downstream propagation.
     """
     # Patch to fix LI Hadrons treatment
     if particle_id==-2000001006:
@@ -159,24 +180,30 @@ def make_realistic_cascade_source(
  
     Parameters
     ----------
-    pos : float[3]
-        Cascade position.
+    pos : numpy.ndarray
+        Cascade position (shape (3,)).
     t0 : float
         Cascade time.
-    dir : float[3]
-        Cascade direction.
+    dir : numpy.ndarray
+        Cascade direction (shape (3,)).
     energy : float
         Cascade energy.
     particle_id : int
         Particle type (PDG ID).
-    key : PRNGKey
-        Random key.
+    key : jax.random.PRNGKey
+        Random key for stochastic operations.
     resolution : float, optional
         Step size for point-like light sources.
     moliere_rand : bool, optional
-        Switch Moliere randomization.
+        If True, apply Molière randomization to lateral offsets.
     wavelength_range : tuple, optional
         Wavelength interval (nm).
+    
+    Returns
+    -------
+    tuple
+        Tuple ``(source_pos, source_dir, source_time, source_nphotons)`` where
+        arrays are returned in JAX-friendly form for downstream propagation.
     """
     # Patch to fix LI Hadrons treatment
     if particle_id==-2000001006:

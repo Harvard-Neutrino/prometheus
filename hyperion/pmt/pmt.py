@@ -4,6 +4,16 @@ from scipy.interpolate import UnivariateSpline
 
 
 class SPETemplate:
+    """Single-photoelectron (SPE) template mixture model.
+
+    Attributes
+    ----------
+    components : list
+        List of scipy.stats distribution components for SPE shapes.
+    weights : list
+        Mixing weights for each component.
+    """
+
     def __init__(self):
         self.components = [
             scipy.stats.expon(scale=1),
@@ -39,9 +49,33 @@ class PulseTemplate:
         )
 
 
+
+
 def make_waveform(
     hits, spe_template, pulse_template, times=None, rng=np.random.RandomState(0)
 ):
+    """Generate a waveform from hits using SPE and pulse templates.
+
+    Parameters
+    ----------
+    hits : array-like
+        Hit times (sorted).
+    spe_template : SPETemplate
+        Single-photoelectron template with ``rvs`` and ``pdf`` methods.
+    pulse_template : callable
+        Callable with signature ``(xs, times, charges)`` returning per-hit waveforms.
+    times : array-like, optional
+        Time grid for the waveform. If None, inferred from hits.
+    rng : numpy.random.RandomState, optional
+        Random number generator used for sampling SPE charges.
+
+    Returns
+    -------
+    tuple
+        ``(wv, charges, times)`` where ``wv`` is the waveform array, ``charges`` are
+        sampled SPE charges, and ``times`` is the time grid.
+    """
+
     # jitter = scipy.stats.norm(0, 2, size=len(hits))
     # times = hits + jitter.rvs(size=len(hits))
 
@@ -59,6 +93,20 @@ def make_waveform(
 
 
 def make_calc_wl_acceptance_weight(path_to_acc_data):
+    """Build a wavelength-acceptance function from CSV data.
+
+    Parameters
+    ----------
+    path_to_acc_data : str
+        Path to CSV file containing wavelength and acceptance values.
+
+    Returns
+    -------
+    callable
+        Function ``(wavelength, peak_qe) -> acceptance_weight`` that interpolates
+        the acceptance and scales by ``peak_qe``.
+    """
+
     wl_acc = np.loadtxt(path_to_acc_data, delimiter=",")
 
     zero_mask = wl_acc[:, 1] > 0

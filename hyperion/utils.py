@@ -164,6 +164,11 @@ def calculate_min_number_steps(
         Photon wavelength.
     p_threshold : float
         Probability threshold.
+
+    Returns
+    -------
+    int
+        Minimum number of steps required.
     """
     c_medium_f = lambda wl: Constants.BaseConstants.c_vac / ref_index_func(  # noqa E731
         wl

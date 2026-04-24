@@ -1,4 +1,6 @@
-"""Light yield calculation."""
+"""
+Light-yield calculations and source factories.
+"""
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -105,23 +107,24 @@ def make_pointlike_cascade_source(
  
     Parameters
     ----------
-    pos : float[3]
-        Cascade position.
+    pos : numpy.ndarray
+        Cascade position (shape (3,)).
     t0 : float
         Cascade time.
-    dir : float[3]
-        Cascade direction.
+    dir : numpy.ndarray
+        Cascade direction (shape (3,)).
     energy : float
         Cascade energy.
     particle_id : int
         Particle type (PDG ID).
     wavelength_range : tuple, optional
         Wavelength interval (nm).
- 
+
     Returns
     -------
-    source_pos, source_dir, source_time, source_nphotons
-        Position, direction, time and photon count.
+    tuple
+        Tuple ``(source_pos, source_dir, source_time, source_nphotons)`` where
+        arrays are returned in JAX-friendly form for downstream propagation.
     """
     # Patch to fix LI Hadrons treatment
     if particle_id==-2000001006:
@@ -159,24 +162,30 @@ def make_realistic_cascade_source(
  
     Parameters
     ----------
-    pos : float[3]
-        Cascade position.
+    pos : numpy.ndarray
+        Cascade position (shape (3,)).
     t0 : float
         Cascade time.
-    dir : float[3]
-        Cascade direction.
+    dir : numpy.ndarray
+        Cascade direction (shape (3,)).
     energy : float
         Cascade energy.
     particle_id : int
         Particle type (PDG ID).
-    key : PRNGKey
-        Random key.
+    key : jax.random.PRNGKey
+        Random key for stochastic operations.
     resolution : float, optional
         Step size for point-like light sources.
     moliere_rand : bool, optional
-        Switch Moliere randomization.
+        If True, apply Molière randomization to lateral offsets.
     wavelength_range : tuple, optional
         Wavelength interval (nm).
+    
+    Returns
+    -------
+    tuple
+        Tuple ``(source_pos, source_dir, source_time, source_nphotons)`` where
+        arrays are returned in JAX-friendly form for downstream propagation.
     """
     # Patch to fix LI Hadrons treatment
     if particle_id==-2000001006:
