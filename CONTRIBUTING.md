@@ -115,7 +115,7 @@ API reference docs are auto-generated directly from docstrings in code. The docs
 To see what your changes look like on the documentation website, install everything listed in `requirements.txt` file:
 
 ```sh
-pip install -r requirements.txt
+pip install -r ./docs/requirements.txt
 ```
 
 After that, you should be able to run `mkdocs serve` to view the local version on the website. The output of the command will contain the website address. For more details, refer to [MkDocs documentation](https://www.mkdocs.org/getting-started/).
