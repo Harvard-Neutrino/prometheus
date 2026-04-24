@@ -1,5 +1,6 @@
 from itertools import repeat
 
+
 def iter_or_rep(arg):
     """Wrap a scalar in ``itertools.repeat`` or pass through an iterable unchanged.
 

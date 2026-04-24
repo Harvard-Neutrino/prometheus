@@ -1,20 +1,20 @@
-import awkward as ak
+from abc import abstractmethod
+
 import LeptonWeighter as LW
 
-from abc import abstractmethod
 
 class Weighter:
     """Base class for weighting injection events with ``LeptonWeighter``."""
 
     def __init__(
-        self, 
+        self,
         lic_file: str,
         xs_prefix: str = None,
         nu_cc_xs: str = "dsdxdy_nu_CC_iso.fits",
         nubar_cc_xs: str = "dsdxdy_nubar_CC_iso.fits",
         nu_nc_xs: str = "dsdxdy_nu_NC_iso.fits",
         nubar_nc_xs: str = "dsdxdy_nubar_NC_iso.fits",
-        nevents: int = 1
+        nevents: int = 1,
     ):
         """Initialize the ``Weighter`` class instance.
 
@@ -37,10 +37,11 @@ class Weighter:
         """
         if xs_prefix is None:
             from pathlib import Path
+
             import prometheus
+
             path = Path(prometheus.__file__).resolve().parent
             xs_prefix = str((path.parent / "resources" / "cross_section_splines").resolve())
-
 
         self._lic_file = lic_file
         self._nevents = nevents
@@ -49,7 +50,7 @@ class Weighter:
         self._nubar_cc_xs = f"{xs_prefix}/{nubar_cc_xs}"
         self._nu_nc_xs = f"{xs_prefix}/{nu_nc_xs}"
         self._nubar_nc_xs = f"{xs_prefix}/{nubar_nc_xs}"
-            
+
         self._xs = LW.CrossSectionFromSpline(
             self.nu_cc_xs,
             self.nubar_cc_xs,

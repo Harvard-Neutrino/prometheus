@@ -23,9 +23,10 @@ python examples/04_event_view.py examples/output/1_photons.parquet \\
     --out event.png \\
     --show
 """
+
 import argparse
-import sys
 import logging
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -36,12 +37,11 @@ import numpy as np
 import pandas as pd
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 — registers 3-D projection
 
-
 # ── Custom colormap: black → purple → orange ─────────────────────────────────
 _CMAP_COLORS = [
-    (0.00, (0.00, 0.00, 0.00)),   # t_min  → black
-    (0.50, (0.44, 0.18, 0.63)),   # t_mid  → purple
-    (1.00, (1.00, 0.60, 0.10)),   # t_max  → orange
+    (0.00, (0.00, 0.00, 0.00)),  # t_min  → black
+    (0.50, (0.44, 0.18, 0.63)),  # t_mid  → purple
+    (1.00, (1.00, 0.60, 0.10)),  # t_max  → orange
 ]
 TIME_CMAP = mcolors.LinearSegmentedColormap.from_list(
     "time_cmap",
@@ -49,8 +49,8 @@ TIME_CMAP = mcolors.LinearSegmentedColormap.from_list(
 )
 
 # Background fill colors
-_BG_WATER = "#06305a"   # deep water blue
-_BG_ICE   = "#cde4f5"   # pale ice blue
+_BG_WATER = "#06305a"  # deep water blue
+_BG_ICE = "#cde4f5"  # pale ice blue
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
@@ -109,7 +109,7 @@ def parse_args() -> argparse.Namespace:
 def load_parquet(path: str) -> pd.DataFrame:
     try:
         return pd.read_parquet(path)
-    except Exception as e:
+    except Exception:
         logger.exception("Cannot read parquet file %s", path)
         sys.exit(1)
 
@@ -141,8 +141,9 @@ def load_detector(geo_path: str):
     """Return (module_coords np.ndarray, medium_str) or (None, None)."""
     try:
         from prometheus.detector import detector_from_geo
+
         det = detector_from_geo(geo_path)
-        medium_str = str(det.medium).lower()   # e.g. 'medium.water'
+        medium_str = str(det.medium).lower()  # e.g. 'medium.water'
         return det.module_coords, medium_str
     except Exception as e:
         logger.warning("Could not load geo file %s: %s. Unhit OMs hidden.", geo_path, e)
@@ -152,7 +153,7 @@ def load_detector(geo_path: str):
 # ── Plotting ──────────────────────────────────────────────────────────────────
 def draw_event(
     hit_oms: pd.DataFrame,
-    all_om_coords,         # np.ndarray (N, 3) or None
+    all_om_coords,  # np.ndarray (N, 3) or None
     medium_str: str,
     mc_truth: dict,
     event_idx: int,
@@ -240,15 +241,20 @@ def draw_event(
     # ── Event info title ──────────────────────────────────────────────────────
     energy_gev = mc_truth.get("initial_state_energy", float("nan"))
     ptype = int(mc_truth.get("initial_state_type", 0))
-    pname = {12: r"$\nu_e$", -12: r"$\bar\nu_e$",
-             14: r"$\nu_\mu$", -14: r"$\bar\nu_\mu$",
-             16: r"$\nu_\tau$", -16: r"$\bar\nu_\tau$"}.get(ptype, f"PDG {ptype}")
+    pname = {
+        12: r"$\nu_e$",
+        -12: r"$\bar\nu_e$",
+        14: r"$\nu_\mu$",
+        -14: r"$\bar\nu_\mu$",
+        16: r"$\nu_\tau$",
+        -16: r"$\bar\nu_\tau$",
+    }.get(ptype, f"PDG {ptype}")
     total_hits = int(hit_oms["n_photons"].sum())
     n_oms_hit = len(hit_oms)
 
     title = (
         f"Event {event_idx}  |  {pname}  CC  "
-        f"E = {energy_gev/1e3:.1f} TeV  |  "
+        f"E = {energy_gev / 1e3:.1f} TeV  |  "
         f"{total_hits} photons on {n_oms_hit} OMs  |  {fg_label}"
     )
     ax.set_title(title, color=text_color, fontsize=9, pad=8)
@@ -291,7 +297,7 @@ def main() -> None:
 
     event_idx = args.event if args.event is not None else brightest_event(df)
     if event_idx < 0 or event_idx >= len(df):
-        logger.error("--event %s out of range (0–%s).", event_idx, len(df)-1)
+        logger.error("--event %s out of range (0–%s).", event_idx, len(df) - 1)
         sys.exit(1)
 
     logger.info("Visualising event %s (%s events in file)", event_idx, len(df))
@@ -327,6 +333,7 @@ args = parse_args()
 
 # Resolve geo path relative to the repo root when a relative path isn't found
 from pathlib import Path
+
 if args.geo:
     _g = Path(args.geo)
     if not _g.is_absolute() and not _g.exists():

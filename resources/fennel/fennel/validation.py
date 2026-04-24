@@ -37,26 +37,21 @@ def validate_energy(energy: float, min_energy: float = 0.0) -> None:
     """
     if not isinstance(energy, (int, float, np.number)):
         raise ValidationError(
-            f"Energy must be a number, got {type(energy).__name__}. "
-            f"Example: energy=100.0"
+            f"Energy must be a number, got {type(energy).__name__}. Example: energy=100.0"
         )
 
     if energy <= min_energy:
-        raise ValidationError(
-            f"Energy must be positive, got {energy} GeV. " f"Example: energy=100.0"
-        )
+        raise ValidationError(f"Energy must be positive, got {energy} GeV. Example: energy=100.0")
 
     if energy > 1e12:
         raise ValidationError(
             f"Energy {energy:.2e} GeV seems unrealistically high. "
-            f"Did you mean {energy/1000:.2e} GeV? "
+            f"Did you mean {energy / 1000:.2e} GeV? "
             f"Note: Energy should be in GeV."
         )
 
 
-def validate_particle_pdg(
-    particle: int, allowed_types: Optional[List[str]] = None
-) -> None:
+def validate_particle_pdg(particle: int, allowed_types: Optional[List[str]] = None) -> None:
     """
     Validate PDG particle ID.
 
@@ -103,9 +98,7 @@ def validate_particle_pdg(
 
         suggestion = ""
         if abs(particle) in common_particles:
-            suggestion = (
-                f"\nDid you mean {common_particles[abs(particle)]} ({abs(particle)})?"
-            )
+            suggestion = f"\nDid you mean {common_particles[abs(particle)]} ({abs(particle)})?"
 
         raise ValidationError(
             f"Unknown particle PDG ID: {particle}. "
@@ -169,8 +162,7 @@ def validate_wavelengths(wavelengths: Optional[np.ndarray]) -> np.ndarray:
 
     if len(wavelengths) == 0:
         raise ValidationError(
-            "Wavelengths array is empty. "
-            "Example: wavelengths=np.linspace(300, 600, 100)"
+            "Wavelengths array is empty. Example: wavelengths=np.linspace(300, 600, 100)"
         )
 
     if np.any(wavelengths <= 0):

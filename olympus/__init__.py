@@ -4,6 +4,7 @@ The olympus implementation now lives in ``prometheus.photon_propagation.olympus`
 This shim pre-populates ``sys.modules`` so that existing code using
 ``import olympus.X`` continues to work without modification.
 """
+
 import importlib
 import sys
 
@@ -19,6 +20,4 @@ _submodules = [
 for _sub in _submodules:
     _key = f"olympus.{_sub}"
     if _key not in sys.modules:
-        sys.modules[_key] = importlib.import_module(
-            f"prometheus.photon_propagation.olympus.{_sub}"
-        )
+        sys.modules[_key] = importlib.import_module(f"prometheus.photon_propagation.olympus.{_sub}")

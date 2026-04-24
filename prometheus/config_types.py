@@ -10,9 +10,9 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import sys
-from dataclasses import dataclass, field, fields, asdict
+from dataclasses import asdict, dataclass, field, fields
+from pathlib import Path
 from typing import ClassVar, Optional
 
 RESOURCES_DIR = Path(__file__).resolve().parent.parent / "resources"
@@ -21,6 +21,7 @@ RESOURCES_DIR = Path(__file__).resolve().parent.parent / "resources"
 # ---------------------------------------------------------------------------
 # Base class providing the dict-compatibility shim
 # ---------------------------------------------------------------------------
+
 
 class ConfigBase:
     """Mixin that lets dataclass instances be accessed like dicts.
@@ -87,6 +88,7 @@ class ConfigBase:
 # Run
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class RunConfig(ConfigBase):
     """Run-related configuration.
@@ -134,6 +136,7 @@ class RunConfig(ConfigBase):
 
     The ``verbosity`` parameter accepts either standard logging level names or integers (see Python's ``logging`` module).
     """
+
     run_number: int = 1337
     nevents: int = 10
     verbosity: str = "WARNING"
@@ -172,6 +175,7 @@ class RunConfig(ConfigBase):
 # Detector
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class DetectorConfig(ConfigBase):
     """Detector configuration."""
@@ -188,6 +192,7 @@ class DetectorConfig(ConfigBase):
 # Injection
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class LIPathsConfig(ConfigBase):
     """LeptonInjector file path configuration."""
@@ -199,9 +204,7 @@ class LIPathsConfig(ConfigBase):
             f"/site-packages"
         )
     )
-    xsec_dir: str = field(
-        default_factory=lambda: str(RESOURCES_DIR / "cross_section_splines")
-    )
+    xsec_dir: str = field(default_factory=lambda: str(RESOURCES_DIR / "cross_section_splines"))
     earth_model_location: Optional[str] = None
     injection_file: Optional[str] = None
     lic_file: Optional[str] = None
@@ -308,13 +311,12 @@ class InjectionConfig(ConfigBase):
 # Lepton propagator
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class ProposalPathsConfig(ConfigBase):
     """PROPOSAL file path configuration."""
 
-    tables_path: str = field(
-        default_factory=lambda: str(RESOURCES_DIR / "PROPOSAL_tables")
-    )
+    tables_path: str = field(default_factory=lambda: str(RESOURCES_DIR / "PROPOSAL_tables"))
     earth_model_location: Optional[str] = None
 
     _KEY_MAP: ClassVar[dict[str, str]] = {
@@ -419,13 +421,12 @@ class LeptonPropagatorConfig(ConfigBase):
 # Photon propagator
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class OlympusPathsConfig(ConfigBase):
     """Olympus file path configuration."""
 
-    location: str = field(
-        default_factory=lambda: str(RESOURCES_DIR / "olympus_resources")
-    )
+    location: str = field(default_factory=lambda: str(RESOURCES_DIR / "olympus_resources"))
     photon_model: str = "pone_config.json"
     flow: str = "photon_arrival_time_nflow_params.pickle"
     counts: str = "photon_arrival_time_counts_params.pickle"
@@ -470,9 +471,7 @@ class OlympusConfig(ConfigBase):
 class PPCPathsConfig(ConfigBase):
     """ppc file path configuration."""
 
-    location: str = field(
-        default_factory=lambda: f"{RESOURCES_DIR}/PPC_executables/PPC/"
-    )
+    location: str = field(default_factory=lambda: f"{RESOURCES_DIR}/PPC_executables/PPC/")
     force: bool = False
     ppc_tmpdir: str = "./.ppc_tmp"
     ppc_tmpfile: str = ".event_hits.ppc.tmp"
@@ -503,9 +502,7 @@ class PPCConfig(ConfigBase):
 class PPCCudaPathsConfig(ConfigBase):
     """ppc CUDA file path configuration."""
 
-    location: str = field(
-        default_factory=lambda: f"{RESOURCES_DIR}/PPC_executables/PPC_CUDA/"
-    )
+    location: str = field(default_factory=lambda: f"{RESOURCES_DIR}/PPC_executables/PPC_CUDA/")
     force: bool = False
     ppc_tmpdir: str = "./.ppc_tmp"
     ppc_tmpfile: str = ".event_hits.ppc.tmp"
@@ -545,6 +542,7 @@ class PhotonPropagatorConfig(ConfigBase):
 # Top-level config
 # ---------------------------------------------------------------------------
 
+
 def _deep_apply(obj: ConfigBase, data: dict) -> None:
     """Recursively apply *data* dict values onto a *ConfigBase* tree in-place.
 
@@ -559,13 +557,10 @@ def _deep_apply(obj: ConfigBase, data: dict) -> None:
         try:
             attr = obj._normalize(key)
         except Exception:
-            raise KeyError(
-                f"Unknown config key {key!r} in {type(obj).__name__}"
-            ) from None
+            raise KeyError(f"Unknown config key {key!r} in {type(obj).__name__}") from None
         if not hasattr(obj, attr):
             raise KeyError(
-                f"Unknown config key {key!r} (normalised: {attr!r}) "
-                f"in {type(obj).__name__}"
+                f"Unknown config key {key!r} (normalised: {attr!r}) in {type(obj).__name__}"
             )
         current = getattr(obj, attr)
         if isinstance(current, ConfigBase) and isinstance(value, dict):
@@ -612,6 +607,7 @@ class PrometheusConfig(ConfigBase):
             Path to a YAML file to load.
         """
         import yaml
+
         with open(yaml_file) as fh:
             data = yaml.load(fh, Loader=yaml.SafeLoader)
         if data:
@@ -626,6 +622,7 @@ class PrometheusConfig(ConfigBase):
             Path to a TOML file to load.
         """
         import tomllib
+
         with open(toml_file, "rb") as fh:
             data = tomllib.load(fh)
         if data:

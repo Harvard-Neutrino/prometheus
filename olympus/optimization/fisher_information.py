@@ -7,7 +7,6 @@ from jax import random
 from ..event_generation.event_generation import (
     generate_cascade,
     generate_muon_energy_losses,
-    generate_realistic_track,
     simulate_noise,
 )
 from ..event_generation.utils import proposal_setup, sph_to_cart_jnp
@@ -97,18 +96,15 @@ def calc_fisher_info_cascades(
     fisher : numpy.ndarray
         Estimated Fisher information matrix of shape ``(7, 7)``.
     """
-    def eval_for_mod(
-        x, y, z, theta, phi, t, log10e, times, mod_coords, noise_rate, key
-    ):
+
+    def eval_for_mod(x, y, z, theta, phi, t, log10e, times, mod_coords, noise_rate, key):
 
         print("Retracing")
 
         pos = jnp.asarray([x, y, z])
         dir = sph_to_cart_jnp(theta, phi)
 
-        sources = converter(
-            pos, t, dir, 10 ** log10e, particle_id=event_data["particle_id"], key=key
-        )
+        sources = converter(pos, t, dir, 10**log10e, particle_id=event_data["particle_id"], key=key)
 
         return lh_func(
             times,
@@ -141,7 +137,6 @@ def calc_fisher_info_cascades(
         # padded = [np.asarray(event[j]) for j in range(len(event))]
         jacsum = 0
         for j in range(len(event)):
-
             padded = pad_array_log_bucket(event[j], pad_base)
             res = jnp.stack(
                 eval_jacobian(
@@ -179,13 +174,10 @@ def calc_fisher_info_tracks(det, event_data, key, ph_prop, lh_func, c_medium):
             dist_along = old_pos_rel[:, 0] / ref_track_dir[0]
 
             new_source_pos = (
-                pos[np.newaxis, :]
-                + new_track_dir[np.newaxis, :] * dist_along[:, np.newaxis]
+                pos[np.newaxis, :] + new_track_dir[np.newaxis, :] * dist_along[:, np.newaxis]
             )
 
-            new_source_dir = rotate_to_new_direc_v(
-                ref_track_dir, new_track_dir, source_dir
-            )
+            new_source_dir = rotate_to_new_direc_v(ref_track_dir, new_track_dir, source_dir)
 
             new_source_time = source_time - event_data["t0"] + time
 

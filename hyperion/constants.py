@@ -29,6 +29,7 @@ class Constants(object):
             d : float
                 Parameter d in angular distribution.
             """
+
             a = 4.27033
             b = -6.02527
             c = 0.29887
@@ -46,6 +47,7 @@ class Constants(object):
         h : float
             Planck constant (Js).
         """
+
         c_vac = 2.99792458e8  # m/s
         e = 1.60217662e-19  # Coulomb
         h = 6.62607015e-34  # Js

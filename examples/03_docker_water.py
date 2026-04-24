@@ -25,14 +25,14 @@ python examples/03_docker_water.py \\
     --ranged \\
     --output-dir /data/prometheus_runs
 """
+
 import argparse
-import os
-from pathlib import Path
+import logging
 import shutil
 import subprocess
 import sys
 import textwrap
-import logging
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -64,10 +64,7 @@ def parse_args() -> argparse.Namespace:
         "--geo",
         default="resources/geofiles/demo_water.geo",
         metavar="PATH",
-        help=(
-            "Geo file path relative to the repo root.  "
-            "Choices: " + ", ".join(GEO_CHOICES)
-        ),
+        help=("Geo file path relative to the repo root.  Choices: " + ", ".join(GEO_CHOICES)),
     )
     parser.add_argument(
         "--seed",
@@ -162,16 +159,27 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     cmd = [
-        "docker", "run", "--rm",
-        "--volume", f"{output_dir}:/output",
-        "--env", f"PROM_NEVENTS={args.nevents}",
-        "--env", f"PROM_GEO=/opt/prometheus/{args.geo}",
-        "--env", f"PROM_SEED={args.seed}",
-        "--env", f"PROM_RANGED={'1' if args.ranged else '0'}",
-        "--env", f"PROM_MIN_ENERGY={args.min_energy}",
-        "--env", f"PROM_MAX_ENERGY={args.max_energy}",
+        "docker",
+        "run",
+        "--rm",
+        "--volume",
+        f"{output_dir}:/output",
+        "--env",
+        f"PROM_NEVENTS={args.nevents}",
+        "--env",
+        f"PROM_GEO=/opt/prometheus/{args.geo}",
+        "--env",
+        f"PROM_SEED={args.seed}",
+        "--env",
+        f"PROM_RANGED={'1' if args.ranged else '0'}",
+        "--env",
+        f"PROM_MIN_ENERGY={args.min_energy}",
+        "--env",
+        f"PROM_MAX_ENERGY={args.max_energy}",
         args.image,
-        "python", "-c", INNER_SCRIPT,
+        "python",
+        "-c",
+        INNER_SCRIPT,
     ]
 
     print(f"Image:      {args.image}")

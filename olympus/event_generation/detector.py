@@ -4,20 +4,11 @@ Detector helpers and re-exports.
 This module re-exports canonical detector classes from ``prometheus.detector``
 and provides sampling utilities used by event generators.
 """
+
 # Re-export shared symbols from the canonical prometheus.detector package.
-from prometheus.detector import (
-    Module,
-    Detector,
-    make_line,
-    make_grid,
-    make_hex_grid,
-    make_triang,
-    make_rhombus,
-)
 
 import awkward as ak
 import numpy as np
-
 
 
 def sample_cylinder_surface(height, radius, n, rng=np.random.RandomState(1337)):
@@ -41,7 +32,7 @@ def sample_cylinder_surface(height, radius, n, rng=np.random.RandomState(1337)):
         Array of shape (n, 3) with sampled Cartesian coordinates on the cylinder surface.
     """
     side_area = 2 * np.pi * radius * height
-    top_area = 2 * np.pi * radius ** 2
+    top_area = 2 * np.pi * radius**2
 
     ratio = top_area / (top_area + side_area)
 
@@ -56,9 +47,7 @@ def sample_cylinder_surface(height, radius, n, rng=np.random.RandomState(1337)):
 
     samples[is_top, 0] = r * np.sin(theta[is_top])
     samples[is_top, 1] = r * np.cos(theta[is_top])
-    samples[is_top, 2] = rng.choice(
-        [-height / 2, height / 2], replace=True, size=n_is_top
-    )
+    samples[is_top, 2] = rng.choice([-height / 2, height / 2], replace=True, size=n_is_top)
 
     # side points
 

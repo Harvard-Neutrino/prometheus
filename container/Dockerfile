@@ -19,7 +19,7 @@ FROM ubuntu:22.04 AS base
 LABEL org.opencontainers.image.title="Prometheus"
 LABEL org.opencontainers.image.description="Neutrino telescope simulation (CPU)"
 LABEL org.opencontainers.image.source="https://github.com/Harvard-Neutrino/prometheus"
-LABEL org.opencontainers.image.licenses="LGPL-3.0"
+LABEL org.opencontainers.image.licenses="LGPL-2.1"
 
 ENV DEBIAN_FRONTEND=noninteractive
 

@@ -1,52 +1,61 @@
 """Unit tests for pure helpers in prometheus.utils."""
-import math
+
 from itertools import repeat
 
 import numpy as np
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # units.py — physical constants and conversion factors
 # ---------------------------------------------------------------------------
+
 
 class TestUnits:
     """Physical constants and unit conversion factors are self-consistent."""
 
     def test_GeV_to_MeV_value(self):
         from prometheus.utils.units import GeV_to_MeV
+
         assert GeV_to_MeV == 1e3
 
     def test_MeV_to_GeV_value(self):
         from prometheus.utils.units import MeV_to_GeV
+
         assert MeV_to_GeV == 1e-3
 
     def test_GeV_MeV_inverse(self):
         from prometheus.utils.units import GeV_to_MeV, MeV_to_GeV
+
         assert GeV_to_MeV * MeV_to_GeV == pytest.approx(1.0)
 
     def test_speed_of_light(self):
         from prometheus.utils.units import SpeedOfLight
+
         assert SpeedOfLight == 299_792_458
 
     def test_s_to_ns(self):
         from prometheus.utils.units import s_to_ns
+
         assert s_to_ns == 1e9
 
     def test_km_to_m(self):
         from prometheus.utils.units import km_to_m
+
         assert km_to_m == 1e3
 
     def test_m_to_cm(self):
         from prometheus.utils.units import m_to_cm
+
         assert m_to_cm == 1e2
 
     def test_cm_to_m_inverse(self):
-        from prometheus.utils.units import m_to_cm, cm_to_m
+        from prometheus.utils.units import cm_to_m, m_to_cm
+
         assert m_to_cm * cm_to_m == pytest.approx(1.0)
 
     def test_km_to_cm(self):
         from prometheus.utils.units import km_to_cm
+
         assert km_to_cm == 1e5
 
 
@@ -106,14 +115,17 @@ from prometheus.utils.convert_loss_name import convert_loss_name
 class TestConvertLossName:
     """All valid PROPOSAL loss-type strings map to the expected PPC names."""
 
-    @pytest.mark.parametrize("inp,expected", [
-        ("epair",      "epair"),
-        ("brems",      "brems"),
-        ("photo",      "hadr"),
-        ("hadr",       "hadr"),
-        ("ioniz",      "delta"),
-        ("continuous", "delta"),
-    ])
+    @pytest.mark.parametrize(
+        "inp,expected",
+        [
+            ("epair", "epair"),
+            ("brems", "brems"),
+            ("photo", "hadr"),
+            ("hadr", "hadr"),
+            ("ioniz", "delta"),
+            ("continuous", "delta"),
+        ],
+    )
     def test_valid_conversion(self, inp, expected):
         assert convert_loss_name(inp) == expected
 
@@ -128,10 +140,10 @@ class TestConvertLossName:
 
 from prometheus.utils.translators import (
     PDG_to_f2k,
-    f2k_to_PDG,
     PDG_to_pstring,
-    pstring_to_PDG,
+    f2k_to_PDG,
     int_type_to_str,
+    pstring_to_PDG,
 )
 
 
@@ -181,6 +193,7 @@ class TestTranslators:
         """For the unique f2k entries, converting back gives the original PDG code."""
         # Build a set of (pdg, f2k) pairs where the f2k key is unique in PDG_to_f2k
         from collections import Counter
+
         f2k_counts = Counter(PDG_to_f2k.values())
         for pdg, f2k in PDG_to_f2k.items():
             if f2k_counts[f2k] == 1:
@@ -238,12 +251,14 @@ from prometheus.utils.find_cog import find_cog
 
 class _FakeModule:
     """Minimal stand-in for prometheus.detector.module.Module."""
+
     def __init__(self, pos):
         self.pos = np.asarray(pos, dtype=float)
 
 
 class _FakeDetector:
     """Minimal stand-in for a Detector that supports key-lookup."""
+
     def __init__(self, modules_by_key):
         self._mods = modules_by_key
 
@@ -255,30 +270,36 @@ class TestFindCog:
     """find_cog correctly weights positions by hit count."""
 
     def test_equal_charges_gives_mean(self):
-        det = _FakeDetector({
-            (0, 0): _FakeModule([0., 0., 0.]),
-            (0, 1): _FakeModule([1., 0., 0.]),
-            (0, 2): _FakeModule([2., 0., 0.]),
-        })
+        det = _FakeDetector(
+            {
+                (0, 0): _FakeModule([0.0, 0.0, 0.0]),
+                (0, 1): _FakeModule([1.0, 0.0, 0.0]),
+                (0, 2): _FakeModule([2.0, 0.0, 0.0]),
+            }
+        )
         event = {(0, 0): [1.0] * 3, (0, 1): [1.0] * 3, (0, 2): [1.0] * 3}
         cog = find_cog(event, det)
-        np.testing.assert_allclose(cog, [1., 0., 0.])
+        np.testing.assert_allclose(cog, [1.0, 0.0, 0.0])
 
     def test_all_weight_on_one_module(self):
-        det = _FakeDetector({
-            (0, 0): _FakeModule([0., 0., 0.]),
-            (0, 1): _FakeModule([10., 0., 0.]),
-        })
+        det = _FakeDetector(
+            {
+                (0, 0): _FakeModule([0.0, 0.0, 0.0]),
+                (0, 1): _FakeModule([10.0, 0.0, 0.0]),
+            }
+        )
         # Only module (0,1) has hits
         event = {(0, 0): [], (0, 1): [1.0, 2.0, 3.0]}
         cog = find_cog(event, det)
-        np.testing.assert_allclose(cog, [10., 0., 0.])
+        np.testing.assert_allclose(cog, [10.0, 0.0, 0.0])
 
     def test_weighted_average_correct(self):
-        det = _FakeDetector({
-            (0, 0): _FakeModule([0., 0., 0.]),
-            (0, 1): _FakeModule([4., 0., 0.]),
-        })
+        det = _FakeDetector(
+            {
+                (0, 0): _FakeModule([0.0, 0.0, 0.0]),
+                (0, 1): _FakeModule([4.0, 0.0, 0.0]),
+            }
+        )
         # 1 hit at 0, 3 hits at 4 → w-avg = (0*1 + 4*3) / 4 = 3
         event = {(0, 0): [1.0], (0, 1): [1.0, 2.0, 3.0]}
         cog = find_cog(event, det)

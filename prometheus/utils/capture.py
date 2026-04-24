@@ -3,6 +3,7 @@
 This module provides a context manager to capture low-level (C/C++)
 stdout/stderr writes that bypass Python's ``sys.stdout`` redirection.
 """
+
 from typing import Tuple
 
 
@@ -12,8 +13,10 @@ class _COutputCapture:
     This captures writes emitted via native extensions (e.g., std::cout)
     which are not intercepted by Python's ``sys.stdout`` redirectors.
     """
+
     def __enter__(self):
-        import os, sys
+        import os
+
         # Use raw file descriptor numbers for robustness under test runners
         # which may replace sys.stdout/sys.stderr objects. FD 1 and 2 are the
         # standard stdout and stderr descriptors at the OS level.
@@ -28,7 +31,9 @@ class _COutputCapture:
         return self
 
     def __exit__(self, exc_type, exc, tb):
-        import os, sys
+        import os
+        import sys
+
         try:
             sys.stdout.flush()
         except Exception:
@@ -57,13 +62,13 @@ class _COutputCapture:
         except Exception:
             pass
         try:
-            with os.fdopen(self._r_out, 'rb') as ro:
-                self.out = ro.read().decode('utf-8', errors='replace')
+            with os.fdopen(self._r_out, "rb") as ro:
+                self.out = ro.read().decode("utf-8", errors="replace")
         except Exception:
             self.out = ""
         try:
-            with os.fdopen(self._r_err, 'rb') as re:
-                self.err = re.read().decode('utf-8', errors='replace')
+            with os.fdopen(self._r_err, "rb") as re:
+                self.err = re.read().decode("utf-8", errors="replace")
         except Exception:
             self.err = ""
         return False
@@ -78,5 +83,6 @@ def capture_native_output(func, *args, **kwargs) -> Tuple[str, str]:
     with _COutputCapture() as cap:
         func(*args, **kwargs)
     return cap.out, cap.err
+
 
 __all__ = ["_COutputCapture", "capture_native_output"]

@@ -1,11 +1,14 @@
 from enum import Enum
 
+
 class Interactions(Enum):
     """Enum of known interaction types."""
+
     GLASHOW_RESONANCE = 0
     CHARGED_CURRENT = 1
     NEUTRAL_CURRENT = 2
     DIMUON = 3
+
 
 # Maps (final_state_1, final_state_2) name strings to interaction-type labels.
 INTERACTION_DICT = {

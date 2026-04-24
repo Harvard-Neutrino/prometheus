@@ -1,14 +1,13 @@
 import awkward as ak
 import numpy as np
 
-from .accumulate_hits import accumulate_hits
 from prometheus.detector import Detector
 from prometheus.injection.injection import Injection
 
-def serialize_particles_to_awkward(
-    det: Detector,
-    injection: Injection
-):
+from .accumulate_hits import accumulate_hits
+
+
+def serialize_particles_to_awkward(det: Detector, injection: Injection):
     """Serialize hit information from all injection events into an ``awkward.Array``.
 
     Parameters
@@ -37,9 +36,7 @@ def serialize_particles_to_awkward(
 
     outdict = {}
     for idx, var in enumerate("x y z".split()):
-        outdict[f"sensor_pos_{var}"] = [
-            x[idx] if x.shape[0] > 0 else np.array([]) for x in xyz
-        ]
+        outdict[f"sensor_pos_{var}"] = [x[idx] if x.shape[0] > 0 else np.array([]) for x in xyz]
 
     hit_functions = [
         ("string_id", lambda x: [[h.string_id for h, _ in event_hits] for event_hits in x]),

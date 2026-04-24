@@ -3,11 +3,13 @@
 # Copyright (C) 2022 Jeffrey Lazar
 # Storage class for particles
 
-import numpy as np
 from dataclasses import dataclass, field
-from typing import Optional, List
+from typing import List
+
+import numpy as np
 
 from ..utils.translators import PDG_to_pstring
+
 
 @dataclass
 class Particle:
@@ -27,12 +29,12 @@ class Particle:
         Index helper for serialization. This will be overwritten at
         serialization time.
     """
+
     pdg_code: int
     e: float
     position: np.ndarray
     direction: np.ndarray
     serialization_idx: int
-
 
     def __str__(self):
         return PDG_to_pstring[self.pdg_code]
@@ -43,6 +45,7 @@ class Particle:
     def clone(self) -> "Particle":
         """Return a deep copy with independent mutable state."""
         import copy
+
         return copy.deepcopy(self)
 
     @property
@@ -52,6 +55,7 @@ class Particle:
     @property
     def phi(self):
         return np.arctan2(self.direction[1], self.direction[0])
+
 
 @dataclass
 class PropagatableParticle(Particle):
@@ -68,6 +72,7 @@ class PropagatableParticle(Particle):
     hits : list
         OM hits originating from this particle.
     """
+
     parent: Particle
     children: List[Particle] = field(default_factory=list)
     losses: List = field(default_factory=list)
@@ -76,4 +81,5 @@ class PropagatableParticle(Particle):
     def clone(self) -> "PropagatableParticle":
         """Return a deep copy with independent children, losses, and hits lists."""
         import copy
+
         return copy.deepcopy(self)

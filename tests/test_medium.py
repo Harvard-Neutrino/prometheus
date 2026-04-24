@@ -1,14 +1,14 @@
 """Tests for water medium model registration and flow model selection."""
+
 import warnings
-import pytest
 
 from hyperion.medium import medium_collections
 from prometheus.detector.medium import Medium
 from prometheus.photon_propagation.olympus_photon_propagator import (
-    _WATER_MEDIUM_MAP,
-    _FLOW_MODEL_MAP,
-    _DEFAULT_FLOW_FILE,
     _DEFAULT_COUNTS_FILE,
+    _DEFAULT_FLOW_FILE,
+    _FLOW_MODEL_MAP,
+    _WATER_MEDIUM_MAP,
 )
 
 
@@ -33,6 +33,7 @@ def test_water_medium_map_covers_water():
 def test_unknown_medium_falls_back_with_warning():
     """A medium not in _WATER_MEDIUM_MAP should cause a UserWarning and fall back to 'pone'."""
     from unittest.mock import MagicMock
+
     fake_medium = MagicMock()
     fake_medium.name = "ATLANTIS"
 
@@ -62,6 +63,7 @@ def test_unknown_medium_falls_back_with_warning():
 # ---------------------------------------------------------------------------
 # Flow model map tests
 # ---------------------------------------------------------------------------
+
 
 def test_flow_model_map_has_pone():
     assert "pone" in _FLOW_MODEL_MAP

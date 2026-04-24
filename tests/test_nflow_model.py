@@ -15,13 +15,14 @@ range of the model:
     row 1:  log10(50 m),  1.2 rad  —  mid distance
     row 2:  log10(200 m), 2.1 rad  —  long distance (near the log10(300) mask)
 """
-import pickle
+
 import pathlib
 
 import jax
 import jax.numpy as jnp
 import numpy as np
 import pytest
+
 from prometheus.compat.haiku_unpickler import load as haiku_load
 
 # ---------------------------------------------------------------------------
@@ -33,11 +34,14 @@ SHAPE_PICKLE = RESOURCES / "photon_arrival_time_nflow_params.pickle"
 COUNTS_PICKLE = RESOURCES / "photon_arrival_time_counts_params.pickle"
 
 # Fixed test inputs: shape (3, 2) — [log10_dist, angle]
-TEST_INPUTS = jnp.array([
-    [1.0, 0.5],
-    [1.7, 1.2],
-    [2.3, 2.1],
-], dtype=jnp.float32)
+TEST_INPUTS = jnp.array(
+    [
+        [1.0, 0.5],
+        [1.7, 1.2],
+        [2.3, 2.1],
+    ],
+    dtype=jnp.float32,
+)
 
 # Tolerance for float32 comparisons across backends
 ATOL = 1e-4
@@ -59,6 +63,7 @@ def counts_model():
 # Pickle structure tests — these must pass before AND after migration
 # ---------------------------------------------------------------------------
 
+
 def test_shape_pickle_loads():
     config, params = haiku_load(SHAPE_PICKLE)
     assert isinstance(config, dict)
@@ -73,8 +78,14 @@ def test_counts_pickle_loads():
 
 def test_shape_config_keys(shape_model):
     config, _ = shape_model
-    required = {"flow_num_layers", "flow_num_bins", "flow_rmin", "flow_rmax",
-                "mlp_hidden_size", "mlp_num_layers"}
+    required = {
+        "flow_num_layers",
+        "flow_num_bins",
+        "flow_rmin",
+        "flow_rmax",
+        "mlp_hidden_size",
+        "mlp_num_layers",
+    }
     assert required <= set(config.keys())
 
 
@@ -116,12 +127,16 @@ def test_counts_params_weight_shapes(counts_model):
 # Shape conditioner (MLP) regression
 # ---------------------------------------------------------------------------
 
+
 def test_shape_conditioner_output_shape(shape_model):
     from hyperion.models.photon_arrival_time_nflow.net import make_shape_conditioner_fn
+
     config, params = shape_model
     conditioner = make_shape_conditioner_fn(
-        config["mlp_hidden_size"], config["mlp_num_layers"],
-        config["flow_num_bins"], config["flow_num_layers"],
+        config["mlp_hidden_size"],
+        config["mlp_num_layers"],
+        config["flow_num_bins"],
+        config["flow_num_layers"],
     )
     out = conditioner.apply(params, TEST_INPUTS)
     num_bijector_params = 3 * config["flow_num_bins"] + 1
@@ -132,18 +147,24 @@ def test_shape_conditioner_output_shape(shape_model):
 def test_shape_conditioner_regression(shape_model):
     """Lock in first 6 columns of traf_params for each test row."""
     from hyperion.models.photon_arrival_time_nflow.net import make_shape_conditioner_fn
+
     config, params = shape_model
     conditioner = make_shape_conditioner_fn(
-        config["mlp_hidden_size"], config["mlp_num_layers"],
-        config["flow_num_bins"], config["flow_num_layers"],
+        config["mlp_hidden_size"],
+        config["mlp_num_layers"],
+        config["flow_num_bins"],
+        config["flow_num_layers"],
     )
     out = np.array(conditioner.apply(params, TEST_INPUTS))
 
-    ref = np.array([
-        [-1.440378,  0.48451898, 1.6659592, 1.486107,  1.4062678, 1.3814201],
-        [-1.497236, -0.01775454, 2.1847098, 1.834826,  1.6428913, 1.603916 ],
-        [-1.9864869,-0.69843817, 3.2488124, 2.7716594, 2.3765428, 2.2806304],
-    ], dtype=np.float32)
+    ref = np.array(
+        [
+            [-1.440378, 0.48451898, 1.6659592, 1.486107, 1.4062678, 1.3814201],
+            [-1.497236, -0.01775454, 2.1847098, 1.834826, 1.6428913, 1.603916],
+            [-1.9864869, -0.69843817, 3.2488124, 2.7716594, 2.3765428, 2.2806304],
+        ],
+        dtype=np.float32,
+    )
 
     np.testing.assert_allclose(out[:, :6], ref, atol=ATOL)
 
@@ -163,12 +184,17 @@ def test_flow_log_prob_regression(shape_model):
     (no random key) and exercises the entire bijector chain.
     """
     from hyperion.models.photon_arrival_time_nflow.net import (
-        make_shape_conditioner_fn, traf_dist_builder, eval_log_prob,
+        eval_log_prob,
+        make_shape_conditioner_fn,
+        traf_dist_builder,
     )
+
     config, params = shape_model
     conditioner = make_shape_conditioner_fn(
-        config["mlp_hidden_size"], config["mlp_num_layers"],
-        config["flow_num_bins"], config["flow_num_layers"],
+        config["mlp_hidden_size"],
+        config["mlp_num_layers"],
+        config["flow_num_bins"],
+        config["flow_num_layers"],
     )
     traf_params = conditioner.apply(params, TEST_INPUTS)
     dist_builder = traf_dist_builder(
@@ -183,12 +209,17 @@ def test_flow_log_prob_regression(shape_model):
 
 def test_flow_log_prob_shape(shape_model):
     from hyperion.models.photon_arrival_time_nflow.net import (
-        make_shape_conditioner_fn, traf_dist_builder, eval_log_prob,
+        eval_log_prob,
+        make_shape_conditioner_fn,
+        traf_dist_builder,
     )
+
     config, params = shape_model
     conditioner = make_shape_conditioner_fn(
-        config["mlp_hidden_size"], config["mlp_num_layers"],
-        config["flow_num_bins"], config["flow_num_layers"],
+        config["mlp_hidden_size"],
+        config["mlp_num_layers"],
+        config["flow_num_bins"],
+        config["flow_num_layers"],
     )
     traf_params = conditioner.apply(params, TEST_INPUTS)
     dist_builder = traf_dist_builder(
@@ -202,12 +233,17 @@ def test_flow_log_prob_shape(shape_model):
 def test_flow_sampler_runs(shape_model):
     """Smoke test: sampler runs without error and returns the right shape."""
     from hyperion.models.photon_arrival_time_nflow.net import (
-        make_shape_conditioner_fn, traf_dist_builder, sample_shape_model,
+        make_shape_conditioner_fn,
+        sample_shape_model,
+        traf_dist_builder,
     )
+
     config, params = shape_model
     conditioner = make_shape_conditioner_fn(
-        config["mlp_hidden_size"], config["mlp_num_layers"],
-        config["flow_num_bins"], config["flow_num_layers"],
+        config["mlp_hidden_size"],
+        config["mlp_num_layers"],
+        config["flow_num_bins"],
+        config["flow_num_layers"],
     )
     traf_params = conditioner.apply(params, TEST_INPUTS)
     dist_builder = traf_dist_builder(
@@ -224,8 +260,10 @@ def test_flow_sampler_runs(shape_model):
 # Counts net regression
 # ---------------------------------------------------------------------------
 
+
 def test_counts_net_output_shape(counts_model):
     from hyperion.models.photon_arrival_time_nflow.net import make_counts_net_fn
+
     config, params = counts_model
     net = make_counts_net_fn(config)
     out = net.apply(params, TEST_INPUTS)
@@ -235,6 +273,7 @@ def test_counts_net_output_shape(counts_model):
 def test_counts_net_regression(counts_model):
     """Lock in log10-survival-fraction predictions."""
     from hyperion.models.photon_arrival_time_nflow.net import make_counts_net_fn
+
     config, params = counts_model
     net = make_counts_net_fn(config)
     out = np.array(net.apply(params, TEST_INPUTS)).squeeze()
@@ -246,6 +285,7 @@ def test_counts_net_regression(counts_model):
 def test_counts_net_monotone_with_distance(counts_model):
     """Survival fraction must decrease (more negative) as distance increases."""
     from hyperion.models.photon_arrival_time_nflow.net import make_counts_net_fn
+
     config, params = counts_model
     net = make_counts_net_fn(config)
     out = np.array(net.apply(params, TEST_INPUTS)).squeeze()

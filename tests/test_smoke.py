@@ -1,7 +1,8 @@
 """Smoke tests: verify every subpackage can be imported without errors."""
-import importlib
-import pytest
 
+import importlib
+
+import pytest
 
 SUBMODULES = [
     # prometheus core

@@ -143,9 +143,7 @@ class Definitions_Generator:
         params = pickle.loads(param_file)
         # Flatten
         params = self._flatten(params)
-        pd.DataFrame.from_dict(data=params, orient="index").to_csv(
-            "parameters.csv", header=False
-        )
+        pd.DataFrame.from_dict(data=params, orient="index").to_csv("parameters.csv", header=False)
 
     def _flatten(self, d: Dict, parent_key="", sep="_"):
         """Helper function to flatten a dictionary of dictionaries

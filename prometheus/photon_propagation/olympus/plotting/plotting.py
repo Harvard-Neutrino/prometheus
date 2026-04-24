@@ -1,6 +1,7 @@
 """
 Plotting utilities for event visualization.
 """
+
 import awkward as ak
 import matplotlib
 import matplotlib.pyplot as plt
@@ -71,9 +72,7 @@ def plot_event(det, hit_times, record=None, plot_tfirst=False, plot_hull=False):
         sizes = []
         for source in record.sources:
             sizes.append(np.asscalar((np.log10(source.n_photons) / 2) ** 2))
-            positions.append(
-                [source.position[0], source.position[1], source.position[2]]
-            )
+            positions.append([source.position[0], source.position[1], source.position[2]])
         positions = np.asarray(positions)
         traces.append(
             go.Scatter3d(
@@ -122,9 +121,7 @@ def plot_event(det, hit_times, record=None, plot_tfirst=False, plot_hull=False):
     return fig
 
 
-def plot_events(
-    det, events, labels=None, records=None, plot_tfirst=False, plot_hull=False
-):
+def plot_events(det, events, labels=None, records=None, plot_tfirst=False, plot_hull=False):
     """
     Plot multiple events as subplots.
 
@@ -195,9 +192,7 @@ def plot_events(
                 )
 
         if plot_hull:
-            ax.plot_surface(
-                x_grid, y_grid, z_grid, linewidth=0, antialiased=True, alpha=0.1
-            )
+            ax.plot_surface(x_grid, y_grid, z_grid, linewidth=0, antialiased=True, alpha=0.1)
 
         ax.set_ylim3d(-700, 700)
         ax.set_zlim3d(-500, 500)

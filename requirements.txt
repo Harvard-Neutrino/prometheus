@@ -1,3 +1,9 @@
+# Auto-generated from pyproject.toml via:
+#   pip install poetry-plugin-export
+#   poetry export --without-hashes -f requirements.txt -o requirements.txt
+#
+# Do not edit by hand. To add/remove dependencies, update pyproject.toml then regenerate.
+#
 # Core, pinned runtime dependencies for Prometheus (CPU)
 numpy==1.26.4
 scipy==1.17.1

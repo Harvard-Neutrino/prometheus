@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from typing import Iterable
 
-from .. interactions import Interactions
-from ..import Particle
+from .. import Particle
+from ..interactions import Interactions
+
 
 # TODO Why is vertex split up ? DTaSD
 @dataclass
@@ -24,6 +25,7 @@ class InjectionEvent:
     vertex_z : float
         Z-position of the interaction vertex.
     """
+
     initial_state: Particle
     final_states: Iterable[Particle]
     interaction: Interactions

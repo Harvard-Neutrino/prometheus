@@ -8,11 +8,12 @@ Usage:
     from prometheus.compat.haiku_unpickler import load as haiku_load
     config, params = haiku_load(path_to_pickle)
 """
+
 from __future__ import annotations
 
 import pickle
 from pathlib import Path
-from typing import BinaryIO, Any, Union
+from typing import Any, BinaryIO, Union
 
 
 class _HaikuUnpickler(pickle.Unpickler):

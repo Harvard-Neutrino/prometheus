@@ -3,41 +3,39 @@
 # Copyright (C) 2022 Christian Haack, Jeffrey Lazar, Stephan Meighen-Berger,
 # Interface class to the package
 
-import numpy as np
-import awkward as ak
-import pyarrow.parquet as pq
-import os
-from pathlib import Path
 import json
-from typing import Union
-from tqdm import tqdm
-from time import time
-import warnings
-import io
-import contextlib
 import logging
-import hashlib
-from datetime import datetime
+import os
+import warnings
+from pathlib import Path
+from time import time
+from typing import Union
 
-from .utils import (
-    config_mims, clean_config,
-    UnknownInjectorError,
-    UnknownPhotonPropagatorError, NoInjectionError,
-    InjectorNotImplementedError, CannotLoadDetectorError
-)
+import awkward as ak
+import numpy as np
+import pyarrow.parquet as pq
+from tqdm import tqdm
+
 from .config import config
 from .detector import Detector
-from .injection import RegisteredInjectors, INJECTION_CONSTRUCTOR_DICT
-from .photon_propagation import (
-    get_propagator,
-    RegisteredPhotonPropagators,
-)
-from .logging_config import configure_logging
-from .utils.timing import time_block
-from .utils.capture import _COutputCapture
+from .injection import INJECTION_CONSTRUCTOR_DICT, RegisteredInjectors
 from .logging.handlers import LogCounterHandler
-from .utils.formatting import _file_checksum, _human_size
+from .logging_config import configure_logging
+from .photon_propagation import (
+    RegisteredPhotonPropagators,
+    get_propagator,
+)
 from .summary import emit_run_summary
+from .utils import (
+    CannotLoadDetectorError,
+    InjectorNotImplementedError,
+    UnknownInjectorError,
+    UnknownPhotonPropagatorError,
+    clean_config,
+    config_mims,
+)
+from .utils.capture import _COutputCapture
+from .utils.timing import time_block
 
 # Legacy alias used in this file.
 get_photon_propagator = get_propagator
@@ -45,6 +43,7 @@ get_photon_propagator = get_propagator
 os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
 
 logger = logging.getLogger(__name__)
+
 
 class PpcTmpdirExistsError(Exception):
     """
@@ -55,9 +54,11 @@ class PpcTmpdirExistsError(Exception):
     path : str
         Path to the tmpdir.
     """
+
     def __init__(self, path):
         self.message = f"{path} exists. Please remove it or specify force in the config"
         super().__init__(self.message)
+
 
 def regularize(s: str) -> str:
     """
@@ -79,20 +80,13 @@ def regularize(s: str) -> str:
     return s
 
 
-
-
-
-
-
-
 class Prometheus(object):
     """
     Class for unifying injection, energy loss calculation, and photon propagation.
     """
+
     def __init__(
-        self,
-        userconfig: Union[None, dict, str] = None,
-        detector: Union[None, Detector] = None
+        self, userconfig: Union[None, dict, str] = None, detector: Union[None, Detector] = None
     ) -> None:
         """
         Initialize the Prometheus class.
@@ -116,6 +110,7 @@ class Prometheus(object):
         self._start_timing_misc = time()
         if userconfig is not None:
             from .config_types import PrometheusConfig
+
             if isinstance(userconfig, PrometheusConfig):
                 # Caller passed a pre-built config object; use it directly.
                 config.__dict__.update(userconfig.__dict__)
@@ -124,9 +119,10 @@ class Prometheus(object):
             else:
                 config.from_yaml(userconfig)
 
-
         if detector is None and config.detector.geo_file is None:
-            raise CannotLoadDetectorError("No Detector provided and no geo file path given in config")
+            raise CannotLoadDetectorError(
+                "No Detector provided and no geo file path given in config"
+            )
 
         # Defer detector construction until after logging/warning capture is
         # configured below so we can suppress its noisy prints in user mode.
@@ -159,7 +155,7 @@ class Prometheus(object):
                 except Exception:
                     pass
                 # In debug mode, still show the warning immediately
-                if getattr(self, '_summary_mode', 'user') == 'debug':
+                if getattr(self, "_summary_mode", "user") == "debug":
                     try:
                         self._orig_showwarning(message, category, filename, lineno, file, line)
                     except Exception:
@@ -180,13 +176,15 @@ class Prometheus(object):
         try:
             show_banner = False
             try:
-                show_banner = bool(getattr(config, "run", None) and getattr(config.run, "banner", False))
+                show_banner = bool(
+                    getattr(config, "run", None) and getattr(config.run, "banner", False)
+                )
             except Exception:
                 show_banner = False
-            logo_path = Path(__file__).resolve().parent.parent / 'assets' / 'ascii-logo.txt'
+            logo_path = Path(__file__).resolve().parent.parent / "assets" / "ascii-logo.txt"
             if show_banner:
                 try:
-                    with open(logo_path, 'r') as _fh:
+                    with open(logo_path, "r") as _fh:
                         logo = _fh.read()
                     if self._summary_mode == "user":
                         print("\n" + logo)
@@ -203,13 +201,18 @@ class Prometheus(object):
         try:
             if self._detector is None:
                 from .detector import detector_from_geo
-                if getattr(self, '_summary_mode', 'user') == 'user':
+
+                if getattr(self, "_summary_mode", "user") == "user":
                     with _COutputCapture() as _cap:
                         self._detector = detector_from_geo(config.detector.geo_file)
                     try:
-                        self._init_output = (getattr(self, '_init_output', '') or '') + (_cap.out or '') + (_cap.err or '')
+                        self._init_output = (
+                            (getattr(self, "_init_output", "") or "")
+                            + (_cap.out or "")
+                            + (_cap.err or "")
+                        )
                     except Exception:
-                        self._init_output = getattr(self, '_init_output', '') or ''
+                        self._init_output = getattr(self, "_init_output", "") or ""
                 else:
                     self._detector = detector_from_geo(config.detector.geo_file)
         except Exception:
@@ -219,28 +222,28 @@ class Prometheus(object):
         # Now import PROPOSAL and the lepton propagator (kept after logging
         # configuration and warning capture so we can suppress their noise).
         import proposal as pp
-        from .lepton_propagation.new_proposal_lepton_propagator import NewProposalLeptonPropagator as LeptonPropagator
+
+        from .lepton_propagation.new_proposal_lepton_propagator import (
+            NewProposalLeptonPropagator as LeptonPropagator,
+        )
+
         config.lepton_propagator.name = "new proposal"
         config.lepton_propagator.version = pp.__version__
 
         config_mims(config, self.detector)
         clean_config(config)
 
-        self._injector = getattr(
-            RegisteredInjectors,
-            regularize(config.injection.name)
-        )
+        self._injector = getattr(RegisteredInjectors, regularize(config.injection.name))
 
-        self._pp = getattr(
-            RegisteredPhotonPropagators,
-            regularize(config.photon_propagator.name)
-        )
+        self._pp = getattr(RegisteredPhotonPropagators, regularize(config.photon_propagator.name))
 
         if regularize(config.injection.name) not in RegisteredInjectors.list():
             raise UnknownInjectorError(config.injection.name + "is not supported as an injector!")
 
         if regularize(config.photon_propagator.name) not in RegisteredPhotonPropagators.list():
-            raise UnknownPhotonPropagatorError(config.photon_propagator.name + " is not a known photon propagator")
+            raise UnknownPhotonPropagatorError(
+                config.photon_propagator.name + " is not a known photon propagator"
+            )
 
         pp.RandomGenerator.get().set_seed(config.run.random_state_seed)
         lepton_prop_config = config.lepton_propagator[config.lepton_propagator.name]
@@ -249,26 +252,22 @@ class Prometheus(object):
         # their stdout/stderr in user mode and present it only in the
         # collapsed warnings section.
         try:
-            if getattr(self, '_summary_mode', 'user') == 'user':
+            if getattr(self, "_summary_mode", "user") == "user":
                 with _COutputCapture() as _cap:
                     self._lepton_propagator = LeptonPropagator(lepton_prop_config)
                     pp_config = config.photon_propagator[config.photon_propagator.name]
                     self._photon_propagator = get_photon_propagator(config.photon_propagator.name)(
-                        self._lepton_propagator,
-                        self.detector,
-                        pp_config
+                        self._lepton_propagator, self.detector, pp_config
                     )
                 try:
-                    self._init_output = (_cap.out or '') + (_cap.err or '')
+                    self._init_output = (_cap.out or "") + (_cap.err or "")
                 except Exception:
                     self._init_output = ""
             else:
                 self._lepton_propagator = LeptonPropagator(lepton_prop_config)
                 pp_config = config.photon_propagator[config.photon_propagator.name]
                 self._photon_propagator = get_photon_propagator(config.photon_propagator.name)(
-                    self._lepton_propagator,
-                    self.detector,
-                    pp_config
+                    self._lepton_propagator, self.detector, pp_config
                 )
         except Exception:
             # If constructor fails, propagate the exception as before.
@@ -282,7 +281,7 @@ class Prometheus(object):
             f"injector={config.injection.name} propagator={config.photon_propagator.name} "
             f"modules={getattr(self.detector, 'n_modules', len(getattr(self.detector, 'modules', [])))}"
         )
-        if getattr(self, '_summary_mode', 'user') == 'user':
+        if getattr(self, "_summary_mode", "user") == "user":
             try:
                 print(init_msg)
             except Exception:
@@ -295,14 +294,13 @@ class Prometheus(object):
             except Exception:
                 logger.debug("Resolved config: <unserializable>")
 
-
     @property
     def detector(self):
         return self._detector
 
     @property
     def injection(self):
-        #if self._injection is None:
+        # if self._injection is None:
         #    raise NoInjectionError("Injection has not been set!")
         return self._injection
 
@@ -319,6 +317,7 @@ class Prometheus(object):
         with time_block("injection", logger):
             if injection_config.inject:
                 from .injection import INJECTOR_DICT
+
                 if self._injector not in INJECTOR_DICT.keys():
                     raise InjectorNotImplementedError(
                         str(self._injector) + " is not a registered injector"
@@ -335,13 +334,19 @@ class Prometheus(object):
                     injection_config.paths.injection_file
                 )
             except Exception:
-                logger.exception("Failed to construct injection from %s", injection_config.paths.injection_file)
+                logger.exception(
+                    "Failed to construct injection from %s", injection_config.paths.injection_file
+                )
                 raise
         try:
             n_inj = len(self._injection)
         except Exception:
             n_inj = None
-        logger.info("Injection complete: loaded %s events from %s", n_inj, injection_config.paths.injection_file)
+        logger.info(
+            "Injection complete: loaded %s events from %s",
+            n_inj,
+            injection_config.paths.injection_file,
+        )
 
     # We should factor out generating losses and photon prop
     def propagate(self, capture: bool = False):
@@ -365,29 +370,34 @@ class Prometheus(object):
         if pp_name == "olympus":
             # Import lazily so JAX messages can be controlled by configure_logging
             from jax import random
+
             rng_key = random.PRNGKey(config.run.random_state_seed)
         elif pp_name == "ppc":
-            from glob import glob
             import shutil
+            from glob import glob
+
             from .utils.clean_ppc_tmpdir import clean_ppc_tmpdir
+
             ppc_tmpdir = Path(config.photon_propagator.ppc.paths.ppc_tmpdir)
             if ppc_tmpdir.exists() and not config.photon_propagator.ppc.paths.force:
                 raise PpcTmpdirExistsError(str(ppc_tmpdir))
             ppc_tmpdir.mkdir(parents=True, exist_ok=False)
-            fs = glob(str(Path(config.photon_propagator.ppc.paths.ppctables) / '*'))
+            fs = glob(str(Path(config.photon_propagator.ppc.paths.ppctables) / "*"))
             for f in fs:
                 shutil.copy(f, str(ppc_tmpdir))
         elif pp_name == "ppc_cuda":
-            from glob import glob
             import shutil
+            from glob import glob
+
             from .utils.clean_ppc_tmpdir import clean_ppc_tmpdir
+
             ppc_cuda_tmpdir = Path(config.photon_propagator.ppc_cuda.paths.ppc_tmpdir)
             if ppc_cuda_tmpdir.exists() and not config.photon_propagator.ppc_cuda.paths.force:
                 raise PpcTmpdirExistsError(str(ppc_cuda_tmpdir))
             elif ppc_cuda_tmpdir.exists():
                 clean_ppc_tmpdir(str(ppc_cuda_tmpdir))
             ppc_cuda_tmpdir.mkdir(parents=True, exist_ok=False)
-            fs = glob(str(Path(config.photon_propagator.ppc_cuda.paths.ppctables) / '*'))
+            fs = glob(str(Path(config.photon_propagator.ppc_cuda.paths.ppctables) / "*"))
             for f in fs:
                 shutil.copy(f, str(ppc_cuda_tmpdir))
 
@@ -409,37 +419,39 @@ class Prometheus(object):
         if cap is not None:
             cap.__enter__()
         try:
-                if show_progress:
-                    iterator = tqdm(enumerate(self.injection), total=len(self.injection))
-                else:
-                    iterator = enumerate(self.injection)
+            if show_progress:
+                iterator = tqdm(enumerate(self.injection), total=len(self.injection))
+            else:
+                iterator = enumerate(self.injection)
 
-                for idx, injection_event in iterator:
-                    if idx == nevents:
-                        break
-                    for final_state in injection_event.final_states:
-                        if show_progress:
-                            try:
-                                iterator.set_description(f"Propagating {final_state}")
-                            except Exception:
-                                pass
-                        if pp_name == "olympus":
-                            # random already imported above for olympus
-                            rng_key, subkey = random.split(rng_key)
-                        else:
-                            subkey = None
+            for idx, injection_event in iterator:
+                if idx == nevents:
+                    break
+                for final_state in injection_event.final_states:
+                    if show_progress:
                         try:
-                            self._photon_propagator.propagate(final_state, subkey)
+                            iterator.set_description(f"Propagating {final_state}")
                         except Exception:
-                            logger.exception("Error propagating event %s final_state=%s", idx, final_state)
-                            raise
+                            pass
+                    if pp_name == "olympus":
+                        # random already imported above for olympus
+                        rng_key, subkey = random.split(rng_key)
+                    else:
+                        subkey = None
+                    try:
+                        self._photon_propagator.propagate(final_state, subkey)
+                    except Exception:
+                        logger.exception(
+                            "Error propagating event %s final_state=%s", idx, final_state
+                        )
+                        raise
         finally:
             if cap is not None:
                 cap.__exit__(None, None, None)
                 try:
-                    self._propagate_output = (cap.out or '') + (cap.err or '')
+                    self._propagate_output = (cap.out or "") + (cap.err or "")
                 except Exception:
-                    self._propagate_output = ''
+                    self._propagate_output = ""
         logger.info("Propagation complete")
         if pp_name == "olympus":
             pass
@@ -447,7 +459,6 @@ class Prometheus(object):
             clean_ppc_tmpdir(config.photon_propagator.ppc.paths.ppc_tmpdir)
         elif pp_name == "ppc_cuda":
             clean_ppc_tmpdir(config.photon_propagator.ppc_cuda.paths.ppc_tmpdir)
-
 
     def sim(self):
         """Perform injection of precipitating interaction, calculate energy losses, calculate photon yield, propagate photons, and save resulting photons."""
@@ -458,11 +469,11 @@ class Prometheus(object):
         # Injection: capture printed noise in user mode so the console stays clean
         self._start_inj = time()
         try:
-            if getattr(self, '_summary_mode', 'user') == 'user':
+            if getattr(self, "_summary_mode", "user") == "user":
                 with _COutputCapture() as _cap:
                     self.inject()
                 try:
-                    self._inject_output = (_cap.out or '') + (_cap.err or '')
+                    self._inject_output = (_cap.out or "") + (_cap.err or "")
                 except Exception:
                     self._inject_output = ""
             else:
@@ -474,10 +485,10 @@ class Prometheus(object):
         try:
             nevents = len(self._injection)
         except Exception:
-            nevents = getattr(config.run, 'nevents', 0)
-        threshold = getattr(config.run, 'progress_threshold', 10)
+            nevents = getattr(config.run, "nevents", 0)
+        threshold = getattr(config.run, "progress_threshold", 10)
         show_progress = bool(nevents > threshold)
-        capture_prop = (getattr(self, '_summary_mode', 'user') == 'user') and (not show_progress)
+        capture_prop = (getattr(self, "_summary_mode", "user") == "user") and (not show_progress)
 
         self._start_prop = time()
         self.propagate(capture=capture_prop)
@@ -489,12 +500,14 @@ class Prometheus(object):
         self._end_out = getattr(self, "_end_out", time())
         logger.info("Simulation run complete")
         # Timing array: misc, inj, prop, out
-        self._timing_arr = np.array([
-            self._end_timing_misc - self._start_timing_misc,
-            self._end_inj - self._start_inj,
-            self._end_prop - self._start_prop,
-            self._end_out - self._start_out,
-        ])
+        self._timing_arr = np.array(
+            [
+                self._end_timing_misc - self._start_timing_misc,
+                self._end_inj - self._start_inj,
+                self._end_prop - self._start_prop,
+                self._end_out - self._start_out,
+            ]
+        )
         try:
             logger.info(
                 "Timings (s): misc=%.3f inj=%.3f prop=%.3f out=%.3f",
@@ -508,29 +521,30 @@ class Prometheus(object):
 
     def construct_output(self):
         """Construct a parquet file with metadata from the generated files.
-        
+
         Currently this still treats olympus and ppc output differently.
         """
         # sim_switch = config["photon propagator"]["name"]
 
         from .utils.serialization import serialize_particles_to_awkward, set_serialization_index
+
         set_serialization_index(self.injection)
         json_config = json.dumps(config.to_dict())
         test_arr = serialize_particles_to_awkward(self.detector, self.injection)
         if test_arr is not None:
-            outarr = ak.Array({
-                'mc_truth': self.injection.to_awkward(),
-                config.photon_propagator.photon_field_name: test_arr
-            })
+            outarr = ak.Array(
+                {
+                    "mc_truth": self.injection.to_awkward(),
+                    config.photon_propagator.photon_field_name: test_arr,
+                }
+            )
         else:
-            outarr = ak.Array({
-                'mc_truth': self.injection.to_awkward()
-            })
+            outarr = ak.Array({"mc_truth": self.injection.to_awkward()})
         outfile = config.run.outfile
         # Converting to pyarrow table
         outarr = ak.to_arrow_table(outarr)
         custom_meta_data_key = "config_prometheus"
-        combined_meta = {custom_meta_data_key.encode() : json_config.encode()}
+        combined_meta = {custom_meta_data_key.encode(): json_config.encode()}
         outarr = outarr.replace_schema_metadata(combined_meta)
         with time_block("write_output", logger):
             pq.write_table(outarr, outfile)
@@ -552,13 +566,14 @@ class Prometheus(object):
             logger.debug("Failed to produce run summary")
 
     def __del__(self):
-        """What to do when the Prometheus instance is deleted
-        """
+        """What to do when the Prometheus instance is deleted"""
         # Restore original warning handler if we replaced it
         try:
-            if hasattr(self, '_orig_showwarning') and getattr(warnings, 'showwarning', None) is not None:
+            if (
+                hasattr(self, "_orig_showwarning")
+                and getattr(warnings, "showwarning", None) is not None
+            ):
                 warnings.showwarning = self._orig_showwarning
         except Exception:
             pass
         # Avoid using logging during interpreter shutdown in __del__.
-

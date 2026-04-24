@@ -1,11 +1,13 @@
-import numpy as np
-import h5py as h5
 from typing import Iterable
+
+import h5py as h5
+import numpy as np
 
 from .. import Particle, PropagatableParticle
 from ..injection_event import LIInjectionEvent
-from ..interactions import Interactions, INTERACTION_CONVERTER
+from ..interactions import INTERACTION_CONVERTER
 from .injection import Injection
+
 
 class LIInjection(Injection):
     """Injection constructed from LeptonInjector output."""
@@ -14,7 +16,7 @@ class LIInjection(Injection):
         if not all([isinstance(event, LIInjectionEvent) for event in events]):
             raise ValueError("You are trying to make LI Injection with non-LI events")
         super().__init__(events)
-    
+
     def to_dict(self) -> dict:
         """Convert all properties of the injection to a dictionary.
 
@@ -32,6 +34,7 @@ class LIInjection(Injection):
         d["column_depth"] = [x.column_depth for x in self]
 
         return d
+
 
 def injection_from_LI_output(LI_file: str) -> LIInjection:
     """Create an injection object from a saved LI file.
@@ -52,10 +55,10 @@ def injection_from_LI_output(LI_file: str) -> LIInjection:
             raise ValueError("Too many injectors")
         injection = h5f[injectors[0]]
         injection_events = [
-            injection_event_from_LI(injection, idx)
-            for idx in range(injection["initial"].shape[0])
+            injection_event_from_LI(injection, idx) for idx in range(injection["initial"].shape[0])
         ]
         return LIInjection(injection_events)
+
 
 def injection_event_from_LI(injection: h5.Group, idx: int) -> LIInjectionEvent:
     """Create an injection event from an LI H5 group and index.
@@ -79,15 +82,17 @@ def injection_event_from_LI(injection: h5.Group, idx: int) -> LIInjectionEvent:
         injection["properties"]["initialType"][idx],
         injection["initial"]["Energy"][idx],
         injection["initial"]["Position"][idx],
-        np.array([
-            np.sin(theta) * np.cos(phi),
-            np.sin(theta) * np.sin(phi),
-            np.cos(theta),
-        ]),
-        None
+        np.array(
+            [
+                np.sin(theta) * np.cos(phi),
+                np.sin(theta) * np.sin(phi),
+                np.cos(theta),
+            ]
+        ),
+        None,
     )
     final_states = []
-    for final_ctr in [1,2]:
+    for final_ctr in [1, 2]:
         direction = injection[f"final_{final_ctr}"]["Direction"][idx]
         theta = direction[0]
         phi = direction[1]
@@ -95,27 +100,31 @@ def injection_event_from_LI(injection: h5.Group, idx: int) -> LIInjectionEvent:
             injection["properties"][f"finalType{final_ctr}"][idx],
             injection[f"final_{final_ctr}"]["Energy"][idx],
             injection[f"final_{final_ctr}"]["Position"][idx],
-            np.array([
-                np.sin(theta) * np.cos(phi),
-                np.sin(theta) * np.sin(phi),
-                np.cos(theta),
-            ]),
+            np.array(
+                [
+                    np.sin(theta) * np.cos(phi),
+                    np.sin(theta) * np.sin(phi),
+                    np.cos(theta),
+                ]
+            ),
             None,
-            initial_state
+            initial_state,
         )
         final_states.append(final_state)
-    interaction = INTERACTION_CONVERTER[(
-        initial_state.pdg_code,
-        final_states[0].pdg_code,
-        final_states[1].pdg_code,
-    )]
+    interaction = INTERACTION_CONVERTER[
+        (
+            initial_state.pdg_code,
+            final_states[0].pdg_code,
+            final_states[1].pdg_code,
+        )
+    ]
     vertex_x = injection["properties"]["x"][idx]
     vertex_y = injection["properties"]["y"][idx]
     vertex_z = injection["properties"]["z"][idx]
     bjorken_x = injection["properties"]["finalStateX"][idx]
     bjorken_y = injection["properties"]["finalStateY"][idx]
     column_depth = injection["properties"]["totalColumnDepth"][idx]
-    
+
     event = LIInjectionEvent(
         initial_state,
         final_states,
@@ -125,6 +134,6 @@ def injection_event_from_LI(injection: h5.Group, idx: int) -> LIInjectionEvent:
         vertex_z,
         bjorken_x,
         bjorken_y,
-        column_depth
+        column_depth,
     )
     return event

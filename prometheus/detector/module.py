@@ -1,15 +1,18 @@
-import numpy as np
 from typing import Tuple
+
+import numpy as np
+
 
 class Module:
     """Detector optical module."""
+
     def __init__(
         self,
-        pos: np.ndarray, 
+        pos: np.ndarray,
         key: Tuple[int, int],
-        noise_rate: int=1e3,
+        noise_rate: int = 1e3,
         efficiency=0.2,
-        serial_no=None
+        serial_no=None,
     ):
         """Initialize a module.
 
@@ -37,7 +40,5 @@ class Module:
     def __repr__(self):
         """Return string representation."""
         return repr(
-            f"Module {self.key}, {self.pos} [m], {self.noise_rate*1e-9} [Hz], {self.efficiency}"
+            f"Module {self.key}, {self.pos} [m], {self.noise_rate * 1e-9} [Hz], {self.efficiency}"
         )
-
-

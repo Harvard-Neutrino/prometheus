@@ -2,8 +2,9 @@
 # Authors: Stephan Meighen-Berger
 # Quick and dirty sampling function for injected hadrons (their offset from the interaction vertex if not given)
 
-import numpy as np
 import logging
+
+import numpy as np
 
 logger = logging.getLogger(__name__)
 

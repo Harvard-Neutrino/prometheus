@@ -1,15 +1,13 @@
 import jax.numpy as jnp
-from jax import jit, vmap
 import numpy as np
+from jax import jit, vmap
 
 from ..photon_source import PhotonSource, PhotonSourceType
 
 
-def source_to_model_input_per_module(
-    module_coords, source_pos, source_dir, source_t0, c_medium
-):
+def source_to_model_input_per_module(module_coords, source_pos, source_dir, source_t0, c_medium):
     """Convert photon source and module coordinates into neural net input.
- 
+
     Calculates the distance and viewing angle between the source and the module.
     The viewing angle is the angle of the vector between module and source and the direction
     vector of the source.
@@ -26,14 +24,14 @@ def source_to_model_input_per_module(
         Emission time of the photon source.
     c_medium : float
         Speed of light in the medium.
- 
+
     Returns
     -------
     inp_pars : jax.numpy.ndarray
         Array of ``[log10(distance), viewing_angle]``.
     time_geo : float
         Geometric time (expected arrival time for a direct photon).
- 
+
     """
 
     source_targ_vec = module_coords - source_pos
@@ -51,9 +49,7 @@ def source_to_model_input_per_module(
 
 
 # Vectorize across modules
-source_to_model_input = vmap(
-    source_to_model_input_per_module, in_axes=(0, None, None, None, None)
-)
+source_to_model_input = vmap(source_to_model_input_per_module, in_axes=(0, None, None, None, None))
 
 # Vectorize across sources and jit
 sources_to_model_input = jit(vmap(source_to_model_input, in_axes=(None, 0, 0, 0, None)))
@@ -72,9 +68,7 @@ def sources_to_array(sources):
 
     for i, source in enumerate(sources):
         if source.type != PhotonSourceType.STANDARD_CHERENKOV:
-            raise ValueError(
-                f"Only Cherenkov-like sources are supported. Got {source.type}."
-            )
+            raise ValueError(f"Only Cherenkov-like sources are supported. Got {source.type}.")
         source_pos[i] = source.position
         source_dir[i] = source.direction
         source_time[i] = source.time

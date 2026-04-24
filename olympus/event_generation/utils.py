@@ -1,14 +1,15 @@
 """
 Utility functions for event generation.
 """
+
 import logging
 
 import jax.numpy as jnp
 import numpy as np
-from scipy.integrate import quad
+
+from prometheus.utils.geo_utils import is_in_cylinder
 
 from .constants import Constants
-from prometheus.utils.geo_utils import is_in_cylinder, get_zen_azi, track_isects_cyl
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +61,7 @@ def t_geo(x, t_0, direc, x_0):
     q = np.linalg.norm(np.cross((x - x_0), direc))
     return t_0 + 1 / Constants.c_vac * (
         np.dot(direc, (x - x_0))
-        + q * (Constants.n_gr * Constants.n_ph - 1) / np.sqrt((Constants.n_ph ** 2) - 1)
+        + q * (Constants.n_gr * Constants.n_ph - 1) / np.sqrt((Constants.n_ph**2) - 1)
     )
 
 
@@ -86,9 +87,7 @@ def proposal_setup():
         "cuts": pp.EnergyCutSettings(500, 1, False),
     }
 
-    cross = pp.crosssection.make_std_crosssection(
-        **args
-    )  # use the standard crosssections
+    cross = pp.crosssection.make_std_crosssection(**args)  # use the standard crosssections
     collection = pp.PropagationUtilityCollection()
 
     collection.displacement = pp.make_displacement(cross, True)
@@ -98,9 +97,7 @@ def proposal_setup():
     utility = pp.PropagationUtility(collection=collection)
 
     detector = pp.geometry.Sphere(pp.Cartesian3D(0, 0, 0), 1e20)
-    density_distr = pp.density_distribution.density_homogeneous(
-        args["target"].mass_density
-    )
+    density_distr = pp.density_distribution.density_homogeneous(args["target"].mass_density)
     prop = pp.Propagator(args["particle_def"], [(detector, utility, density_distr)])
     return prop
 

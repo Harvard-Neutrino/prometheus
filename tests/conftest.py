@@ -4,6 +4,7 @@ Changes the working directory to the repository root before any test runs so
 that all relative paths (geo files, resource files) resolve consistently whether
 pytest is invoked from the repo root or from inside tests/.
 """
+
 import os
 import pathlib
 
@@ -19,7 +20,9 @@ def pytest_configure(config):
 
 def pytest_addoption(parser):
     parser.addoption(
-        "--run-slow", action="store_true", default=False,
+        "--run-slow",
+        action="store_true",
+        default=False,
         help="Run slow end-to-end simulation tests (may take several minutes)",
     )
 

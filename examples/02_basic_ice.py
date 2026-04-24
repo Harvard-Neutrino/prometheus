@@ -5,24 +5,27 @@ Minimal ice-case example to validate a Prometheus install with PPC.
 Runs a single-event CPU-only simulation using the demo ice geo file
 and the south-pole PPC ice tables bundled in resources/.
 """
-import sys
-import traceback
+
 import logging
+import sys
 
 logger = logging.getLogger(__name__)
 
 try:
     from prometheus import Prometheus, config
-except Exception as e:
+except Exception:
     logger.exception(
         "Error importing Prometheus. Ensure the environment is activated and requirements are installed."
     )
-    logger.info("Hint: source scripts/activate.sh .prometheus_env && pip install -r requirements.txt")
+    logger.info(
+        "Hint: source scripts/activate.sh .prometheus_env && pip install -r requirements.txt"
+    )
     sys.exit(1)
 
 # Use CPU-only JAX
 try:
     import jax
+
     jax.config.update("jax_enable_x64", True)
     jax.config.update("jax_platform_name", "cpu")
 except Exception:
@@ -45,7 +48,8 @@ def main():
 
     # Use the demo ice geo shipped in resources/
     from pathlib import Path
-    _geo_default = 'resources/geofiles/demo_ice.geo'
+
+    _geo_default = "resources/geofiles/demo_ice.geo"
     _geo_path = Path(_geo_default)
     if not _geo_path.is_absolute() and not _geo_path.exists():
         REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -62,9 +66,11 @@ def main():
 
     try:
         prom.sim()
-    except Exception as e:
-        logger.exception('Simulation error during prom.sim()')
-        logger.info("Hint: check PPC binaries, tables, and that config.photon_propagator is set correctly.")
+    except Exception:
+        logger.exception("Simulation error during prom.sim()")
+        logger.info(
+            "Hint: check PPC binaries, tables, and that config.photon_propagator is set correctly."
+        )
         sys.exit(1)
 
     print("Simulation completed successfully")

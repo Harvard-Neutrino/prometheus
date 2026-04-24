@@ -1,6 +1,6 @@
 """Unit tests for prometheus.utils.geo_utils — geofile I/O and round-trips."""
+
 import pathlib
-import tempfile
 
 import numpy as np
 import pytest
@@ -8,15 +8,16 @@ import pytest
 from prometheus.utils.geo_utils import from_geo, geo_from_coords
 
 REPO_ROOT = pathlib.Path(__file__).parent.parent.resolve()
-WATER_GEO   = str(REPO_ROOT / "resources/geofiles/demo_water.geo")
-ICE_GEO     = str(REPO_ROOT / "resources/geofiles/demo_ice.geo")
+WATER_GEO = str(REPO_ROOT / "resources/geofiles/demo_water.geo")
+ICE_GEO = str(REPO_ROOT / "resources/geofiles/demo_ice.geo")
 ICECUBE_GEO = str(REPO_ROOT / "resources/geofiles/icecube.geo")
-PONE_GEO    = str(REPO_ROOT / "resources/geofiles/pone_triangle.geo")
+PONE_GEO = str(REPO_ROOT / "resources/geofiles/pone_triangle.geo")
 
 
 # ---------------------------------------------------------------------------
 # from_geo — read an existing geometry file
 # ---------------------------------------------------------------------------
+
 
 class TestFromGeoWater:
     @pytest.fixture(scope="class")
@@ -120,6 +121,7 @@ class TestFromGeoPOne:
 # geo_from_coords — write a geometry and read it back
 # ---------------------------------------------------------------------------
 
+
 class TestGeoFromCoordsRoundTrip:
     """geo_from_coords writes valid geofiles that from_geo can re-read."""
 
@@ -127,8 +129,8 @@ class TestGeoFromCoordsRoundTrip:
     def simple_coords(self):
         """3×3 grid of 5 modules each, at z=0, 1, 2, 3, 4."""
         coords = []
-        for x in [0., 10., 20.]:
-            for y in [0., 10., 20.]:
+        for x in [0.0, 10.0, 20.0]:
+            for y in [0.0, 10.0, 20.0]:
                 for z in range(5):
                     coords.append([float(x), float(y), float(z)])
         return np.array(coords)
@@ -150,8 +152,8 @@ class TestGeoFromCoordsRoundTrip:
         geo_from_coords(simple_coords, out, medium="water")
         pos, _keys, _medium = from_geo(out)
         # Positions may be reordered by geo_from_coords (it sorts); compare sets
-        orig_set  = {tuple(np.round(c, 3)) for c in simple_coords}
-        read_set  = {tuple(np.round(p, 3)) for p in pos}
+        orig_set = {tuple(np.round(c, 3)) for c in simple_coords}
+        read_set = {tuple(np.round(p, 3)) for p in pos}
         assert orig_set == read_set
 
     def test_roundtrip_keys_are_valid_tuples(self, simple_coords, tmp_path):
@@ -163,7 +165,7 @@ class TestGeoFromCoordsRoundTrip:
             assert len(k) == 2
 
     def test_single_module_roundtrip(self, tmp_path):
-        coords = np.array([[0., 0., 0.]])
+        coords = np.array([[0.0, 0.0, 0.0]])
         out = str(tmp_path / "single.geo")
         geo_from_coords(coords, out, medium="water")
         pos, keys, medium = from_geo(out)
@@ -171,7 +173,7 @@ class TestGeoFromCoordsRoundTrip:
         assert medium.lower() == "water"
 
     def test_dom_radius_written_to_file(self, tmp_path):
-        coords = np.array([[0., 0., 0.]])
+        coords = np.array([[0.0, 0.0, 0.0]])
         out = str(tmp_path / "radius.geo")
         geo_from_coords(coords, out, medium="water", dom_radius=42)
         with open(out) as f:

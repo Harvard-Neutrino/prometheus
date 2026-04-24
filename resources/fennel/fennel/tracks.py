@@ -258,9 +258,7 @@ class Track:
         ratio = lambd + kappa * jnp.log(E)
         return ratio
 
-    def _symmetric_angle_distro_fetcher_jax(
-        self, phi: float, n: float, E: float
-    ) -> float:
+    def _symmetric_angle_distro_fetcher_jax(self, phi: float, n: float, E: float) -> float:
         # TODO: Add asymmetry function
         """Calculates the symmetric angular distribution of the Cherenkov
         emission for a single energy. The error should lie below 10%.

@@ -48,9 +48,7 @@ def config_mims(config, detector) -> None:
     else:
         earth_model_file = EARTH_MODEL_DICT[detector.medium.name]
 
-    config.detector.offset = [
-        detector._offset[0], detector._offset[1], detector._offset[2]
-    ]
+    config.detector.offset = [detector._offset[0], detector._offset[1], detector._offset[2]]
 
     injection_config_mims(
         config.injection[config.injection.name],
@@ -86,8 +84,7 @@ def check_consistency(config) -> None:
     pp_name = config.photon_propagator.name
     if pp_name is None:
         raise ValueError(
-            "photon propagator name has not been set. "
-            "Is the detector medium recognised?"
+            "photon propagator name has not been set. Is the detector medium recognised?"
         )
 
     inj_cfg = config.injection[config.injection.name]
@@ -102,16 +99,12 @@ def check_consistency(config) -> None:
         for attr, label in (("diff_xsec", "diff xsec"), ("total_xsec", "total xsec")):
             path = getattr(inj_cfg.paths, attr, None)
             if path is not None and not Path(path).exists():
-                raise ValueError(
-                    f"injection paths.{label} does not exist: {path}"
-                )
+                raise ValueError(f"injection paths.{label} does not exist: {path}")
 
     lp_cfg = config.lepton_propagator[config.lepton_propagator.name]
     tables_path = lp_cfg.paths.tables_path
     if tables_path is not None and not Path(tables_path).exists():
-        raise ValueError(
-            f"lepton propagator tables path does not exist: {tables_path}"
-        )
+        raise ValueError(f"lepton propagator tables path does not exist: {tables_path}")
 
 
 def photon_prop_config_mims(config, output_prefix: str) -> None:
@@ -177,15 +170,14 @@ def injection_config_mims(
         config.paths.lic_file = f"{output_prefix}_LI_config.lic"
 
     from .geo_utils import get_endcap, get_injection_radius, get_volume
+
     is_ice = detector.medium.name == "ICE"
 
     if config.simulation.endcap_length is None:
         config.simulation.endcap_length = get_endcap(detector.module_coords, is_ice)
 
     if config.simulation.injection_radius is None:
-        config.simulation.injection_radius = get_injection_radius(
-            detector.module_coords, is_ice
-        )
+        config.simulation.injection_radius = get_injection_radius(detector.module_coords, is_ice)
 
     cyl_radius, cyl_height = get_volume(detector.module_coords, is_ice)
     if config.simulation.cylinder_radius is None:
@@ -193,17 +185,16 @@ def injection_config_mims(
     if config.simulation.cylinder_height is None:
         config.simulation.cylinder_height = cyl_height
 
-    int_str = INTERACTION_DICT[(
-        config.simulation.final_state_1,
-        config.simulation.final_state_2,
-    )]
+    int_str = INTERACTION_DICT[
+        (
+            config.simulation.final_state_1,
+            config.simulation.final_state_2,
+        )
+    ]
 
     if int_str in ("CC", "NC"):
         nutype = "nubar"
-        if (
-            "Bar" in config.simulation.final_state_1
-            or "Plus" in config.simulation.final_state_1
-        ):
+        if "Bar" in config.simulation.final_state_1 or "Plus" in config.simulation.final_state_1:
             nutype = "nu"
         if config.paths.diff_xsec is None:
             config.paths.diff_xsec = str(

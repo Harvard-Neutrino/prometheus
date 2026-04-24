@@ -1,6 +1,6 @@
+import jax
 import jax.numpy as jnp
 from jax.lax import Precision
-import jax
 
 
 def rotate_to_new_direc(old_dir, new_dir, operand):
@@ -16,9 +16,7 @@ def rotate_to_new_direc(old_dir, new_dir, operand):
         v_rot = (
             operand * jnp.cos(theta)
             + jnp.cross(axis, operand) * jnp.sin(theta)
-            + axis
-            * jnp.dot(axis, operand, precision=Precision.HIGHEST)
-            * (1 - jnp.cos(theta))
+            + axis * jnp.dot(axis, operand, precision=Precision.HIGHEST) * (1 - jnp.cos(theta))
         )
         return v_rot
 

@@ -1,8 +1,9 @@
 import numpy as np
-from .convert_loss_name import convert_loss_name
+
 from .units import SpeedOfLight, s_to_ns
 
 PPC_MAGIC_Z = 1948.07
+
 
 def serialize_particle(particle, output_f2k):
     """Write an ``MC`` header line for a particle to an open f2k file.
@@ -18,8 +19,9 @@ def serialize_particle(particle, output_f2k):
     theta = np.arccos(particle.direction[2])
     phi = np.arctan2(particle.direction[1], particle.direction[0])
     output_f2k.write(
-        f'MC E {particle.e} x {offpos[0]} y {offpos[1]} z {offpos[2] + PPC_MAGIC_Z} theta {theta} phi {phi}\n'
+        f"MC E {particle.e} x {offpos[0]} y {offpos[1]} z {offpos[2] + PPC_MAGIC_Z} theta {theta} phi {phi}\n"
     )
+
 
 def serialize_loss(loss, parent, output_f2k):
     """Write a ``TR`` track line for an energy loss to an open f2k file.
@@ -40,8 +42,9 @@ def serialize_loss(loss, parent, output_f2k):
     c = SpeedOfLight
     c /= s_to_ns
     dt = d / c
-    line = f'TR 0 {0} {loss} {offpos[0]} {offpos[1]} {offpos[2] + PPC_MAGIC_Z} {theta} {phi} 0 {loss.e} {dt} \n'
+    line = f"TR 0 {0} {loss} {offpos[0]} {offpos[1]} {offpos[2] + PPC_MAGIC_Z} {theta} {phi} 0 {loss.e} {dt} \n"
     output_f2k.write(line)
+
 
 def serialize_to_f2k(particle, fname):
     """Create an f2k file from given events.
@@ -77,11 +80,11 @@ def serialize_to_f2k(particle, fname):
         - It is only required for muons because cascades are treated as point-like sources.
     - ``energy`` is the track's initial energy in GeV.
     - ``time`` is the track's initial time in nanoseconds.
-    
+
     """
     index = 0
     with open(fname, "w") as output_f2k:
-        output_f2k.write(f'EM {index} 1 0 0 0 0 \n')
+        output_f2k.write(f"EM {index} 1 0 0 0 0 \n")
         serialize_particle(particle, output_f2k)
         for loss in particle.losses:
             serialize_loss(loss, particle, output_f2k)
@@ -89,4 +92,4 @@ def serialize_to_f2k(particle, fname):
             serialize_particle(child, output_f2k)
             for loss in child.losses:
                 serialize_loss(loss, child, output_f2k)
-        output_f2k.write('EE\n')
+        output_f2k.write("EE\n")

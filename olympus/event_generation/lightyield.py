@@ -1,6 +1,7 @@
 """
 Light-yield calculations and source factories.
 """
+
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -21,12 +22,12 @@ except AttributeError:
 def simple_cascade_light_yield(energy, *args):
     """
     Approximation for cascade light yield.
- 
+
     Parameters
     ----------
     energy : float
         Particle energy in GeV.
-    
+
     Returns
     -------
     float
@@ -40,7 +41,7 @@ def simple_cascade_light_yield(energy, *args):
 def fennel_total_light_yield(energy, particle_id, wavelength_range):
     """
     Calculate total light yield using fennel.
- 
+
     Parameters
     ----------
     energy : float
@@ -49,7 +50,7 @@ def fennel_total_light_yield(energy, particle_id, wavelength_range):
         Particle type (PDG ID).
     wavelength_range : tuple
         Wavelength interval (nm).
-    
+
     Returns
     -------
     float
@@ -57,7 +58,7 @@ def fennel_total_light_yield(energy, particle_id, wavelength_range):
     """
 
     # Patch to fix LI Hadrons treatment
-    if particle_id==-2000001006:
+    if particle_id == -2000001006:
         particle_id = 2212
     funcs = fennel_instance.auto_yields(energy, particle_id, function=True)
     counts_func = funcs[0]
@@ -67,16 +68,14 @@ def fennel_total_light_yield(energy, particle_id, wavelength_range):
 
     return light_yield
 
-    
-
 
 def fennel_frac_long_light_yield(energy, particle_id, resolution=0.2):
     """
     Calculate the longitudinal light yield contribution.
- 
+
     Integrate the longitudinal distribution in steps of ``resolution`` and
     return the relative contributions.
- 
+
     Parameters
     ----------
     energy : float
@@ -85,7 +84,7 @@ def fennel_frac_long_light_yield(energy, particle_id, resolution=0.2):
         Particle type (PDG ID).
     resolution : float, optional
         Step length in m for evaluating the longitudinal distribution.
-    
+
     Returns
     -------
     tuple
@@ -93,7 +92,7 @@ def fennel_frac_long_light_yield(energy, particle_id, resolution=0.2):
         relative contributions and ``int_grid`` is the grid used for integration.
     """
     # Patch to fix LI Hadrons treatment
-    if particle_id==-2000001006:
+    if particle_id == -2000001006:
         particle_id = 2212
     funcs = fennel_instance.auto_yields(energy, particle_id, function=True)
     long_func = funcs[4]
@@ -122,7 +121,7 @@ def make_pointlike_cascade_source(
 ):
     """
     Create a pointlike light source.
- 
+
     Parameters
     ----------
     pos : numpy.ndarray
@@ -145,7 +144,7 @@ def make_pointlike_cascade_source(
         arrays are returned in JAX-friendly form for downstream propagation.
     """
     # Patch to fix LI Hadrons treatment
-    if particle_id==-2000001006:
+    if particle_id == -2000001006:
         particle_id = 2212
     source_nphotons = jnp.asarray(
         [fennel_total_light_yield(energy, particle_id, wavelength_range)]
@@ -174,10 +173,10 @@ def make_realistic_cascade_source(
 ):
     """
     Create a realistic (elongated) particle cascade.
- 
+
     The longitudinal profile is approximated by placing point-like light sources
     every ``resolution`` steps.
- 
+
     Parameters
     ----------
     pos : numpy.ndarray
@@ -198,7 +197,7 @@ def make_realistic_cascade_source(
         If True, apply Molière randomization to lateral offsets.
     wavelength_range : tuple, optional
         Wavelength interval (nm).
-    
+
     Returns
     -------
     tuple
@@ -206,7 +205,7 @@ def make_realistic_cascade_source(
         arrays are returned in JAX-friendly form for downstream propagation.
     """
     # Patch to fix LI Hadrons treatment
-    if particle_id==-2000001006:
+    if particle_id == -2000001006:
         particle_id = 2212
     n_photons_total = fennel_total_light_yield(energy, particle_id, wavelength_range)
     frac_yields, grid = fennel_frac_long_light_yield(energy, particle_id, resolution)
@@ -223,11 +222,7 @@ def make_realistic_cascade_source(
 
         dpos_vec = jnp.stack([x, y, jnp.zeros_like(x)], axis=1)
         dpos_vec = rotate_to_new_direc_v(jnp.asarray([0, 0, 1]), dir, dpos_vec)
-        source_pos = (
-            dist_along[:, np.newaxis] * dir[np.newaxis, :]
-            + pos[np.newaxis, :]
-            + dpos_vec
-        )
+        source_pos = dist_along[:, np.newaxis] * dir[np.newaxis, :] + pos[np.newaxis, :] + dpos_vec
     else:
         source_pos = dist_along[:, np.newaxis] * dir[np.newaxis, :] + pos[np.newaxis, :]
 

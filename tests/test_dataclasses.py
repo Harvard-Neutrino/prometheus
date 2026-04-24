@@ -1,30 +1,29 @@
 """Unit tests for domain dataclasses and simple value-objects."""
+
 import math
 
 import numpy as np
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Particle / PropagatableParticle
 # ---------------------------------------------------------------------------
-
 from prometheus.particle.particle import Particle, PropagatableParticle
 
 
 def _make_particle(pdg=13, e=1e3, pos=None, direction=None, idx=0):
     if pos is None:
-        pos = np.array([0., 0., 0.])
+        pos = np.array([0.0, 0.0, 0.0])
     if direction is None:
-        direction = np.array([0., 0., 1.])
+        direction = np.array([0.0, 0.0, 1.0])
     return Particle(pdg, e, pos, direction, idx)
 
 
 def _make_propagatable(pdg=13, e=1e3, pos=None, direction=None, idx=0, parent=None):
     if pos is None:
-        pos = np.array([0., 0., 0.])
+        pos = np.array([0.0, 0.0, 0.0])
     if direction is None:
-        direction = np.array([0., 0., 1.])
+        direction = np.array([0.0, 0.0, 1.0])
     return PropagatableParticle(pdg, e, pos, direction, idx, parent)
 
 
@@ -50,27 +49,27 @@ class TestParticle:
         assert int(p) == -13
 
     def test_theta_pointing_along_z(self):
-        p = _make_particle(direction=np.array([0., 0., 1.]))
+        p = _make_particle(direction=np.array([0.0, 0.0, 1.0]))
         assert p.theta == pytest.approx(0.0)
 
     def test_theta_pointing_against_z(self):
-        p = _make_particle(direction=np.array([0., 0., -1.]))
+        p = _make_particle(direction=np.array([0.0, 0.0, -1.0]))
         assert p.theta == pytest.approx(math.pi)
 
     def test_theta_transverse(self):
-        p = _make_particle(direction=np.array([1., 0., 0.]))
+        p = _make_particle(direction=np.array([1.0, 0.0, 0.0]))
         assert p.theta == pytest.approx(math.pi / 2)
 
     def test_phi_along_x(self):
-        p = _make_particle(direction=np.array([1., 0., 0.]))
+        p = _make_particle(direction=np.array([1.0, 0.0, 0.0]))
         assert p.phi == pytest.approx(0.0)
 
     def test_phi_along_y(self):
-        p = _make_particle(direction=np.array([0., 1., 0.]))
+        p = _make_particle(direction=np.array([0.0, 1.0, 0.0]))
         assert p.phi == pytest.approx(math.pi / 2)
 
     def test_phi_along_negative_x(self):
-        p = _make_particle(direction=np.array([-1., 0., 0.]))
+        p = _make_particle(direction=np.array([-1.0, 0.0, 0.0]))
         assert abs(p.phi) == pytest.approx(math.pi)
 
     def test_energy_stored(self):
@@ -78,7 +77,7 @@ class TestParticle:
         assert p.e == 2345.6
 
     def test_position_stored(self):
-        pos = np.array([1., 2., 3.])
+        pos = np.array([1.0, 2.0, 3.0])
         p = _make_particle(pos=pos)
         np.testing.assert_array_equal(p.position, pos)
 
@@ -113,7 +112,7 @@ class TestPropagatableParticle:
         assert len(p.losses) == 1
 
     def test_inherits_particle_theta(self):
-        p = _make_propagatable(direction=np.array([0., 0., 1.]))
+        p = _make_propagatable(direction=np.array([0.0, 0.0, 1.0]))
         assert p.theta == pytest.approx(0.0)
 
 
@@ -126,28 +125,28 @@ from prometheus.lepton_propagation.loss import Loss
 
 class TestLoss:
     def test_str_brems(self):
-        loss = Loss(1000000002, 100.0, np.array([0., 0., 0.]))
+        loss = Loss(1000000002, 100.0, np.array([0.0, 0.0, 0.0]))
         assert str(loss) == "brems"
 
     def test_str_delta(self):
-        loss = Loss(1000000003, 50.0, np.array([1., 2., 3.]))
+        loss = Loss(1000000003, 50.0, np.array([1.0, 2.0, 3.0]))
         assert str(loss) == "delta"
 
     def test_str_epair(self):
-        loss = Loss(1000000004, 200.0, np.array([0., 0., 0.]))
+        loss = Loss(1000000004, 200.0, np.array([0.0, 0.0, 0.0]))
         assert str(loss) == "epair"
 
     def test_energy_accessible(self):
-        loss = Loss(1000000002, 42.0, np.array([0., 0., 0.]))
+        loss = Loss(1000000002, 42.0, np.array([0.0, 0.0, 0.0]))
         assert loss.e == 42.0
 
     def test_position_accessible(self):
-        pos = np.array([1., 2., 3.])
+        pos = np.array([1.0, 2.0, 3.0])
         loss = Loss(1000000002, 1.0, pos)
         np.testing.assert_array_equal(loss.position, pos)
 
     def test_frozen_prevents_mutation(self):
-        loss = Loss(1000000002, 1.0, np.array([0., 0., 0.]))
+        loss = Loss(1000000002, 1.0, np.array([0.0, 0.0, 0.0]))
         with pytest.raises((TypeError, AttributeError)):
             loss.e = 999.0
 
@@ -162,9 +161,14 @@ from prometheus.photon_propagation.hit import Hit
 class TestHit:
     def test_construction_with_all_fields(self):
         h = Hit(
-            string_id=1, om_id=2, time=123.4,
-            wavelength=400.0, om_zenith=0.5, om_azimuth=1.2,
-            photon_zenith=0.3, photon_azimuth=0.7,
+            string_id=1,
+            om_id=2,
+            time=123.4,
+            wavelength=400.0,
+            om_zenith=0.5,
+            om_azimuth=1.2,
+            photon_zenith=0.3,
+            photon_azimuth=0.7,
         )
         assert h.string_id == 1
         assert h.om_id == 2
@@ -173,9 +177,14 @@ class TestHit:
 
     def test_construction_with_none_optionals(self):
         h = Hit(
-            string_id=0, om_id=0, time=0.0,
-            wavelength=None, om_zenith=None, om_azimuth=None,
-            photon_zenith=None, photon_azimuth=None,
+            string_id=0,
+            om_id=0,
+            time=0.0,
+            wavelength=None,
+            om_zenith=None,
+            om_azimuth=None,
+            photon_zenith=None,
+            photon_azimuth=None,
         )
         assert h.wavelength is None
         assert h.om_zenith is None
@@ -192,15 +201,15 @@ class TestInteractions:
     def test_all_four_members_exist(self):
         names = [m.name for m in Interactions]
         assert "GLASHOW_RESONANCE" in names
-        assert "CHARGED_CURRENT"   in names
-        assert "NEUTRAL_CURRENT"   in names
-        assert "DIMUON"            in names
+        assert "CHARGED_CURRENT" in names
+        assert "NEUTRAL_CURRENT" in names
+        assert "DIMUON" in names
 
     def test_values_match_spec(self):
         assert Interactions.GLASHOW_RESONANCE.value == 0
-        assert Interactions.CHARGED_CURRENT.value   == 1
-        assert Interactions.NEUTRAL_CURRENT.value   == 2
-        assert Interactions.DIMUON.value            == 3
+        assert Interactions.CHARGED_CURRENT.value == 1
+        assert Interactions.NEUTRAL_CURRENT.value == 2
+        assert Interactions.DIMUON.value == 3
 
     def test_enum_members_count(self):
         assert len(list(Interactions)) == 4
@@ -256,26 +265,26 @@ from olympus.event_generation.photon_source import PhotonSource, PhotonSourceTyp
 class TestPhotonSource:
     def test_default_type_is_standard_cherenkov(self):
         src = PhotonSource(
-            position=np.array([0., 0., 0.]),
+            position=np.array([0.0, 0.0, 0.0]),
             n_photons=1000,
             time=0.0,
-            direction=np.array([0., 0., 1.]),
+            direction=np.array([0.0, 0.0, 1.0]),
         )
         assert src.type == PhotonSourceType.STANDARD_CHERENKOV
 
     def test_custom_type_isotropic(self):
         src = PhotonSource(
-            position=np.array([0., 0., 0.]),
+            position=np.array([0.0, 0.0, 0.0]),
             n_photons=500,
             time=1.0,
-            direction=np.array([1., 0., 0.]),
+            direction=np.array([1.0, 0.0, 0.0]),
             type=PhotonSourceType.ISOTROPIC,
         )
         assert src.type == PhotonSourceType.ISOTROPIC
 
     def test_attributes_stored_correctly(self):
-        pos = np.array([1., 2., 3.])
-        d   = np.array([0., 1., 0.])
+        pos = np.array([1.0, 2.0, 3.0])
+        d = np.array([0.0, 1.0, 0.0])
         src = PhotonSource(position=pos, n_photons=42, time=5.0, direction=d)
         np.testing.assert_array_equal(src.position, pos)
         assert src.n_photons == 42
@@ -305,14 +314,14 @@ class TestShouldPropagate:
 
     def test_child_with_loss_returns_true(self):
         parent = _make_propagatable()
-        child  = _make_propagatable()
+        child = _make_propagatable()
         child.losses.append("loss")
         parent.children.append(child)
         assert should_propagate(parent) is True
 
     def test_child_without_loss_returns_false(self):
         parent = _make_propagatable()
-        child  = _make_propagatable()
+        child = _make_propagatable()
         parent.children.append(child)
         assert should_propagate(parent) is False
 
@@ -322,14 +331,18 @@ class TestShouldPropagate:
 # ---------------------------------------------------------------------------
 
 from prometheus.utils.serialization.accumulate_hits import accumulate_hits
-from prometheus.photon_propagation.hit import Hit
 
 
 def _make_hit(t=0.0):
     return Hit(
-        string_id=0, om_id=0, time=t,
-        wavelength=None, om_zenith=None, om_azimuth=None,
-        photon_zenith=None, photon_azimuth=None,
+        string_id=0,
+        om_id=0,
+        time=t,
+        wavelength=None,
+        om_zenith=None,
+        om_azimuth=None,
+        photon_zenith=None,
+        photon_azimuth=None,
     )
 
 
@@ -359,7 +372,7 @@ class TestAccumulateHits:
 
     def test_child_hits_collected(self):
         parent = _make_propagatable(idx=1)
-        child  = _make_propagatable(idx=2)
+        child = _make_propagatable(idx=2)
         child.hits = [_make_hit(5.0)]
         parent.children.append(child)
         result = accumulate_hits([parent])
@@ -368,9 +381,9 @@ class TestAccumulateHits:
 
     def test_nested_children_collected_recursively(self):
         grandparent = _make_propagatable(idx=0)
-        parent      = _make_propagatable(idx=1)
-        child       = _make_propagatable(idx=2)
-        child.hits  = [_make_hit(1.0), _make_hit(2.0)]
+        parent = _make_propagatable(idx=1)
+        child = _make_propagatable(idx=2)
+        child.hits = [_make_hit(1.0), _make_hit(2.0)]
         parent.children.append(child)
         grandparent.children.append(parent)
         result = accumulate_hits([grandparent])

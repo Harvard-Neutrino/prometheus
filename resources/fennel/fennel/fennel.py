@@ -106,9 +106,7 @@ class Fennel:
     - Set random seed for reproducible results
     """
 
-    def __init__(
-        self, userconfig: Optional[Union[Dict[str, Any], str, Path]] = None
-    ) -> None:
+    def __init__(self, userconfig: Optional[Union[Dict[str, Any], str, Path]] = None) -> None:
         """
         Initialize the Fennel light yield calculator.
 
@@ -206,13 +204,9 @@ class Fennel:
         _log.info("---------------------------------------------------")
         _log.info("Creating a photon...")
         # Hadron cascade creation
-        self._photon = Photon(
-            self._particles, self._track, self._em_cascade, self._hadron_cascade
-        )
+        self._photon = Photon(self._particles, self._track, self._em_cascade, self._hadron_cascade)
         # Creating the definitions storer
-        self._dg = Definitions_Generator(
-            self._track, self._em_cascade, self._hadron_cascade
-        )
+        self._dg = Definitions_Generator(self._track, self._em_cascade, self._hadron_cascade)
         _log.info("Creation finished")
         _log.info("---------------------------------------------------")
         _log.info("---------------------------------------------------")
@@ -912,10 +906,8 @@ class Fennel:
         n = validate_refractive_index(n)
 
         # Call original method
-        dcounts, dcounts_sample, em_frac, em_frac_sample, long_prof, angles = (
-            self.hadron_yields(
-                energy, particle, wavelengths, angle_grid, n, z_grid, function
-            )
+        dcounts, dcounts_sample, em_frac, em_frac_sample, long_prof, angles = self.hadron_yields(
+            energy, particle, wavelengths, angle_grid, n, z_grid, function
         )
 
         # Return structured result
@@ -934,9 +926,7 @@ class Fennel:
     # Convenience Methods for Common Use Cases
     # =========================================================================
 
-    def quick_track(
-        self, energy: float, interaction: str = "total"
-    ) -> TrackYieldResult:
+    def quick_track(self, energy: float, interaction: str = "total") -> TrackYieldResult:
         """
         Quick track calculation with minimal parameters.
 

@@ -1,9 +1,9 @@
 import json
-import time
 import logging
+import time
 
-from prometheus.summary import emit_run_summary
 from prometheus import config
+from prometheus.summary import emit_run_summary
 
 
 class DummyLogCounter:
@@ -22,9 +22,11 @@ class FakeEvent:
 class FakeProm:
     def __init__(self):
         self.injection = [FakeEvent()]
+
         class Detector:
             n_modules = 42
             modules = list(range(42))
+
         self.detector = Detector()
         # timing attributes
         self._start_inj = 0.0
@@ -97,4 +99,6 @@ def test_emit_run_summary_debug_mode_logs(tmp_path, monkeypatch, caplog):
 
     # Look for the debug summary entry
     msgs = [r.getMessage() for r in caplog.records]
-    assert any("Run debug summary" in m or "Checksum (sha256)" in m or "Timings [s]" in m for m in msgs)
+    assert any(
+        "Run debug summary" in m or "Checksum (sha256)" in m or "Timings [s]" in m for m in msgs
+    )

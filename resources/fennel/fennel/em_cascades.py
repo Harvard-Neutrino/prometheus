@@ -108,9 +108,7 @@ class EM_Cascade:
             self._params = pickle.loads(param_file)["em cascade"]
         else:
             raise ValueError(
-                "EM parametrization "
-                + config["scenario"]["parametrization"]
-                + " not implemented!"
+                "EM parametrization " + config["scenario"]["parametrization"] + " not implemented!"
             )
         if config["general"]["jax"]:
             _log.info("Running with JAX functions")
@@ -200,10 +198,7 @@ class EM_Cascade:
         a = self._a_energy_fetch(E, name)
         a = np.array(a).flatten()
         res = np.array(
-            [
-                b * ((t * b) ** (a_val - 1.0) * np.exp(-(t * b)) / gamma_func(a_val))
-                for a_val in a
-            ]
+            [b * ((t * b) ** (a_val - 1.0) * np.exp(-(t * b)) / gamma_func(a_val)) for a_val in a]
         )
         return res
 
@@ -266,9 +261,7 @@ class EM_Cascade:
         b = params["b"]
         return b
 
-    def _symmetric_angle_distro(
-        self, phi: np.ndarray, n: float, name: int
-    ) -> np.ndarray:
+    def _symmetric_angle_distro(self, phi: np.ndarray, n: float, name: int) -> np.ndarray:
         """
         Calculate symmetric angular distribution of Cherenkov photons.
 

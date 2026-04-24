@@ -21,7 +21,6 @@ import jax
 import jax.numpy as jnp
 import optax
 
-
 # ---------------------------------------------------------------------------
 # Pure-JAX MLP
 # Reads directly from the haiku-style param dict:
@@ -32,6 +31,7 @@ import optax
 #   params["linear"]["b"]          shape (out,)
 # Hidden activation: ReLU (same as haiku MLP default).
 # ---------------------------------------------------------------------------
+
 
 def _mlp_apply(params, x, n_hidden_layers):
     """Apply a simple MLP using parameters in haiku-style dicts.
@@ -64,6 +64,7 @@ def _mlp_apply(params, x, n_hidden_layers):
 # Adapted from distrax/_src/bijectors/rational_quadratic_spline.py
 # (Copyright 2021 DeepMind Technologies Limited, Apache License 2.0)
 # ---------------------------------------------------------------------------
+
 
 def _normalize_bin_sizes(unnormalized, total_size, min_bin_size=1e-4):
     """
@@ -137,20 +138,24 @@ def _build_rqs_knots_1d(spl_p, rmin, rmax):
     """
     num_bins = (spl_p.shape[0] - 1) // 3
     range_size = rmax - rmin
-    bin_widths  = _normalize_bin_sizes(spl_p[:num_bins], range_size)
-    bin_heights = _normalize_bin_sizes(spl_p[num_bins:2 * num_bins], range_size)
-    knot_slopes = _normalize_knot_slopes(spl_p[2 * num_bins:])
+    bin_widths = _normalize_bin_sizes(spl_p[:num_bins], range_size)
+    bin_heights = _normalize_bin_sizes(spl_p[num_bins : 2 * num_bins], range_size)
+    knot_slopes = _normalize_knot_slopes(spl_p[2 * num_bins :])
     # Interior knot positions (distrax convention: explicit rmin / rmax endpoints).
-    x_pos = jnp.concatenate([
-        jnp.array([rmin]),
-        rmin + jnp.cumsum(bin_widths[:-1]),
-        jnp.array([rmax]),
-    ])
-    y_pos = jnp.concatenate([
-        jnp.array([rmin]),
-        rmin + jnp.cumsum(bin_heights[:-1]),
-        jnp.array([rmax]),
-    ])
+    x_pos = jnp.concatenate(
+        [
+            jnp.array([rmin]),
+            rmin + jnp.cumsum(bin_widths[:-1]),
+            jnp.array([rmax]),
+        ]
+    )
+    y_pos = jnp.concatenate(
+        [
+            jnp.array([rmin]),
+            rmin + jnp.cumsum(bin_heights[:-1]),
+            jnp.array([rmax]),
+        ]
+    )
     return x_pos, y_pos, knot_slopes
 
 
@@ -175,22 +180,28 @@ def _build_rqs_knots_batched(spl_params, rmin, rmax):
     """
     num_bins = (spl_params.shape[-1] - 1) // 3
     range_size = rmax - rmin
-    bin_widths  = _normalize_bin_sizes(spl_params[..., :num_bins], range_size)
-    bin_heights = _normalize_bin_sizes(spl_params[..., num_bins:2 * num_bins], range_size)
-    knot_slopes = _normalize_knot_slopes(spl_params[..., 2 * num_bins:])
+    bin_widths = _normalize_bin_sizes(spl_params[..., :num_bins], range_size)
+    bin_heights = _normalize_bin_sizes(spl_params[..., num_bins : 2 * num_bins], range_size)
+    knot_slopes = _normalize_knot_slopes(spl_params[..., 2 * num_bins :])
     pad_shape = spl_params.shape[:-1] + (1,)
     pad_min = jnp.full(pad_shape, rmin)
     pad_max = jnp.full(pad_shape, rmax)
-    x_pos = jnp.concatenate([
-        pad_min,
-        rmin + jnp.cumsum(bin_widths[..., :-1], axis=-1),
-        pad_max,
-    ], axis=-1)
-    y_pos = jnp.concatenate([
-        pad_min,
-        rmin + jnp.cumsum(bin_heights[..., :-1], axis=-1),
-        pad_max,
-    ], axis=-1)
+    x_pos = jnp.concatenate(
+        [
+            pad_min,
+            rmin + jnp.cumsum(bin_widths[..., :-1], axis=-1),
+            pad_max,
+        ],
+        axis=-1,
+    )
+    y_pos = jnp.concatenate(
+        [
+            pad_min,
+            rmin + jnp.cumsum(bin_heights[..., :-1], axis=-1),
+            pad_max,
+        ],
+        axis=-1,
+    )
     return x_pos, y_pos, knot_slopes
 
 
@@ -215,41 +226,35 @@ def _rqs_fwd(x, x_pos, y_pos, knot_slopes):
     above_range = x >= x_pos[-1]
     correct_bin = jnp.logical_and(x >= x_pos[:-1], x < x_pos[1:])
     any_bin_in_range = jnp.any(correct_bin)
-    first_bin = jnp.concatenate(
-        [jnp.array([1]), jnp.zeros(len(correct_bin) - 1)]
-    ).astype(bool)
+    first_bin = jnp.concatenate([jnp.array([1]), jnp.zeros(len(correct_bin) - 1)]).astype(bool)
     correct_bin = jnp.where(any_bin_in_range, correct_bin, first_bin)
 
     params = jnp.stack([x_pos, y_pos, knot_slopes], axis=1)
     params_l = jnp.sum(correct_bin[:, None] * params[:-1], axis=0)
-    params_r = jnp.sum(correct_bin[:, None] * params[1:],  axis=0)
+    params_r = jnp.sum(correct_bin[:, None] * params[1:], axis=0)
     x0, x1 = params_l[0], params_r[0]
     y0, y1 = params_l[1], params_r[1]
     d0, d1 = params_l[2], params_r[2]
 
     bin_w = x1 - x0
     bin_h = y1 - y0
-    s     = bin_h / bin_w
-    z     = jnp.clip((x - x0) / bin_w, 0.0, 1.0)
-    z2    = z * z
-    z1mz  = z - z2          # z(1-z)
-    z1m2  = (1.0 - z) ** 2
+    s = bin_h / bin_w
+    z = jnp.clip((x - x0) / bin_w, 0.0, 1.0)
+    z2 = z * z
+    z1mz = z - z2  # z(1-z)
+    z1m2 = (1.0 - z) ** 2
 
-    st    = d1 + d0 - 2.0 * s
-    num   = bin_h * (s * z2 + d0 * z1mz)
-    den   = s + st * z1mz
-    y     = y0 + num / den
+    st = d1 + d0 - 2.0 * s
+    num = bin_h * (s * z2 + d0 * z1mz)
+    den = s + st * z1mz
+    y = y0 + num / den
 
-    log_det = (
-        2.0 * jnp.log(s)
-        + jnp.log(d1 * z2 + 2.0 * s * z1mz + d0 * z1m2)
-        - 2.0 * jnp.log(den)
-    )
+    log_det = 2.0 * jnp.log(s) + jnp.log(d1 * z2 + 2.0 * s * z1mz + d0 * z1m2) - 2.0 * jnp.log(den)
 
     # Linear extrapolation outside [rmin, rmax]
-    y       = jnp.where(below_range, (x - x_pos[0])  * knot_slopes[0]  + y_pos[0],  y)
-    y       = jnp.where(above_range, (x - x_pos[-1]) * knot_slopes[-1] + y_pos[-1], y)
-    log_det = jnp.where(below_range, jnp.log(knot_slopes[0]),  log_det)
+    y = jnp.where(below_range, (x - x_pos[0]) * knot_slopes[0] + y_pos[0], y)
+    y = jnp.where(above_range, (x - x_pos[-1]) * knot_slopes[-1] + y_pos[-1], y)
+    log_det = jnp.where(below_range, jnp.log(knot_slopes[0]), log_det)
     log_det = jnp.where(above_range, jnp.log(knot_slopes[-1]), log_det)
     return y, log_det
 
@@ -271,11 +276,11 @@ def _safe_quadratic_root(a, b, c):
     jax.numpy.ndarray
         Numerically stable root value (intended for z in [0, 1]).
     """
-    sqrt_diff = b ** 2 - 4.0 * a * c
+    sqrt_diff = b**2 - 4.0 * a * c
     safe_sqrt = jnp.sqrt(jnp.clip(sqrt_diff, jnp.finfo(sqrt_diff.dtype).tiny))
     safe_sqrt = jnp.where(sqrt_diff > 0.0, safe_sqrt, 0.0)
-    num = jnp.where(b >= 0, 2.0 * c,        -b + safe_sqrt)
-    den = jnp.where(b >= 0, -b - safe_sqrt,  2.0 * a)
+    num = jnp.where(b >= 0, 2.0 * c, -b + safe_sqrt)
+    den = jnp.where(b >= 0, -b - safe_sqrt, 2.0 * a)
     return num / den
 
 
@@ -300,42 +305,36 @@ def _rqs_inv(y, x_pos, y_pos, knot_slopes):
     above_range = y >= y_pos[-1]
     correct_bin = jnp.logical_and(y >= y_pos[:-1], y < y_pos[1:])
     any_bin_in_range = jnp.any(correct_bin)
-    first_bin = jnp.concatenate(
-        [jnp.array([1]), jnp.zeros(len(correct_bin) - 1)]
-    ).astype(bool)
+    first_bin = jnp.concatenate([jnp.array([1]), jnp.zeros(len(correct_bin) - 1)]).astype(bool)
     correct_bin = jnp.where(any_bin_in_range, correct_bin, first_bin)
 
     params = jnp.stack([x_pos, y_pos, knot_slopes], axis=1)
     params_l = jnp.sum(correct_bin[:, None] * params[:-1], axis=0)
-    params_r = jnp.sum(correct_bin[:, None] * params[1:],  axis=0)
+    params_r = jnp.sum(correct_bin[:, None] * params[1:], axis=0)
     x0, x1 = params_l[0], params_r[0]
     y0, y1 = params_l[1], params_r[1]
     d0, d1 = params_l[2], params_r[2]
 
     bin_w = x1 - x0
     bin_h = y1 - y0
-    s     = bin_h / bin_w
-    w     = jnp.clip((y - y0) / bin_h, 0.0, 1.0)
-    st    = d1 + d0 - 2.0 * s
-    c_    = -s * w
-    b_    = d0 - st * w
-    a_    = s - b_
-    z     = jnp.clip(_safe_quadratic_root(a_, b_, c_), 0.0, 1.0)
-    x     = bin_w * z + x0
+    s = bin_h / bin_w
+    w = jnp.clip((y - y0) / bin_h, 0.0, 1.0)
+    st = d1 + d0 - 2.0 * s
+    c_ = -s * w
+    b_ = d0 - st * w
+    a_ = s - b_
+    z = jnp.clip(_safe_quadratic_root(a_, b_, c_), 0.0, 1.0)
+    x = bin_w * z + x0
 
-    z2    = z * z
-    z1mz  = z - z2
-    z1m2  = (1.0 - z) ** 2
-    den   = s + st * z1mz
-    log_det = (
-        -2.0 * jnp.log(s)
-        - jnp.log(d1 * z2 + 2.0 * s * z1mz + d0 * z1m2)
-        + 2.0 * jnp.log(den)
-    )
+    z2 = z * z
+    z1mz = z - z2
+    z1m2 = (1.0 - z) ** 2
+    den = s + st * z1mz
+    log_det = -2.0 * jnp.log(s) - jnp.log(d1 * z2 + 2.0 * s * z1mz + d0 * z1m2) + 2.0 * jnp.log(den)
 
-    x       = jnp.where(below_range, (y - y_pos[0])  / knot_slopes[0]  + x_pos[0],  x)
-    x       = jnp.where(above_range, (y - y_pos[-1]) / knot_slopes[-1] + x_pos[-1], x)
-    log_det = jnp.where(below_range, -jnp.log(knot_slopes[0]),  log_det)
+    x = jnp.where(below_range, (y - y_pos[0]) / knot_slopes[0] + x_pos[0], x)
+    x = jnp.where(above_range, (y - y_pos[-1]) / knot_slopes[-1] + x_pos[-1], x)
+    log_det = jnp.where(below_range, -jnp.log(knot_slopes[0]), log_det)
     log_det = jnp.where(above_range, -jnp.log(knot_slopes[-1]), log_det)
     return x, log_det
 
@@ -343,6 +342,7 @@ def _rqs_inv(y, x_pos, y_pos, knot_slopes):
 # ---------------------------------------------------------------------------
 # Gamma distribution helpers (pure JAX)
 # ---------------------------------------------------------------------------
+
 
 def _gamma_log_prob(x, concentration=1.5, rate=0.1):
     """Log probability of x under Gamma(concentration, rate).
@@ -395,6 +395,7 @@ def _gamma_sample(key, concentration=1.5, rate=0.1, shape=()):
 # Public API
 # ---------------------------------------------------------------------------
 
+
 class _ConditionerFn:
     """Drop-in replacement for hk.Transformed with .apply(params, x)."""
 
@@ -446,9 +447,7 @@ def make_conditioner(hidden_sizes, out_params_activ, init_zero=True):
     return _ConditionerFn(n_hidden_layers=len(hidden_sizes))
 
 
-def make_shape_conditioner_fn(
-    mlp_hidden_size, mlp_num_layers, flow_num_bins, flow_num_layers
-):
+def make_shape_conditioner_fn(mlp_hidden_size, mlp_num_layers, flow_num_bins, flow_num_layers):
     """Build the shape-model conditioner (MLP).
 
     Parameters
@@ -488,8 +487,7 @@ def make_spl_flow(spl_params_list, rmin, rmax):
         List of tuples ``(x_pos, y_pos, knot_slopes)`` each with shape
         (batch, num_bins + 1).
     """
-    return [_build_rqs_knots_batched(sp, float(rmin), float(rmax))
-            for sp in spl_params_list]
+    return [_build_rqs_knots_batched(sp, float(rmin), float(rmax)) for sp in spl_params_list]
 
 
 class _TrafDistBuilder:
@@ -549,7 +547,7 @@ class _TrafDistBuilder:
             instance or a ``(_BaseDist, _Flow)`` pair.
         """
         spl_params_list = jnp.split(traf_params, self.flow_num_layers, axis=-1)
-        spline_layers   = make_spl_flow(spl_params_list, self.rmin, self.rmax)
+        spline_layers = make_spl_flow(spl_params_list, self.rmin, self.rmax)
         builder = self
 
         class _Flow:
@@ -563,6 +561,7 @@ class _TrafDistBuilder:
             Inverse(Chain).forward = Chain.inverse, so:
               y = spl1.inv(spl0.inv(z)) - 4
             """
+
             def forward(self, z):
                 """Forward transformation of the flow on input ``z``.
 
@@ -576,17 +575,16 @@ class _TrafDistBuilder:
                 array-like
                     Inverse-transformed samples.
                 """
-                fn_inv = jnp.vectorize(
-                    _rqs_inv, signature="(),(n),(n),(n)->(),()"
-                )
+                fn_inv = jnp.vectorize(_rqs_inv, signature="(),(n),(n),(n)->(),()")
                 x = z
-                for xp, yp, ks in spline_layers:   # spl0 first, then spl1, …
+                for xp, yp, ks in spline_layers:  # spl0 first, then spl1, …
                     x, _ = fn_inv(x, xp, yp, ks)
-                x = x - 4.0          # shift4.inverse
+                x = x - 4.0  # shift4.inverse
                 return x
 
         class _BaseDist:
             """Simple base distribution wrapper exposing ``sample()``."""
+
             def sample(self, seed, sample_shape=()):
                 """Draw samples from the base Gamma distribution.
 
@@ -602,11 +600,11 @@ class _TrafDistBuilder:
                 jax.numpy.ndarray
                     Samples from the base distribution.
                 """
-                return _gamma_sample(seed, concentration=1.5, rate=0.1,
-                                     shape=sample_shape)
+                return _gamma_sample(seed, concentration=1.5, rate=0.1, shape=sample_shape)
 
         class _TransformedDist:
             """Distribution-like object exposing ``log_prob()``."""
+
             def log_prob(self, samples):
                 """Compute log-probability of ``samples`` under the flow.
 
@@ -656,14 +654,14 @@ class _TrafDistBuilder:
             """
             # tp: (total_params,)   s: scalar
             spl_p_list = jnp.split(tp, flow_num_layers)
-            y = s + 4.0              # shift4.forward
+            y = s + 4.0  # shift4.forward
             total_ldj = jnp.zeros(())
             # Chain.forward applies last-to-first: spl1 before spl0
             for spl_p in reversed(spl_p_list):
                 xp, yp, ks = _build_rqs_knots_1d(spl_p, rmin, rmax)
-                y_new, ld  = _rqs_fwd(y, xp, yp, ks)
-                total_ldj  = total_ldj + ld
-                y          = y_new
+                y_new, ld = _rqs_fwd(y, xp, yp, ks)
+                total_ldj = total_ldj + ld
+                y = y_new
             z = y
             return _gamma_log_prob(z) + total_ldj
 
@@ -755,6 +753,7 @@ def make_counts_net_fn(config):
 # Training functions — use optax; hk.PRNGSequence replaced with jax.random
 # ---------------------------------------------------------------------------
 
+
 def _prng_seq(seed):
     """Infinite generator of fresh JAX PRNG keys.
 
@@ -796,14 +795,14 @@ def _init_mlp_params(in_dim, hidden_size, n_hidden, out_dim, seed):
         Parameter dictionary following the haiku naming/key convention.
     """
     import numpy as np
+
     rng = np.random.default_rng(seed)
     params = {}
     d = in_dim
     for i in range(n_hidden):
         scale = np.sqrt(2.0 / d)
         params[f"mlp/~/linear_{i}"] = {
-            "w": jnp.array(rng.normal(scale=scale, size=(d, hidden_size)),
-                           dtype=jnp.float32),
+            "w": jnp.array(rng.normal(scale=scale, size=(d, hidden_size)), dtype=jnp.float32),
             "b": jnp.zeros(hidden_size, dtype=jnp.float32),
         }
         d = hidden_size
@@ -922,21 +921,24 @@ def train_shape_model(config, train_loader, test_loader, seed=1337, writer=None)
 
     train_iter = iter(train_loader)
     for i in range(1, config["steps"] + 1):
-        train    = next(train_iter)
-        cond     = jnp.concatenate(train[:2]).T
-        samples  = jnp.squeeze(train[2])
+        train = next(train_iter)
+        cond = jnp.concatenate(train[:2]).T
+        samples = jnp.squeeze(train[2])
         params, opt_state, train_loss = update(params, opt_state, cond, samples)
         avg_params = ema_update(params, avg_params)
 
         if i % 100 == 0:
-            test_loss = sum(
-                loss_fn(avg_params, jnp.concatenate(t[:2]).T, jnp.squeeze(t[2]))
-                for t in test_loader
-            ) / test_loader._n_batches
+            test_loss = (
+                sum(
+                    loss_fn(avg_params, jnp.concatenate(t[:2]).T, jnp.squeeze(t[2]))
+                    for t in test_loader
+                )
+                / test_loader._n_batches
+            )
             train_loss, test_loss = jax.device_get((train_loss, test_loss))
             if writer is not None:
                 writer.add_scalar("Loss/train", train_loss, i)
-                writer.add_scalar("Loss/test",  test_loss,  i)
+                writer.add_scalar("Loss/test", test_loss, i)
                 writer.flush()
             print(f"Epoch: {i} \t Train/Test: {train_loss:.3E} / {test_loss:.3E}")
 
@@ -1000,14 +1002,12 @@ def train_counts_model(config, train_loader, test_loader, seed=1337, writer=None
     scheduler = optax.cosine_decay_schedule(config["lr"], config["steps"], alpha=0.0)
     optimizer = optax.adam(learning_rate=scheduler)
 
-    params     = _init_mlp_params(
-        2, config["mlp_hidden_size"], config["mlp_num_layers"], 1, seed
-    )
-    opt_state  = optimizer.init(params)
+    params = _init_mlp_params(2, config["mlp_hidden_size"], config["mlp_num_layers"], 1, seed)
+    opt_state = optimizer.init(params)
 
     train_iter = iter(train_loader)
     for i in range(1, config["steps"] + 1):
-        train  = next(train_iter)
+        train = next(train_iter)
         params, opt_state, train_loss = update(params, opt_state, train)
 
         if i % 100 == 0:
@@ -1015,7 +1015,7 @@ def train_counts_model(config, train_loader, test_loader, seed=1337, writer=None
             train_loss, test_loss = jax.device_get((train_loss, test_loss))
             if writer is not None:
                 writer.add_scalar("Loss/train", train_loss, i)
-                writer.add_scalar("Loss/test",  test_loss,  i)
+                writer.add_scalar("Loss/test", test_loss, i)
                 writer.flush()
             print(f"Epoch: {i} \t Train/Test: {train_loss:.3E} / {test_loss:.3E}")
 

@@ -3,6 +3,7 @@ from typing import Iterable, Tuple
 from prometheus.particle import PropagatableParticle
 from prometheus.photon_propagation.hit import Hit
 
+
 def accumulate_hits(
     particles: Iterable[PropagatableParticle],
 ) -> Tuple[Hit, int]:

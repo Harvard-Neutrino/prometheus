@@ -1,5 +1,5 @@
-from .loss import Loss
 from .lepton_propagator import LeptonPropagator
+from .loss import Loss
 from .registry import get_lepton_propagator, register_lepton_propagator
 
 # NewProposalLeptonPropagator is intentionally not imported here.

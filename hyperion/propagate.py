@@ -3,6 +3,7 @@ Photon propagation utilities.
 
 Provides geometric intersection helpers and Cherenkov spectral sampling.
 """
+
 import functools
 
 import jax
@@ -76,7 +77,7 @@ def photon_sphere_intersection(
     p_normed = jnp.asarray(photon_p, dtype=dtype)  # assume normed
 
     a = jnp.dot(p_normed, (photon_x - target_x))
-    b = a ** 2 - (jnp.linalg.norm(photon_x - target_x) ** 2 - target_r ** 2)
+    b = a**2 - (jnp.linalg.norm(photon_x - target_x) ** 2 - target_r**2)
     # Distance of of the intersection point along the line
     d = -a - jnp.sqrt(b)
 
@@ -174,9 +175,7 @@ def make_multi_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.flo
     return f
 
 
-def make_photon_spherical_shell_intersection(
-    shell_center, shell_radius, dtype=jnp.float64
-):
+def make_photon_spherical_shell_intersection(shell_center, shell_radius, dtype=jnp.float64):
     """Create intersection function for a spherical shell.
 
     Parameters
@@ -217,7 +216,7 @@ def make_photon_spherical_shell_intersection(
         p_normed = jnp.asarray(photon_p, dtype=dtype)  # assume normed
 
         a = jnp.dot(p_normed, (photon_x - shell_center))
-        b = a ** 2 - (jnp.linalg.norm(photon_x - shell_center) ** 2 - shell_radius ** 2)
+        b = a**2 - (jnp.linalg.norm(photon_x - shell_center) ** 2 - shell_radius**2)
 
         # Distance of of the intersection point along the line
         d = -a + jnp.sqrt(b)
@@ -237,9 +236,7 @@ def make_photon_spherical_shell_intersection(
     return photon_spherical_shell_intersection
 
 
-def make_photon_circle_intersection(
-    circle_center, circle_normal, circle_r, dtype=jnp.float64
-):
+def make_photon_circle_intersection(circle_center, circle_normal, circle_r, dtype=jnp.float64):
     """Create an intersection function for a circle (plane + radius).
 
     Parameters
@@ -332,13 +329,9 @@ def frank_tamm(wavelength, ref_index_func):
     """
     return (
         4
-        * np.pi ** 2
-        * Constants.BaseConstants.e ** 2
-        / (
-            Constants.BaseConstants.h
-            * Constants.BaseConstants.c_vac
-            * (wavelength / 1e9) ** 2
-        )
+        * np.pi**2
+        * Constants.BaseConstants.e**2
+        / (Constants.BaseConstants.h * Constants.BaseConstants.c_vac * (wavelength / 1e9) ** 2)
         * (1 - 1 / ref_index_func(wavelength) ** 2)
     )
 
@@ -367,9 +360,7 @@ def make_cherenkov_spectral_sampling_func(wl_range, ref_index_func, dtype=jnp.fl
         functools.partial(frank_tamm, ref_index_func=ref_index_func), wl_range[0], upper
     )[0]
     norm = integral(wl_range[-1])
-    poly_pars = jnp.asarray(
-        np.polyfit(np.vectorize(integral)(wls) / norm, wls, 10), dtype=dtype
-    )
+    poly_pars = jnp.asarray(np.polyfit(np.vectorize(integral)(wls) / norm, wls, 10), dtype=dtype)
 
     def sampling_func(rng_key):
         """Sample a wavelength according to the Frank–Tamm distribution.
@@ -436,16 +427,10 @@ def calc_new_direction(keys, old_dir, scattering_function):
         lambda _: jnp.array(
             [
                 (px * cos_theta)
-                + (
-                    (sin_theta * (px * pz * cos_phi - py * sin_phi))
-                    / (jnp.sqrt(1.0 - pz ** 2))
-                ),
+                + ((sin_theta * (px * pz * cos_phi - py * sin_phi)) / (jnp.sqrt(1.0 - pz**2))),
                 (py * cos_theta)
-                + (
-                    (sin_theta * (py * pz * cos_phi + px * sin_phi))
-                    / (jnp.sqrt(1.0 - pz ** 2))
-                ),
-                (pz * cos_theta) - (sin_theta * cos_phi * jnp.sqrt(1.0 - pz ** 2)),
+                + ((sin_theta * (py * pz * cos_phi + px * sin_phi)) / (jnp.sqrt(1.0 - pz**2))),
+                (pz * cos_theta) - (sin_theta * cos_phi * jnp.sqrt(1.0 - pz**2)),
             ]
         ),
         None,
@@ -516,9 +501,7 @@ def make_step_function(
         k1, k2, k3, k4 = random.split(rng_key, 4)
 
         sca_coeff = 1 / scattering_length_function(wavelength)
-        c_medium = (
-            Constants.BaseConstants.c_vac * 1e-9 / ref_index_func(wavelength)
-        )  # m/ns
+        c_medium = Constants.BaseConstants.c_vac * 1e-9 / ref_index_func(wavelength)  # m/ns
 
         eta = random.uniform(k1)
         step_size = -jnp.log(eta) / sca_coeff
@@ -537,9 +520,7 @@ def make_step_function(
         isec_time = dtype(time + jnp.linalg.norm(pos - isec_pos) / c_medium)
 
         # If intersected, set position to intersection position
-        new_pos = cond(
-            isec, lambda args: args[0], lambda args: args[1], (isec_pos, new_pos)
-        )
+        new_pos = cond(isec, lambda args: args[0], lambda args: args[1], (isec_pos, new_pos))
 
         # If intersected set time to intersection time
         new_time = cond(
@@ -601,9 +582,7 @@ def unpack_args(f):
     return _f
 
 
-@functools.partial(
-    jax.profiler.annotate_function, name="initialize_direction_isotropic"
-)
+@functools.partial(jax.profiler.annotate_function, name="initialize_direction_isotropic")
 def initialize_direction_isotropic(rng_key):
     """Draw direction uniformly on a sphere.
 
@@ -660,6 +639,7 @@ def make_initialize_direction_laser(direction):
     callable
         Function with signature ``(rng_key)`` returning ``direction``.
     """
+
     def initialize_direction_laser(rng_key):
         """Return the fixed laser direction.
 
@@ -746,7 +726,7 @@ def make_fixed_pos_time_initializer(
 ):
     """
     Initialize with fixed position and time and sample for direction and wavelength.
- 
+
     Parameters
     ----------
     initial_pos : float[3]
@@ -795,7 +775,7 @@ def make_fixed_time_initializer(
 ):
     """
     Initialize with a fixed time, sample for position, direction and wavelength.
- 
+
     Parameters
     ----------
     initial_time : float
@@ -850,10 +830,10 @@ def make_track_segment_fixed_time_pos_dir_initializer(
 ):
     """
     Initialize a track segment with fixed time, position and direction.
- 
+
     The photon emission position is sampled uniformly along the track (while adjusting the time).
     Emission angle is calculated from the wavelength.
- 
+
     Parameters
     ----------
     initial_time : float
@@ -906,9 +886,7 @@ def make_track_segment_fixed_time_pos_dir_initializer(
 
         photon_rel_dir = sph_to_cart(cherenkov_angle_theta, phi_angle)
 
-        photon_dir = rotate_to_new_direc(
-            jnp.asarray([0, 0, 1.0]), track_dir, photon_rel_dir
-        )
+        photon_dir = rotate_to_new_direc(jnp.asarray([0, 0, 1.0]), track_dir, photon_rel_dir)
 
         # Set initial photon state
         initial_photon_state = {
@@ -945,8 +923,10 @@ def make_loop_until_isec_or_maxtime(max_time):
             Final photon state.
         """
         final_photon_state, _ = while_loop(
-            lambda args: (args[0]["isec"] == False)  # noqa: E712
-            & (args[0]["time"] < max_time),
+            lambda args: (
+                (args[0]["isec"] == False)  # noqa: E712
+                & (args[0]["time"] < max_time)
+            ),
             unpack_args(step_function),
             (initial_photon_state, rng_key),
         )
@@ -1017,10 +997,10 @@ def make_photon_trajectory_fun(
 ):
     """
     Create a photon trajectory function.
- 
+
     This function calls the photon step function multiple times until
     some termination condition is reached (defined by ``stepping_mode``).
- 
+
     Parameters
     ----------
     step_function : callable

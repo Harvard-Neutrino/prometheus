@@ -1,4 +1,5 @@
 """Utility functions."""
+
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -10,9 +11,7 @@ from scipy.special import gamma, gammaincc
 from .constants import Constants
 
 
-def calc_tres(
-    t: np.ndarray, det_radius: float, det_dist: float, c_medium: float
-) -> np.ndarray:
+def calc_tres(t: np.ndarray, det_radius: float, det_dist: float, c_medium: float) -> np.ndarray:
     """Calculate time residual.
 
     The time residual is calculated by subtracting the expected (geometric)
@@ -106,6 +105,7 @@ def cherenkov_ang_dist_int(n_ph, lower=-1, upper=1):
         numpy.ndarray
             Indefinite integral evaluated at ``x``.
         """
+
         def lower_branch(x, cos_theta_c):
             """Lower-branch expression for the indefinite integral.
 
@@ -116,14 +116,11 @@ def cherenkov_ang_dist_int(n_ph, lower=-1, upper=1):
                 / c
                 * (
                     c * d * x
-                    + (
-                        a
-                        * (cos_theta_c - x)
-                        * incgamma(1 / c, -(b * (cos_theta_c - x) ** c))
-                    )
+                    + (a * (cos_theta_c - x) * incgamma(1 / c, -(b * (cos_theta_c - x) ** c)))
                     * (-(b * (cos_theta_c - x) ** c)) ** (-1 / c)
                 )
             )
+
         def upper_branch(x, cos_theta_c):
             """Upper-branch expression for the indefinite integral."""
             return (
@@ -131,11 +128,7 @@ def cherenkov_ang_dist_int(n_ph, lower=-1, upper=1):
                 / c
                 * (
                     c * d * x
-                    + (
-                        a
-                        * (cos_theta_c - x)
-                        * incgamma(1 / c, -(b * (-cos_theta_c + x) ** c))
-                    )
+                    + (a * (cos_theta_c - x) * incgamma(1 / c, -(b * (-cos_theta_c + x) ** c)))
                     * (-(b * (-cos_theta_c + x) ** c)) ** (-1 / c)
                 )
             )
@@ -187,13 +180,16 @@ def calculate_min_number_steps(
     int
         Minimum number of steps required.
     """
-    c_medium_f = lambda wl: Constants.BaseConstants.c_vac / ref_index_func(  # noqa E731
-        wl
+    c_medium_f = lambda wl: (
+        Constants.BaseConstants.c_vac
+        / ref_index_func(  # noqa E731
+            wl
+        )
     )
 
     t_geo = det_dist / (c_medium_f(wavelength) / 1e9) + max_tres
-    func = (
-        lambda step: scipy.stats.gamma.cdf(
+    func = lambda step: (
+        scipy.stats.gamma.cdf(
             t_geo * (c_medium_f(wavelength) / 1e9),
             step,
             scale=scattering_length_function(wavelength),
@@ -256,6 +252,7 @@ def rotate_to_new_direc(old_dir, new_dir, operand):
     jax.numpy.ndarray
         Rotated vector(s) with same shape as `operand`.
     """
+
     def _rotate(operand):
         """Rotate ``operand`` by the angle between ``old_dir`` and ``new_dir``.
 
@@ -280,9 +277,7 @@ def rotate_to_new_direc(old_dir, new_dir, operand):
         v_rot = (
             operand * jnp.cos(theta)
             + jnp.cross(axis, operand) * jnp.sin(theta)
-            + axis
-            * jnp.dot(axis, operand, precision=Precision.HIGHEST)
-            * (1 - jnp.cos(theta))
+            + axis * jnp.dot(axis, operand, precision=Precision.HIGHEST) * (1 - jnp.cos(theta))
         )
         return v_rot
 

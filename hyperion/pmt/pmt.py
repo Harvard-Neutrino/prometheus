@@ -1,5 +1,5 @@
-import scipy.stats
 import numpy as np
+import scipy.stats
 from scipy.interpolate import UnivariateSpline
 
 
@@ -65,9 +65,9 @@ class SPETemplate:
         numpy.ndarray
             PDF values corresponding to ``xs``.
         """
-        return self.weights[0] * self.components[0].pdf(xs) + self.weights[
+        return self.weights[0] * self.components[0].pdf(xs) + self.weights[1] * self.components[
             1
-        ] * self.components[1].pdf(xs)
+        ].pdf(xs)
 
 
 class PulseTemplate:
@@ -102,16 +102,10 @@ class PulseTemplate:
         numpy.ndarray
             Per-time-bin pulse amplitudes with shape ``(len(xs), len(times))``.
         """
-        return charges * scipy.stats.gumbel_r.pdf(
-            xs[:, np.newaxis], loc=times + 2, scale=2
-        )
+        return charges * scipy.stats.gumbel_r.pdf(xs[:, np.newaxis], loc=times + 2, scale=2)
 
 
-
-
-def make_waveform(
-    hits, spe_template, pulse_template, times=None, rng=np.random.RandomState(0)
-):
+def make_waveform(hits, spe_template, pulse_template, times=None, rng=np.random.RandomState(0)):
     """Generate a waveform from hits using SPE and pulse templates.
 
     Parameters
@@ -170,9 +164,7 @@ def make_calc_wl_acceptance_weight(path_to_acc_data):
     zero_mask = wl_acc[:, 1] > 0
     safe_range = (np.min(wl_acc[zero_mask, 0]), np.max(wl_acc[zero_mask, 0]))
 
-    wl_acc_spl = UnivariateSpline(
-        wl_acc[zero_mask, 0], np.log(wl_acc[zero_mask, 1]), s=0.1
-    )
+    wl_acc_spl = UnivariateSpline(wl_acc[zero_mask, 0], np.log(wl_acc[zero_mask, 1]), s=0.1)
     wlw_peak = scipy.optimize.minimize(lambda wl: -wl_acc_spl(wl), x0=[400]).x
 
     val_at_peak = np.exp(wl_acc_spl(wlw_peak))

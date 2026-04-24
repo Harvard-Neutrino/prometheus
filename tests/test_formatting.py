@@ -1,5 +1,4 @@
 import hashlib
-import tempfile
 
 from prometheus.utils.formatting import _file_checksum, _human_size
 

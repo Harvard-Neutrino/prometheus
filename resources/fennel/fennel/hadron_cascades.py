@@ -282,16 +282,11 @@ class Hadron_Cascade:
         a = np.array([a]).flatten()
         # gamma.pdf seems far slower than the explicit implementation
         res = np.array(
-            [
-                b * ((t * b) ** (a_val - 1.0) * np.exp(-(t * b)) / gamma_func(a_val))
-                for a_val in a
-            ]
+            [b * ((t * b) ** (a_val - 1.0) * np.exp(-(t * b)) / gamma_func(a_val)) for a_val in a]
         )
         return res
 
-    def _a_energy_fetcher(
-        self, E: Union[float, np.ndarray], particle: int
-    ) -> np.ndarray:
+    def _a_energy_fetcher(self, E: Union[float, np.ndarray], particle: int) -> np.ndarray:
         """
         Calculate energy-dependent 'a' parameter for longitudinal profile.
 
@@ -489,15 +484,10 @@ class Hadron_Cascade:
         for id_arr, _ in enumerate(energy_2d):
             energy_2d[id_arr][energy_2d[id_arr] > energy_prim[id_arr]] = 0.0
             # Removing too large values
-            energy[
-                energy > (alpha[id_arr] / beta[id_arr]) ** (-1.0 / gamma[id_arr])
-            ] = 0.0
+            energy[energy > (alpha[id_arr] / beta[id_arr]) ** (-1.0 / gamma[id_arr])] = 0.0
             distro.append(
                 energy_prim[id_arr]
-                * (
-                    -alpha[id_arr]
-                    + beta[id_arr] * (energy_2d[id_arr] ** (-gamma[id_arr]))
-                )
+                * (-alpha[id_arr] + beta[id_arr] * (energy_2d[id_arr] ** (-gamma[id_arr])))
             )
         distro = np.array(distro)
         distro[distro == np.inf] = 0.0
@@ -633,9 +623,7 @@ class Hadron_Cascade:
         res = jax_gamma.pdf(t * b, a) * b
         return res
 
-    def _a_energy_fetcher_jax(
-        self, E: Union[float, "JaxArray"], particle: int
-    ) -> "JaxArray":
+    def _a_energy_fetcher_jax(self, E: Union[float, "JaxArray"], particle: int) -> "JaxArray":
         """
         Calculate 'a' parameter (JAX implementation).
 

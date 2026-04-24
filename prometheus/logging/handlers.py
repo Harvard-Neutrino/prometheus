@@ -8,6 +8,7 @@ class LogCounterHandler(logging.Handler):
     `prometheus/prometheus.py` and is intentionally minimal: it should
     never raise while counting.
     """
+
     def __init__(self):
         super().__init__()
         self.warning_count = 0

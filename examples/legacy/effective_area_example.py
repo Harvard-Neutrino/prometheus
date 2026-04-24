@@ -1,25 +1,25 @@
 import json
-import pyarrow.parquet as pq
-import numpy as np
+
 import awkward as ak
+import numpy as np
+import pyarrow.parquet as pq
 
 from prometheus.weighting import ParquetWeighter
 
+
 def initialize_args():
     from argparse import ArgumentParser
+
     parser = ArgumentParser()
     parser.add_argument(
         "--parquet_file",
         required=True,
     )
-    parser.add_argument(
-        "--nbins",
-        default=10,
-        type=int
-    )
+    parser.add_argument("--nbins", default=10, type=int)
 
     args = parser.parse_args()
     return args
+
 
 def main(parquet_file=None, nbins=10) -> None:
 
@@ -31,22 +31,17 @@ def main(parquet_file=None, nbins=10) -> None:
     weighter = ParquetWeighter(parquet_file)
 
     # Load up the configuraion
-    config = json.loads(
-        pq.read_metadata(parquet_file).metadata[b"config_prometheus"]
-    )
+    config = json.loads(pq.read_metadata(parquet_file).metadata[b"config_prometheus"])
     inj_conf = config["injection"]["LeptonInjector"]["simulation"]
 
     # Compute the solid angle
-    delta_omega = (
-        (np.radians(inj_conf["max azimuth"]) - np.radians(inj_conf["min azimuth"])) *
-        (np.cos(np.radians(inj_conf["min zenith"])) - np.cos(np.radians(inj_conf["max zenith"])))
+    delta_omega = (np.radians(inj_conf["max azimuth"]) - np.radians(inj_conf["min azimuth"])) * (
+        np.cos(np.radians(inj_conf["min zenith"])) - np.cos(np.radians(inj_conf["max zenith"]))
     )
 
     # Make the energy bins
     edges = np.logspace(
-        np.log10(inj_conf["minimal energy"]),
-        np.log10(inj_conf["maximal energy"]),
-        args.nbins+1
+        np.log10(inj_conf["minimal energy"]), np.log10(inj_conf["maximal energy"]), args.nbins + 1
     )
     widths = np.diff(edges)
     cents = (edges[1:] + edges[:-1]) / 2
@@ -58,9 +53,7 @@ def main(parquet_file=None, nbins=10) -> None:
     weights = weighter.weight_events()
 
     h, _ = np.histogram(
-        a["mc_truth", "initial_state_energy", mask].to_numpy(),
-        bins=edges,
-        weights=weights[mask]
+        a["mc_truth", "initial_state_energy", mask].to_numpy(), bins=edges, weights=weights[mask]
     )
 
     effa = h / delta_omega / widths / len(a)
@@ -68,5 +61,6 @@ def main(parquet_file=None, nbins=10) -> None:
     print(f"Energies: {cents} GeV")
     print(f"Effective area: {effa} m")
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main()

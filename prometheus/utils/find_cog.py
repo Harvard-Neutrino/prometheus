@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def find_cog(event_dict, detector):
     """Find the center of gravity of an event."""
     keys = event_dict.keys()

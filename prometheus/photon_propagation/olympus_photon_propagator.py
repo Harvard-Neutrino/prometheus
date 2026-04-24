@@ -1,27 +1,26 @@
-import numpy as np
 import warnings
+from pathlib import Path
 
+import numpy as np
+
+from hyperion.constants import Constants
+from hyperion.medium import medium_collections
+
+from ..detector import Detector, Medium
 from ..lepton_propagation import LeptonPropagator
 from ..particle import Particle
-from ..detector import Detector, Medium
-from .photon_propagator import PhotonPropagator
-from .registry import register_propagator
 from .hit import Hit
-
-from .olympus.event_generation.lightyield import make_realistic_cascade_source
-from .olympus.event_generation.utils import sph_to_cart_jnp
-
-from .olympus.event_generation.photon_propagation.norm_flow_photons import (
-    make_generate_norm_flow_photons
-)
 from .olympus.event_generation.event_generation import (
     generate_cascade,
     generate_realistic_track,
-    simulate_noise,
 )
-from hyperion.medium import medium_collections
-from hyperion.constants import Constants
-from pathlib import Path
+from .olympus.event_generation.lightyield import make_realistic_cascade_source
+from .olympus.event_generation.photon_propagation.norm_flow_photons import (
+    make_generate_norm_flow_photons,
+)
+from .olympus.event_generation.utils import sph_to_cart_jnp
+from .photon_propagator import PhotonPropagator
+from .registry import register_propagator
 
 # Map Medium enum values to registered medium_collections keys.
 # When a detector's medium has no dedicated model registered, the propagator
@@ -53,12 +52,8 @@ _DEFAULT_COUNTS_FILE = "photon_arrival_time_counts_params.pickle"
 @register_propagator("olympus")
 class OlympusPhotonPropagator(PhotonPropagator):
     """Photon propagator that uses Olympus to propagate photons."""
-    def __init__(
-        self,
-        lepton_propagator: LeptonPropagator,
-        detector: Detector,
-        config: dict
-    ):
+
+    def __init__(self, lepton_propagator: LeptonPropagator, detector: Detector, config: dict):
         """Initialize the ``OlympusPhotonPropagator``.
 
         Parameters
@@ -72,8 +67,8 @@ class OlympusPhotonPropagator(PhotonPropagator):
         """
         super().__init__(lepton_propagator, detector, config)
 
-        if not self.config['simulation']['files']:
-            ValueError('Currently only file runs for olympus are supported!')
+        if not self.config["simulation"]["files"]:
+            ValueError("Currently only file runs for olympus are supported!")
 
         medium_key = _WATER_MEDIUM_MAP.get(detector.medium)
         if medium_key is None:
@@ -92,8 +87,8 @@ class OlympusPhotonPropagator(PhotonPropagator):
         # non-default filenames in their config those take precedence; otherwise
         # auto-select based on the resolved medium key, falling back to P-ONE
         # with a warning when no dedicated model is registered yet.
-        cfg_flow = self.config['paths']['flow']
-        cfg_counts = self.config['paths']['counts']
+        cfg_flow = self.config["paths"]["flow"]
+        cfg_counts = self.config["paths"]["counts"]
         if cfg_flow != _DEFAULT_FLOW_FILE or cfg_counts != _DEFAULT_COUNTS_FILE:
             # User override — use exactly what the config says.
             flow_file, counts_file = cfg_flow, cfg_counts
@@ -109,14 +104,14 @@ class OlympusPhotonPropagator(PhotonPropagator):
             )
             flow_file, counts_file = _FLOW_MODEL_MAP["pone"]
 
-        location = self.config['paths']['location']
+        location = self.config["paths"]["location"]
         # Ensure robust path joining whether `location` ends with a slash or not
         flow_path = str(Path(location) / flow_file)
         counts_path = str(Path(location) / counts_file)
         self._gen_ph = make_generate_norm_flow_photons(
             flow_path,
             counts_path,
-            c_medium=self._c_medium_f(self.config['simulation']['wavelength']) / 1E9,
+            c_medium=self._c_medium_f(self.config["simulation"]["wavelength"]) / 1e9,
         )
 
     def propagate(self, particle: Particle, rng_key):
@@ -137,51 +132,46 @@ class OlympusPhotonPropagator(PhotonPropagator):
             return
 
         prop_distance = (
-            np.linalg.norm(particle.position - self.detector.offset) 
+            np.linalg.norm(particle.position - self.detector.offset)
             + self.lepton_propagator.config["simulation"]["propagation padding"]
         )
 
         injection_event = {
-            "time": 0.,
+            "time": 0.0,
             "theta": particle.theta,
             "phi": particle.phi,
             "pos": particle.position,
             "energy": particle.e,
             "particle_id": particle.pdg_code,
-            'length': prop_distance,
+            "length": prop_distance,
             #'length': config['lepton propagator']['track length'],
         }
-        event_dir = sph_to_cart_jnp(
-            injection_event["theta"],
-            injection_event["phi"]
-        )
+        event_dir = sph_to_cart_jnp(injection_event["theta"], injection_event["phi"])
         injection_event["dir"] = event_dir
         # Tracks
-        if injection_event['particle_id'] in self.config['particles']['track particles']:
+        if injection_event["particle_id"] in self.config["particles"]["track particles"]:
             _, proposal_prop = self.lepton_propagator[particle]
-            res_event, _ = (
-                generate_realistic_track(
-                    self.detector,
-                    injection_event,
-                    key=rng_key,
-                    pprop_func=self._gen_ph,
-                    proposal_prop=proposal_prop,
-                    splitter=self.config['simulation']['splitter']
-                )
+            res_event, _ = generate_realistic_track(
+                self.detector,
+                injection_event,
+                key=rng_key,
+                pprop_func=self._gen_ph,
+                proposal_prop=proposal_prop,
+                splitter=self.config["simulation"]["splitter"],
             )
         # Cascades
         else:
             import functools
+
             res_event, _ = generate_cascade(
                 self.detector,
                 injection_event,
-                seed = rng_key,
-                converter_func = functools.partial(
-                    make_realistic_cascade_source,
-                    moliere_rand=True,
-                    resolution=0.2),
+                seed=rng_key,
+                converter_func=functools.partial(
+                    make_realistic_cascade_source, moliere_rand=True, resolution=0.2
+                ),
                 pprop_func=self._gen_ph,
-                splitter=self.config['simulation']['splitter']
+                splitter=self.config["simulation"]["splitter"],
             )
 
         hits = []
@@ -190,21 +180,17 @@ class OlympusPhotonPropagator(PhotonPropagator):
         om_idx = 0
         oms_per_string = len(self.detector.modules) / nstrings
         for dom_hits in res_event:
-            if om_idx==oms_per_string:
+            if om_idx == oms_per_string:
                 om_idx = 0
                 string_idx += 1
             for hit in dom_hits:
-                hits.append(
-                    Hit(string_idx, om_idx, float(hit), None,
-                    None, None, None, None)
-                )
+                hits.append(Hit(string_idx, om_idx, float(hit), None, None, None, None, None))
             om_idx += 1
         particle.hits = hits
         for child in particle.children:
             if child.e < 1:
                 continue
             self.propagate(child, rng_key)
-
 
     def _c_medium_f(self, wl):
         """Speed of light in medium for a given wavelength in nm."""

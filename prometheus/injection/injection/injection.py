@@ -3,12 +3,14 @@
 # Copyright (C) 2022 Jeffrey Lazar, Stephan Meighen-Berger
 # Interface class to the different lepton injectors
 
-import numpy as np
+from typing import Any, Iterable, List, Union
+
 import awkward as ak
-from typing import Iterable, Union, Any, List
+import numpy as np
 
 from .. import Particle
 from ..injection_event.injection_event import InjectionEvent
+
 
 def recursive_getattr(x: Any, attr: str) -> Any:
     """Get an attribute that is farther down an object hierarchy.
@@ -34,10 +36,9 @@ def recursive_getattr(x: Any, attr: str) -> Any:
         x = getattr(x, a)
     return x
 
+
 def recursively_get_final_property(
-    particles: Iterable[Particle],
-    attr: str,
-    idx: Union[None, int] = None
+    particles: Iterable[Particle], attr: str, idx: Union[None, int] = None
 ) -> np.ndarray:
     """A helper for getting the attributes from particles.
 
@@ -78,7 +79,7 @@ def recursively_get_final_property(
             arr = np.atleast_1d(np.asarray(val))
             acc.append(arr)
             # Recurse into children
-            children = getattr(p, 'children', None)
+            children = getattr(p, "children", None)
             if children:
                 _collect(children)
 
@@ -87,12 +88,11 @@ def recursively_get_final_property(
         return np.array([])
     return np.concatenate(acc)
 
+
 class Injection:
     """Base class for Prometheus injection."""
-    def __init__(
-        self,
-        events: Iterable[InjectionEvent]
-    ):
+
+    def __init__(self, events: Iterable[InjectionEvent]):
         """Initialize the injection object.
 
         Parameters
@@ -136,6 +136,7 @@ class Injection:
         d["initial_state_x"] = [x.initial_state.position[0] for x in self]
         d["initial_state_y"] = [x.initial_state.position[1] for x in self]
         d["initial_state_z"] = [x.initial_state.position[2] for x in self]
+
         # Extract final-state properties in a single traversal per event to
         # avoid repeated recursive scans (previously called recursively_get_final_property
         # seven times per event).
@@ -177,23 +178,23 @@ class Injection:
                         y_list.append(np.nan)
                         z_list.append(np.nan)
                     try:
-                        parent_list.append(getattr(p.parent, 'serialization_idx', None))
+                        parent_list.append(getattr(p.parent, "serialization_idx", None))
                     except Exception:
                         parent_list.append(None)
-                    children = getattr(p, 'children', None)
+                    children = getattr(p, "children", None)
                     if children:
                         _collect(children)
 
             _collect(particles)
             return {
-                'e': np.array(e_list, dtype=float),
-                'pdg': np.array(pdg_list, dtype=object),
-                'theta': np.array(theta_list, dtype=float),
-                'phi': np.array(phi_list, dtype=float),
-                'x': np.array(x_list, dtype=float),
-                'y': np.array(y_list, dtype=float),
-                'z': np.array(z_list, dtype=float),
-                'parent': np.array(parent_list, dtype=object),
+                "e": np.array(e_list, dtype=float),
+                "pdg": np.array(pdg_list, dtype=object),
+                "theta": np.array(theta_list, dtype=float),
+                "phi": np.array(phi_list, dtype=float),
+                "x": np.array(x_list, dtype=float),
+                "y": np.array(y_list, dtype=float),
+                "z": np.array(z_list, dtype=float),
+                "parent": np.array(parent_list, dtype=object),
             }
 
         final_state_es = []
@@ -206,14 +207,14 @@ class Injection:
         parents = []
         for event in self:
             props = _extract_final_state_props(event.final_states)
-            final_state_es.append(props['e'])
-            final_state_types.append(props['pdg'])
-            final_state_zeniths.append(props['theta'])
-            final_state_azimuths.append(props['phi'])
-            final_state_xs.append(props['x'])
-            final_state_ys.append(props['y'])
-            final_state_zs.append(props['z'])
-            parents.append(props['parent'])
+            final_state_es.append(props["e"])
+            final_state_types.append(props["pdg"])
+            final_state_zeniths.append(props["theta"])
+            final_state_azimuths.append(props["phi"])
+            final_state_xs.append(props["x"])
+            final_state_ys.append(props["y"])
+            final_state_zs.append(props["z"])
+            parents.append(props["parent"])
         d["final_state_energy"] = final_state_es
         d["final_state_type"] = final_state_types
         d["final_state_zenith"] = final_state_zeniths

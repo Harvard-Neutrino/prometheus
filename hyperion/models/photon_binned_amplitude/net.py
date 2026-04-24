@@ -3,13 +3,15 @@
 # implementation of the binned-amplitude photon-yield approach (an earlier
 # alternative to the normalizing-flow model in photon_arrival_time_nflow/).
 # It still depends on dm-haiku and has not been migrated to pure JAX.
-import pickle
 import functools
+import pickle
+
 import haiku as hk
 import jax
 import jax.numpy as jnp
 import numpy as np
 import optax
+
 from hyperion.data import DataLoader
 
 
@@ -29,6 +31,7 @@ class HistMLP(hk.Module):
     name : str, optional
         Module name passed to haiku.
     """
+
     def __init__(self, output_size, layers, dropout, final_activations, name=None):
         """Initialise the Histogram MLP.
 
@@ -304,9 +307,9 @@ def train_net(conf, train_data, test_data, writer, rng):
 
         # Regularization (smoothness)
         first_diff = jnp.diff(pred, axis=1)
-        first_diff_n = (
-            first_diff - jnp.mean(first_diff, axis=1)[:, np.newaxis]
-        ) / jnp.std(first_diff, axis=1)[:, np.newaxis]
+        first_diff_n = (first_diff - jnp.mean(first_diff, axis=1)[:, np.newaxis]) / jnp.std(
+            first_diff, axis=1
+        )[:, np.newaxis]
 
         first_diff_n = jnp.where(
             jnp.isfinite(first_diff_n), first_diff_n, jnp.zeros_like(first_diff_n)
@@ -341,9 +344,7 @@ def train_net(conf, train_data, test_data, writer, rng):
         tuple
             ``(loss, new_params, new_opt_state)``.
         """
-        l, grads = jax.value_and_grad(loss)(
-            params, state, rng_key, batch, is_training=is_training
-        )
+        l, grads = jax.value_and_grad(loss)(params, state, rng_key, batch, is_training=is_training)
         updates, opt_state = opt.update(grads, opt_state)
         new_params = optax.apply_updates(params, updates)
         return l, new_params, opt_state
@@ -368,9 +369,7 @@ def train_net(conf, train_data, test_data, writer, rng):
 
         test_loss = 0
         for test in test_loader:
-            test_loss += loss(avg_params, state, None, test, is_training=False) * len(
-                test[0]
-            )
+            test_loss += loss(avg_params, state, None, test, is_training=False) * len(test[0])
         test_loss /= len(test_data)
 
         if writer is not None:
@@ -400,9 +399,7 @@ def train_net(conf, train_data, test_data, writer, rng):
     if writer is not None:
         test_loss = 0
         for test in test_loader:
-            test_loss += loss(avg_params, state, None, test, is_training=False) * len(
-                test[0]
-            )
+            test_loss += loss(avg_params, state, None, test, is_training=False) * len(test[0])
         test_loss /= len(test_data)
 
         hparam_dict = dict(conf)

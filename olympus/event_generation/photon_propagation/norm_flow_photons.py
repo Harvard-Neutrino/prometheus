@@ -3,18 +3,19 @@ import pickle
 import awkward as ak
 import jax
 import jax.numpy as jnp
-from jax.lax import cond
 import numpy as np
+from jax import random
+
 from hyperion.models.photon_arrival_time_nflow.net import (
+    eval_log_prob,
     make_counts_net_fn,
     make_shape_conditioner_fn,
     sample_shape_model,
     traf_dist_builder,
-    eval_log_prob,
 )
-from jax import random
 
 from .utils import sources_to_model_input, sources_to_model_input_per_module
+
 
 # @profile
 def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_medium):
@@ -131,17 +132,17 @@ def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_mediu
         mod_eff_factor_masked = mod_eff_factor[distance_mask]
 
         # Eval count net to obtain survival fraction
-        ph_frac = jnp.power(
-            10, counts_net.apply(counts_params, inp_params_masked)
-        ).squeeze()
+        ph_frac = jnp.power(10, counts_net.apply(counts_params, inp_params_masked)).squeeze()
 
         # Sample number of detected photons
         n_photons_masked = ph_frac * source_photons_masked * mod_eff_factor_masked
 
         key, subkey = random.split(key)
-        n_photons_masked = random.poisson(
-            subkey, n_photons_masked, shape=n_photons_masked.shape
-        ).squeeze().astype(jnp.int32)
+        n_photons_masked = (
+            random.poisson(subkey, n_photons_masked, shape=n_photons_masked.shape)
+            .squeeze()
+            .astype(jnp.int32)
+        )
 
         if jnp.all(n_photons_masked == 0):
             times = [] * module_coords.shape[0]
@@ -155,9 +156,7 @@ def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_mediu
 
         # Calculate number of photons per module
         # Start with zero array and fill in the poisson samples using distance mask
-        n_photons = jnp.zeros(
-            source_pos.shape[0] * module_coords.shape[0], dtype=jnp.int32
-        )
+        n_photons = jnp.zeros(source_pos.shape[0] * module_coords.shape[0], dtype=jnp.int32)
         n_photons = n_photons.at[distance_mask].set(n_photons_masked)
         n_photons = n_photons.reshape(module_coords.shape[0], source_pos.shape[0])
         n_ph_per_mod = np.sum(n_photons, axis=1)
@@ -223,9 +222,7 @@ def make_nflow_photon_likelihood_per_module(
 
         mask = distance_mask & finite_times & physical
 
-        traf_params = traf_params.reshape(
-            (traf_params.shape[0], 1, traf_params.shape[1])
-        )
+        traf_params = traf_params.reshape((traf_params.shape[0], 1, traf_params.shape[1]))
 
         # Sanitize likelihood evaluation to avoid nans.
         sanitized_times = jnp.where(mask, t_res, jnp.zeros_like(t_res))
@@ -274,9 +271,7 @@ def make_nflow_photon_likelihood_per_module(
         noise_window_len = 5000
         noise_photons = noise_rate * noise_window_len
 
-        n_photons = jnp.reshape(
-            ph_frac * source_photons.squeeze(), (source_pos.shape[0],)
-        )
+        n_photons = jnp.reshape(ph_frac * source_photons.squeeze(), (source_pos.shape[0],))
 
         n_ph_pred_per_mod = jnp.sum(n_photons)
         n_ph_pred_per_mod_total = n_ph_pred_per_mod + noise_photons

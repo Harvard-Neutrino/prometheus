@@ -1,9 +1,10 @@
 """
 Collection of functions related to the optical properties of a medium.
 """
+
+import jax
 import jax.numpy as jnp
 from jax import random
-import jax
 from jax.lax import cond
 
 
@@ -24,9 +25,7 @@ def henyey_greenstein_scattering_angle(key, g=0.9):
         Scattering angle in radians.
     """
     eta = random.uniform(key)
-    costheta = (
-        1 / (2 * g) * (1 + g ** 2 - ((1 - g ** 2) / (1 + g * (2 * eta - 1))) ** 2)
-    )
+    costheta = 1 / (2 * g) * (1 + g**2 - ((1 - g**2) / (1 + g * (2 * eta - 1))) ** 2)
     return jnp.arccos(costheta)
 
 
@@ -81,7 +80,7 @@ def liu_scattering_angle(key, g=0.95):
     """
     beta = (1 - g) / (1 + g)
     xi = random.uniform(key)
-    costheta = 2 * xi ** beta - 1
+    costheta = 2 * xi**beta - 1
     return jnp.arccos(costheta)
 
 

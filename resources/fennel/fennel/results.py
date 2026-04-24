@@ -115,8 +115,7 @@ class EMYieldResult:
     def __repr__(self) -> str:
         mode = "functional" if self.is_function else "array"
         return (
-            f"EMYieldResult(energy={self.energy} GeV, "
-            f"particle={self.particle_name}, mode={mode})"
+            f"EMYieldResult(energy={self.energy} GeV, particle={self.particle_name}, mode={mode})"
         )
 
 

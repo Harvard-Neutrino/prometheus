@@ -1,6 +1,5 @@
 import logging
 import logging.config
-from typing import Optional
 
 
 def configure_logging(config) -> None:

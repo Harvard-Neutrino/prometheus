@@ -1,11 +1,13 @@
 """Physical constants.
- 
+
 Notes
 -----
 Pandel: <https://www.sciencedirect.com/science/article/pii/S0927650507001260>.
- 
+
 """
+
 import numpy as np
+
 
 class Constants(object):
     """Collection of useful constants."""

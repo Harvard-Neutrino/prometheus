@@ -1,8 +1,8 @@
 # Script to generate reference values for physics regression tests
 # Run this script ONCE with the validated v1.3.4 code
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -11,9 +11,7 @@ from tests.test_physics_regression import save_reference_values  # noqa: E402
 
 if __name__ == "__main__":
     print("Generating reference values from current implementation...")
-    print(
-        "These values will be used to ensure physics consistency across code changes."
-    )
+    print("These values will be used to ensure physics consistency across code changes.")
     print()
 
     refs = save_reference_values()

@@ -1,7 +1,8 @@
 from typing import Iterable
 
-from prometheus.particle import Particle
 from prometheus.injection import Injection
+from prometheus.particle import Particle
+
 
 def recursion_helper(particles: Iterable[Particle], idx0: int) -> int:
     """Recursively assign serialization indices to a tree of particles.
@@ -21,8 +22,9 @@ def recursion_helper(particles: Iterable[Particle], idx0: int) -> int:
     idx = idx0
     for particle in particles:
         particle.serialization_idx = idx
-        idx = recursion_helper(particle.children, idx+1)
+        idx = recursion_helper(particle.children, idx + 1)
     return idx
+
 
 def set_serialization_index(injection: Injection) -> None:
     """Assign a unique serialization index to every particle in the injection.

@@ -7,6 +7,7 @@ To add a new injector:
 
 This registry is intentionally minimal.
 """
+
 from __future__ import annotations
 
 from typing import Callable
@@ -26,11 +27,13 @@ def register_injector(name: str, *, constructor: Callable | None = None):
         Function that reads an injection from a file produced by this
         injector (e.g. ``injection_from_LI_output``).
     """
+
     def decorator(fn):
         _INJECTOR_REGISTRY[name.lower()] = fn
         if constructor is not None:
             _INJECTION_CONSTRUCTOR_REGISTRY[name.lower()] = constructor
         return fn
+
     return decorator
 
 

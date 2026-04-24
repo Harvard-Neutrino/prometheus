@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class SimpleDataset(object):
     """Simple Dataset that returns a tuple of arrays (inputs, outputs).
 
@@ -190,7 +191,6 @@ def downsample_ds(dataset, fraction, rng, copy=False):
 
 
 class DataLoader(object):
-
     """
     Iterator over a dataset yielding batches.
 

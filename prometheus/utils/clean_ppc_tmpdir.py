@@ -1,5 +1,6 @@
 from pathlib import Path
 
+
 def clean_ppc_tmpdir(path):
     """Remove the ppc temporary directory and all files within it.
 

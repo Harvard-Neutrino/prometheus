@@ -4,28 +4,34 @@
 # Deals with detector stuff
 from __future__ import annotations
 
-import numpy as np
-import awkward as ak
-from typing import List, Union, Tuple
+from typing import List, Tuple, Union
 
-from .module import Module
+import awkward as ak
+import numpy as np
+
 from .medium import Medium
-from ..config import config
+from .module import Module
+
 
 class IncompatibleSerialNumbersError(Exception):
     """Raised when serial numbers length doesn't match number of DOMs."""
+
     def __init__(self):
         self.message = "Serial numbers incompatible with modules"
         super().__init__(self.message)
 
+
 class IncompatibleMACIDsError(Exception):
     """Raised when MAC IDs length doesn't match number of DOMs."""
+
     def __init__(self):
         self.message = "MAC IDs incompatible with modules"
         super().__init__(self.message)
 
+
 class Detector(object):
     """Prometheus detector object."""
+
     def __init__(self, modules: List[Module], medium: Union[Medium, None]):
         """Initialize detector.
 
@@ -43,9 +49,9 @@ class Detector(object):
         self.module_coords_ak = ak.Array(self.module_coords)
         self.module_efficiencies = np.asarray([m.efficiency for m in self.modules])
         self.module_noise_rates = np.asarray([m.noise_rate for m in self.modules])
-        
+
         # TODO replace this with the functions David writes
-        self._outer_radius = np.linalg.norm(self.module_coords-self.offset, axis=1).max()
+        self._outer_radius = np.linalg.norm(self.module_coords - self.offset, axis=1).max()
         self._outer_cylinder = (
             np.linalg.norm(self.module_coords[:, :2] - self.offset[:2].transpose(), axis=1).max(),
             self.module_coords[:, 2].max() - self.module_coords[:, 2].min(),
@@ -58,7 +64,7 @@ class Detector(object):
         return self.modules[idx]
 
     def __add__(self, other) -> Detector:
-        if self.medium!=other.medium:
+        if self.medium != other.medium:
             raise ValueError("Cannot combine detectors that are in different media")
         modules = self.modules + other.modules
         return Detector(modules, self.medium)
@@ -87,14 +93,9 @@ class Detector(object):
     def offset(self) -> np.ndarray:
         return self._offset
 
-    def to_f2k(
-        self,
-        geo_file: str,
-        serial_nos: List[str]=[],
-        mac_ids: List[str]=[]
-    ) -> None:
+    def to_f2k(self, geo_file: str, serial_nos: List[str] = [], mac_ids: List[str] = []) -> None:
         """Write detector corrdinates into f2k format.
-        
+
         Parameters
         ----------
         geo_file : str
@@ -115,20 +116,22 @@ class Detector(object):
         IncompatibleMACIDsError
             Raised if MAC IDs length doesn't match number of DOMs.
         """
-        if serial_nos and len(serial_nos)!=len(self.modules):
+        if serial_nos and len(serial_nos) != len(self.modules):
             raise IncompatibleSerialNumbersError()
 
-        if mac_ids and len(mac_ids)!=len(self.modules):
+        if mac_ids and len(mac_ids) != len(self.modules):
             raise IncompatibleMACIDsError()
 
         # Make serial numbers place holders
         if not serial_nos:
             from .utils import random_serial
+
             serial_nos = [random_serial() for _ in range(self.n_modules)]
 
         # Make MAC ID place holders
         if not mac_ids:
             from .utils import random_mac
+
             mac_ids = [random_mac() for _ in range(self.n_modules)]
 
         keys = [m.key for m in self.modules]
@@ -146,16 +149,17 @@ class Detector(object):
 
     def display(self, ax=None, elevation_angle=0, azimuth=0):
         import matplotlib.pyplot as plt
+
         if ax is None:
             fig = plt.figure(figsize=(6, 5))
-            ax = fig.add_subplot(111, projection='3d')
+            ax = fig.add_subplot(111, projection="3d")
         ax.set_axis_off()
         ax.scatter(
-            self.module_coords[:,0],
-            self.module_coords[:,1],
-            self.module_coords[:,2],
+            self.module_coords[:, 0],
+            self.module_coords[:, 1],
+            self.module_coords[:, 2],
             alpha=0.5,
-            s=0.2
+            s=0.2,
         )
         ax.view_init(np.degrees(elevation_angle), np.degrees(azimuth))
         plt.show()
@@ -171,4 +175,3 @@ class Detector(object):
                     line += f"\t{x}"
                 line += "\n"
                 f.write(line)
-

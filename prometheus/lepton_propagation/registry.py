@@ -4,6 +4,7 @@ To add a new lepton propagator:
 1. Decorate the class with ``@register_lepton_propagator("my_name")``.
 2. That's it — no other files need to change.
 """
+
 from __future__ import annotations
 
 from typing import Type
@@ -16,9 +17,11 @@ def register_lepton_propagator(name: str):
 
     The name is normalised to lower-case with spaces replaced by underscores.
     """
+
     def decorator(cls):
         _LEPTON_PROPAGATOR_REGISTRY[name.lower().replace(" ", "_")] = cls
         return cls
+
     return decorator
 
 

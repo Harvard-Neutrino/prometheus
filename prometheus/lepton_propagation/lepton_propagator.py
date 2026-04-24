@@ -1,20 +1,20 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from typing import Tuple
+
 import proposal as pp
 
 from ..particle import Particle
 
+
 class LeptonPropagator(ABC):
     """Interface class for the different lepton propagators."""
+
     def __init__(self, config):
         self._prop_dict = {}
         self._pdef_dict = {}
         self._config = config
 
-    def __getitem__(
-        self,
-        particle: Particle
-    ) -> Tuple[pp.particle.ParticleDef, pp.Propagator]:
+    def __getitem__(self, particle: Particle) -> Tuple[pp.particle.ParticleDef, pp.Propagator]:
         """Retrieve the PROPOSAL ``ParticleDef`` and ``Propagator`` for a particle.
 
         Parameters
@@ -37,7 +37,7 @@ class LeptonPropagator(ABC):
     def config(self) -> dict:
         """Get the configuration dictionary used to build this propagator."""
         return self._config
-    
+
     @abstractmethod
     def _make_propagator(self, particle: Particle) -> pp.Propagator:
         """Create a PROPOSAL propagator for a Prometheus particle."""
