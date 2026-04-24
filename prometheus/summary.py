@@ -1,7 +1,7 @@
 """Run summary builder and emitter.
 
 This module contains the logic to construct and emit the end-of-run
-summary for a `Prometheus` run. It intentionally operates on a
+summary for a Prometheus run. It intentionally operates on a
 `Prometheus` instance passed in to avoid circular imports.
 """
 import json

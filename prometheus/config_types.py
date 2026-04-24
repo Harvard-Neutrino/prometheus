@@ -73,7 +73,13 @@ class ConfigBase:
         return [(f.name, getattr(self, f.name)) for f in fields(self)]
 
     def to_dict(self) -> dict:
-        """Return a plain nested dict (suitable for ``json.dumps``)."""
+        """Return a plain nested dict (suitable for ``json.dumps``).
+
+        Returns
+        -------
+        dict
+            Nested dictionary representation of the config.
+        """
         return asdict(self)
 
 
@@ -85,34 +91,48 @@ class ConfigBase:
 class RunConfig(ConfigBase):
     """Run-related configuration.
 
-    Fields
-    ------
-    run_number (int): Unique run identifier.
-    nevents (int): Number of events to simulate (must be > 0).
-    verbosity (str|int): Logging verbosity. Allowed string values: 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL' (case-insensitive) or a numeric logging level.
-    logfile (Optional[str]): Path to a file to write logs. If ``None`` logs go to console.
-    log_format (Optional[str]): Logging format string for handlers.
-    storage_prefix (str): Base directory for output files.
-    outfile (Optional[str]): Explicit output file path (parquet). If ``None`` a path under ``storage_prefix`` will be used.
-    random_state_seed (Optional[int]): Seed for RNGs used in injection/propagation.
-    summary_mode (str): Reporting mode. Allowed values: 'user' (default) and 'debug'.
-        - 'user': user-friendly, compact summary printed to the console and noisy third-party output collapsed.
-        - 'debug': developer-oriented summary emitted at DEBUG level; captured warnings and native prints are logged verbosely.
-    banner (bool): Show ASCII banner from assets when ``True``.
-    compact (bool): Emit a compact single-line summary for batch runs when ``True``.
-    summary_json (bool): If ``True``, write a machine-readable JSON summary alongside the output file.
-    summary_json_path (Optional[str]): Explicit path for JSON summary (overrides default outfile + '.summary.json').
-    progress_threshold (int): Minimum number of events required to display progress bars (tqdm).
+    Parameters
+    ----------
+    run_number : int
+        Unique run identifier.
+    nevents : int
+        Number of events to simulate (must be > 0).
+    verbosity : str or int
+        Logging verbosity. Allowed string values: 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL' (case-insensitive) or a numeric logging level.
+    logfile : str, optional
+        Path to a file to write logs. If None, logs go to console.
+    log_format : str, optional
+        Logging format string for handlers.
+    storage_prefix : str
+        Base directory for output files.
+    outfile : str, optional
+        Explicit output file path (parquet). If None, a path under storage_prefix will be used.
+    random_state_seed : int, optional
+        Seed for RNGs used in injection/propagation.
+    summary_mode : str
+        Reporting mode. Allowed values: 'user' (default) and 'debug'.
+        'user' prints a user-friendly, compact summary to the console and collapses noisy third-party output.
+        'debug' prints a developer-oriented summary at DEBUG level with verbose logging of captured warnings and native prints.
+    banner : bool
+        Show ASCII banner from assets when True.
+    compact : bool
+        Emit a compact single-line summary for batch runs when True.
+    summary_json : bool
+        If True, write a machine-readable JSON summary alongside the output file.
+    summary_json_path : str, optional
+        Explicit path for JSON summary (overrides default outfile + '.summary.json').
+    progress_threshold : int
+        Minimum number of events required to display progress bars (tqdm).
 
     Notes
     -----
-    - To enable the debug summary when running examples that do not expose CLI flags, set::
+    To enable the debug summary when running examples that do not expose CLI flags, set::
 
-          from prometheus import config
-          config.run.summary_mode = 'debug'
-          config.run.verbosity = 'DEBUG'  # optional: enable logger DEBUG-level output
+        from prometheus import config
+        config.run.summary_mode = 'debug'
+        config.run.verbosity = 'DEBUG'  # optional: enable logger DEBUG-level output
 
-    - ``verbosity`` accepts either standard logging level names or integers (see Python's ``logging`` module).
+    The ``verbosity`` parameter accepts either standard logging level names or integers (see Python's ``logging`` module).
     """
     run_number: int = 1337
     nevents: int = 10
@@ -478,7 +498,15 @@ class PhotonPropagatorConfig(ConfigBase):
 # ---------------------------------------------------------------------------
 
 def _deep_apply(obj: ConfigBase, data: dict) -> None:
-    """Recursively apply *data* dict values onto a *ConfigBase* tree in-place."""
+    """Recursively apply *data* dict values onto a *ConfigBase* tree in-place.
+
+    Parameters
+    ----------
+    obj : ConfigBase
+        Destination config object to update.
+    data : dict
+        Mapping of values to apply onto `obj`.
+    """
     for key, value in data.items():
         try:
             attr = obj._normalize(key)
@@ -516,11 +544,23 @@ class PrometheusConfig(ConfigBase):
     # ------------------------------------------------------------------
 
     def from_dict(self, user_dict: dict) -> None:
-        """Apply *user_dict* over the current defaults in-place."""
+        """Apply *user_dict* over the current defaults in-place.
+
+        Parameters
+        ----------
+        user_dict : dict
+            Mapping to apply onto the current defaults.
+        """
         _deep_apply(self, user_dict)
 
     def from_yaml(self, yaml_file: str) -> None:
-        """Load a YAML file and apply it over the current defaults in-place."""
+        """Load a YAML file and apply it over the current defaults in-place.
+
+        Parameters
+        ----------
+        yaml_file : str
+            Path to a YAML file to load.
+        """
         import yaml
         with open(yaml_file) as fh:
             data = yaml.load(fh, Loader=yaml.SafeLoader)
@@ -528,7 +568,13 @@ class PrometheusConfig(ConfigBase):
             _deep_apply(self, data)
 
     def from_toml(self, toml_file: str) -> None:
-        """Load a TOML file and apply it over the current defaults in-place."""
+        """Load a TOML file and apply it over the current defaults in-place.
+
+        Parameters
+        ----------
+        toml_file : str
+            Path to a TOML file to load.
+        """
         import tomllib
         with open(toml_file, "rb") as fh:
             data = tomllib.load(fh)
@@ -536,7 +582,13 @@ class PrometheusConfig(ConfigBase):
             _deep_apply(self, data)
 
     def to_dict(self) -> dict:
-        """Return a plain nested dict (suitable for ``json.dumps``)."""
+        """Return a plain nested dict (suitable for ``json.dumps``).
+
+        Returns
+        -------
+        dict
+            Nested dictionary representation of the config.
+        """
         return asdict(self)
 
     def __repr__(self) -> str:

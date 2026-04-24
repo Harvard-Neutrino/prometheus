@@ -1,4 +1,4 @@
-"""Lepton-propagator plugin registry.
+"""Lepton propagator plugin registry.
 
 To add a new lepton propagator:
 1. Decorate the class with ``@register_lepton_propagator("my_name")``.
