@@ -1,4 +1,4 @@
-"""Tests for water medium model registration (Phase 6) and flow model selection."""
+"""Tests for water medium model registration and flow model selection."""
 import warnings
 import pytest
 

@@ -1,9 +1,8 @@
 """Regression tests for the normalizing-flow and counts neural-net models.
 
 These tests lock in the numerical outputs of the current haiku/distrax
-implementation so that the Phase 7 migration to a replacement backend can be
-validated against them.  A passing test suite here is the *definition* of a
-correct migration.
+implementation so that replacement backend can be
+validated against them.
 
 All reference values were captured from the trained P-ONE pickle files with
 JAX PRNGKey(42) on CPU (April 2026).  The tolerance is generous (1e-4) because

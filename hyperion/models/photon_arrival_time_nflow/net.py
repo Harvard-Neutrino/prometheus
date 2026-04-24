@@ -1,4 +1,4 @@
-# Phase 7: distrax and dm-haiku removed.
+# distrax and dm-haiku removed.
 #
 # Replacements:
 #   haiku MLP   → pure-JAX _mlp_apply() reading weights directly from the

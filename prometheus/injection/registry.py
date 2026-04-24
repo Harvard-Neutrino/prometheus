@@ -5,8 +5,7 @@ To add a new injector:
    ``@register_injector("my_name", constructor=<from-file callable>)``.
 2. That's it — no other files need to change.
 
-This registry is intentionally minimal.  Full flexible-injection support
-is planned for Phase 13.
+This registry is intentionally minimal.
 """
 from __future__ import annotations
 
