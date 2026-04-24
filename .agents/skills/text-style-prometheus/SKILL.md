@@ -19,7 +19,11 @@ Do **not** apply these rules to pure code identifiers unless explicitly allowed 
 
 ## Wording and Grammar Preferences
 
-### 1. `Create` or `build` VS `make` in code-related statements and comments
+### 1. Use Microsoft Writing Style Guide
+
+When writing/editing text, checking for errors in grammar, wording, or typos, adhere to [Microsoft Writing Style Guide](https://learn.microsoft.com/en-us/style-guide/welcome/).
+
+### 2. `Create` or `build` VS `make` in code-related statements and comments
 
 When describing code (functions, methods, classes etc.), prefer the words `create` or `build` to the word `make`, since `make` is often used as a designated term related to build tools in programming.
 
@@ -28,7 +32,7 @@ When describing code (functions, methods, classes etc.), prefer the words `creat
 - ❌ `Make a PROPOSAL propagator`
 - ✅ `Build a PROPOSAL propagator`
 
-### 2. Use present tense in code documentation and docstrings
+### 3. Use present tense in code documentation and docstrings
 
 When describing what classes, methods and other pieces of code do, prefer present tense. For example:
 

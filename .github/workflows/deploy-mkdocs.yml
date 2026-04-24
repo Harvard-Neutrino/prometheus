@@ -1,0 +1,25 @@
+name: deploy-docsite
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Deploy docs site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13' 
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: pip install -r ./docs/requirements.txt
+ 
+      - name: Deploy docs
+        run: mkdocs gh-deploy --force

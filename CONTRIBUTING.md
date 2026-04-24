@@ -76,23 +76,49 @@ Bad examples:
 Our pull request template includes a handy checklist:
 
 ```md
-[ ] Code compiles without errors & works
-[ ] Code changes include relevant comments & unit tests
-[ ] All unit tests pass
-[ ] Documentation is updated
+- [ ] My branch is up to date with the main branch
+- [ ] Code compiles without errors and works
+- [ ] Code changes include relevant comments, docstrings, and unit tests
+- [ ] All unit tests pass
+- [ ] Documentation is updated in line with style standards
+- [ ] Changes to the documentation were manually tested on the documentation site
 ```
 
 You don't have to follow it to a T, but it's there to make sure your proposed change adheres to good coding practices: doesn't break anything, is tested and documented, etc.
 
 ## Documentation changes
 
-We love the documentation edits that fix typos, correct grammar, punctuation, facts, or expand the explanation of existing features, when the expansion has a compelling reason.
+We love the documentation edits that fix typos, correct grammar, punctuation, or expand the explanation of existing features, when the expansion has a compelling reason.
 
 We choose not to accept edits made purely for tone or readability, unless there is a good reason for them, like an overwhelming amount of open issues or discussions with people being visibly confused by existing documentation.
 
-The existing docs in this project are written using [Microsoft Writing Style Guide](https://learn.microsoft.com/en-us/style-guide/welcome/).
+### How our docs work
 
-For documentation best practices, refer to [Best practices for GitHub Docs](https://docs.github.com/en/contributing/writing-for-github-docs/best-practices-for-github-docs).
+Our documentation is publicly available on the website <https://harvard-neutrino.github.io/prometheus/>.
+
+It uses [MkDocs](https://www.mkdocs.org/) with readthedocs theme and some plugins that help with auto-generating the API reference (full list of plugins is available in [requirements.txt](./requirements.txt)).
+
+Setup guides and general docs from the `Documentation` section of the website are built from [./docs directory](./docs/). To contribute to those, amend/add files in `./docs` directory. If your changes relate to citation, terms of use, or project summary, please make sure the repo [README](./README.md) is up to date as well.
+
+API reference docs are auto-generated directly from docstrings in code. The docstrings are formatted in [NumPy style](https://numpy.org/doc/1.19/docs/howto_document.html#docstring-standard).
+
+### Style guides, checks and best practices
+
+- For help with text and docstring style checks, use the shared agent skill files in the [./agents directory](./agents).
+
+- The docs are written following [Microsoft Writing Style Guide](https://learn.microsoft.com/en-us/style-guide/welcome/).
+
+- For documentation best practices, refer to [Best practices for GitHub Docs](https://docs.github.com/en/contributing/writing-for-github-docs/best-practices-for-github-docs).
+
+### Testing your documentation changes
+
+To see what your changes look like on the documentation website, install everything listed in `requirements.txt` file:
+
+```sh
+pip install -r ./docs/requirements.txt
+```
+
+After that, you should be able to run `mkdocs serve` to view the local version on the website. The output of the command will contain the website address. For more details, refer to [MkDocs documentation](https://www.mkdocs.org/getting-started/).
 
 ## Questions
 
