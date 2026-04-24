@@ -5,6 +5,15 @@ from .units import SpeedOfLight, s_to_ns
 PPC_MAGIC_Z = 1948.07
 
 def serialize_particle(particle, output_f2k):
+    """Write an ``MC`` header line for a particle to an open f2k file.
+
+    Parameters
+    ----------
+    particle : Particle
+        Particle whose energy and position are written.
+    output_f2k : file-like object
+        Open file to write to.
+    """
     offpos = particle.position
     theta = np.arccos(particle.direction[2])
     phi = np.arctan2(particle.direction[1], particle.direction[0])
@@ -13,6 +22,17 @@ def serialize_particle(particle, output_f2k):
     )
 
 def serialize_loss(loss, parent, output_f2k):
+    """Write a ``TR`` track line for an energy loss to an open f2k file.
+
+    Parameters
+    ----------
+    loss : Loss
+        Energy loss to serialize.
+    parent : Particle
+        Parent particle that produced the loss; its direction is used.
+    output_f2k : file-like object
+        Open file to write to.
+    """
     d = np.linalg.norm(loss.position - parent.position)
     offpos = loss.position
     theta = np.arccos(parent.direction[2])

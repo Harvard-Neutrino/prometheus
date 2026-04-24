@@ -15,7 +15,18 @@ from ..utils import rotate_to_new_direc_v
 
 
 def pad_event(event):
+    """Pad an event array to the next multiple of 256 hits per module.
 
+    Parameters
+    ----------
+    event : awkward.Array
+        Per-module hit-time arrays to pad.
+
+    Returns
+    -------
+    ev_np : numpy.ndarray
+        Padded array with ``numpy.inf`` fill values.
+    """
     pad_len = np.int32(np.ceil(ak.max(ak.count(event, axis=1)) / 256) * 256)
 
     if ak.max(ak.count(event, axis=1)) > pad_len:
@@ -27,6 +38,21 @@ def pad_event(event):
 
 
 def pad_array_log_bucket(array, base):
+    """Pad a 1-D array to the next power of ``base`` using ``numpy.inf`` fill.
+
+    Parameters
+    ----------
+    array : awkward.Array
+        Array to pad.
+    base : int
+        Logarithmic bucket base used to determine the target length.
+
+    Returns
+    -------
+    ev_np : numpy.ndarray
+        Padded array with ``numpy.inf`` fill values, or an empty float array if
+        ``array`` is empty.
+    """
     if ak.count(array) == 0:
         return np.array([], dtype=np.float)
 
@@ -43,6 +69,34 @@ def pad_array_log_bucket(array, base):
 def calc_fisher_info_cascades(
     det, event_data, key, converter, ph_prop, lh_func, c_medium, n_ev=20, pad_base=4
 ):
+    """Estimate the Fisher information matrix for cascades by averaging over events.
+
+    Parameters
+    ----------
+    det : Detector
+        Detector instance.
+    event_data : dict
+        Event parameters used for cascade generation.
+    key : jax.random.PRNGKey
+        JAX random key.
+    converter : callable
+        Function converting event parameters to photon source descriptions.
+    ph_prop : callable
+        Photon propagation function.
+    lh_func : callable
+        Per-module likelihood function.
+    c_medium : float
+        Speed of light in the medium.
+    n_ev : int, optional
+        Number of events to average over.
+    pad_base : int, optional
+        Base used for log-bucket padding of hit arrays.
+
+    Returns
+    -------
+    fisher : numpy.ndarray
+        Estimated Fisher information matrix of shape ``(7, 7)``.
+    """
     def eval_for_mod(
         x, y, z, theta, phi, t, log10e, times, mod_coords, noise_rate, key
     ):

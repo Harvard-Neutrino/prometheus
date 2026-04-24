@@ -102,7 +102,7 @@ class Prometheus(object):
         userconfig : dict or str or None
             Configuration dictionary or path to YAML file specifying configuration.
         detector : Detector or None
-            Detector to be used or path to geofile to load detector file. If omitted, the path from ``userconfig["detector"]["geo file"]`` will be loaded.
+            Detector to be used or path to geo file to load detector from. If omitted, the path from ``userconfig["detector"]["geo file"]`` will be loaded.
 
         Raises
         ------
@@ -111,7 +111,7 @@ class Prometheus(object):
         UnknownPhotonPropagatorError
             If the photon propagator specified in the config is unknown.
         CannotLoadDetectorError
-            If no detector is provided and no geofile path is provided in config.
+            If no detector is provided and no geo file path is provided in config.
         """
         self._start_timing_misc = time()
         if userconfig is not None:

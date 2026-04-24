@@ -5,6 +5,15 @@ def construct_totals_from_dict(
         det,
         fill_dict
     ):
+    """Aggregate per-particle hit arrays into a combined ``total`` entry in-place.
+
+    Parameters
+    ----------
+    det : Detector
+        Prometheus detector used to look up module coordinates and keys.
+    fill_dict : dict
+        Dictionary of per-particle hit records. A ``total`` key is added in-place.
+    """
     particle_keys = [
         k for k in fill_dict.keys()
         if k not in "event_id mc_truth".split()

@@ -1,8 +1,22 @@
 # Conversion of energy loss names
 def convert_loss_name(type_of_loss):
-    '''
-    Converts from PROPOSAL naming convention of energy losses to PPC ones.
-    '''
+    """Convert from PROPOSAL naming convention of energy losses to ppc ones.
+
+    Parameters
+    ----------
+    type_of_loss : str
+        PROPOSAL energy loss type name.
+
+    Returns
+    -------
+    loss_name : str
+        Corresponding ppc energy loss type name.
+
+    Raises
+    ------
+    Exception
+        Raised if ``type_of_loss`` is not a recognized PROPOSAL loss type.
+    """
     if type_of_loss == 'epair':
         return 'epair'
     elif type_of_loss == 'brems':

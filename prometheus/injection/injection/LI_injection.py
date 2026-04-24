@@ -8,6 +8,7 @@ from ..interactions import Interactions, INTERACTION_CONVERTER
 from .injection import Injection
 
 class LIInjection(Injection):
+    """Injection constructed from LeptonInjector output."""
 
     def __init__(self, events: Iterable[LIInjectionEvent]):
         if not all([isinstance(event, LIInjectionEvent) for event in events]):
@@ -15,6 +16,16 @@ class LIInjection(Injection):
         super().__init__(events)
     
     def to_dict(self) -> dict:
+        """Convert all properties of the injection to a dictionary.
+
+        Extends the base implementation with LeptonInjector-specific fields
+        (Bjorken x, Bjorken y, and column depth).
+
+        Returns
+        -------
+        d : dict
+            Dictionary with all injection properties.
+        """
         d = super().to_dict()
         d["bjorken_x"] = [x.bjorken_x for x in self]
         d["bjorken_y"] = [x.bjorken_y for x in self]

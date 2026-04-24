@@ -14,7 +14,37 @@ from hyperion.data import DataLoader
 
 
 class HistMLP(hk.Module):
+    """Histogram MLP module used as a small haiku model.
+
+    Parameters
+    ----------
+    output_size : int
+        Number of output units (histogram bins or channels).
+    layers : sequence of int
+        Hidden layer sizes.
+    dropout : float
+        Dropout rate applied during training.
+    final_activations : callable or None
+        Optional activation applied to final layer outputs.
+    name : str, optional
+        Module name passed to haiku.
+    """
     def __init__(self, output_size, layers, dropout, final_activations, name=None):
+        """Initialise the Histogram MLP.
+
+        Parameters
+        ----------
+        output_size : int
+            Number of output units (histogram bins or channels).
+        layers : sequence of int
+            Hidden layer sizes.
+        dropout : float
+            Dropout rate applied during training.
+        final_activations : callable or None
+            Optional activation applied to final layer outputs.
+        name : str, optional
+            Module name passed to haiku.
+        """
         super().__init__(name=name)
         self.output_size = output_size
         self.layers = layers
@@ -22,6 +52,20 @@ class HistMLP(hk.Module):
         self.final_activations = final_activations
 
     def __call__(self, x, is_training):
+        """Forward pass through the histogram MLP.
+
+        Parameters
+        ----------
+        x : jax.numpy.ndarray
+            Input array with shape (..., in_dim).
+        is_training : bool
+            Whether the module is executed in training mode (applies dropout).
+
+        Returns
+        -------
+        jax.numpy.ndarray
+            Output array with last dimension equal to ``output_size``.
+        """
         for n_per_layer in self.layers:
             x = hk.Linear(n_per_layer)(x)
             # x = hk.BatchNorm(create_scale=True, create_offset=True, decay_rate=0.9)(x, is_training=is_training)
@@ -56,6 +100,20 @@ def make_forward_fn(conf):
     layers = [conf["n_neurons"], conf["n_neurons"], conf["n_neurons"]]
 
     def forward_fn(batch, is_training):
+        """Forward function used during training.
+
+        Parameters
+        ----------
+        batch : sequence
+            Training batch where ``batch[0]`` contains inputs.
+        is_training : bool
+            Whether to run in training mode (enables dropout).
+
+        Returns
+        -------
+        jax.numpy.ndarray
+            Model outputs for the batch.
+        """
         inp = jnp.asarray(batch[0], dtype=jnp.float32)
         return HistMLP(conf["n_out"], layers, conf["dropout"], None)(inp, is_training)
 
@@ -79,6 +137,18 @@ def make_eval_forward_fn(conf):
     layers = [conf["n_neurons"], conf["n_neurons"], conf["n_neurons"]]
 
     def forward_fn(inp):
+        """Evaluation forward function (no dropout).
+
+        Parameters
+        ----------
+        inp : array-like
+            Input array for evaluation.
+
+        Returns
+        -------
+        jax.numpy.ndarray
+            Model outputs.
+        """
         return HistMLP(conf["n_out"], layers, conf["dropout"], None)(inp, False)
 
     return forward_fn
@@ -99,9 +169,11 @@ def make_logp1_trafo(scale):
     """
 
     def trafo(data):
+        """Forward transform: log(1 + x*scale)."""
         return np.log(data * scale + 1)
 
     def rev_trafo(data):
+        """Inverse of the forward transform."""
         return jnp.exp(data - 1) / scale
 
     return trafo, rev_trafo
@@ -130,6 +202,18 @@ def make_net_eval_from_pickle(path):
 
     @jax.jit
     def net_eval_fn(x):
+        """JIT-compiled evaluation function loading parameters from pickle.
+
+        Parameters
+        ----------
+        x : array-like
+            Model input.
+
+        Returns
+        -------
+        array-like
+            Model output after reverse transform.
+        """
         return rev_trafo(net.apply(params, state, None, x)[0])
 
     return net_eval_fn, binning
@@ -189,6 +273,26 @@ def train_net(conf, train_data, test_data, writer, rng):
     opt_state = opt.init(params)
 
     def loss(params, state, rng_key, batch, is_training):
+        """Compute loss for a batch during training.
+
+        Parameters
+        ----------
+        params : dict
+            Model parameters.
+        state : dict
+            Haiku state.
+        rng_key : jax.random.PRNGKey
+            PRNG key for stochastic layers.
+        batch : tuple
+            Training batch containing inputs and targets.
+        is_training : bool
+            Whether to run in training mode.
+
+        Returns
+        -------
+        jax.numpy.ndarray
+            Scalar loss value.
+        """
         pred, _ = net.apply(params, state, rng_key, batch, is_training)
         target = batch[1]
         # mask = batch[2]
@@ -215,7 +319,28 @@ def train_net(conf, train_data, test_data, writer, rng):
 
     @functools.partial(jax.jit, static_argnums=[5])
     def get_updates(params, state, rng_key, opt_state, batch, is_training):
-        """Learning rule (stochastic gradient descent)."""
+        """Learning rule (stochastic gradient descent).
+
+        Parameters
+        ----------
+        params : dict
+            Model parameters.
+        state : dict
+            Haiku state.
+        rng_key : jax.random.PRNGKey
+            PRNG key.
+        opt_state : optax.OptState
+            Optimizer state.
+        batch : tuple
+            Training batch.
+        is_training : bool
+            Whether the update is for training.
+
+        Returns
+        -------
+        tuple
+            ``(loss, new_params, new_opt_state)``.
+        """
         l, grads = jax.value_and_grad(loss)(
             params, state, rng_key, batch, is_training=is_training
         )
@@ -225,6 +350,7 @@ def train_net(conf, train_data, test_data, writer, rng):
 
     @jax.jit
     def ema_update(params, avg_params):
+        """Update EMA parameters from current parameters."""
         return optax.incremental_update(params, avg_params, step_size=0.001)
 
     for epoch in range(conf["epochs"]):
@@ -257,6 +383,18 @@ def train_net(conf, train_data, test_data, writer, rng):
 
     @jax.jit
     def net_eval_fn(x):
+        """JIT-compiled evaluation using averaged parameters.
+
+        Parameters
+        ----------
+        x : array-like
+            Input array for evaluation.
+
+        Returns
+        -------
+        array-like
+            Model outputs.
+        """
         return net.apply(avg_params, state, None, x, is_training=False)[0]
 
     if writer is not None:

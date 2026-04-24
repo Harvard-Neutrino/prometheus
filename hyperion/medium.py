@@ -105,6 +105,18 @@ def make_mixed_scattering_func(f1, f2, ratio):
     """
 
     def _f(key):
+        """Mixture sampler selecting between ``f1`` and ``f2`` based on ``ratio``.
+
+        Parameters
+        ----------
+        key : jax.random.PRNGKey
+            PRNG key for sampling.
+
+        Returns
+        -------
+        float
+            Sampled scattering angle.
+        """
         k1, k2 = random.split(key)
         is_f1 = random.uniform(k1) < ratio
 
@@ -147,6 +159,18 @@ def make_wl_dep_sca_len_func(vol_conc_small_part, vol_conc_large_part):
     """
 
     def sca_len(wavelength):
+        """Compute scattering length as a function of wavelength (nm).
+
+        Parameters
+        ----------
+        wavelength : float or array-like
+            Wavelength in nanometres.
+
+        Returns
+        -------
+        float or numpy.ndarray
+            Scattering length in same units as the input.
+        """
         ref_wlen = 550  # nm
         x = ref_wlen / wavelength
 
@@ -175,6 +199,11 @@ def make_ref_index_func(salinity, temperature, pressure):
         Temperature in C.
     pressure : float
         Pressure in bar.
+
+    Returns
+    -------
+    callable
+        Function mapping wavelength (nm) to refractive index.
     """
     n0 = 1.31405
     n1 = 1.45e-5
@@ -199,6 +228,18 @@ def make_ref_index_func(salinity, temperature, pressure):
     a4 = n10
 
     def ref_index_func(wavelength):
+        """Return refractive index for given wavelength(s).
+
+        Parameters
+        ----------
+        wavelength : float or array-like
+            Wavelength in nanometres.
+
+        Returns
+        -------
+        float or array-like
+            Refractive index corresponding to input wavelength(s).
+        """
 
         x = 1 / wavelength
         return a01 + x * (a2 + x * (a3 + x * a4))

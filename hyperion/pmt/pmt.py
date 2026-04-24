@@ -15,6 +15,11 @@ class SPETemplate:
     """
 
     def __init__(self):
+        """Initialize default SPE mixture components and weights.
+
+        The default components are a combination of an exponential and a
+        truncated normal to mimic a simple SPE shape.
+        """
         self.components = [
             scipy.stats.expon(scale=1),
             scipy.stats.truncnorm(-1 / 0.3, 10, loc=1, scale=0.3),
@@ -23,6 +28,20 @@ class SPETemplate:
         self.weights = [0.3, 0.7]
 
     def rvs(self, size, rng):
+        """Draw random SPE charges from the mixture model.
+
+        Parameters
+        ----------
+        size : int
+            Number of samples to draw.
+        rng : numpy.random.RandomState or numpy.random.Generator
+            Random number generator used for sampling.
+
+        Returns
+        -------
+        numpy.ndarray
+            Array of sampled SPE charges.
+        """
         pe = np.ones(size) * (-1.0)
         comp = rng.choice([0, 1], p=self.weights, size=size)
 
@@ -34,16 +53,55 @@ class SPETemplate:
         return pe
 
     def pdf(self, xs):
+        """Evaluate the SPE mixture probability density at input locations.
+
+        Parameters
+        ----------
+        xs : array-like
+            Points at which to evaluate the PDF.
+
+        Returns
+        -------
+        numpy.ndarray
+            PDF values corresponding to ``xs``.
+        """
         return self.weights[0] * self.components[0].pdf(xs) + self.weights[
             1
         ] * self.components[1].pdf(xs)
 
 
 class PulseTemplate:
+    """Callable pulse template that generates per-hit pulse waveforms.
+
+    The instance is callable with signature ``(xs, times, charges)`` and returns
+    an array of per-time-bin pulse amplitudes formed by summing a simple Gumbel
+    pulse shape for each hit time and charge.
+    """
+
     def __init__(self):
+        """Create a callable pulse template.
+
+        The instance can be called to produce per-hit pulse shapes.
+        """
         pass
 
     def __call__(self, xs, times, charges):
+        """Generate per-hit pulse waveforms and scale by charges.
+
+        Parameters
+        ----------
+        xs : numpy.ndarray
+            Time grid (1-D) for the waveform.
+        times : array-like
+            Hit times.
+        charges : array-like
+            Per-hit charges.
+
+        Returns
+        -------
+        numpy.ndarray
+            Per-time-bin pulse amplitudes with shape ``(len(xs), len(times))``.
+        """
         return charges * scipy.stats.gumbel_r.pdf(
             xs[:, np.newaxis], loc=times + 2, scale=2
         )
@@ -123,6 +181,20 @@ def make_calc_wl_acceptance_weight(path_to_acc_data):
     )
 
     def calc_wl_acc(wavelength, peak_qe):
+        """Interpolate and scale wavelength acceptance.
+
+        Parameters
+        ----------
+        wavelength : float or array-like
+            Wavelength(s) in nanometres.
+        peak_qe : float
+            Peak quantum efficiency scaling factor.
+
+        Returns
+        -------
+        float or array-like
+            Acceptance weight(s) for the provided wavelength(s).
+        """
         if np.any((wavelength < safe_range[0]) | (wavelength > safe_range[1])):
             raise ValueError("Wavelength outside of safe range")
         return np.exp(wl_acc_spl(wavelength)) * peak_qe

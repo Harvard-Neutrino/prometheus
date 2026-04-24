@@ -1,4 +1,6 @@
 class Constants(object):
+    """Physical and simulation constants used across Hyperion."""
+
     class CherenkovLightYield(object):
         """
         Constants relating to light yield (LY).

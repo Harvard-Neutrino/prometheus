@@ -1,6 +1,24 @@
 import awkward as ak
 
 def join_awkward_arrays(arr1, arr2, fields=None):
+    """Concatenate two ``awkward.Array`` objects event-by-event along shared fields.
+
+    Parameters
+    ----------
+    arr1 : awkward.Array
+        First array to join.
+    arr2 : awkward.Array
+        Second array to join.
+    fields : list of str, optional
+        Fields to join. If not provided, the fields are inferred from the arrays
+        and must fully overlap between ``arr1`` and ``arr2``.
+
+    Returns
+    -------
+    arr : awkward.Array
+        Array with the same fields, where each event contains the concatenation
+        of the corresponding events from ``arr1`` and ``arr2``.
+    """
     # Infer fields from arrs if not passed
     if fields is None:
         if not (

@@ -399,9 +399,30 @@ class _ConditionerFn:
     """Drop-in replacement for hk.Transformed with .apply(params, x)."""
 
     def __init__(self, n_hidden_layers):
+        """Initialize conditioner wrapper.
+
+        Parameters
+        ----------
+        n_hidden_layers : int
+            Number of hidden layers in the underlying MLP.
+        """
         self._n = n_hidden_layers
 
     def apply(self, params, x):
+        """Apply the underlying MLP to inputs using given parameters.
+
+        Parameters
+        ----------
+        params : dict
+            Haiku-style parameter dictionary.
+        x : jax.numpy.ndarray
+            Input array with shape (..., in_dim).
+
+        Returns
+        -------
+        jax.numpy.ndarray
+            Network output array.
+        """
         return _mlp_apply(params, x, self._n)
 
 
@@ -479,15 +500,54 @@ class _TrafDistBuilder:
     """
 
     def __init__(self, flow_num_layers, rmin, rmax, return_base):
+        """Initialise the traffic distribution builder.
+
+        Parameters
+        ----------
+        flow_num_layers : int
+            Number of spline layers in the flow.
+        rmin : float
+            Minimum range value for the spline.
+        rmax : float
+            Maximum range value for the spline.
+        return_base : bool
+            If True, ``__call__`` returns ``(base_dist, flow)``.
+        """
         self.flow_num_layers = flow_num_layers
         self.rmin = float(rmin)
         self.rmax = float(rmax)
         self.return_base = return_base
 
     def __call__(self, traf_params):
+        """Build and return the distribution object for given parameters.
+
+        Parameters
+        ----------
+        traf_params : jax.numpy.ndarray
+            Array of transformed flow parameters.
+
+        Returns
+        -------
+        object
+            Depending on ``return_base`` either a dist-like object with
+            ``.log_prob()`` or a ``(base_dist, flow)`` pair.
+        """
         return self._make(traf_params)
 
     def _make(self, traf_params):
+        """Construct flow-related helper classes for given traffic parameters.
+
+        Parameters
+        ----------
+        traf_params : jax.numpy.ndarray
+            Flattened flow parameter vector.
+
+        Returns
+        -------
+        object
+            Depending on ``self.return_base`` either a ``_TransformedDist``
+            instance or a ``(_BaseDist, _Flow)`` pair.
+        """
         spl_params_list = jnp.split(traf_params, self.flow_num_layers, axis=-1)
         spline_layers   = make_spl_flow(spl_params_list, self.rmin, self.rmax)
         builder = self
@@ -504,6 +564,18 @@ class _TrafDistBuilder:
               y = spl1.inv(spl0.inv(z)) - 4
             """
             def forward(self, z):
+                """Forward transformation of the flow on input ``z``.
+
+                Parameters
+                ----------
+                z : array-like
+                    Input samples in the flow target space.
+
+                Returns
+                -------
+                array-like
+                    Inverse-transformed samples.
+                """
                 fn_inv = jnp.vectorize(
                     _rqs_inv, signature="(),(n),(n),(n)->(),()"
                 )
@@ -514,12 +586,40 @@ class _TrafDistBuilder:
                 return x
 
         class _BaseDist:
+            """Simple base distribution wrapper exposing ``sample()``."""
             def sample(self, seed, sample_shape=()):
+                """Draw samples from the base Gamma distribution.
+
+                Parameters
+                ----------
+                seed : jax.random.PRNGKey
+                    PRNG key for sampling.
+                sample_shape : tuple, optional
+                    Output sample shape.
+
+                Returns
+                -------
+                jax.numpy.ndarray
+                    Samples from the base distribution.
+                """
                 return _gamma_sample(seed, concentration=1.5, rate=0.1,
                                      shape=sample_shape)
 
         class _TransformedDist:
+            """Distribution-like object exposing ``log_prob()``."""
             def log_prob(self, samples):
+                """Compute log-probability of ``samples`` under the flow.
+
+                Parameters
+                ----------
+                samples : array-like
+                    Samples in the target space.
+
+                Returns
+                -------
+                jax.numpy.ndarray
+                    Log-probabilities for each sample.
+                """
                 return builder.log_prob(traf_params, samples)
 
         if self.return_base:
@@ -540,6 +640,20 @@ class _TrafDistBuilder:
         flow_num_layers = self.flow_num_layers
 
         def _single(tp, s):
+            """Compute log-probability for a single parameter/sample pair.
+
+            Parameters
+            ----------
+            tp : array-like
+                Flattened spline parameter vector for one instance.
+            s : float
+                Scalar sample value.
+
+            Returns
+            -------
+            jax.numpy.ndarray
+                Log-probability scalar.
+            """
             # tp: (total_params,)   s: scalar
             spl_p_list = jnp.split(tp, flow_num_layers)
             y = s + 4.0              # shift4.forward
@@ -701,6 +815,26 @@ def _init_mlp_params(in_dim, hidden_size, n_hidden, out_dim, seed):
 
 
 def train_shape_model(config, train_loader, test_loader, seed=1337, writer=None):
+    """Train the shape model using the provided data loaders.
+
+    Parameters
+    ----------
+    config : dict
+        Training and model configuration dictionary.
+    train_loader : iterable
+        Training data loader.
+    test_loader : iterable
+        Test data loader.
+    seed : int, optional
+        Random seed for parameter initialisation (default is 1337).
+    writer : SummaryWriter or None, optional
+        Optional writer for logging metrics.
+
+    Returns
+    -------
+    dict
+        Trained parameter dictionary.
+    """
 
     dist_builder = traf_dist_builder(
         config["flow_num_layers"],
@@ -715,16 +849,64 @@ def train_shape_model(config, train_loader, test_loader, seed=1337, writer=None)
 
     @jax.jit
     def ema_update(params, avg_params):
+        """Exponential moving average update for parameters.
+
+        Parameters
+        ----------
+        params : dict
+            Current parameters.
+        avg_params : dict
+            Current EMA parameters.
+
+        Returns
+        -------
+        dict
+            Updated EMA parameters.
+        """
         return optax.incremental_update(params, avg_params, step_size=0.001)
 
     @jax.jit
     def loss_fn(params, cond, samples):
+        """Compute negative log-likelihood loss for a batch.
+
+        Parameters
+        ----------
+        params : dict
+            Model parameters for the conditioner MLP.
+        cond : array-like
+            Conditioning inputs.
+        samples : array-like
+            Observed sample values.
+
+        Returns
+        -------
+        jax.numpy.ndarray
+            Scalar loss value.
+        """
         traf_params = shape_conditioner.apply(params, cond)
         lprobs = eval_log_prob(dist_builder, traf_params, samples)
         return -jnp.mean(lprobs * jnp.isfinite(lprobs))
 
     @jax.jit
     def update(params, opt_state, cond, samples):
+        """Perform a single optimization step.
+
+        Parameters
+        ----------
+        params : dict
+            Current model parameters.
+        opt_state : optax.OptState
+            Current optimizer state.
+        cond : array-like
+            Conditioning inputs for the batch.
+        samples : array-like
+            Observed samples for the batch.
+
+        Returns
+        -------
+        tuple
+            ``(new_params, new_opt_state, loss_value)``.
+        """
         lval, grads = jax.value_and_grad(loss_fn)(params, cond, samples)
         updates, new_opt_state = optimizer.update(grads, opt_state)
         return optax.apply_updates(params, updates), new_opt_state, lval
@@ -762,17 +944,55 @@ def train_shape_model(config, train_loader, test_loader, seed=1337, writer=None)
 
 
 def train_counts_model(config, train_loader, test_loader, seed=1337, writer=None):
+    """Train the counts model using MLP regression.
+
+    Parameters
+    ----------
+    config : dict
+        Training and model configuration.
+    train_loader : iterable
+        Training data loader.
+    test_loader : iterable
+        Test data loader.
+    seed : int, optional
+        Random seed.
+    writer : SummaryWriter or None, optional
+        Optional writer for logging metrics.
+
+    Returns
+    -------
+    dict
+        Trained parameter dictionary.
+    """
 
     net_fn = make_counts_net_fn(config)
 
     @jax.jit
     def loss_fn(params, batch):
+        """Mean-squared error loss for a batch.
+
+        Parameters
+        ----------
+        params : dict
+            Model parameters.
+        batch : tuple
+            Batch data (inputs, targets, ...).
+
+        Returns
+        -------
+        jax.numpy.ndarray
+            Scalar loss value.
+        """
         inp = jnp.concatenate(batch[:2]).T
         out = net_fn.apply(params, inp).squeeze()
         return 0.5 * jnp.average((out - batch[2]) ** 2)
 
     @jax.jit
     def update(params, opt_state, batch):
+        """Single optimizer update for counts model.
+
+        Returns updated parameters, optimizer state and loss.
+        """
         lval, grads = jax.value_and_grad(loss_fn)(params, batch)
         updates, new_opt_state = optimizer.update(grads, opt_state)
         return optax.apply_updates(params, updates), new_opt_state, lval

@@ -145,6 +145,22 @@ def make_multi_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.flo
     isec_func_v = jax.vmap(photon_sphere_intersection, in_axes=[None, None, 0, 0, None])
 
     def f(photon_x, photon_p, step_size):
+        """Vectorised intersection for multiple target spheres.
+
+        Parameters
+        ----------
+        photon_x : jax.numpy.ndarray
+            Photon origin position.
+        photon_p : jax.numpy.ndarray
+            Photon direction vector.
+        step_size : float
+            Maximum step size to consider.
+
+        Returns
+        -------
+        tuple
+            ``(is_intersected, position)`` for the nearest intersection.
+        """
         isecs = isec_func_v(photon_x, photon_p, target_x, target_r, step_size)
         any_isec = jnp.any(isecs[0])
 
@@ -161,10 +177,43 @@ def make_multi_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.flo
 def make_photon_spherical_shell_intersection(
     shell_center, shell_radius, dtype=jnp.float64
 ):
+    """Create intersection function for a spherical shell.
+
+    Parameters
+    ----------
+    shell_center : array-like
+        Center of the spherical shell (shape (3,)).
+    shell_radius : float
+        Radius of the spherical shell.
+    dtype : jax.numpy.dtype, optional
+        Data type for computations (default is ``jax.numpy.float64``).
+
+    Returns
+    -------
+    callable
+        Function with signature ``(photon_x, photon_p, step_size)`` returning
+        ``(is_intersected, position)``.
+    """
     shell_center = jnp.asarray(shell_center, dtype=dtype)
     shell_radius = dtype(shell_radius)
 
     def photon_spherical_shell_intersection(photon_x, photon_p, step_size):
+        """Check intersection between a photon ray and the spherical shell.
+
+        Parameters
+        ----------
+        photon_x : jax.numpy.ndarray
+            Photon origin position.
+        photon_p : jax.numpy.ndarray
+            Photon direction vector.
+        step_size : float
+            Maximum step size to consider.
+
+        Returns
+        -------
+        tuple
+            ``(is_intersected, position)``.
+        """
         p_normed = jnp.asarray(photon_p, dtype=dtype)  # assume normed
 
         a = jnp.dot(p_normed, (photon_x - shell_center))
@@ -191,6 +240,25 @@ def make_photon_spherical_shell_intersection(
 def make_photon_circle_intersection(
     circle_center, circle_normal, circle_r, dtype=jnp.float64
 ):
+    """Create an intersection function for a circle (plane + radius).
+
+    Parameters
+    ----------
+    circle_center : array-like
+        Center of the circle in 3D space.
+    circle_normal : array-like
+        Normal vector of the plane containing the circle.
+    circle_r : float
+        Radius of the circle.
+    dtype : jax.numpy.dtype, optional
+        Data type for computations.
+
+    Returns
+    -------
+    callable
+        Function with signature ``(photon_x, photon_p, step_size)`` returning
+        ``(is_intersected, position)``.
+    """
 
     circle_center = jnp.asarray(circle_center, dtype=dtype)
     circle_normal = jnp.asarray(circle_normal, dtype=dtype)
@@ -304,6 +372,18 @@ def make_cherenkov_spectral_sampling_func(wl_range, ref_index_func, dtype=jnp.fl
     )
 
     def sampling_func(rng_key):
+        """Sample a wavelength according to the Frank–Tamm distribution.
+
+        Parameters
+        ----------
+        rng_key : jax.random.PRNGKey
+            PRNG key for sampling.
+
+        Returns
+        -------
+        float
+            Sampled wavelength in nanometres.
+        """
         uni = random.uniform(rng_key, dtype=dtype)
         return jnp.polyval(poly_pars, uni)
 
@@ -509,6 +589,13 @@ def unpack_args(f):
     """
 
     def _f(args):
+        """Unpack a single tuple argument and call ``f`` with it.
+
+        Parameters
+        ----------
+        args : tuple
+            Positional arguments to unpack for ``f``.
+        """
         return f(*args)
 
     return _f
@@ -539,6 +626,18 @@ def initialize_direction_isotropic(rng_key):
 
 
 def initialize_direction_led(rng_key):
+    """Draw an LED-like emission direction.
+
+    Parameters
+    ----------
+    rng_key : jax.random.PRNGKey
+        PRNG key for sampling.
+
+    Returns
+    -------
+    jax.numpy.ndarray
+        Unit direction vector sampled according to the LED sampling routine.
+    """
     k1, k2 = random.split(rng_key, 2)
     theta = jnp.arcsin(random.uniform(k1))
     phi = random.uniform(k2, minval=0, maxval=2 * np.pi)
@@ -549,6 +648,18 @@ def initialize_direction_led(rng_key):
 
 
 def make_initialize_direction_laser(direction):
+    """Create an initializer that always returns the configured laser direction.
+
+    Parameters
+    ----------
+    direction : array-like
+        Direction vector to return from the initializer.
+
+    Returns
+    -------
+    callable
+        Function with signature ``(rng_key)`` returning ``direction``.
+    """
     def initialize_direction_laser(rng_key):
         """Return the fixed laser direction.
 
@@ -568,7 +679,34 @@ def make_initialize_direction_laser(direction):
 
 
 def make_initialize_position_sphere(sphere_pos, sphere_radius):
+    """Create an initializer that samples positions on a sphere surface.
+
+    Parameters
+    ----------
+    sphere_pos : array-like
+        Center position of the sphere.
+    sphere_radius : float
+        Radius of the sphere.
+
+    Returns
+    -------
+    callable
+        Initializer function with signature ``(rng_key)`` returning a position vector.
+    """
+
     def initialize_position_sphere(rng_key):
+        """Sample a position on the sphere surface using an isotropic direction.
+
+        Parameters
+        ----------
+        rng_key : jax.random.PRNGKey
+            PRNG key for sampling.
+
+        Returns
+        -------
+        jax.numpy.ndarray
+            Position vector on the sphere surface.
+        """
         direc_vec = initialize_direction_isotropic(rng_key)
 
         pos = sphere_pos + direc_vec * sphere_radius
@@ -624,6 +762,18 @@ def make_fixed_pos_time_initializer(
     """
 
     def init(rng_key):
+        """Initializer returning a fixed position/time and sampled direction/wavelength.
+
+        Parameters
+        ----------
+        rng_key : jax.random.PRNGKey
+            PRNG key for sampling.
+
+        Returns
+        -------
+        dict
+            Initial photon state dictionary.
+        """
         k1, k2 = random.split(rng_key, 2)
 
         # Set initial photon state
@@ -661,6 +811,18 @@ def make_fixed_time_initializer(
     """
 
     def init(rng_key):
+        """Initializer returning a fixed time and sampled position, direction and wavelength.
+
+        Parameters
+        ----------
+        rng_key : jax.random.PRNGKey
+            PRNG key for sampling.
+
+        Returns
+        -------
+        dict
+            Initial photon state dictionary.
+        """
         k1, k2, k3 = random.split(rng_key, 3)
 
         # Set initial photon state
@@ -715,6 +877,20 @@ def make_track_segment_fixed_time_pos_dir_initializer(
     track_dir = jnp.asarray(track_dir, dtype=dtype)
 
     def init(rng_key):
+        """Initializer for a photon emitted along a track segment.
+
+        Samples an emission point along the track and computes Cherenkov direction.
+
+        Parameters
+        ----------
+        rng_key : jax.random.PRNGKey
+            PRNG key for sampling.
+
+        Returns
+        -------
+        dict
+            Initial photon state dictionary.
+        """
         k1, k2, k3 = random.split(rng_key, 3)
 
         # sample position along track
@@ -752,6 +928,22 @@ def make_loop_until_isec_or_maxtime(max_time):
     """Create a function that calls the step function until either the photon intersects or ``max_time`` is reached."""
 
     def loop_until_isec_or_maxtime(step_function, initial_photon_state, rng_key):
+        """Run the step function until intersection or maximum time is exceeded.
+
+        Parameters
+        ----------
+        step_function : callable
+            Photon step function.
+        initial_photon_state : dict
+            Initial photon state.
+        rng_key : jax.random.PRNGKey
+            PRNG key for stepping.
+
+        Returns
+        -------
+        dict
+            Final photon state.
+        """
         final_photon_state, _ = while_loop(
             lambda args: (args[0]["isec"] == False)  # noqa: E712
             & (args[0]["time"] < max_time),
@@ -767,7 +959,38 @@ def make_loop_for_n_steps(n_steps):
     """Create a function that calls step function ``n_steps`` times."""
 
     def loop_for_nsteps(step_function, initial_photon_state, rng_key):
+        """Loop the step function for a fixed number of iterations.
+
+        Parameters
+        ----------
+        step_function : callable
+            Photon step function to be repeatedly applied.
+        initial_photon_state : dict
+            Initial photon state.
+        rng_key : jax.random.PRNGKey
+            PRNG key for stepping.
+
+        Returns
+        -------
+        dict
+            Final photon state after ``n_steps`` iterations.
+        """
+
         def noop_if_not_alive(state, rng_key):
+            """Call step function only if photon is still alive (not intersected).
+
+            Parameters
+            ----------
+            state : dict
+                Current photon state.
+            rng_key : jax.random.PRNGKey
+                PRNG key for stepping.
+
+            Returns
+            -------
+            tuple
+                New state and rng_key.
+            """
             out = cond(
                 state["isec"],
                 lambda args: args,

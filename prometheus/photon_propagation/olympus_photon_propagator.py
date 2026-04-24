@@ -59,6 +59,17 @@ class OlympusPhotonPropagator(PhotonPropagator):
         detector: Detector,
         config: dict
     ):
+        """Initialize the ``OlympusPhotonPropagator``.
+
+        Parameters
+        ----------
+        lepton_propagator : LeptonPropagator
+            Prometheus lepton propagator used to compute energy losses.
+        detector : Detector
+            Prometheus detector object.
+        config : dict
+            Olympus photon propagator configuration dictionary.
+        """
         super().__init__(lepton_propagator, detector, config)
 
         if not self.config['simulation']['files']:

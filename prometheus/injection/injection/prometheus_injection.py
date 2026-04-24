@@ -9,6 +9,18 @@ from .injection import Injection
 from .LI_injection import LIInjection
 
 def prometheus_inj_to_li_injection_event(truth: ak.Record) -> LIInjectionEvent:
+    """Convert a Prometheus truth record to an ``LIInjectionEvent``.
+
+    Parameters
+    ----------
+    truth : awkward.Record
+        Single truth record from a Prometheus parquet output file.
+
+    Returns
+    -------
+    event : LIInjectionEvent
+        Corresponding LeptonInjector injection event.
+    """
     initial_state = Particle(
         truth["initial_type"],
         truth["initial_energy"],
@@ -62,7 +74,7 @@ def injection_from_prometheus(
         injection_cls: Injection = LIInjection,
         event_converter: Callable = prometheus_inj_to_li_injection_event
     ):
-        """Make an injection object from Prometheus output.
+        """Build an injection object from Prometheus output.
 
         If the output was not generated from ``LeptonInjector``, you will
         need to specify which kind of injection to use and how to

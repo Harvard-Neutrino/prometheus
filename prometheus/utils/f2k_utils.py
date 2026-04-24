@@ -7,6 +7,22 @@ import numpy as np
 padding = 200
 
 def from_f2k(fname):
+    """Read module positions, keys, and serial numbers from an f2k file.
+
+    Parameters
+    ----------
+    fname : str
+        Path to the f2k file.
+
+    Returns
+    -------
+    pos_out : numpy.ndarray
+        Array of shape ``(N, 3)`` with the (x, y, z) positions of each OM.
+    keys : list of tuple of int
+        List of (string_id, om_id) keys for each OM.
+    sers : list of str
+        List of serial numbers for each OM.
+    """
      # List for the (x,y,z) positions of each OM
     pos = []
     # List for the optical module keys
@@ -48,16 +64,54 @@ def clean_icecube(fname):
 #clean_icecube('../data/copy-f2k')
 
 def get_xyz(fname):
+    """Return module coordinates from an f2k file as an array.
+
+    Parameters
+    ----------
+    fname : str
+        Path to the f2k file.
+
+    Returns
+    -------
+    coords : numpy.ndarray
+        Array of shape ``(N, 3)`` with the (x, y, z) positions.
+    """
     # returns 3xn array
     det = from_f2k(fname)
     return det[0]
 
 def offset(coords):
+    """Compute the translation vector that centers the coordinates at the origin.
+
+    Parameters
+    ----------
+    coords : numpy.ndarray
+        Array of shape ``(N, 3)`` with module positions.
+
+    Returns
+    -------
+    offset_vec : numpy.ndarray
+        Vector such that ``coords + offset_vec`` has a mean of ``[0, 0, 0]``.
+    """
     # returns x st x+mean(x,y,z) = <o,o,o>
     xyz_avg = np.average(coords,0)
     return -1*xyz_avg
 
 def get_cylinder(coords, epsilon = 5):
+    """Compute the bounding cylinder (radius, height) for a set of module coordinates.
+
+    Parameters
+    ----------
+    coords : numpy.ndarray
+        Array of shape ``(N, 3)`` with module positions.
+    epsilon : float, optional
+        Tolerance for deciding whether the centroid is already at the origin.
+
+    Returns
+    -------
+    out_cylinder : tuple of float
+        Tuple ``(radius, height)`` of the bounding cylinder.
+    """
     # returns cylinder (radius, height) from 3xn array
     if max(np.average(coords,0)) > epsilon:
         coords = coords+offset(coords)
@@ -70,6 +124,18 @@ def get_cylinder(coords, epsilon = 5):
     return out_cylinder
     
 def get_endcap(coords):
+    """Compute the endcap length for LeptonInjector from module coordinates.
+
+    Parameters
+    ----------
+    coords : numpy.ndarray
+        Array of shape ``(N, 3)`` with module positions.
+
+    Returns
+    -------
+    endcap_len : float
+        Endcap length in meters.
+    """
     cyl = get_cylinder(coords)
     r = cyl[0]; z = cyl[1]
     theta = (np.pi/2)-2*np.arctan(2*r/z)
@@ -77,6 +143,18 @@ def get_endcap(coords):
     return endcap_len
 
 def get_injRadius(coords):
+    """Compute the injection radius for LeptonInjector from module coordinates.
+
+    Parameters
+    ----------
+    coords : numpy.ndarray
+        Array of shape ``(N, 3)`` with module positions.
+
+    Returns
+    -------
+    injRad : float
+        Injection radius in meters.
+    """
     cyl = get_cylinder(coords)
     injRad = padding + (np.sqrt(cyl[0]**2+(0.5*cyl[1])**2))
     return injRad

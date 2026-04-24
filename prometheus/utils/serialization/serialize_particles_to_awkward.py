@@ -9,6 +9,21 @@ def serialize_particles_to_awkward(
     det: Detector,
     injection: Injection
 ):
+    """Serialize hit information from all injection events into an ``awkward.Array``.
+
+    Parameters
+    ----------
+    det : Detector
+        Prometheus detector used to look up module positions.
+    injection : Injection
+        Injection object containing the simulated events.
+
+    Returns
+    -------
+    outarr : awkward.Array or None
+        Array with sensor position, sensor ID, hit times, and index fields for
+        each event. Returns ``None`` if no hits were recorded.
+    """
     all_hits = []
     for injection_event in injection:
         all_hits.append(accumulate_hits(injection_event.final_states))

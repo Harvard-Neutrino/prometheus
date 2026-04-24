@@ -174,6 +174,8 @@ class RunConfig(ConfigBase):
 
 @dataclass
 class DetectorConfig(ConfigBase):
+    """Detector configuration."""
+
     geo_file: Optional[str] = None
     offset: Optional[list] = None
 
@@ -188,6 +190,8 @@ class DetectorConfig(ConfigBase):
 
 @dataclass
 class LIPathsConfig(ConfigBase):
+    """LeptonInjector file path configuration."""
+
     install_location: str = field(
         default_factory=lambda: (
             f"{sys.prefix}/lib/python"
@@ -217,6 +221,8 @@ class LIPathsConfig(ConfigBase):
 
 @dataclass
 class LISimulationConfig(ConfigBase):
+    """LeptonInjector simulation parameters configuration."""
+
     final_state_1: str = "MuMinus"
     final_state_2: str = "Hadrons"
     minimal_energy: float = 1e2
@@ -255,6 +261,8 @@ class LISimulationConfig(ConfigBase):
 
 @dataclass
 class LeptonInjectorConfig(ConfigBase):
+    """Top-level LeptonInjector configuration."""
+
     inject: bool = True
     paths: LIPathsConfig = field(default_factory=LIPathsConfig)
     simulation: LISimulationConfig = field(default_factory=LISimulationConfig)
@@ -262,6 +270,8 @@ class LeptonInjectorConfig(ConfigBase):
 
 @dataclass
 class SimpleInjectorPathsConfig(ConfigBase):
+    """Simple injector file path configuration."""
+
     injection_file: Optional[str] = None
 
     _KEY_MAP: ClassVar[dict[str, str]] = {
@@ -271,6 +281,8 @@ class SimpleInjectorPathsConfig(ConfigBase):
 
 @dataclass
 class SimpleInjectorConfig(ConfigBase):
+    """Top-level simple injector configuration."""
+
     inject: bool = False
     paths: SimpleInjectorPathsConfig = field(default_factory=SimpleInjectorPathsConfig)
     simulation: dict = field(default_factory=dict)
@@ -278,6 +290,8 @@ class SimpleInjectorConfig(ConfigBase):
 
 @dataclass
 class InjectionConfig(ConfigBase):
+    """Injection configuration."""
+
     name: str = "LeptonInjector"
     lepton_injector: LeptonInjectorConfig = field(default_factory=LeptonInjectorConfig)
     prometheus_injector: SimpleInjectorConfig = field(default_factory=SimpleInjectorConfig)
@@ -296,6 +310,8 @@ class InjectionConfig(ConfigBase):
 
 @dataclass
 class ProposalPathsConfig(ConfigBase):
+    """PROPOSAL file path configuration."""
+
     tables_path: str = field(
         default_factory=lambda: str(RESOURCES_DIR / "PROPOSAL_tables")
     )
@@ -309,6 +325,8 @@ class ProposalPathsConfig(ConfigBase):
 
 @dataclass
 class ProposalSimConfig(ConfigBase):
+    """PROPOSAL simulation parameters configuration."""
+
     vcut: float = 0.1
     ecut: float = 0.5
     interpolation: bool = True
@@ -332,12 +350,16 @@ class ProposalSimConfig(ConfigBase):
 
 @dataclass
 class NewProposalConfig(ConfigBase):
+    """Configuration for the new PROPOSAL lepton propagator."""
+
     paths: ProposalPathsConfig = field(default_factory=ProposalPathsConfig)
     simulation: ProposalSimConfig = field(default_factory=ProposalSimConfig)
 
 
 @dataclass
 class OldProposalSimConfig(ConfigBase):
+    """Old PROPOSAL simulation parameters configuration."""
+
     vcut: float = 1.0
     ecut: float = 0.1
     interpolation: bool = True
@@ -359,6 +381,8 @@ class OldProposalSimConfig(ConfigBase):
 
 @dataclass
 class OldProposalPathsConfig(ConfigBase):
+    """Old PROPOSAL file path configuration."""
+
     tables_path: str = "~/.local/share/PROPOSAL/tables"
     earth_model_location: Optional[str] = None
 
@@ -370,12 +394,16 @@ class OldProposalPathsConfig(ConfigBase):
 
 @dataclass
 class OldProposalConfig(ConfigBase):
+    """Configuration for the old PROPOSAL lepton propagator."""
+
     paths: OldProposalPathsConfig = field(default_factory=OldProposalPathsConfig)
     simulation: OldProposalSimConfig = field(default_factory=OldProposalSimConfig)
 
 
 @dataclass
 class LeptonPropagatorConfig(ConfigBase):
+    """Top-level lepton propagator configuration."""
+
     name: str = "new proposal"
     version: Optional[str] = None
     new_proposal: NewProposalConfig = field(default_factory=NewProposalConfig)
@@ -393,6 +421,8 @@ class LeptonPropagatorConfig(ConfigBase):
 
 @dataclass
 class OlympusPathsConfig(ConfigBase):
+    """Olympus file path configuration."""
+
     location: str = field(
         default_factory=lambda: str(RESOURCES_DIR / "olympus_resources")
     )
@@ -407,6 +437,8 @@ class OlympusPathsConfig(ConfigBase):
 
 @dataclass
 class OlympusSimConfig(ConfigBase):
+    """Olympus simulation parameters configuration."""
+
     files: bool = True
     wavelength: int = 700
     splitter: int = 100000
@@ -414,6 +446,8 @@ class OlympusSimConfig(ConfigBase):
 
 @dataclass
 class OlympusParticlesConfig(ConfigBase):
+    """Olympus particle type configuration."""
+
     track_particles: list = field(default_factory=lambda: [13, -13])
     explicit: list = field(default_factory=lambda: [11, -11, 111, 211, 13, -13, 15, -15])
     replacement: int = 2212
@@ -425,6 +459,8 @@ class OlympusParticlesConfig(ConfigBase):
 
 @dataclass
 class OlympusConfig(ConfigBase):
+    """Top-level Olympus photon propagator configuration."""
+
     paths: OlympusPathsConfig = field(default_factory=OlympusPathsConfig)
     simulation: OlympusSimConfig = field(default_factory=OlympusSimConfig)
     particles: OlympusParticlesConfig = field(default_factory=OlympusParticlesConfig)
@@ -432,6 +468,8 @@ class OlympusConfig(ConfigBase):
 
 @dataclass
 class PPCPathsConfig(ConfigBase):
+    """ppc file path configuration."""
+
     location: str = field(
         default_factory=lambda: f"{RESOURCES_DIR}/PPC_executables/PPC/"
     )
@@ -447,18 +485,24 @@ class PPCPathsConfig(ConfigBase):
 
 @dataclass
 class PPCSimConfig(ConfigBase):
+    """ppc simulation parameters configuration."""
+
     device: int = 0
     supress_output: bool = True
 
 
 @dataclass
 class PPCConfig(ConfigBase):
+    """Top-level ppc photon propagator configuration."""
+
     paths: PPCPathsConfig = field(default_factory=PPCPathsConfig)
     simulation: PPCSimConfig = field(default_factory=PPCSimConfig)
 
 
 @dataclass
 class PPCCudaPathsConfig(ConfigBase):
+    """ppc CUDA file path configuration."""
+
     location: str = field(
         default_factory=lambda: f"{RESOURCES_DIR}/PPC_executables/PPC_CUDA/"
     )
@@ -474,12 +518,16 @@ class PPCCudaPathsConfig(ConfigBase):
 
 @dataclass
 class PPCCudaConfig(ConfigBase):
+    """Top-level ppc CUDA photon propagator configuration."""
+
     paths: PPCCudaPathsConfig = field(default_factory=PPCCudaPathsConfig)
     simulation: PPCSimConfig = field(default_factory=PPCSimConfig)
 
 
 @dataclass
 class PhotonPropagatorConfig(ConfigBase):
+    """Top-level photon propagator configuration."""
+
     name: Optional[str] = None
     photon_field_name: str = "photons"
     olympus: OlympusConfig = field(default_factory=OlympusConfig)
@@ -528,6 +576,8 @@ def _deep_apply(obj: ConfigBase, data: dict) -> None:
 
 @dataclass
 class PrometheusConfig(ConfigBase):
+    """Top-level Prometheus simulation configuration."""
+
     run: RunConfig = field(default_factory=RunConfig)
     detector: DetectorConfig = field(default_factory=DetectorConfig)
     injection: InjectionConfig = field(default_factory=InjectionConfig)

@@ -30,7 +30,7 @@ def make_new_LI_injection(
     injection_specs: dict,
     detector_offset: np.ndarray
 ) -> None:
-    """Make a new injection with LeptonInjector.
+    """Create a new injection with LeptonInjector.
  
     Parameters
     ----------

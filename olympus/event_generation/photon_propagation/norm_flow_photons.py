@@ -18,6 +18,29 @@ from .utils import sources_to_model_input, sources_to_model_input_per_module
 
 # @profile
 def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_medium):
+    """Build a photon-generation function backed by normalizing flow models.
+
+    Loads the shape and counts normalizing flow models from disk and returns a
+    compiled JAX function that samples detected photon arrival times for a given
+    set of sources and modules.
+
+    Parameters
+    ----------
+    shape_model_path : str
+        Path to the pickled shape normalizing flow model.
+    counts_model_path : str
+        Path to the pickled photon counts model.
+    c_medium : float
+        Speed of light in the medium in meters per nanosecond.
+
+    Returns
+    -------
+    generate_norm_flow_photons : callable
+        Function with signature
+        ``(module_coords, module_efficiencies, source_pos, source_dir,
+        source_time, source_nphotons, seed) -> awkward.Array``
+        that returns per-module detected photon arrival times.
+    """
     shape_config, shape_params = pickle.load(open(shape_model_path, "rb"))
     counts_config, counts_params = pickle.load(open(counts_model_path, "rb"))
 

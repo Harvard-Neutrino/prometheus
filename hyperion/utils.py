@@ -20,7 +20,7 @@ def calc_tres(
 
     Parameters
     ----------
-    t : np.ndarray
+    t : numpy.ndarray
         Measured arrival times.
     det_radius : float
         Detector radius.
@@ -31,7 +31,7 @@ def calc_tres(
 
     Returns
     -------
-    tres : np.ndarray
+    tres : numpy.ndarray
         Time residual.
     """
     return t - ((det_dist - det_radius) / c_medium)
@@ -44,14 +44,14 @@ def cherenkov_ang_dist(costheta: np.ndarray, n_ph: float = 1.35) -> np.ndarray:
 
     Parameters
     ----------
-    costheta : np.ndarray
+    costheta : numpy.ndarray
         Cosine of the angle.
     n_ph : float, optional
         Refractive index for photons.
 
     Returns
     -------
-    dist : np.ndarray
+    dist : numpy.ndarray
         Angular distribution values.
     """
     # params for e-
@@ -78,11 +78,12 @@ def cherenkov_ang_dist_int(n_ph, lower=-1, upper=1):
 
     Returns
     -------
-    result : np.ndarray
+    result : numpy.ndarray
         Definite integral of the angular distribution.
     """
 
     def incgamma(a, x):
+        """Scaled upper incomplete gamma helper: Gamma(a) * gammaincc(a, x)."""
         return gamma(a) * gammaincc(a, x)
 
     a = Constants.CherenkovLightYield.AngDist.a
@@ -93,7 +94,23 @@ def cherenkov_ang_dist_int(n_ph, lower=-1, upper=1):
     cos_theta_c = 1.0 / n_ph
 
     def indef_int(x):
+        """Indefinite integral of the Cherenkov angular distribution.
+
+        Parameters
+        ----------
+        x : float or array-like
+            Integration variable.
+
+        Returns
+        -------
+        numpy.ndarray
+            Indefinite integral evaluated at ``x``.
+        """
         def lower_branch(x, cos_theta_c):
+            """Lower-branch expression for the indefinite integral.
+
+            This branch applies for x < cos_theta_c.
+            """
             return (
                 1
                 / c
@@ -107,8 +124,8 @@ def cherenkov_ang_dist_int(n_ph, lower=-1, upper=1):
                     * (-(b * (cos_theta_c - x) ** c)) ** (-1 / c)
                 )
             )
-
         def upper_branch(x, cos_theta_c):
+            """Upper-branch expression for the indefinite integral."""
             return (
                 1
                 / c
@@ -189,17 +206,69 @@ def calculate_min_number_steps(
 
 
 def make_cascadia_abs_len_func(sca_len_func):
+    """Create an absorption-length function for Cascadia.
+
+    Parameters
+    ----------
+    sca_len_func : callable
+        Function mapping wavelength (nm) to scattering length.
+
+    Returns
+    -------
+    callable
+        Function mapping wavelength (nm) to absorption length.
+    """
     att_lengths = np.asarray([[365, 10.4], [400, 14.6], [450, 27.7], [585, 7.1]])
     spl = UnivariateSpline(att_lengths[:, 0], np.log(att_lengths[:, 1]), k=2, s=0.01)
 
     def abs_len(wavelength):
+        """Compute absorption length from interpolated attenuation and scattering.
+
+        Parameters
+        ----------
+        wavelength : float or array-like
+            Wavelength in nanometres.
+
+        Returns
+        -------
+        float or numpy.ndarray
+            Absorption length.
+        """
         return 1 / (1 / np.exp(spl(wavelength)) - 1 / sca_len_func(wavelength))
 
     return abs_len
 
 
 def rotate_to_new_direc(old_dir, new_dir, operand):
+    """Rotate `operand` so that `old_dir` maps to `new_dir` using Rodrigues' formula.
+
+    Parameters
+    ----------
+    old_dir : jax.numpy.ndarray
+        Original direction vector (shape (3,) or (..., 3)).
+    new_dir : jax.numpy.ndarray
+        Target direction vector with same shape as `old_dir`.
+    operand : jax.numpy.ndarray
+        Vector(s) to rotate. The rotation is applied along the last axis.
+
+    Returns
+    -------
+    jax.numpy.ndarray
+        Rotated vector(s) with same shape as `operand`.
+    """
     def _rotate(operand):
+        """Rotate ``operand`` by the angle between ``old_dir`` and ``new_dir``.
+
+        Parameters
+        ----------
+        operand : array-like
+            Vector(s) to rotate.
+
+        Returns
+        -------
+        array-like
+            Rotated vector(s).
+        """
 
         axis = jnp.cross(old_dir, new_dir)
         axis /= jnp.linalg.norm(axis)

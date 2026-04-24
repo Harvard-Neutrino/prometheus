@@ -2,17 +2,41 @@
 
 ## Running Simulations
 
-The [examples directory](https://github.com/Harvard-Neutrino/prometheus/tree/main/examples) of the Prometheus GitHub repository contains example scripts for running simulations.
+The [examples directory](https://github.com/Harvard-Neutrino/prometheus/tree/main/examples) contains small, runnable scripts that demonstrate typical Prometheus workflows.
 
-As a first-time user, you will need `example_ppc.py` for ice-based simulations and `example_olympus.py` for water-based ones. Other scripts cover more specific use case scenarios.
+Recommended quick-start examples:
 
-To execute a script, run:
+- `examples/01_basic_water.py` — Minimal water-case example to validate an install.
+- `examples/02_basic_ice.py` — Minimal ice-case example (uses PPC) to validate an install with PPC.
+
+Run examples using the repository-local micromamba environment. For a typical run:
+
+Activate
 
 ```sh
-python3 python -m pip <SCRIPT_NAME>.py
+# Activate the repo-local micromamba environment
+source scripts/activate.sh .prometheus_env
 ```
 
-Replace `<SCRIPT_NAME>` with the name of your simulation script.
+Run a water simulation
+
+```sh
+# Run the water example
+python examples/01_basic_water.py
+```
+
+Run an ice simulation
+
+```sh
+# Run the ice example
+python examples/02_basic_ice.py
+```
+
+You can also combine activation and execution on one line:
+
+```sh
+source scripts/activate.sh .prometheus_env && python examples/01_basic_water.py
+```
 
 ## Getting Help
 

@@ -4,6 +4,22 @@ import jax
 
 
 def rotate_to_new_direc(old_dir, new_dir, operand):
+    """Rotate a vector from one reference direction to another using Rodrigues' formula.
+
+    Parameters
+    ----------
+    old_dir : jax.numpy.ndarray
+        Original reference direction (unit vector).
+    new_dir : jax.numpy.ndarray
+        Target reference direction (unit vector).
+    operand : jax.numpy.ndarray
+        Vector to rotate.
+
+    Returns
+    -------
+    v_rot : jax.numpy.ndarray
+        Rotated vector.
+    """
     def _rotate(operand):
 
         axis = jnp.cross(old_dir, new_dir)

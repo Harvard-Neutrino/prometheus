@@ -2,7 +2,7 @@ import random
 import string
 
 def random_serial() -> str:
-    """Makes a serial number in the hexdecimal form expected by ppc.
+    """Create a serial number in the hexadecimal form expected by ppc.
 
     Returns
     -------

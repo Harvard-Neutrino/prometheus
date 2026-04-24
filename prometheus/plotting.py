@@ -9,6 +9,18 @@ from mpl_toolkits.mplot3d import Axes3D
 from .utils import find_cog
 
 def is_empty(event):
+    """Check whether an event has no hits.
+
+    Parameters
+    ----------
+    event : object
+        Event object whose values are iterable hit arrays.
+
+    Returns
+    -------
+    result : bool
+        True if the event contains no hits.
+    """
     nhit = 0
     for val in event.values():
         nhit += len(val[0])
@@ -35,6 +47,45 @@ def plot_brightest(
     elevation_angle=0.0,
     azi_angle=None
 ):
+    """Find and plot the brightest event from a collection of events.
+
+    Parameters
+    ----------
+    events : object
+        Collection of events indexed by channel and sensor position.
+    det : Detector
+        Prometheus detector used to look up module positions.
+    brightest_event : bool, optional
+        Passed through to ``plot_event``.
+    figname : str, optional
+        Output file name for the saved figure.
+    save : bool, optional
+        Whether to save the figure to disk.
+    show : bool, optional
+        Whether to display the figure interactively.
+    channel : str, optional
+        Hit channel to use when selecting the brightest event.
+    show_doms : bool, optional
+        Whether to plot DOM locations in the background.
+    show_lepton : bool, optional
+        Whether to overlay the lepton track.
+    show_dust_layer : bool, optional
+        Whether to overlay the dust layer.
+    charge_mult : float, optional
+        Scaling factor for hit-count marker sizes.
+    cut : float, optional
+        Quantile cut applied to hit times (1.0 keeps all hits).
+    loss_threshold : float, optional
+        Energy threshold for displaying energy losses.
+    cmap : str, optional
+        Matplotlib colormap name.
+    tmethod : str, optional
+        Method used to reduce hit times per DOM (e.g. ``'mean'``).
+    elevation_angle : float, optional
+        Camera elevation angle for the 3D view in degrees.
+    azi_angle : float or None, optional
+        Camera azimuth angle in degrees. Derived from the event direction if ``None``.
+    """
     hit_counts = []
     for event in events[channel].sensor_pos_x:
         hit_counts.append(len(event))
@@ -70,6 +121,45 @@ def plot_event(
     elevation_angle=0.0,
     azi_angle=None
 ):
+    """Plot a single event in 3D.
+
+    Parameters
+    ----------
+    event : object
+        Event record containing hit information and MC truth.
+    detector : Detector
+        Prometheus detector used to look up module positions.
+    brightest_event : bool, optional
+        Unused; reserved for future use.
+    figname : str, optional
+        Output file name for the saved figure.
+    save : bool, optional
+        Whether to save the figure to disk.
+    show : bool, optional
+        Whether to display the figure interactively.
+    channel : str, optional
+        Hit channel to plot (e.g. ``'total'``).
+    show_doms : bool, optional
+        Whether to plot DOM locations in the background.
+    show_lepton : bool, optional
+        Whether to overlay the lepton track.
+    show_dust_layer : bool, optional
+        Whether to overlay the dust layer.
+    charge_mult : float, optional
+        Scaling factor for hit-count marker sizes.
+    cut : float, optional
+        Quantile cut applied to hit times (1.0 keeps all hits).
+    loss_threshold : float, optional
+        Energy threshold for displaying energy losses.
+    cmap : str, optional
+        Matplotlib colormap name.
+    tmethod : str, optional
+        Method used to reduce hit times per DOM (e.g. ``'mean'``).
+    elevation_angle : float, optional
+        Camera elevation angle for the 3D view in degrees.
+    azi_angle : float or None, optional
+        Camera azimuth angle in degrees. Derived from the event direction if ``None``.
+    """
     # TODO: Add formatting check
     fig = plt.figure(figsize=(6, 5))
     ax  = fig.add_subplot(111, projection='3d')

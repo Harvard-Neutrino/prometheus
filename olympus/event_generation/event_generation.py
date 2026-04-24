@@ -26,7 +26,22 @@ logger = logging.getLogger(__name__)
 
 
 def simulate_noise(det, event):
+    """Add detector noise hits to an event.
 
+    Parameters
+    ----------
+    det : Detector
+        Detector instance used to generate noise hits.
+    event : awkward.Array
+        Existing hit-time array for the event.
+
+    Returns
+    -------
+    event : awkward.Array
+        Hit-time array with noise hits merged and sorted.
+    noise : awkward.Array
+        Noise-only hit-time array.
+    """
     if ak.count(event) == 0:
         time_range = [-1000, 4000]
         noise = generate_noise(det, time_range)

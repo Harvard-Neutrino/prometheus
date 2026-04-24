@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 WARNMSG = "It looks like the lic file provided does not match that in the Parquet file. You may want to check this."
 
 class ParquetWeighter(Weighter):
+    """Weighter that reads event properties directly from a Prometheus parquet output file."""
 
     def __init__(
         self,
@@ -26,7 +27,29 @@ class ParquetWeighter(Weighter):
         lic_file: Optional[str] = None,
         offset: Optional[np.ndarray] = None
     ):
+        """Initialize the ``ParquetWeighter``.
 
+        Parameters
+        ----------
+        parquet_file : str
+            Path to the Prometheus parquet output file to weight.
+        nu_cc_xs : str, optional
+            File name of the neutrino CC cross-section fits file.
+        nubar_cc_xs : str, optional
+            File name of the anti-neutrino CC cross-section fits file.
+        nu_nc_xs : str, optional
+            File name of the neutrino NC cross-section fits file.
+        nubar_nc_xs : str, optional
+            File name of the anti-neutrino NC cross-section fits file.
+        xs_prefix : str or None, optional
+            Directory containing the cross-section fits files.
+        lic_file : str or None, optional
+            Path to the LeptonInjector ``.lic`` configuration file.
+            If ``None``, the path stored in the parquet metadata is used.
+        offset : numpy.ndarray or None, optional
+            Detector offset to subtract from event coordinates. If ``None``,
+            the offset is read from the parquet metadata.
+        """
         config = json.loads(
             pq.read_metadata(parquet_file).metadata[b"config_prometheus"]
         )
@@ -64,9 +87,8 @@ class ParquetWeighter(Weighter):
         )
 
     def _get_event_oneweight(self, event:ak.Record) -> float:
-        """
-        Get oneweight for event.
-        
+        """Get oneweight for event.
+
         Oneweight * flux / n_gen_events = rate.
 
         Parameters

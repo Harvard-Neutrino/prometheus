@@ -35,7 +35,7 @@ class LeptonPropagator(ABC):
 
     @property
     def config(self) -> dict:
-        """Get the configuration dictionary used to make this propagator."""
+        """Get the configuration dictionary used to build this propagator."""
         return self._config
     
     @abstractmethod
@@ -45,13 +45,12 @@ class LeptonPropagator(ABC):
 
     @abstractmethod
     def _make_particle_def(self, particle: Particle) -> pp.particle.ParticleDef:
-        """Creates a PROPOSAL ``ParticleDef`` for a Prometheus particle."""
+        """Create a PROPOSAL ``ParticleDef`` for a Prometheus particle."""
         pass
 
     @abstractmethod
     def energy_losses(self, particle: Particle) -> None:
-        """Propagate particle with energy losses. The losses will be
-            stored in ``particle.losses``.
+        """Propagate particle with energy losses. The losses will be stored in ``particle.losses``.
 
         Parameters
         ----------

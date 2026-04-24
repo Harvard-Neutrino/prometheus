@@ -4,11 +4,11 @@ import LeptonWeighter as LW
 from .weighter import Weighter
 
 class H5Weighter(Weighter):
+    """Weighter that reads event properties from an HDF5 file."""
 
     def get_event_oneweight(self, event_properties:h5.Dataset) -> float:
-        """
-        Get oneweight for event.
-        
+        """Get oneweight for event.
+
         Oneweight * flux / n_gen_events = rate.
 
         Parameters
