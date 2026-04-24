@@ -263,7 +263,7 @@ def misc_q():
 
 def run_ui():
     """Run user interface."""
-    print(f"""
+    print(rf"""
 ——————————————————————————————————————————————————————————
 Welcome to
 {Fore.RED} ____                           _   _                    

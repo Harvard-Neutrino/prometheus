@@ -275,8 +275,6 @@ def make_hex_grid(
         Vertical spacing between modules.
     z_cent : float
         Z-position of the center of the line.
-    line_id : int
-        Integer identifier of the line.
     rng : np.random.RandomState, int or None, optional
         The way to set numpy random state. If a np.random.RandomState instance
         is passed, that will be used. If int or None, random state will be

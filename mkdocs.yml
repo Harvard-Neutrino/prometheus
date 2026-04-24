@@ -48,7 +48,6 @@ plugins:
               ignore_init_summary: true
             docstring_style: numpy
             docstring_section_style: list
-            filters: ["!^_"]
             heading_level: 1
             merge_init_into_class: true
             parameter_headings: false
