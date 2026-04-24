@@ -1,7 +1,6 @@
 ---
 name: text-style-prometheus
-description: >
-  Enforces Prometheus-specific text style rules for docstrings, markdown, and other prose. Use when checking or generating any non-code text (docstrings, .md files, comments-as-prose).
+description: Enforces Prometheus-specific text style rules for docstrings, markdown, and other prose. Use when checking or generating any non-code text (docstrings, .md files, comments-as-prose).
 ---
 
 # Prometheus Text Style
@@ -36,52 +35,104 @@ When describing code (functions, methods, classes etc.), prefer the words `creat
 
 When describing what classes, methods and other pieces of code do, prefer present tense. For example:
 
-- ❌ `lepton_propagator: Prometheus LeptonPropagator object which will be used to generate losses from the particles.`
-- ✅ `lepton_propagator: Prometheus LeptonPropagator object which **is** used to generate losses from the particles.`
+- ❌ `lepton_propagator: Prometheus ``LeptonPropagator`` object which will be used to generate losses from the particles.`
+- ✅ `lepton_propagator: Prometheus ``LeptonPropagator`` object which **is** used to generate losses from the particles.`
+
+### 4. Use one command per code block for shell commands
+
+When generating or checking text that requires code blocks for shell commands (for example, Installation Guides):
+
+- Use one command per code block to make it easier for the user to copy and paste the command into their command line session.
+
+- If you have to use multiple commands in the same block, chain them with "&&".
+
+- Avoid code comments within shell command blocks, describe the command with text outside the block instead.
+
+#### Examples
+
+##### ✅ Good: no comments, one command per block
+
+````md
+  Before running simulations, you may need to source the environment file to ensure all dependencies load correctly:
+
+  ```sh
+  source /opt/.bashrc
+  ```
+
+  Once this is done, still in your container shell, navigate into the Prometheus directory:
+
+  ```sh
+  cd /home/myuser/prometheus
+  ```
+````
+##### Good: multiple commands chained with "&&"
+
+````md
+  Clone the repository onto your machine and navigate into the project directory:
+
+  ```sh
+  git clone git@github.com:Harvard-Neutrino/prometheus.git && cd ./prometheus
+  ```
+````
+##### Avoid: multiple commands with code comments inside the same block
+
+````md
+  Use the provided test script to build and validate images:
+
+  ```sh
+  # Build + smoke tests + fast unit tests (CPU)
+  bash scripts/docker_test.sh
+
+  # GPU image
+  bash scripts/docker_test.sh --gpu
+  ```
+````
 
 ## Core Terminology Rules
 
-### 1. `Prometheus` project name
+### 1. Prometheus: project name
 
-- Always spell as **`Prometheus`** (capitalized).
+- Always spell as **Prometheus** (capitalized).
 - Do not change the form in prose:
-  - ✅ `Prometheus`
-  - ❌ `prometheus`, `PROMETHEUS`, `P.P.C.`, or other variants.
+  - ✅ Prometheus
+  - ❌ prometheus, PROMETHEUS, or other variants.
+- Do not enclose the name in backticks, unless referring to `Prometheus` class or instances of the class. 
+  - Example: "This module contains the logic to construct and emit the end-of-run summary for a Prometheus run. It intentionally operates on a `Prometheus` instance passed in to avoid circular imports." In the first sentence Prometheus is a reference to the project/programme, so it's not backticked. In the second sentence it's a reference to an instance of the class, so it is backticked = formatted as code.
 
-### 2. `ppc` library name
+### 2. ppc: library name
 
-- Always spell the library name as **`ppc`** (all lowercase).
+- Always spell the library name as **ppc** (all lowercase).
 - Do not change the form in prose:
-  - ✅ `ppc`
-  - ❌ `PPC`, `Ppc`, `P.P.C.`, or other variants.
+  - ✅ ppc
+  - ❌ PPC, Ppc, P.P.C., or other variants.
 
 If a code identifier already uses a different capitalization (e.g. a class named
 `PPCConfig`), **leave the code identifier as-is**, but still refer to the library as
 `ppc` in surrounding prose.
 
-### 3.`GENIE` neutrino event generator name
+### 3. GENIE: neutrino event generator name
 
-- Always spell as **`GENIE`** (all uppercase).
+- Always spell as **GENIE** (all uppercase).
 - Do not change the form in prose:
-  - ✅ `GENIE`
-  - ❌ `genie`, `Genie`, or other variants.
+  - ✅ GENIE
+  - ❌ genie, Genie, or other variants.
 
-### 4.`PROPOSAL` tool / programme name
+### 4. PROPOSAL: tool / programme name
 
-- Always spell as **`PROPOSAL`** (all uppercase).
+- Always spell as **PROPOSAL** (all uppercase).
 - When referred to a tool, do not change the form in prose:
-  - ✅ `PROPOSAL`
-  - ❌ `proposal`, `Proposal`, or other variants.
-- If the word "proposal" used as a regular word meaning a plan or suggestion put forward for consideration or discussion by others, then there is no need to capitalize, style as you would any other word.
+  - ✅ PROPOSAL
+  - ❌ proposal, Proposal, or other variants.
+- If the word "proposal" used as a regular word, meaning a plan or suggestion put forward for consideration or discussion by others, then there is no need to capitalize, style as you would any other word.
 
-### 5. `geo file` (Geometry File)
+### 5. geo file: geometry file
 
-- In prose, always write **`geo file`** (two words, lowercase).
-- Avoid: ❌ `geofile`, `GeoFile`, or other variants.
+- In prose, always write **geo file** (two words, lowercase).
+- Avoid: ❌ geofile, GeoFile, or other variants.
 
 #### Code vs Prose Exception
 
-- The single-word form **`geofile`** is acceptable **only in code contexts**, such as:
+- The single-word form **geofile** is acceptable **only in code contexts**, such as:
   - Variable, function, class, or module names (e.g. `load_geofile`, `GeofileError`).
   - Configuration keys, or API fields that are explicitly part of a code
     interface (e.g. JSON key `"geofile"`).
@@ -89,11 +140,6 @@ If a code identifier already uses a different capitalization (e.g. a class named
   - "The `geofile` parameter specifies the **geo file** to load."
 
 ## Application Guidelines
-
-Apply these rules to:
-  - Docstrings and comments written as sentences.
-  - Markdown and other documentation.
-  - User-facing messages, logs, or CLI help text.
 
 When editing or generating text:
 
