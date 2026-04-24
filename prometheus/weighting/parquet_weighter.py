@@ -11,7 +11,10 @@ from .weighter import Weighter
 
 logger = logging.getLogger(__name__)
 
-WARNMSG = "It looks like the lic file provided does not match that in the Parquet file. You may want to check this."
+WARNMSG = (
+    "It looks like the lic file provided does not match that in the Parquet file. "
+    "You may want to check this."
+)
 
 
 class ParquetWeighter(Weighter):

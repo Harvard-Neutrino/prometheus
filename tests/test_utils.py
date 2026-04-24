@@ -233,7 +233,7 @@ class TestPathLengthSampling:
 
     def test_proton_mean_scale_reasonable(self):
         """The proton mean free path in water-ice should be ~90 cm."""
-        rng = np.random.default_rng(0)
+        _rng = np.random.default_rng(0)
         np.random.seed(0)
         samples = [path_length_sampling(1e3, pdg_id=2212) for _ in range(2000)]
         mean = np.mean(samples)

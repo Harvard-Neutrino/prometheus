@@ -14,7 +14,8 @@ try:
     from prometheus import Prometheus, config
 except Exception:
     logger.exception(
-        "Error importing Prometheus. Ensure the environment is activated and requirements are installed."
+        "Error importing Prometheus. "
+        "Ensure the environment is activated and requirements are installed."
     )
     logger.info(
         "Hint: source scripts/activate.sh .prometheus_env && pip install -r requirements.txt"
@@ -57,7 +58,8 @@ def main():
     except Exception:
         logger.exception("Simulation error during prom.sim()")
         logger.info(
-            "Hint: ensure resources (LeptonInjector, model files) are available and config is correct."
+            "Hint: ensure resources (LeptonInjector, model files) "
+            "are available and config is correct."
         )
         sys.exit(1)
 

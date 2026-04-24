@@ -22,7 +22,7 @@ class Constants(object):
     theta_cherenkov = np.arccos(1 / n_ph)
     photons_per_GeV = 5.3 * 250 * 1e2
     """Number of photons per GeV of EM cascade energy.
- 
+
     1 GeV EM cascade corresponds to 5.3 m Cherenkov track length.
     In the relevant wavelength interval, a single charged particle emits 250 photons / cm.
     """

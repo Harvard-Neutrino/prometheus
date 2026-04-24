@@ -21,7 +21,8 @@ class Weighter:
         Parameters
         ----------
         xs_prefix : str, optional
-            Path to differential cross sections. This can usually be found in ``/LeptonWeighter/resources/data/``.
+            Path to differential cross sections. This can usually be found in
+            ``/LeptonWeighter/resources/data/``.
         lic_file : str
             Path to lic file created by LeptonInjector.
         nu_cc_xs : str, optional
@@ -33,7 +34,8 @@ class Weighter:
         nubar_nc_xs : str, optional
             File name of the anti-neutrino NC cross section spline.
         nevents : int, optional
-            Number of generated events to rescale weight by. Helpful if you have non-uniform events per file.
+            Number of generated events to rescale weight by. Helpful if you have
+            non-uniform events per file.
         """
         if xs_prefix is None:
             from pathlib import Path

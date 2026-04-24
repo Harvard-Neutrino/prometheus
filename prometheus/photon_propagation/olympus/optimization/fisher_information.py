@@ -6,8 +6,6 @@ import numpy as np
 from jax import numpy as jnp
 from jax import random
 
-logger = logging.getLogger(__name__)
-
 from ..event_generation.event_generation import (
     generate_cascade,
     generate_muon_energy_losses,
@@ -15,6 +13,8 @@ from ..event_generation.event_generation import (
 )
 from ..event_generation.utils import proposal_setup, sph_to_cart_jnp
 from ..utils import rotate_to_new_direc_v
+
+logger = logging.getLogger(__name__)
 
 
 def pad_event(event):

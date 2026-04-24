@@ -1,4 +1,4 @@
-from ..utils import ExtendedEnum
+from ..utils.extended_enum import ExtendedEnum
 
 
 class RegisteredInjectors(ExtendedEnum):

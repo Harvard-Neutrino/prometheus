@@ -96,7 +96,8 @@ class Prometheus(object):
         userconfig : dict or str or None
             Configuration dictionary or path to YAML file specifying configuration.
         detector : Detector or None
-            Detector to be used or path to geo file to load detector from. If omitted, the path from ``userconfig["detector"]["geo file"]`` will be loaded.
+            Detector to be used or path to geo file to load detector from. If omitted,
+            the path from ``userconfig["detector"]["geo file"]`` will be loaded.
 
         Raises
         ------
@@ -279,7 +280,7 @@ class Prometheus(object):
         init_msg = (
             f"Prometheus initialized: run={config.run.run_number} nevents={config.run.nevents} "
             f"injector={config.injection.name} propagator={config.photon_propagator.name} "
-            f"modules={getattr(self.detector, 'n_modules', len(getattr(self.detector, 'modules', [])))}"
+            f"modules={getattr(self.detector, 'n_modules', len(getattr(self.detector, 'modules', [])))}"  # noqa: E501
         )
         if getattr(self, "_summary_mode", "user") == "user":
             try:
@@ -461,7 +462,9 @@ class Prometheus(object):
             clean_ppc_tmpdir(config.photon_propagator.ppc_cuda.paths.ppc_tmpdir)
 
     def sim(self):
-        """Perform injection of precipitating interaction, calculate energy losses, calculate photon yield, propagate photons, and save resulting photons."""
+        """Perform injection, calculate energy losses and photon yield, propagate photons,
+        and save resulting photons.
+        """
         logger.info("Starting full simulation run %s", config.run.run_number)
         # Record phase start/end timestamps on self so construct_output can summarise
         self._run_start_time = time()

@@ -183,14 +183,17 @@ def genie_loader(filepath: str) -> pd.DataFrame:
 #         "pos_y": And(Use(float)),  # position y (in detector coordinates)
 #         "pos_z": And(Use(float)),  # position z (in detector coordinates)
 #         "column_depth": And(Use(float)),  # Column depth where the interaction happened
-#         Optional('custom_info'): And(Use(str))  # Additional information the user can add as a string. # TODO: This should be handed to the propagators
+#         Optional('custom_info'): And(Use(str))  # Additional info as a string.
+#             # TODO: This should be handed to the propagators
 #     })
 
 
 def genie2prometheus(parsed_events: pd.DataFrame):
     """Reformat parsed GENIE events into a usable format for Prometheus.
 
-    NOTES: Create a standardized scheme function. This could then be used as an interface to Prometheus for any injector. E.g. a user would only need to create a function to translate their injector output to the scheme format.
+    NOTES: Create a standardized scheme function. This could then be used as an interface
+    to Prometheus for any injector. A user would only need to create a function to
+    translate their injector output to the scheme format.
 
     Parameters
     ----------
@@ -229,7 +232,8 @@ def genie2prometheus(parsed_events: pd.DataFrame):
             "pos_z": event.event_vertex[2],  # position z (in detector coordinates)
             "position": event.event_vertex[:3],  # 3d position
             "column_depth": -1,  # Column depth where the interaction happened
-            "custom_info": event.event_descr,  # Additional information the user can add as a string. # TODO: This should be handed to the propagators
+            "custom_info": event.event_descr,  # Additional info as a string.
+            # TODO: This should be handed to the propagators
         }
         # TODO: Optimize
         angles = np.array([p2azimuthAndzenith(p) for p in event.final_p])
@@ -259,7 +263,8 @@ def genie2prometheus(parsed_events: pd.DataFrame):
             * -1,  # Column depth where the interaction happened
             "custom_info": np.array(
                 ["child" for _ in range(len(event.final_ids))]
-            ),  # Additional information the user can add as a string. # TODO: This should be handed to the propagators
+            ),  # Additional info as a string.
+            # TODO: This should be handed to the propagators
         }
         event_set[index] = particles
         primaries[index] = primary_particle

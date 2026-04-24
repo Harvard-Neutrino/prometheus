@@ -1,4 +1,7 @@
 import awkward as ak
+import numpy as np
+
+from .serialization.totals_from_awkward_arr import IncompaticleFieldsError
 
 
 def join_awkward_arrays(arr1, arr2, fields=None):

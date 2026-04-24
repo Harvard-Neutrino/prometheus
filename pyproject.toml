@@ -48,7 +48,18 @@ markers = ["slow: end-to-end simulation tests (deselected by default; use --run-
 
 [tool.ruff]
 line-length = 100
+exclude = [
+    "resources/",
+    "paper_plots/",
+    "site/",
+    "olympus/",
+    "examples/legacy/",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+"*/__init__.py" = ["F401"]
+"tests/*.py" = ["E402"]
 

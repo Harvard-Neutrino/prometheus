@@ -176,7 +176,9 @@ def plot_event(
     # TODO: Add formatting check
     fig = plt.figure(figsize=(6, 5))
     ax = fig.add_subplot(111, projection="3d")
-    # particle_fields = [field for field in event.fields if field not in "mc_truth event_id".split()]
+    # particle_fields = [
+    #     field for field in event.fields if field not in "mc_truth event_id".split()
+    # ]
     # om_ids = []
     # times = []
     # for field in particle_fields:
@@ -187,7 +189,7 @@ def plot_event(
                 getattr(event, channel).sensor_string_id, getattr(event, channel).sensor_id
             )
         ]
-    except:
+    except Exception:
         om_ids = [
             (int(x[0]), int(x[1]))
             for x in zip(getattr(event, channel).string_id, getattr(event, channel).sensor_id)
@@ -222,7 +224,7 @@ def plot_event(
 
         cmap = getattr(plt.cm, cmap)
         c = cmap((reduced_times - tmin) / deltat)
-        scat = ax.scatter(xyz[:, 0], xyz[:, 1], xyz[:, 2], c=c, alpha=0.4, s=lcharges, zorder=10)
+        ax.scatter(xyz[:, 0], xyz[:, 1], xyz[:, 2], c=c, alpha=0.4, s=lcharges, zorder=10)
 
     # Show the dust layer, if requested
     if show_dust_layer:

@@ -56,7 +56,7 @@ def make_new_LI_injection(
             import LeptonInjector as LI
     except ImportError:
         raise ImportError("LeptonInjector not found!")
-    n_events = injection_specs["nevents"]
+    _n_events = injection_specs["nevents"]
     # xs_folder = os.path.join(
     #    os.path.dirname(__file__),
     #    path_dict["xsec dir"]

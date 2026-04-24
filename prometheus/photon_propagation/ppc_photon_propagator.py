@@ -18,7 +18,8 @@ subprocess_statuses = []
 
 
 def ppc_sim(particle: Particle, det: Detector, lp: LeptonPropagator, ppc_config: dict) -> None:
-    """Simulate the propagation of a particle and of any photons resulting from the energy losses of this particle.
+    """Simulate the propagation of a particle and of any photons resulting from its
+    energy losses.
 
     Parameters
     ----------
@@ -66,7 +67,10 @@ def ppc_sim(particle: Particle, det: Detector, lp: LeptonPropagator, ppc_config:
     f2k_tmpfile = (
         f"{ppc_config['paths']['ppc_tmpdir']}/{ppc_config['paths']['f2k_tmpfile']}_{str(particle)}"
     )
-    command = f"{ppc_config['paths']['ppc_exe']} {ppc_config['simulation']['device']} < {f2k_tmpfile} > {ppc_tmpfile}"
+    command = (
+        f"{ppc_config['paths']['ppc_exe']} {ppc_config['simulation']['device']}"
+        f" < {f2k_tmpfile} > {ppc_tmpfile}"
+    )
     if ppc_config["simulation"]["supress_output"]:
         command += " 2>/dev/null"
 
@@ -95,7 +99,7 @@ def ppc_sim(particle: Particle, det: Detector, lp: LeptonPropagator, ppc_config:
         ppc_sim(child, det, lp, ppc_config)
 
 
-from .registry import register_propagator
+from .registry import register_propagator  # noqa: E402
 
 
 @register_propagator("ppc")
@@ -106,7 +110,8 @@ class PPCPhotonPropagator(PhotonPropagator):
     def propagate(self, particle: Particle, rng_key=None) -> None:
         """Propagate an input particle using ppc.
 
-        This modifies the state of the input particle in-place. We should make this more consistent, but that is a problem for another day.
+        This modifies the state of the input particle in-place. We should make this more
+        consistent, but that is a problem for another day.
 
         Parameters
         ----------

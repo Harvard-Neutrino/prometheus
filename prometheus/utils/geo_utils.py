@@ -92,7 +92,8 @@ def geo_from_coords(coords, out_path, tol=0.5, medium="ice", dom_radius=30):
     with open(out_path, "w") as geo_out:
         # Write metadata
         geo_out.write(
-            f"### Metadata ###\nMedium:\t{medium}\nDOM Radius [cm]:\t{dom_radius}\n### Modules ###\n"
+            f"### Metadata ###\nMedium:\t{medium}\n"
+            f"DOM Radius [cm]:\t{dom_radius}\n### Modules ###\n"
         )
         # Write coords
         for coord in coord_list:
@@ -116,7 +117,8 @@ def geo_from_f2k(fname, out_path, medium="ice", dom_radius=30):
     positions, keys, sers = from_f2k(fname)
     with open(out_path, "w") as geo_out:
         geo_out.write(
-            f"### Metadata ###\nMedium:\t{medium}\nDOM Radius [cm]:\t{dom_radius}\n### Modules ###\n"
+            f"### Metadata ###\nMedium:\t{medium}\n"
+            f"DOM Radius [cm]:\t{dom_radius}\n### Modules ###\n"
         )
         for pos, key in zip(positions, keys):
             geo_out.write(f"{pos[0]}\t{pos[1]}\t{pos[2]}\t{key[0]}\t{key[1]}\n")

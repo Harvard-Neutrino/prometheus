@@ -266,7 +266,8 @@ def make_photon_circle_intersection(circle_center, circle_normal, circle_r, dtyp
         Intersection of line and plane.
 
         Given a photon origin, a photon direction, a step size, a target location and a
-        target radius, calculate whether the photon intersects the target and the intersection point.
+        target radius, calculate whether the photon intersects the target and the
+        intersection point.
 
         Parameters
         ----------
@@ -903,7 +904,9 @@ def make_track_segment_fixed_time_pos_dir_initializer(
 
 
 def make_loop_until_isec_or_maxtime(max_time):
-    """Create a function that calls the step function until either the photon intersects or ``max_time`` is reached."""
+    """Create a function that calls the step function until either the photon intersects
+    or ``max_time`` is reached.
+    """
 
     def loop_until_isec_or_maxtime(step_function, initial_photon_state, rng_key):
         """Run the step function until intersection or maximum time is exceeded.

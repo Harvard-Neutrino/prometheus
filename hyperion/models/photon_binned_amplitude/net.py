@@ -71,7 +71,9 @@ class HistMLP(hk.Module):
         """
         for n_per_layer in self.layers:
             x = hk.Linear(n_per_layer)(x)
-            # x = hk.BatchNorm(create_scale=True, create_offset=True, decay_rate=0.9)(x, is_training=is_training)
+            # x = hk.BatchNorm(
+            #     create_scale=True, create_offset=True, decay_rate=0.9
+            # )(x, is_training=is_training)
             x = jax.nn.relu(x)
             if is_training:
                 key = hk.next_rng_key()
@@ -344,10 +346,12 @@ def train_net(conf, train_data, test_data, writer, rng):
         tuple
             ``(loss, new_params, new_opt_state)``.
         """
-        l, grads = jax.value_and_grad(loss)(params, state, rng_key, batch, is_training=is_training)
+        loss_val, grads = jax.value_and_grad(loss)(
+            params, state, rng_key, batch, is_training=is_training
+        )
         updates, opt_state = opt.update(grads, opt_state)
         new_params = optax.apply_updates(params, updates)
-        return l, new_params, opt_state
+        return loss_val, new_params, opt_state
 
     @jax.jit
     def ema_update(params, avg_params):
@@ -359,12 +363,12 @@ def train_net(conf, train_data, test_data, writer, rng):
         train_loss = 0
         for train in train_loader:
             rng_key = next(key)
-            l, params, opt_state = get_updates(
+            loss_val, params, opt_state = get_updates(
                 params, state, rng_key, opt_state, train, is_training=True
             )
             avg_params = ema_update(params, avg_params)
 
-            train_loss += l * len(train[0])
+            train_loss += loss_val * len(train[0])
         train_loss /= len(train_data)
 
         test_loss = 0

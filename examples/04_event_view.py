@@ -28,14 +28,14 @@ import argparse
 import logging
 import sys
 
-logger = logging.getLogger(__name__)
-
 import matplotlib
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 — registers 3-D projection
+
+logger = logging.getLogger(__name__)
 
 # ── Custom colormap: black → purple → orange ─────────────────────────────────
 _CMAP_COLORS = [
@@ -219,7 +219,7 @@ def draw_event(
         )
 
     # ── Hit OMs (colored + sized) ─────────────────────────────────────────────
-    sc = ax.scatter(
+    ax.scatter(
         hit_oms["x"].values,
         hit_oms["y"].values,
         hit_oms["z"].values,
@@ -332,7 +332,7 @@ def main() -> None:
 args = parse_args()
 
 # Resolve geo path relative to the repo root when a relative path isn't found
-from pathlib import Path
+from pathlib import Path  # noqa: E402
 
 if args.geo:
     _g = Path(args.geo)

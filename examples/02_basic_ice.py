@@ -15,7 +15,8 @@ try:
     from prometheus import Prometheus, config
 except Exception:
     logger.exception(
-        "Error importing Prometheus. Ensure the environment is activated and requirements are installed."
+        "Error importing Prometheus. "
+        "Ensure the environment is activated and requirements are installed."
     )
     logger.info(
         "Hint: source scripts/activate.sh .prometheus_env && pip install -r requirements.txt"

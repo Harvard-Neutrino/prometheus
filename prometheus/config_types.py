@@ -100,7 +100,8 @@ class RunConfig(ConfigBase):
     nevents : int
         Number of events to simulate (must be > 0).
     verbosity : str or int
-        Logging verbosity. Allowed string values: 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL' (case-insensitive) or a numeric logging level.
+        Logging verbosity. Allowed string values: 'DEBUG', 'INFO', 'WARNING', 'ERROR',
+        'CRITICAL' (case-insensitive) or a numeric logging level.
     logfile : str, optional
         Path to a file to write logs. If None, logs go to console.
     log_format : str, optional
@@ -113,8 +114,10 @@ class RunConfig(ConfigBase):
         Seed for RNGs used in injection/propagation.
     summary_mode : str
         Reporting mode. Allowed values: 'user' (default) and 'debug'.
-        'user' prints a user-friendly, compact summary to the console and collapses noisy third-party output.
-        'debug' prints a developer-oriented summary at DEBUG level with verbose logging of captured warnings and native prints.
+        'user' prints a user-friendly, compact summary to the console and collapses
+        noisy third-party output.
+        'debug' prints a developer-oriented summary at DEBUG level with verbose logging
+        of captured warnings and native prints.
     banner : bool
         Show ASCII banner from assets when True.
     compact : bool
@@ -134,7 +137,8 @@ class RunConfig(ConfigBase):
         config.run.summary_mode = 'debug'
         config.run.verbosity = 'DEBUG'  # optional: enable logger DEBUG-level output
 
-    The ``verbosity`` parameter accepts either standard logging level names or integers (see Python's ``logging`` module).
+    The ``verbosity`` parameter accepts either standard logging level names or integers
+    (see Python's ``logging`` module).
     """
 
     run_number: int = 1337

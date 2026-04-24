@@ -180,22 +180,22 @@ def calculate_min_number_steps(
     int
         Minimum number of steps required.
     """
-    c_medium_f = lambda wl: (
-        Constants.BaseConstants.c_vac
-        / ref_index_func(  # noqa E731
-            wl
-        )
-    )
+
+    def c_medium_f(wl):
+        return Constants.BaseConstants.c_vac / ref_index_func(wl)
 
     t_geo = det_dist / (c_medium_f(wavelength) / 1e9) + max_tres
-    func = lambda step: (
-        scipy.stats.gamma.cdf(
-            t_geo * (c_medium_f(wavelength) / 1e9),
-            step,
-            scale=scattering_length_function(wavelength),
+
+    def func(step):
+        return (
+            scipy.stats.gamma.cdf(
+                t_geo * (c_medium_f(wavelength) / 1e9),
+                step,
+                scale=scattering_length_function(wavelength),
+            )
+            - 0.01
         )
-        - 0.01
-    )
+
     lim = scipy.optimize.brentq(func, 2, 100)
 
     return int(np.ceil(lim))

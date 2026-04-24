@@ -19,7 +19,8 @@ def serialize_particle(particle, output_f2k):
     theta = np.arccos(particle.direction[2])
     phi = np.arctan2(particle.direction[1], particle.direction[0])
     output_f2k.write(
-        f"MC E {particle.e} x {offpos[0]} y {offpos[1]} z {offpos[2] + PPC_MAGIC_Z} theta {theta} phi {phi}\n"
+        f"MC E {particle.e} x {offpos[0]} y {offpos[1]}"
+        f" z {offpos[2] + PPC_MAGIC_Z} theta {theta} phi {phi}\n"
     )
 
 
@@ -42,7 +43,10 @@ def serialize_loss(loss, parent, output_f2k):
     c = SpeedOfLight
     c /= s_to_ns
     dt = d / c
-    line = f"TR 0 {0} {loss} {offpos[0]} {offpos[1]} {offpos[2] + PPC_MAGIC_Z} {theta} {phi} 0 {loss.e} {dt} \n"
+    line = (
+        f"TR 0 {0} {loss} {offpos[0]} {offpos[1]} {offpos[2] + PPC_MAGIC_Z}"
+        f" {theta} {phi} 0 {loss.e} {dt} \n"
+    )
     output_f2k.write(line)
 
 
@@ -75,7 +79,8 @@ def serialize_to_f2k(particle, fname):
         "delta," "brems," "epair," "e+,", "e-," and "e" for electromagnetic cascades,
         and "munu" and "hadr" for hadronic cascades.
     - ``x``, ``y`` and ``z`` are the vector components of the track's initial position in meters.
-    - The quantities ``theta`` and ``phi`` are the track's theta and phi angle in degrees, respectively.
+    - The quantities ``theta`` and ``phi`` are the track's theta and phi angle
+      in degrees, respectively.
     - ``length`` is the length of the track in meters.
         - It is only required for muons because cascades are treated as point-like sources.
     - ``energy`` is the track's initial energy in GeV.

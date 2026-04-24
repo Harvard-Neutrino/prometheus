@@ -66,12 +66,12 @@ def emit_run_summary(prom, outfile, end_out, size=None):
         except Exception:
             external_statuses = []
 
-        warn = err = crit = info_count = 0
+        warn = err = crit = 0
         if getattr(prom, "_log_counter", None) is not None:
             warn = getattr(prom._log_counter, "warning_count", 0)
             err = getattr(prom._log_counter, "error_count", 0)
             crit = getattr(prom._log_counter, "critical_count", 0)
-            info_count = getattr(prom._log_counter, "info_count", 0)
+            getattr(prom._log_counter, "info_count", 0)
 
         # File size and checksum
         if size is None:
@@ -94,7 +94,9 @@ def emit_run_summary(prom, outfile, end_out, size=None):
         if compact:
             compact_line = (
                 f"Run {getattr(config.run, 'run_number', 'unknown')} "
-                f"{'✔' if success else '❌'} | {events_written} events | {total_time:.2f} s | {throughput:.2f} ev/s | output: {Path(str(outfile)).name if outfile else 'None'}"
+                f"{'✔' if success else '❌'} | {events_written} events"
+                f" | {total_time:.2f} s | {throughput:.2f} ev/s"
+                f" | output: {Path(str(outfile)).name if outfile else 'None'}"
             )
             if mode == "user":
                 print(compact_line)
@@ -207,7 +209,8 @@ def emit_run_summary(prom, outfile, end_out, size=None):
                 if mode == "user":
                     print(f"⚠ Warnings detected ({total_warnings + internal_noise_count})")
                     print(
-                        "  Hint: set config.run.summary_mode='debug' (and optionally config.run.verbosity='DEBUG') to inspect details"
+                        "  Hint: set config.run.summary_mode='debug' "
+                        "(and optionally config.run.verbosity='DEBUG') to inspect details"
                     )
                 else:
                     logger.warning(
@@ -217,22 +220,27 @@ def emit_run_summary(prom, outfile, end_out, size=None):
                         logger.warning("  - %s", w)
                     if init_noise:
                         logger.debug("--- Init output (excerpt) ---")
-                        for l in getattr(prom, "_init_output", "").splitlines()[:200]:
-                            logger.debug(l)
+                        for line_ in getattr(prom, "_init_output", "").splitlines()[:200]:
+                            logger.debug(line_)
                     if inject_noise:
                         logger.debug("--- Injection output (excerpt) ---")
-                        for l in getattr(prom, "_inject_output", "").splitlines()[:200]:
-                            logger.debug(l)
+                        for line_ in getattr(prom, "_inject_output", "").splitlines()[:200]:
+                            logger.debug(line_)
                     if prop_noise:
                         logger.debug("--- Propagation output (excerpt) ---")
-                        for l in getattr(prom, "_propagate_output", "").splitlines()[:200]:
-                            logger.debug(l)
+                        for line_ in getattr(prom, "_propagate_output", "").splitlines()[:200]:
+                            logger.debug(line_)
 
         # Debug/details mode: emit the richer, developer-oriented summary at DEBUG
         if mode.lower() == "debug":
             debug_lines = [
-                f"Run {getattr(config.run, 'run_number', 'unknown')} | requested_nevents={getattr(config.run, 'nevents', 'unknown')} | events_written={events_written}",
-                f"Timings [s]: inj={inj_time:.3f} prop={prop_time:.3f} write={write_time:.3f} total={total_time:.3f}",
+                (
+                    f"Run {getattr(config.run, 'run_number', 'unknown')}"
+                    f" | requested_nevents={getattr(config.run, 'nevents', 'unknown')}"
+                    f" | events_written={events_written}"
+                ),
+                f"Timings [s]: inj={inj_time:.3f} prop={prop_time:.3f}"
+                f" write={write_time:.3f} total={total_time:.3f}",
                 f"Throughput: {throughput:.2f} ev/s",
                 f"Start: {start_ts} | End: {end_ts}",
                 f"Output: {outfile} ({human})",

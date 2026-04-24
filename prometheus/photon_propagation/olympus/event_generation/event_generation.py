@@ -265,7 +265,7 @@ def generate_muon_energy_losses(
 
         """
         dir = np.asarray([loss.direction.x, loss.direction.y, loss.direction.z])
-        
+
         p = position + dist * direction
         t = dist / Constants.c_vac + time
         """

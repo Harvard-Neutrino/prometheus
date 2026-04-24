@@ -97,7 +97,6 @@ def detector_from_geo(geofile: str, efficiency: float = 0.2, noise_rate: float =
         for line in read_lines[modules_i + 1 :]:
             line = line.strip("\n").split("\t")
             pos.append(np.array([float(line[0]), float(line[1]), float(line[2])]))
-            pos_out = np.array(pos)
             keys.append((int(line[3]), int(line[4])))
 
     sers = [random_serial() for _ in range(len(pos))]
@@ -124,7 +123,10 @@ def make_line(
     baseline_noise_rate: float = 1.0e3,
     efficiency: float = 0.2,
 ) -> List[Module]:
-    """Build a line of detector modules. The modules share the same (x, y) coordinate and are spaced along the z-direction. This detector will be symmetrically spaced about z=z_cent.
+    """Build a line of detector modules.
+
+    The modules share the same (x, y) coordinate and are spaced along the z-direction.
+    This detector will be symmetrically spaced about z=z_cent.
 
     Parameters
     ----------
@@ -179,7 +181,12 @@ def make_grid(
     baseline_noise_rate: float = 1.0e3,
     efficiency: float = 0.2,
 ) -> Detector:
-    """Build a square detector grid. Strings of detector modules are placed on a square grid, with the number of strings per side, number of modules per string, and z-spacing on a string set by input. The noise rate for each module is randomly sampled from a gamma distribution. The random state may be set by input.
+    """Build a square detector grid.
+
+    Strings of detector modules are placed on a square grid, with the number of strings
+    per side, number of modules per string, and z-spacing on a string set by input.
+    The noise rate for each module is randomly sampled from a gamma distribution.
+    The random state may be set by input.
 
     Parameters
     ----------

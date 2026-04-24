@@ -97,7 +97,8 @@ def test_flow_model_unknown_medium_falls_back():
             warnings.warn(
                 f"No dedicated flow model is registered for medium '{unknown_key}'. "
                 f"Falling back to the P-ONE model files. "
-                f"Timing predictions may not accurately reflect '{unknown_key}' optical properties.",
+                f"Timing predictions may not accurately reflect "
+                f"'{unknown_key}' optical properties.",
                 UserWarning,
                 stacklevel=1,
             )

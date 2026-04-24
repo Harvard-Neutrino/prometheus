@@ -7,7 +7,7 @@ import logging
 import jax.numpy as jnp
 import numpy as np
 
-from prometheus.utils.geo_utils import is_in_cylinder
+from prometheus.utils.geo_utils import is_in_cylinder, track_isects_cyl
 
 from .constants import Constants
 

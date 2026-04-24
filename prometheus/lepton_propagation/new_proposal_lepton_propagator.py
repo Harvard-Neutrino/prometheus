@@ -197,11 +197,11 @@ def make_propagation_utilities(
             # outer_radius = float(split_line[0])
             if len(split_line[4:]) == 1:
                 # TODO: Get the feeling these should be used but aren't
-                gibberish = None
+                _gibberish = None
                 # rho_bar = float(split_line[4])
             else:
-                p0 = float(split_line[4])
-                p1 = float(split_line[5])
+                _p0 = float(split_line[4])
+                _p1 = float(split_line[5])
                 # TODO: Get the feeling these should be used but aren't
                 # rho_bar = p0 + p1 * (inner_radius + outer_radius) /2
             # test_medium = MEDIUM_DICT[split_line[2]]()
@@ -363,7 +363,7 @@ class NewProposalLeptonPropagator(LeptonPropagator):
         """
         # TODO particle_def is not needed. DTaSD
         particle_def, propagator = self[particle]
-        propped_particle = new_proposal_losses(
+        new_proposal_losses(
             propagator,
             particle,
             self._config["simulation"]["propagation padding"],

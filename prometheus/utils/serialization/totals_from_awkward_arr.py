@@ -3,7 +3,9 @@ import numpy as np
 
 
 class IncompaticleFieldsError(Exception):
-    """Error raised when two ``awkward.Array`` objects cannot be combined because fileds don't match."""
+    """Error raised when two ``awkward.Array`` objects cannot be combined because
+    fileds don't match.
+    """
 
     def __init__(self, fields1, fields2):
         self.message = "If `fields` not provided, array fields must fully overlap."

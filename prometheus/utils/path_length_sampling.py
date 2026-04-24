@@ -1,6 +1,7 @@
 # path_length_sampling.py
 # Authors: Stephan Meighen-Berger
-# Quick and dirty sampling function for injected hadrons (their offset from the interaction vertex if not given)
+# Quick and dirty sampling function for injected hadrons
+# (their offset from the interaction vertex if not given)
 
 import logging
 

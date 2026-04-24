@@ -132,9 +132,10 @@ INNER_SCRIPT = textwrap.dedent(
     config.run.storage_prefix = '/output/'
 
     config.injection.name = 'LeptonInjector'
-    config.injection.lepton_injector.simulation.is_ranged = os.environ['PROM_RANGED'] == '1'
-    config.injection.lepton_injector.simulation.minimal_energy = float(os.environ['PROM_MIN_ENERGY'])
-    config.injection.lepton_injector.simulation.maximal_energy = float(os.environ['PROM_MAX_ENERGY'])
+    sim = config.injection.lepton_injector.simulation
+    sim.is_ranged = os.environ['PROM_RANGED'] == '1'
+    sim.minimal_energy = float(os.environ['PROM_MIN_ENERGY'])
+    sim.maximal_energy = float(os.environ['PROM_MAX_ENERGY'])
 
     config.detector.geo_file = os.environ['PROM_GEO']
 
