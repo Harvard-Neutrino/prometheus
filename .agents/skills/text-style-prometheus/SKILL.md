@@ -16,6 +16,12 @@ Use this skill whenever you:
 
 Do **not** apply these rules to pure code identifiers unless explicitly allowed below.
 
+## Formatting preferences
+
+### Generating Markdown files
+
+When generating Markdown files, use the same markdown formatting other files in [docs directory](../../../docs/) use.
+
 ## Wording and Grammar Preferences
 
 ### 1. Use Microsoft Writing Style Guide
@@ -65,7 +71,7 @@ When generating or checking text that requires code blocks for shell commands (f
   cd /home/myuser/prometheus
   ```
 ````
-##### Good: multiple commands chained with "&&"
+#####  ✅ Good: multiple commands chained with "&&"
 
 ````md
   Clone the repository onto your machine and navigate into the project directory:
@@ -74,7 +80,7 @@ When generating or checking text that requires code blocks for shell commands (f
   git clone git@github.com:Harvard-Neutrino/prometheus.git && cd ./prometheus
   ```
 ````
-##### Avoid: multiple commands with code comments inside the same block
+##### ❌ Avoid: multiple commands with code comments inside the same block
 
 ````md
   Use the provided test script to build and validate images:
@@ -90,14 +96,18 @@ When generating or checking text that requires code blocks for shell commands (f
 
 ## Core Terminology Rules
 
-### 1. Prometheus: project name
+### 1. Prometheus, Olympus, Hyperion: project name and parts
 
-- Always spell as **Prometheus** (capitalized).
+- Always spell as **Prometheus**, **Olympus**, **Hyperion** (capitalized).
 - Do not change the form in prose:
-  - ✅ Prometheus
-  - ❌ prometheus, PROMETHEUS, or other variants.
-- Do not enclose the name in backticks, unless referring to `Prometheus` class or instances of the class. 
-  - Example: "This module contains the logic to construct and emit the end-of-run summary for a Prometheus run. It intentionally operates on a `Prometheus` instance passed in to avoid circular imports." In the first sentence Prometheus is a reference to the project/programme, so it's not backticked. In the second sentence it's a reference to an instance of the class, so it is backticked = formatted as code.
+  - ✅ Prometheus, Olympus, Hyperion
+  - ❌ prometheus, PROMETHEUS, olympus, OLYMPUS, hyperion, HYPERION, or other variants.
+- Do not enclose the name in backticks, unless referring to `Prometheus`, `Olympus` or `Hyperion` classes or instances of the classes. 
+  - Example: 
+    ```md
+    This module contains the logic to construct and emit the end-of-run summary for a Prometheus run. It intentionally operates on a `Prometheus` instance passed in to avoid circular imports.
+    ```
+    In the first sentence Prometheus is a reference to the project/programme, so it's not backticked. In the second sentence it's a reference to an instance of the class, so it is backticked = formatted as code.
 
 ### 2. ppc: library name
 
@@ -105,10 +115,6 @@ When generating or checking text that requires code blocks for shell commands (f
 - Do not change the form in prose:
   - ✅ ppc
   - ❌ PPC, Ppc, P.P.C., or other variants.
-
-If a code identifier already uses a different capitalization (e.g. a class named
-`PPCConfig`), **leave the code identifier as-is**, but still refer to the library as
-`ppc` in surrounding prose.
 
 ### 3. GENIE: neutrino event generator name
 
@@ -120,38 +126,27 @@ If a code identifier already uses a different capitalization (e.g. a class named
 ### 4. PROPOSAL: tool / programme name
 
 - Always spell as **PROPOSAL** (all uppercase).
-- When referred to a tool, do not change the form in prose:
+- When referring to a tool, do not change the form in prose:
   - ✅ PROPOSAL
   - ❌ proposal, Proposal, or other variants.
 - If the word "proposal" used as a regular word, meaning a plan or suggestion put forward for consideration or discussion by others, then there is no need to capitalize, style as you would any other word.
 
-### 5. geo file: geometry file
+### 5. geofile: geometry file
 
-- In prose, always write **geo file** (two words, lowercase).
-- Avoid: ❌ geofile, GeoFile, or other variants.
+- In prose, always write **geofile** (one word, lowercase), unless it's a beginning of the sentence, in which case it can be capitalized: **Geofile**
+- Avoid: ❌ geo file, GeoFile, or other variants, unless refering to existing variable, function, class, module names, configuration keys, etc. (e.g. `GeofileError`).
 
-#### Code vs Prose Exception
-
-- The single-word form **geofile** is acceptable **only in code contexts**, such as:
-  - Variable, function, class, or module names (e.g. `load_geofile`, `GeofileError`).
-  - Configuration keys, or API fields that are explicitly part of a code
-    interface (e.g. JSON key `"geofile"`).
-- When explaining these identifiers in text, prefer:
-  - "The `geofile` parameter specifies the **geo file** to load."
 
 ## Application Guidelines
 
 When editing or generating text:
 
-1. **Scan for terminology**:
-   - Normalize any mention of the library to `ppc`.
-   - Normalize any prose mention of the geometry file to `geo file`.
-2. **Respect code identifiers**:
+1. **Respect code identifiers**:
    - Do not rename variables, functions, classes, or modules solely to satisfy these
      prose rules.
    - Only adjust the *surrounding text* unless the user explicitly asks to rename code.
-3. **Be consistent**:
-   - Use the chosen forms (`ppc`, `geo file`) uniformly within a document or docstring.
+2. **Be consistent**:
+   - Use the chosen forms (`ppc`, `GENIE`) uniformly within a document or docstring.
 
 If a code identifier already uses a different capitalization (e.g. a class named
 `PPCConfig`), **leave the code identifier as-is**, but still refer to the term/name in surrounding prose as defined by the above rules.
@@ -174,7 +169,7 @@ After (applying this skill):
 ```python
 def load_geofile(path: str) -> GeoData:
     """
-    Load the geo file used by ppc.
+    Load the geofile used by ppc.
     """
 ```
 
@@ -182,13 +177,13 @@ def load_geofile(path: str) -> GeoData:
 
 Before:
 
-```markdown
+```md
 The PPC library reads GeoFiles from disk.
 ```
 
 After:
 
-```markdown
-The ppc library reads geo files from disk.
+```md
+The ppc library reads geofiles from disk.
 ```
 
