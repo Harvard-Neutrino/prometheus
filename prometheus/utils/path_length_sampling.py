@@ -1,8 +1,13 @@
 # path_length_sampling.py
 # Authors: Stephan Meighen-Berger
-# Quick and dirty sampling function for injected hadrons (their offset from the interaction vertex if not given)
+# Quick and dirty sampling function for injected hadrons
+# (their offset from the interaction vertex if not given)
+
+import logging
 
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 
 def path_length_sampling(E: float, pdg_id: int) -> float:
@@ -10,14 +15,14 @@ def path_length_sampling(E: float, pdg_id: int) -> float:
 
     Parameters
     ----------
-    E : float or numpy.ndarray
+    E : float or np.ndarray
         The energy of the particle(s).
     pdg_id : int
         The pdg id of the particle.
 
     Returns
     -------
-    dist: float or numpy.ndarray
+    dist: float or np.ndarray
         The sampled travelled distance in cm with the same shape as E.
     """
     # TODO: Add energy dependence
@@ -27,8 +32,7 @@ def path_length_sampling(E: float, pdg_id: int) -> float:
     elif pdg_id in (211, 111, -211, 130, 310, 311, 321, -321):
         lamd = 115.2 / dens_water  # in cm
     else:
-        print("Unknown particle")
-        print("Assuming it travels like a pion")
+        logger.warning("Unknown particle — assuming it travels like a pion")
         lamd = 115.2 / dens_water
     if type(E) is np.ndarray:
         return np.random.exponential(scale=lamd, size=E.shape)

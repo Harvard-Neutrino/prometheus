@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from .injection_event import InjectionEvent
 
+
 @dataclass
 class LIInjectionEvent(InjectionEvent):
     """Injection event for ``LeptonInjector`` injection.
@@ -17,6 +18,7 @@ class LIInjectionEvent(InjectionEvent):
         Column depth traversed by the neutrino before interacting in
         M.W.E.
     """
+
     bjorken_x: float
     bjorken_y: float
     column_depth: float

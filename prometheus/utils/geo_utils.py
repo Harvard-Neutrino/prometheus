@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 # geo_utils.py
 # Authors: David Kim
-# Util functions for geofiles
+# Util functions for geo files
 
 import numpy as np
+
 from .f2k_utils import from_f2k
+
 # from .iter_or_rep import iter_or_rep
 
 # Padding in meters.
 # The absorption length in ice is much shorter so padding is bigger
 ICE_PADDING = 200
 WATER_PADDING = 30
+
 
 def from_geo(fname):
     """Read positions, keys, and medium from a detector geometry file.
@@ -22,41 +25,42 @@ def from_geo(fname):
 
     Returns
     -------
-    pos_out : numpy.ndarray
+    pos_out : np.ndarray
         Array of module positions.
     keys : list of tuple of int
         List of module keys.
     medium : str
         Medium in which the detector is embedded.
     """
-    pos = []; keys = []; meta_data = []
+    pos = []
+    keys = []
+    meta_data = []
     with open(fname) as geo_in:
         read_lines = geo_in.readlines()
         meta_i = read_lines.index("### Metadata ###\n")
-        modules_i = read_lines.index("### Modules ###\n")   
+        modules_i = read_lines.index("### Modules ###\n")
 
-        for line in read_lines[meta_i+1:modules_i]:
+        for line in read_lines[meta_i + 1 : modules_i]:
             line = line.strip("\n").split("\t")
-            meta_data.append(line[0]); meta_data.append(line[1])
+            meta_data.append(line[0])
+            meta_data.append(line[1])
         medium_i = meta_data.index("Medium:")
-        medium = meta_data[medium_i+1]
+        medium = meta_data[medium_i + 1]
 
-        for line in read_lines[modules_i+1:]:
+        for line in read_lines[modules_i + 1 :]:
             line = line.strip("\n").split("\t")
-            pos.append(
-                np.array([float(line[0]), float(line[1]),
-                float(line[2])]))
+            pos.append(np.array([float(line[0]), float(line[1]), float(line[2])]))
             pos_out = np.array(pos)
-            keys.append((int(line[3]),int(line[4])))
+            keys.append((int(line[3]), int(line[4])))
     return pos_out, keys, medium
 
-def geo_from_coords(coords, out_path, tol = 0.5, medium = "ice", dom_radius = 30):
-    """
-    Generate a detector geometry file from an array of module coordinates.
+
+def geo_from_coords(coords, out_path, tol=0.5, medium="ice", dom_radius=30):
+    """Generate a detector geometry file from an array of module coordinates.
 
     Parameters
     ----------
-    coords : numpy.ndarray
+    coords : np.ndarray
         nx3 array of module coordinates.
     out_path : str
         File path to write to.
@@ -83,16 +87,20 @@ def geo_from_coords(coords, out_path, tol = 0.5, medium = "ice", dom_radius = 30
             coord += [string_num, 0]
             key = coord[:2]
             count = 1
-            
+
     with open(out_path, "w") as geo_out:
         # Write metadata
-        geo_out.write(f'### Metadata ###\nMedium:\t{medium}\nDOM Radius [cm]:\t{dom_radius}\n### Modules ###\n')
+        geo_out.write(
+            f"### Metadata ###\nMedium:\t{medium}\n"
+            f"DOM Radius [cm]:\t{dom_radius}\n### Modules ###\n"
+        )
         # Write coords
         for coord in coord_list:
-            geo_out.write(f'{coord[0]}\t{coord[1]}\t{coord[2]}\t{coord[3]}\t{coord[4]}\n')
+            geo_out.write(f"{coord[0]}\t{coord[1]}\t{coord[2]}\t{coord[3]}\t{coord[4]}\n")
 
-def geo_from_f2k(fname, out_path, medium = "ice", dom_radius = 30):
-    """ Generate a detector geofile from an f2k file.
+
+def geo_from_f2k(fname, out_path, medium="ice", dom_radius=30):
+    """Generate a detector geo file from an f2k file.
 
     Parameters
     ----------
@@ -107,30 +115,34 @@ def geo_from_f2k(fname, out_path, medium = "ice", dom_radius = 30):
     """
     positions, keys, sers = from_f2k(fname)
     with open(out_path, "w") as geo_out:
-        geo_out.write(f'### Metadata ###\nMedium:\t{medium}\nDOM Radius [cm]:\t{dom_radius}\n### Modules ###\n')
-        for pos, key in zip(positions,keys):
-            geo_out.write(f'{pos[0]}\t{pos[1]}\t{pos[2]}\t{key[0]}\t{key[1]}\n')
+        geo_out.write(
+            f"### Metadata ###\nMedium:\t{medium}\n"
+            f"DOM Radius [cm]:\t{dom_radius}\n### Modules ###\n"
+        )
+        for pos, key in zip(positions, keys):
+            geo_out.write(f"{pos[0]}\t{pos[1]}\t{pos[2]}\t{key[0]}\t{key[1]}\n")
+
 
 def get_xyz(fname):
     # returns 3xn array
     det = from_geo(fname)
     return det[0]
 
+
 def offset(coords):
     # returns x st x+mean(x,y,z) = <o,o,o>
-    xyz_avg = np.average(coords,0)
-    return -1*xyz_avg
+    xyz_avg = np.average(coords, 0)
+    return -1 * xyz_avg
 
-def get_cylinder(coords, epsilon = 5):
+
+def get_cylinder(coords, epsilon=5):
     # returns cylinder (radius, height) from 3xn array
-    if max(np.average(coords,0)) > epsilon:
-        coords = coords+offset(coords)
-    
-    out_cylinder = (
-            np.linalg.norm(coords[:, :2], axis=1).max(),
-            np.ptp(coords[:,2:])
-        )
+    if max(np.average(coords, 0)) > epsilon:
+        coords = coords + offset(coords)
+
+    out_cylinder = (np.linalg.norm(coords[:, :2], axis=1).max(), np.ptp(coords[:, 2:]))
     return out_cylinder
+
 
 def get_volume(coords, is_ice):
     out_cyl = get_cylinder(coords)
@@ -138,24 +150,97 @@ def get_volume(coords, is_ice):
         padding = ICE_PADDING
     else:
         padding = WATER_PADDING
-    return (out_cyl[0]+padding, out_cyl[1]+2*padding)
+    return (out_cyl[0] + padding, out_cyl[1] + 2 * padding)
+
 
 def get_endcap(coords, is_ice):
     if is_ice:
-        padding = ICE_PADDING 
+        padding = ICE_PADDING
     else:
         padding = WATER_PADDING
     cyl = get_cylinder(coords)
-    r = cyl[0]; z = cyl[1]
-    theta = (np.pi/2)-2*np.arctan(2*r/z)
-    endcap_len = padding + np.cos(theta)*(get_injection_radius(coords, is_ice=is_ice)-padding)
+    r = cyl[0]
+    z = cyl[1]
+    theta = (np.pi / 2) - 2 * np.arctan(2 * r / z)
+    endcap_len = padding + np.cos(theta) * (get_injection_radius(coords, is_ice=is_ice) - padding)
     return endcap_len
+
 
 def get_injection_radius(coords, is_ice):
     if is_ice:
-        padding = ICE_PADDING 
+        padding = ICE_PADDING
     else:
         padding = WATER_PADDING
     cyl = get_cylinder(coords)
-    injRad = padding + (np.sqrt(cyl[0]**2+(0.5*cyl[1])**2))
+    injRad = padding + (np.sqrt(cyl[0] ** 2 + (0.5 * cyl[1]) ** 2))
     return injRad
+
+
+def is_in_cylinder(radius, height, pos):
+    """Test whether a position vector is inside a cylinder."""
+    return (np.sqrt(pos[0] ** 2 + pos[1] ** 2) < radius) & (np.abs(pos[2]) < height / 2)
+
+
+def get_zen_azi(direc):
+    """Convert a cartesian direction into zenith / azimuth (IC convention)."""
+    r = np.linalg.norm(direc)
+    theta = 0
+    if direc[2] / r <= 1:
+        theta = np.arccos(direc[2] / r)
+    else:
+        if direc[2] < 0:
+            theta = np.pi
+    if theta < 0:
+        theta += 2 * np.pi
+    phi = 0
+    if (direc[0] != 0) or (direc[1] != 0):
+        phi = np.arctan2(direc[1], direc[0])
+    if phi < 0:
+        phi += 2 * np.pi
+    zenith = np.pi - theta
+    azimuth = phi + np.pi
+    if zenith > np.pi:
+        zenith -= 2 * np.pi - zenith
+    azimuth -= int(azimuth / (2 * np.pi)) * (2 * np.pi)
+    return zenith, azimuth
+
+
+def track_isects_cyl(radius, height, pos, direc):
+    """Check if a track intersects a cylinder."""
+    x = pos[0]
+    y = pos[1]
+    z = pos[2]
+
+    theta, phi = get_zen_azi(direc)
+
+    sinph = np.sin(phi)
+    cosph = np.cos(phi)
+    sinth = np.sin(theta)
+    costh = np.cos(theta)
+
+    b = x * cosph + y * sinph
+    d = b * b + radius * radius - x * x - y * y
+    h = (np.nan, np.nan)
+    r = (np.nan, np.nan)
+
+    if d > 0:
+        d = np.sqrt(d)
+        if costh != 0:
+            h = sorted(((z - height / 2) / costh, (z + height / 2) / costh))
+        if sinth != 0:
+            r = sorted(((b - d) / sinth, (b + d) / sinth))
+
+        if costh == 0:
+            if (z > -height / 2) & (z < height / 2):
+                h = r
+            else:
+                h = (np.nan, np.nan)
+        elif sinth == 0:
+            if np.sqrt(x**2 + y**2) >= radius:
+                h = (np.nan, np.nan)
+        else:
+            if (h[0] >= r[1]) or (h[1] <= r[0]):
+                h = (np.nan, np.nan)
+            else:
+                h = max(h[0], r[0]), min(h[1], r[1])
+    return h

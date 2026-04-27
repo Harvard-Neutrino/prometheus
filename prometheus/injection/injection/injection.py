@@ -3,12 +3,14 @@
 # Copyright (C) 2022 Jeffrey Lazar, Stephan Meighen-Berger
 # Interface class to the different lepton injectors
 
-import numpy as np
+from typing import Any, Iterable, List, Union
+
 import awkward as ak
-from typing import Iterable, Union, Any, List
+import numpy as np
 
 from .. import Particle
 from ..injection_event.injection_event import InjectionEvent
+
 
 def recursive_getattr(x: Any, attr: str) -> Any:
     """Get an attribute that is farther down an object hierarchy.
@@ -34,10 +36,9 @@ def recursive_getattr(x: Any, attr: str) -> Any:
         x = getattr(x, a)
     return x
 
+
 def recursively_get_final_property(
-    particles: Iterable[Particle],
-    attr: str,
-    idx: Union[None, int] = None
+    particles: Iterable[Particle], attr: str, idx: Union[None, int] = None
 ) -> np.ndarray:
     """A helper for getting the attributes from particles.
 
@@ -58,23 +59,40 @@ def recursively_get_final_property(
         A numpy array with the requested attribute for each particle. The shape
         of this array is equal to the length of the ``particles`` input parameter.
     """
-    l = np.array([])
-    for particle in particles:
-        if idx is None:
-            l = np.hstack([l, recursive_getattr(particle, attr)])
-        else:
-            l = np.hstack([l, recursive_getattr(particle, attr)[idx]])
-        l = np.hstack([
-            l, recursively_get_final_property(particle.children, attr, idx=idx)
-        ])
-    return l
+    # Collect values in a Python list to avoid repeated NumPy concatenation
+    acc = []
+
+    def _collect(ps: Iterable[Particle]):
+        for p in ps:
+            try:
+                val = recursive_getattr(p, attr)
+            except Exception:
+                # If attribute lookup fails for a particle, skip it
+                continue
+            if idx is not None:
+                try:
+                    val = val[idx]
+                except Exception:
+                    # If indexing fails, fall back to the raw value
+                    pass
+            # Ensure we append a 1-D numpy array for consistent concatenation
+            arr = np.atleast_1d(np.asarray(val))
+            acc.append(arr)
+            # Recurse into children
+            children = getattr(p, "children", None)
+            if children:
+                _collect(children)
+
+    _collect(particles)
+    if not acc:
+        return np.array([])
+    return np.concatenate(acc)
+
 
 class Injection:
     """Base class for Prometheus injection."""
-    def __init__(
-        self,
-        events: Iterable[InjectionEvent]
-    ):
+
+    def __init__(self, events: Iterable[InjectionEvent]):
         """Initialize the injection object.
 
         Parameters
@@ -118,6 +136,67 @@ class Injection:
         d["initial_state_x"] = [x.initial_state.position[0] for x in self]
         d["initial_state_y"] = [x.initial_state.position[1] for x in self]
         d["initial_state_z"] = [x.initial_state.position[2] for x in self]
+
+        # Extract final-state properties in a single traversal per event to
+        # avoid repeated recursive scans (previously called recursively_get_final_property
+        # seven times per event).
+        def _extract_final_state_props(particles):
+            e_list = []
+            pdg_list = []
+            theta_list = []
+            phi_list = []
+            x_list = []
+            y_list = []
+            z_list = []
+            parent_list = []
+
+            def _collect(ps):
+                for p in ps:
+                    try:
+                        e_list.append(p.e)
+                    except Exception:
+                        e_list.append(np.nan)
+                    try:
+                        pdg_list.append(p.pdg_code)
+                    except Exception:
+                        pdg_list.append(None)
+                    try:
+                        theta_list.append(p.theta)
+                    except Exception:
+                        theta_list.append(np.nan)
+                    try:
+                        phi_list.append(p.phi)
+                    except Exception:
+                        phi_list.append(np.nan)
+                    try:
+                        pos = p.position
+                        x_list.append(pos[0])
+                        y_list.append(pos[1])
+                        z_list.append(pos[2])
+                    except Exception:
+                        x_list.append(np.nan)
+                        y_list.append(np.nan)
+                        z_list.append(np.nan)
+                    try:
+                        parent_list.append(getattr(p.parent, "serialization_idx", None))
+                    except Exception:
+                        parent_list.append(None)
+                    children = getattr(p, "children", None)
+                    if children:
+                        _collect(children)
+
+            _collect(particles)
+            return {
+                "e": np.array(e_list, dtype=float),
+                "pdg": np.array(pdg_list, dtype=object),
+                "theta": np.array(theta_list, dtype=float),
+                "phi": np.array(phi_list, dtype=float),
+                "x": np.array(x_list, dtype=float),
+                "y": np.array(y_list, dtype=float),
+                "z": np.array(z_list, dtype=float),
+                "parent": np.array(parent_list, dtype=object),
+            }
+
         final_state_es = []
         final_state_types = []
         final_state_zeniths = []
@@ -127,14 +206,15 @@ class Injection:
         final_state_zs = []
         parents = []
         for event in self:
-            final_state_es.append(recursively_get_final_property(event.final_states, "e"))
-            final_state_types.append(recursively_get_final_property(event.final_states, "pdg_code"))
-            final_state_zeniths.append(recursively_get_final_property(event.final_states, "theta"))
-            final_state_azimuths.append(recursively_get_final_property(event.final_states, "phi"))
-            final_state_xs.append(recursively_get_final_property(event.final_states, "position", 0))
-            final_state_ys.append(recursively_get_final_property(event.final_states, "position", 1))
-            final_state_zs.append(recursively_get_final_property(event.final_states, "position", 2))
-            parents.append(recursively_get_final_property(event.final_states, "parent.serialization_idx"))
+            props = _extract_final_state_props(event.final_states)
+            final_state_es.append(props["e"])
+            final_state_types.append(props["pdg"])
+            final_state_zeniths.append(props["theta"])
+            final_state_azimuths.append(props["phi"])
+            final_state_xs.append(props["x"])
+            final_state_ys.append(props["y"])
+            final_state_zs.append(props["z"])
+            parents.append(props["parent"])
         d["final_state_energy"] = final_state_es
         d["final_state_type"] = final_state_types
         d["final_state_zenith"] = final_state_zeniths

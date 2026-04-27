@@ -1,19 +1,23 @@
+import itertools
+from typing import List, Union
+
 import numpy as np
 import scipy
-from typing import Union, List
-import itertools
 
-from .module import Module
-from .medium import Medium
-from .detector import Detector
-from .utils import random_serial
 from ..utils import iter_or_rep
+from .detector import Detector
+from .medium import Medium
+from .module import Module
+from .utils import random_serial
+
 
 class InvalidRNGError(Exception):
-    """Raised when rng specification can't be parsed"""
+    """Raised when rng specification can't be parsed."""
+
     def __init__(self, rng):
         self.message = f"Unable to determine random state seeding from {rng}"
-        super.__init__(self.message)
+        super().__init__(self.message)
+
 
 def parse_rng(rng: Union[None, int, np.random.RandomState]) -> np.random.RandomState:
     """Helps determine random number generation state from input.
@@ -33,24 +37,21 @@ def parse_rng(rng: Union[None, int, np.random.RandomState]) -> np.random.RandomS
     InvalidRNGError
         Raised if we don't know how to handle the input rng.
     """
-    if not (
-        isinstance(rng, int) or \
-        isinstance(rng, np.random.RandomState) or \
-        rng is None
-    ):
+    if not (isinstance(rng, int) or isinstance(rng, np.random.RandomState) or rng is None):
         raise InvalidRNGError(rng)
     if rng is None or isinstance(rng, int):
         rng = np.random.RandomState(rng)
     return rng
 
+
 def read_medium(geofile) -> Union[Medium, None]:
-    """Figures out detector medium from geofile.
+    """Figures out detector medium from a geofile.
 
     Parameters
     ----------
     geofile : str
-        Detector geometry file.
-    
+        Detector geofile path.
+
     Returns
     -------
     medium : Medium or None
@@ -68,17 +69,14 @@ def read_medium(geofile) -> Union[Medium, None]:
         return None
     return getattr(Medium, medium_string)
 
-def detector_from_geo(
-    geofile: str,
-    efficiency: float=0.2,
-    noise_rate: float=1
-) -> Detector:
-    """Make a detector from a Prometheus geofile.
-    
+
+def detector_from_geo(geofile: str, efficiency: float = 0.2, noise_rate: float = 1) -> Detector:
+    """Build a detector from a Prometheus geofile.
+
     Parameters
     ----------
     geofile : str
-        Geofile to read from.
+        Path to the geofile to read from.
     efficiency : float, optional
         Quantum efficiency of OMs.
     noise_rate : float, optional
@@ -94,19 +92,12 @@ def detector_from_geo(
     medium = read_medium(geofile)
     with open(geofile) as geo_in:
         read_lines = geo_in.readlines()
-        modules_i = read_lines.index("### Modules ###\n")   
+        modules_i = read_lines.index("### Modules ###\n")
 
-        for line in read_lines[modules_i+1:]:
+        for line in read_lines[modules_i + 1 :]:
             line = line.strip("\n").split("\t")
-            pos.append(
-                np.array([
-                    float(line[0]),
-                    float(line[1]),
-                    float(line[2])
-                ])
-            )
-            pos_out = np.array(pos)
-            keys.append((int(line[3]),int(line[4])))
+            pos.append(np.array([float(line[0]), float(line[1]), float(line[2])]))
+            keys.append((int(line[3]), int(line[4])))
 
     sers = [random_serial() for _ in range(len(pos))]
 
@@ -114,11 +105,12 @@ def detector_from_geo(
     noise_rate = iter_or_rep(noise_rate)
 
     modules = [
-        Module(p, k, efficiency=e, noise_rate=nr, serial_no=ser) 
+        Module(p, k, efficiency=e, noise_rate=nr, serial_no=ser)
         for p, k, e, nr, ser in zip(pos, keys, efficiency, noise_rate, sers)
     ]
     det = Detector(modules, medium)
     return det
+
 
 def make_line(
     x: float,
@@ -129,10 +121,12 @@ def make_line(
     line_id: int,
     rng: np.random.RandomState = 1337,
     baseline_noise_rate: float = 1.0e3,
-    efficiency: float = 0.2
+    efficiency: float = 0.2,
 ) -> List[Module]:
-    """Make a line of detector modules. The modules share the same (x, y) coordinate and 
-    are spaced along the z-direction. This detector will be symetrically spaced about z=z_cent.
+    """Build a line of detector modules.
+
+    The modules share the same (x, y) coordinate and are spaced along the z-direction.
+    This detector will be symmetrically spaced about z=z_cent.
 
     Parameters
     ----------
@@ -170,15 +164,8 @@ def make_line(
     zmax = dist_z * n_z / 2 + z_cent
     for idx, z in enumerate(np.linspace(zmin, zmax, n_z)):
         pos = np.array([x, y, z])
-        noise_rate = (
-            scipy.stats.gamma.rvs(1, 0.25, random_state=rng) * baseline_noise_rate
-        )
-        mod = Module(
-            pos,
-            key=(line_id, idx),
-            noise_rate=noise_rate,
-            efficiency=efficiency
-        )
+        noise_rate = scipy.stats.gamma.rvs(1, 0.25, random_state=rng) * baseline_noise_rate
+        mod = Module(pos, key=(line_id, idx), noise_rate=noise_rate, efficiency=efficiency)
         modules.append(mod)
     return modules
 
@@ -192,13 +179,14 @@ def make_grid(
     medium: Medium,
     rng: Union[int, None, np.random.RandomState] = 1337,
     baseline_noise_rate: float = 1.0e3,
-    efficiency: float = 0.2
+    efficiency: float = 0.2,
 ) -> Detector:
-    """Build a square detector grid. Strings of detector modules are placed 
-    on a square grid, with the number of strings per side, number of modules 
-    per string, and z-spacing on a string set by input. The noise rate for 
-    each module is randomly sampled from a gamma distribution. The random
-    state may be set by input
+    """Build a square detector grid.
+
+    Strings of detector modules are placed on a square grid, with the number of strings
+    per side, number of modules per string, and z-spacing on a string set by input.
+    The noise rate for each module is randomly sampled from a gamma distribution.
+    The random state may be set by input.
 
     Parameters
     ----------
@@ -212,6 +200,8 @@ def make_grid(
         Vertical spacing between modules.
     z_cent : float
         Z-position of the center of the detector.
+    medium : Medium
+        Medium in which the detector is embedded.
     rng : np.random.RandomState, int or None, optional
         The way to set numpy random state. If a np.random.RandomState instance
         is passed, that will be used. If int or None, random state will be
@@ -219,7 +209,7 @@ def make_grid(
     baseline_noise_rate : float, optional
         Baseline dark noise rate for the OMs in GHz.
     efficiency : float, optional
-        quantum efficiency of the OMs.
+        Quantum efficiency of the OMs.
 
     Returns
     -------
@@ -240,7 +230,7 @@ def make_grid(
             idx,
             rng=rng,
             baseline_noise_rate=baseline_noise_rate,
-            efficiency=efficiency
+            efficiency=efficiency,
         )
 
     det = Detector(modules, medium)
@@ -253,15 +243,17 @@ def make_hex_grid(
     n_z: int,
     dist_z: float,
     z_cent: float,
-    medium: Medium, 
+    medium: Medium,
     baseline_noise_rate: float = 1e3,
     rng: Union[int, None, np.random.RandomState] = 1337,
-    efficiency: float = 0.2
+    efficiency: float = 0.2,
 ) -> Detector:
-    """Build a hex detector grid. Strings of detector modules are placed on a hexagonal
+    """Build a hex detector grid.
+
+    Strings of detector modules are placed on a hexagonal
     grid with number of OMs per string and distance between these modules set by input.
     The vertical center of the detector is at z_cent.
-    The noise rate for each module is randomöy sampled from a gamma distribution.
+    The noise rate for each module is randomly sampled from a gamma distribution.
 
     Parameters
     ----------
@@ -274,15 +266,15 @@ def make_hex_grid(
     dist_z : float
         Vertical spacing between modules.
     z_cent : float
-        Z-position of the center of the line.
-    line_id : int
-        Integer identifier of the line.
+        Z-position of the center of the detector.
+    medium : Medium
+        Medium in which the detector is embedded.
+    baseline_noise_rate : float, optional
+        Baseline dark noise rate for the OMs in GHz.
     rng : np.random.RandomState, int or None, optional
         The way to set numpy random state. If a np.random.RandomState instance
         is passed, that will be used. If int or None, random state will be
         np.random.RandomState(rng). Anything else will raise error.
-    baseline_noise_rate : float, optional
-        Baseline dark noise rate for the OMs in GHz.
     efficiency : float, optional
         Quantum efficiency of the OMs.
 
@@ -290,16 +282,14 @@ def make_hex_grid(
     -------
     det : Detector
         Hexagonal Prometheus detector.
-    """
+    """  # noqa: E501
 
     modules = []
     line_id = 0
 
     for irow in range(0, n_side):
         i_this_row = 2 * (n_side - 1) - irow
-        x_pos = np.linspace(
-            -(i_this_row - 1) / 2 * dist, (i_this_row - 1) / 2 * dist, i_this_row
-        )
+        x_pos = np.linspace(-(i_this_row - 1) / 2 * dist, (i_this_row - 1) / 2 * dist, i_this_row)
         y_pos = irow * dist * np.sqrt(3) / 2
         for x in x_pos:
             modules += make_line(
@@ -311,18 +301,14 @@ def make_hex_grid(
                 line_id,
                 rng=rng,
                 baseline_noise_rate=baseline_noise_rate,
-                efficiency=efficiency
+                efficiency=efficiency,
             )
             line_id += 1
 
-        if irow==0:
+        if irow == 0:
             continue
 
-        x_pos = np.linspace(
-            -(i_this_row - 1) / 2 * dist,
-            (i_this_row - 1) / 2 * dist,
-            i_this_row
-        )
+        x_pos = np.linspace(-(i_this_row - 1) / 2 * dist, (i_this_row - 1) / 2 * dist, i_this_row)
         y_pos = -irow * dist * np.sqrt(3) / 2
 
         for x in x_pos:
@@ -335,12 +321,13 @@ def make_hex_grid(
                 line_id,
                 rng=rng,
                 baseline_noise_rate=baseline_noise_rate,
-                efficiency=efficiency
+                efficiency=efficiency,
             )
             line_id += 1
 
     det = Detector(modules, medium)
     return det
+
 
 def make_triang(
     side_len,
@@ -350,12 +337,14 @@ def make_triang(
     medium: Medium,
     rng: np.random.RandomState = 1337,
     baseline_noise_rate: float = 1.0e3,
-    efficiency: float = 0.2
+    efficiency: float = 0.2,
 ) -> Detector:
-    """Build a triangular detector grid. Strings of detector modules are placed 
+    """Build a triangular detector grid.
+
+    Strings of detector modules are placed
     on a the corners of a equilateral triangle, with input side length,
     number of modules per string, and z-spacing on a string set by input.
-    The noise rate for each module is randomly sampled from a gamma distribution. 
+    The noise rate for each module is randomly sampled from a gamma distribution.
     The random state may be set by input.
 
     Parameters
@@ -368,6 +357,8 @@ def make_triang(
         Vertical spacing between modules.
     z_cent : float
         Z-position of the center of the detector.
+    medium : Medium
+        Medium in which the detector is embedded.
     rng : np.random.RandomState, int or None, optional
         The way to set numpy random state. If a np.random.RandomState instance
         is passed, that will be used. If int or None, random state will be
@@ -383,7 +374,7 @@ def make_triang(
         Triangular Prometheus detector.
     """
 
-    height = np.sqrt(side_len ** 2 - (side_len / 2) ** 2)
+    height = np.sqrt(side_len**2 - (side_len / 2) ** 2)
 
     modules = make_line(
         -side_len / 2,
@@ -394,7 +385,7 @@ def make_triang(
         0,
         rng=rng,
         baseline_noise_rate=baseline_noise_rate,
-        efficiency=efficiency
+        efficiency=efficiency,
     )
     modules += make_line(
         side_len / 2,
@@ -405,7 +396,7 @@ def make_triang(
         1,
         rng=rng,
         baseline_noise_rate=baseline_noise_rate,
-        efficiency=efficiency
+        efficiency=efficiency,
     )
     modules += make_line(
         0,
@@ -416,7 +407,7 @@ def make_triang(
         2,
         rng=rng,
         baseline_noise_rate=baseline_noise_rate,
-        efficiency=efficiency
+        efficiency=efficiency,
     )
 
     det = Detector(modules, medium)
@@ -431,9 +422,9 @@ def make_rhombus(
     medium: Medium,
     rng: Union[int, None, np.random.RandomState] = 1337,
     baseline_noise_rate: float = 1.0e3,
-    efficiency: float = 0.2
+    efficiency: float = 0.2,
 ) -> Detector:
-    """Make a rhombus detector.
+    """Build a rhombus detector.
 
     Parameters
     ----------
@@ -452,7 +443,7 @@ def make_rhombus(
     baseline_noise_rate : float, optional
         Baseline dark noise rate for the OMs in GHz.
     efficiency : float, optional
-        quantum efficiency of the OMs.
+        Quantum efficiency of the OMs.
 
     Returns
     -------
@@ -470,7 +461,7 @@ def make_rhombus(
         0,
         rng=rng,
         baseline_noise_rate=baseline_noise_rate,
-        efficiency=efficiency
+        efficiency=efficiency,
     )
     modules += make_line(
         side_len / 2,
@@ -481,7 +472,7 @@ def make_rhombus(
         1,
         rng=rng,
         baseline_noise_rate=baseline_noise_rate,
-        efficiency=efficiency
+        efficiency=efficiency,
     )
     modules += make_line(
         0,
@@ -492,7 +483,7 @@ def make_rhombus(
         2,
         rng=rng,
         baseline_noise_rate=baseline_noise_rate,
-        efficiency=efficiency
+        efficiency=efficiency,
     )
     modules += make_line(
         0,
@@ -503,7 +494,7 @@ def make_rhombus(
         3,
         rng=rng,
         baseline_noise_rate=baseline_noise_rate,
-        efficiency=efficiency
+        efficiency=efficiency,
     )
     det = Detector(modules, medium)
     return det

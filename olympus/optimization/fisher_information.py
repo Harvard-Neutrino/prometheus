@@ -7,7 +7,6 @@ from jax import random
 from ..event_generation.event_generation import (
     generate_cascade,
     generate_muon_energy_losses,
-    generate_realistic_track,
     simulate_noise,
 )
 from ..event_generation.utils import proposal_setup, sph_to_cart_jnp
@@ -15,7 +14,18 @@ from ..utils import rotate_to_new_direc_v
 
 
 def pad_event(event):
+    """Pad an event array to the next multiple of 256 hits per module.
 
+    Parameters
+    ----------
+    event : ak.Array
+        Per-module hit-time arrays to pad.
+
+    Returns
+    -------
+    ev_np : np.ndarray
+        Padded array with ``numpy.inf`` fill values.
+    """
     pad_len = np.int32(np.ceil(ak.max(ak.count(event, axis=1)) / 256) * 256)
 
     if ak.max(ak.count(event, axis=1)) > pad_len:
@@ -27,6 +37,21 @@ def pad_event(event):
 
 
 def pad_array_log_bucket(array, base):
+    """Pad a 1-D array to the next power of ``base`` using ``numpy.inf`` fill.
+
+    Parameters
+    ----------
+    array : ak.Array
+        Array to pad.
+    base : int
+        Logarithmic bucket base used to determine the target length.
+
+    Returns
+    -------
+    ev_np : np.ndarray
+        Padded array with ``numpy.inf`` fill values, or an empty float array if
+        ``array`` is empty.
+    """
     if ak.count(array) == 0:
         return np.array([], dtype=np.float)
 
@@ -43,18 +68,43 @@ def pad_array_log_bucket(array, base):
 def calc_fisher_info_cascades(
     det, event_data, key, converter, ph_prop, lh_func, c_medium, n_ev=20, pad_base=4
 ):
-    def eval_for_mod(
-        x, y, z, theta, phi, t, log10e, times, mod_coords, noise_rate, key
-    ):
+    """Estimate the Fisher information matrix for cascades by averaging over events.
+
+    Parameters
+    ----------
+    det : Detector
+        Detector instance.
+    event_data : dict
+        Event parameters used for cascade generation.
+    key : jax.random.PRNGKey
+        JAX random key.
+    converter : callable
+        Function converting event parameters to photon source descriptions.
+    ph_prop : callable
+        Photon propagation function.
+    lh_func : callable
+        Per-module likelihood function.
+    c_medium : float
+        Speed of light in the medium.
+    n_ev : int, optional
+        Number of events to average over.
+    pad_base : int, optional
+        Base used for log-bucket padding of hit arrays.
+
+    Returns
+    -------
+    fisher : np.ndarray
+        Estimated Fisher information matrix of shape ``(7, 7)``.
+    """
+
+    def eval_for_mod(x, y, z, theta, phi, t, log10e, times, mod_coords, noise_rate, key):
 
         print("Retracing")
 
         pos = jnp.asarray([x, y, z])
         dir = sph_to_cart_jnp(theta, phi)
 
-        sources = converter(
-            pos, t, dir, 10 ** log10e, particle_id=event_data["particle_id"], key=key
-        )
+        sources = converter(pos, t, dir, 10**log10e, particle_id=event_data["particle_id"], key=key)
 
         return lh_func(
             times,
@@ -87,7 +137,6 @@ def calc_fisher_info_cascades(
         # padded = [np.asarray(event[j]) for j in range(len(event))]
         jacsum = 0
         for j in range(len(event)):
-
             padded = pad_array_log_bucket(event[j], pad_base)
             res = jnp.stack(
                 eval_jacobian(
@@ -125,13 +174,10 @@ def calc_fisher_info_tracks(det, event_data, key, ph_prop, lh_func, c_medium):
             dist_along = old_pos_rel[:, 0] / ref_track_dir[0]
 
             new_source_pos = (
-                pos[np.newaxis, :]
-                + new_track_dir[np.newaxis, :] * dist_along[:, np.newaxis]
+                pos[np.newaxis, :] + new_track_dir[np.newaxis, :] * dist_along[:, np.newaxis]
             )
 
-            new_source_dir = rotate_to_new_direc_v(
-                ref_track_dir, new_track_dir, source_dir
-            )
+            new_source_dir = rotate_to_new_direc_v(ref_track_dir, new_track_dir, source_dir)
 
             new_source_time = source_time - event_data["t0"] + time
 

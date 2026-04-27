@@ -1,4 +1,5 @@
 """Utility functions."""
+
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -10,9 +11,7 @@ from scipy.special import gamma, gammaincc
 from .constants import Constants
 
 
-def calc_tres(
-    t: np.ndarray, det_radius: float, det_dist: float, c_medium: float
-) -> np.ndarray:
+def calc_tres(t: np.ndarray, det_radius: float, det_dist: float, c_medium: float) -> np.ndarray:
     """Calculate time residual.
 
     The time residual is calculated by subtracting the expected (geometric)
@@ -83,6 +82,7 @@ def cherenkov_ang_dist_int(n_ph, lower=-1, upper=1):
     """
 
     def incgamma(a, x):
+        """Scaled upper incomplete gamma helper: Gamma(a) * gammaincc(a, x)."""
         return gamma(a) * gammaincc(a, x)
 
     a = Constants.CherenkovLightYield.AngDist.a
@@ -93,32 +93,42 @@ def cherenkov_ang_dist_int(n_ph, lower=-1, upper=1):
     cos_theta_c = 1.0 / n_ph
 
     def indef_int(x):
+        """Indefinite integral of the Cherenkov angular distribution.
+
+        Parameters
+        ----------
+        x : float or array-like
+            Integration variable.
+
+        Returns
+        -------
+        np.ndarray
+            Indefinite integral evaluated at ``x``.
+        """
+
         def lower_branch(x, cos_theta_c):
+            """Lower-branch expression for the indefinite integral.
+
+            This branch applies for x < cos_theta_c.
+            """
             return (
                 1
                 / c
                 * (
                     c * d * x
-                    + (
-                        a
-                        * (cos_theta_c - x)
-                        * incgamma(1 / c, -(b * (cos_theta_c - x) ** c))
-                    )
+                    + (a * (cos_theta_c - x) * incgamma(1 / c, -(b * (cos_theta_c - x) ** c)))
                     * (-(b * (cos_theta_c - x) ** c)) ** (-1 / c)
                 )
             )
 
         def upper_branch(x, cos_theta_c):
+            """Upper-branch expression for the indefinite integral."""
             return (
                 1
                 / c
                 * (
                     c * d * x
-                    + (
-                        a
-                        * (cos_theta_c - x)
-                        * incgamma(1 / c, -(b * (-cos_theta_c + x) ** c))
-                    )
+                    + (a * (cos_theta_c - x) * incgamma(1 / c, -(b * (-cos_theta_c + x) ** c)))
                     * (-(b * (-cos_theta_c + x) ** c)) ** (-1 / c)
                 )
             )
@@ -164,37 +174,98 @@ def calculate_min_number_steps(
         Photon wavelength.
     p_threshold : float
         Probability threshold.
+
+    Returns
+    -------
+    int
+        Minimum number of steps required.
     """
-    c_medium_f = lambda wl: Constants.BaseConstants.c_vac / ref_index_func(  # noqa E731
-        wl
-    )
+
+    def c_medium_f(wl):
+        return Constants.BaseConstants.c_vac / ref_index_func(wl)
 
     t_geo = det_dist / (c_medium_f(wavelength) / 1e9) + max_tres
-    func = (
-        lambda step: scipy.stats.gamma.cdf(
-            t_geo * (c_medium_f(wavelength) / 1e9),
-            step,
-            scale=scattering_length_function(wavelength),
+
+    def func(step):
+        return (
+            scipy.stats.gamma.cdf(
+                t_geo * (c_medium_f(wavelength) / 1e9),
+                step,
+                scale=scattering_length_function(wavelength),
+            )
+            - 0.01
         )
-        - 0.01
-    )
+
     lim = scipy.optimize.brentq(func, 2, 100)
 
     return int(np.ceil(lim))
 
 
 def make_cascadia_abs_len_func(sca_len_func):
+    """Create an absorption-length function for Cascadia.
+
+    Parameters
+    ----------
+    sca_len_func : callable
+        Function mapping wavelength (nm) to scattering length.
+
+    Returns
+    -------
+    callable
+        Function mapping wavelength (nm) to absorption length.
+    """
     att_lengths = np.asarray([[365, 10.4], [400, 14.6], [450, 27.7], [585, 7.1]])
     spl = UnivariateSpline(att_lengths[:, 0], np.log(att_lengths[:, 1]), k=2, s=0.01)
 
     def abs_len(wavelength):
+        """Compute absorption length from interpolated attenuation and scattering.
+
+        Parameters
+        ----------
+        wavelength : float or array-like
+            Wavelength in nanometres.
+
+        Returns
+        -------
+        float or np.ndarray
+            Absorption length.
+        """
         return 1 / (1 / np.exp(spl(wavelength)) - 1 / sca_len_func(wavelength))
 
     return abs_len
 
 
 def rotate_to_new_direc(old_dir, new_dir, operand):
+    """Rotate ``operand`` so that ``old_dir`` maps to ``new_dir`` using Rodrigues' formula.
+
+    Parameters
+    ----------
+    old_dir : jnp.ndarray
+        Original direction vector (shape (3,) or (..., 3)).
+    new_dir : jnp.ndarray
+        Target direction vector with same shape as ``old_dir``.
+    operand : jnp.ndarray
+        Vector(s) to rotate. The rotation is applied along the last axis.
+
+    Returns
+    -------
+    jnp.ndarray
+        Rotated vector(s) with same shape as ``operand``.
+    """
+
     def _rotate(operand):
+        """Rotate ``operand`` by the angle between ``old_dir`` and ``new_dir``.
+
+        Parameters
+        ----------
+        operand : array-like
+            Vector(s) to rotate.
+
+        Returns
+        -------
+        array-like
+            Rotated vector(s).
+        """
 
         axis = jnp.cross(old_dir, new_dir)
         axis /= jnp.linalg.norm(axis)
@@ -206,9 +277,7 @@ def rotate_to_new_direc(old_dir, new_dir, operand):
         v_rot = (
             operand * jnp.cos(theta)
             + jnp.cross(axis, operand) * jnp.sin(theta)
-            + axis
-            * jnp.dot(axis, operand, precision=Precision.HIGHEST)
-            * (1 - jnp.cos(theta))
+            + axis * jnp.dot(axis, operand, precision=Precision.HIGHEST) * (1 - jnp.cos(theta))
         )
         return v_rot
 

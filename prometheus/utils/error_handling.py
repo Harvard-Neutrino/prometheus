@@ -3,51 +3,60 @@
 # Authors: Stephan Meighen-Berger
 # Collection of custom errors for Prometheus
 
-import sys
 import inspect
+import logging
+import sys
+
+logger = logging.getLogger(__name__)
 
 
 class NoTraceBackWithLineNumber(Exception):
     """Custom error messages for exceptions."""
+
     def __init__(self, msg):
         try:
-
             ln = sys.exc_info()[-1].tb_lineno
         except AttributeError:
             ln = inspect.currentframe().f_back.f_lineno
             stack = inspect.stack()
             the_class = stack[1][0].f_locals["self"].__class__.__name__
             the_method = stack[1][0].f_code.co_name
-            print("An error was raised in {}.{}()".format(the_class, the_method))
-        self.args = "{0.__name__} (line {1}): {2}".format(type(self), ln, msg),
+            logger.error("An error was raised in %s.%s()", the_class, the_method)
+        self.args = ("{0.__name__} (line {1}): {2}".format(type(self), ln, msg),)
         sys.exit(self)
 
 
 class UnknownInjectorError(NoTraceBackWithLineNumber):
     """Injector defined in the config is not supported."""
+
     pass
 
 
 class UnknownLeptonPropagatorError(NoTraceBackWithLineNumber):
     """Lepton propagator defined in the config is not supported."""
+
     pass
 
 
 class UnknownPhotonPropagatorError(NoTraceBackWithLineNumber):
     """Photon propagator defined in the config is not supported."""
+
     pass
 
 
 class NoInjectionError(NoTraceBackWithLineNumber):
     """Injection has not been set."""
+
     pass
 
 
 class InjectorNotImplementedError(NoTraceBackWithLineNumber):
     """Injection type has not been implemented."""
+
     pass
 
 
 class CannotLoadDetectorError(NoTraceBackWithLineNumber):
     """Raised when detector not provided and cannot be determined from config."""
+
     pass

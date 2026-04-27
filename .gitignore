@@ -1,40 +1,96 @@
+# .gitignore — Prometheus
+# Grouped and annotated for readability; review before modifying. Negations (e.g., !file) override previous patterns.
+
+########################
+# Editor / OS files
+########################
+.DS_Store
+Thumbs.db
+*~
 .*.sw*
+.vscode/
+.idea/
 
-*.lic
-
-*.h5
-
-*.pickle
-
-*.sif
-
+########################
+# Python caches / bytecode
+########################
+__pycache__/
+*.py[cod]
 *.pyc
 
+########################
+# Virtual environments
+########################
+.venv/
+.venv*
+venv/
+venv3/            # local virtualenv sometimes used by contributors
+.prometheus_env
+.prometheus_env*
+
+########################
+# Build / packaging
+########################
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+########################
+# Documentation / site
+########################
+site/
+mkdocs.log
+
+########################
+# Data / outputs
+########################
+output/
+examples/output/
+*.h5
+*.lic
 *.parquet
-
-.ipynb_checkpoints
-
-*geo-f2k
-
+*.sif
 *.tmp
-
 *.pdf
 
+########################
+# PROPOSAL / PPC / binary artifacts
+########################
+PROPOSAL_tables/
+*.f2k
+*.ppc
+
+########################
+# Micromamba / installer caches
+########################
+bin/
+pkgs/
+.install_logs
+
+########################
+# Testing / coverage / tooling
+########################
+.pytest_cache/
+.mypy_cache/
+.tox/
+.cache/
+.coverage
+htmlcov/
+
+########################
+# Project-specific artifacts (review before removing)
+########################
+event_view.png
+LI           # project-local artifact (confirm intent)
+
+########################
+# Keep some model/config files committed (negations override *.pickle below)
+########################
+*.pickle
 !photon_arrival_time_counts_params.pickle
 !photon_arrival_time_nflow_params.pickle
 
-venv3
-
-*.json
-
-LI
-
-# Keep some config files
 !pone_config.json
 
-memories.npy
-
-timings.npy
-timings_e.npy
-
-*pycache*
+# End of file

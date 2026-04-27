@@ -1,12 +1,14 @@
-"""Event Generators."""
+"""Event generation helpers.
+"""
+
 import functools
 import logging
 
 import awkward as ak
-import jax.numpy as jnp
 import numpy as np
 from jax import random
 from tqdm.auto import trange
+
 from .constants import Constants
 from .detector import (
     generate_noise,
@@ -17,14 +19,28 @@ from .detector import (
 from .lightyield import make_pointlike_cascade_source, make_realistic_cascade_source
 from .mc_record import MCRecord
 from .photon_propagation.utils import source_array_to_sources
-from .photon_source import PhotonSource
 from .utils import track_isects_cyl
 
 logger = logging.getLogger(__name__)
 
 
 def simulate_noise(det, event):
+    """Add detector noise hits to an event.
 
+    Parameters
+    ----------
+    det : Detector
+        Detector instance used to generate noise hits.
+    event : ak.Array
+        Existing hit-time array for the event.
+
+    Returns
+    -------
+    event : ak.Array
+        Hit-time array with noise hits merged and sorted.
+    noise : ak.Array
+        Noise-only hit-time array.
+    """
     if ak.count(event) == 0:
         time_range = [-1000, 4000]
         noise = generate_noise(det, time_range)
@@ -49,22 +65,30 @@ def generate_cascade(
     converter_func,
     splitter=100000,
 ):
-    """Generate a single cascade with given amplitude and position and return time of detected photons.
- 
+    """Generate a single cascade and return detected photon times.
+
     Parameters
     ----------
     det : Detector
         Instance of Detector class.
     event_data : dict
-        Container of the event data.
+        Container with event parameters (position, energy, direction, time, etc.).
     seed : int
         Random seed.
     pprop_func : callable
-        Function to calculate the photon signal.
+        Function that computes the photon propagation signal.
     converter_func : callable
-        Function to calculate number of photons as function of energy.
+        Callable that converts event energy and metadata to source positions,
+        directions, times and photon counts.
     splitter : int, optional
-        Subset of the modules to use per run. This is for memory.
+        Number of modules per subset for memory-efficient propagation.
+
+    Returns
+    -------
+    tuple
+        Tuple ``(propagation_result, record)`` where ``propagation_result`` is an
+        ``ak.Array`` of detected photon times and ``record`` is an
+        ``MCRecord`` instance.
     """
 
     k1, k2 = random.split(seed)
@@ -87,35 +111,34 @@ def generate_cascade(
     # splitting for memory efficiency
     if det.module_coords.shape[0] > splitter:
         det_subsets_coords = np.array_split(
-            det.module_coords,
-            det.module_coords.shape[0] % splitter
+            det.module_coords, det.module_coords.shape[0] % splitter
         )
         det_subsets_eff = np.array_split(
-            det.module_efficiencies,
-            det.module_coords.shape[0] % splitter
+            det.module_efficiencies, det.module_coords.shape[0] % splitter
         )
         propagation_result = [
             pprop_func(
-            det_subsets_coords[id_set],
-            det_subsets_eff[id_set],
+                det_subsets_coords[id_set],
+                det_subsets_eff[id_set],
+                source_pos,
+                source_dir,
+                source_time,
+                source_nphotons,
+                seed=k2,
+            )
+            for id_set, _ in enumerate(det_subsets_coords)
+        ]
+        propagation_result = ak.concatenate(propagation_result)
+    else:
+        propagation_result = pprop_func(
+            det.module_coords,
+            det.module_efficiencies,
             source_pos,
             source_dir,
             source_time,
             source_nphotons,
             seed=k2,
-        ) for id_set, _ in enumerate(det_subsets_coords)
-        ]
-        propagation_result = ak.concatenate(propagation_result)
-    else:
-        propagation_result = pprop_func(
-        det.module_coords,
-        det.module_efficiencies,
-        source_pos,
-        source_dir,
-        source_time,
-        source_nphotons,
-        seed=k2,
-    )
+        )
 
     return propagation_result, record
 
@@ -133,7 +156,40 @@ def generate_cascades(
     converter_func,
     noise_function=simulate_noise,
 ):
-    """Generate a sample of cascades, randomly sampling the positions in a cylinder of given radius and length."""
+    """Generate a sample of cascades sampled uniformly in a cylinder.
+
+    Parameters
+    ----------
+    det : Detector
+        Detector instance used for propagation.
+    cylinder_height : float
+        Cylinder height for source sampling.
+    cylinder_radius : float
+        Cylinder radius for source sampling.
+    nsamples : int
+        Number of cascades to generate.
+    seed : int
+        RNG seed.
+    log_emin : float
+        Log10 of minimum energy.
+    log_emax : float
+        Log10 of maximum energy.
+    particle_id : int
+        PDG particle id used by the converter.
+    pprop_func : callable
+        Photon propagation function.
+    converter_func : callable
+        Function converting event parameters to source descriptions.
+    noise_function : callable, optional
+        Function used to simulate detector noise (default is ``simulate_noise``).
+
+    Returns
+    -------
+    tuple
+        Tuple ``(events, records)`` where ``events`` is a list of per-event
+        ``ak.Array`` objects and ``records`` is a list of corresponding
+        ``MCRecord`` objects.
+    """
     rng = np.random.RandomState(seed)
     key = random.PRNGKey(seed)
 
@@ -169,6 +225,7 @@ def generate_cascades(
 
     return events, records
 
+
 # @profile
 def generate_muon_energy_losses(
     propagator,
@@ -186,12 +243,10 @@ def generate_muon_energy_losses(
     except ImportError as e:
         logger.critical("Could not import proposal!")
         raise e
-    
+
     init_state = pp.particle.ParticleState()
     init_state.energy = energy * 1e3  # initial energy in MeV
-    init_state.position = pp.Cartesian3D(
-        position[0] * 100, position[1] * 100, position[2] * 100
-    )
+    init_state.position = pp.Cartesian3D(position[0] * 100, position[1] * 100, position[2] * 100)
     init_state.direction = pp.Cartesian3D(direction[0], direction[1], direction[2])
     track = propagator.propagate(init_state, track_len * 100)  # cm
 
@@ -220,12 +275,10 @@ def generate_muon_energy_losses(
         # dist = loss.position.z / 100
         e_loss = loss.energy / 1e3
 
-        """
-        dir = np.asarray([loss.direction.x, loss.direction.y, loss.direction.z])
+        # dir = np.asarray([loss.direction.x, loss.direction.y, loss.direction.z])
         
-        p = position + dist * direction
-        t = dist / Constants.c_vac + time
-        """
+        # p = position + dist * direction
+        # t = dist / Constants.c_vac + time
 
         p = np.asarray([loss.position.x, loss.position.y, loss.position.z]) / 100
         dir = np.asarray([loss.direction.x, loss.direction.y, loss.direction.z])
@@ -235,9 +288,7 @@ def generate_muon_energy_losses(
         ptype = loss_map[loss_type_name]
 
         if e_loss < 1e3:
-            spos, sdir, stime, sph = make_pointlike_cascade_source(
-                p, t, dir, e_loss, ptype
-            )
+            spos, sdir, stime, sph = make_pointlike_cascade_source(p, t, dir, e_loss, ptype)
         else:
             key, subkey = random.split(key)
             spos, sdir, stime, sph = make_realistic_cascade_source(
@@ -264,19 +315,17 @@ def generate_muon_energy_losses(
     total_dist = track.track_propagated_distances()[-1] / 100
     loss_dists = np.arange(0, total_dist, cont_resolution)
     # TODO: Remove this really ugly fix
-    if len (loss_dists) == 0:
-        cont_loss_sum = 1.
+    if len(loss_dists) == 0:
+        cont_loss_sum = 1.0
         total_dist = 1.1
-        loss_dists = np.array([0., 1.])
+        loss_dists = np.array([0.0, 1.0])
     e_loss = cont_loss_sum / len(loss_dists)
 
     for ld in loss_dists:
         p = ld * direction + position
         t = np.linalg.norm(p - position) / Constants.c_vac + time
 
-        spos, sdir, stime, sph = make_pointlike_cascade_source(
-            p, t, direction, e_loss, 11
-        )
+        spos, sdir, stime, sph = make_pointlike_cascade_source(p, t, direction, e_loss, 11)
 
         aspos.append(spos)
         asdir.append(sdir)
@@ -294,31 +343,32 @@ def generate_muon_energy_losses(
         total_dist,
     )
 
+
 # @profile
-def generate_realistic_track(
-    det,
-    event_data,
-    key,
-    pprop_func,
-    proposal_prop,
-    splitter=100000
-):
-    """Generate a realistic track using energy losses from PROPOSAL.
- 
+def generate_realistic_track(det, event_data, key, pprop_func, proposal_prop, splitter=100000):
+    """Generate a realistic muon track using energy losses from PROPOSAL.
+
     Parameters
     ----------
     det : Detector
-        Instance of Detector class.
+        Detector instance used for propagation.
     event_data : dict
-        Container of the event data.
-    key : PRNGKey
-        Random key.
+        Event parameters including position, direction, energy and length.
+    key : jax.random.PRNGKey
+        Random key for stochastic sampling.
     pprop_func : callable
-        Function to calculate the photon signal.
+        Photon propagation function.
     proposal_prop : callable
-        PROPOSAL propagator.
+        PROPOSAL propagator instance.
     splitter : int, optional
-        Splits the detector modules in ``splitter``-sized chunks for memory efficiency.
+        Split size for detector modules to reduce memory usage.
+
+    Returns
+    -------
+    tuple
+        Tuple ``(propagation_result, record)`` where ``propagation_result`` is an
+        ``ak.Array`` of detected photon times and ``record`` is an
+        ``MCRecord`` instance, or ``(None, None)`` when no sources remain.
     """
 
     if proposal_prop is None:
@@ -364,12 +414,10 @@ def generate_realistic_track(
     # splitting for memory efficiency
     if det.module_coords.shape[0] > splitter:
         det_subsets_coords = np.array_split(
-            det.module_coords,
-            det.module_coords.shape[0] % splitter
+            det.module_coords, det.module_coords.shape[0] % splitter
         )
         det_subsets_eff = np.array_split(
-            det.module_efficiencies,
-            det.module_coords.shape[0] % splitter
+            det.module_efficiencies, det.module_coords.shape[0] % splitter
         )
         propagation_result = [
             pprop_func(
@@ -380,19 +428,20 @@ def generate_realistic_track(
                 source_time,
                 source_photons,
                 seed=k2,
-            ) for id_set, _ in enumerate(det_subsets_coords)
+            )
+            for id_set, _ in enumerate(det_subsets_coords)
         ]
         propagation_result = ak.concatenate(propagation_result)
     else:
         propagation_result = pprop_func(
-                det.module_coords,
-                det.module_efficiencies,
-                source_pos,
-                source_dir,
-                source_time,
-                source_photons,
-                seed=k2,
-            )
+            det.module_coords,
+            det.module_efficiencies,
+            source_pos,
+            source_dir,
+            source_time,
+            source_photons,
+            seed=k2,
+        )
     return propagation_result, record
 
 
@@ -407,7 +456,36 @@ def generate_realistic_tracks(
     pprop_func,
     proposal_prop=None,
 ):
-    """Generate realistic muon tracks."""
+    """Generate realistic muon tracks sampled from the cylinder surface.
+
+    Parameters
+    ----------
+    det : Detector
+        Detector instance used for propagation.
+    cylinder_height : float
+        Cylinder height for source sampling.
+    cylinder_radius : float
+        Cylinder radius for source sampling.
+    nsamples : int
+        Number of tracks to generate.
+    seed : int
+        RNG seed.
+    log_emin : float
+        Log10 of minimum energy.
+    log_emax : float
+        Log10 of maximum energy.
+    pprop_func : callable
+        Photon propagation function.
+    proposal_prop : callable, optional
+        PROPOSAL propagator instance.
+
+    Returns
+    -------
+    tuple
+        Tuple ``(events, records)`` where ``events`` is a list of per-event
+        ``ak.Array`` objects and ``records`` is a list of corresponding
+        ``MCRecord`` objects.
+    """
     rng = np.random.RandomState(seed)
     key = random.PRNGKey(seed)
 
@@ -415,9 +493,7 @@ def generate_realistic_tracks(
     records = []
 
     for i in trange(nsamples):
-        pos = sample_cylinder_surface(
-            cylinder_height, cylinder_radius, 1, rng
-        ).squeeze()
+        pos = sample_cylinder_surface(cylinder_height, cylinder_radius, 1, rng).squeeze()
         energy = np.power(10, rng.uniform(log_emin, log_emax, size=1))
         # determine the surface normal vectors given the samples position
         # surface normal always points out
@@ -442,9 +518,7 @@ def generate_realistic_tracks(
         # shift pos back by half the length:
         # pos = pos - track_length / 2 * direc
 
-        isec = track_isects_cyl(
-            det._outer_cylinder[0], det._outer_cylinder[1], pos, direc
-        )
+        isec = track_isects_cyl(det._outer_cylinder[0], det._outer_cylinder[1], pos, direc)
         track_length = 3000
         if (isec[0] != np.nan) and (isec[1] != np.nan):
             track_length = isec[1] - isec[0] + 300
@@ -486,7 +560,36 @@ def generate_realistic_starting_tracks(
     pprop_func,
     proposal_prop=None,
 ):
-    """Generate realistic starting tracks (cascade + track)."""
+    """Generate realistic starting tracks (cascade + track).
+
+    Parameters
+    ----------
+    det : Detector
+        Detector instance used for propagation.
+    cylinder_height : float
+        Cylinder height for source sampling.
+    cylinder_radius : float
+        Cylinder radius for source sampling.
+    nsamples : int
+        Number of tracks to generate.
+    seed : int
+        RNG seed.
+    log_emin : float
+        Log10 of minimum energy.
+    log_emax : float
+        Log10 of maximum energy.
+    pprop_func : callable
+        Photon propagation function.
+    proposal_prop : callable, optional
+        PROPOSAL propagator instance.
+
+    Returns
+    -------
+    tuple
+        Tuple ``(events, records)`` where ``events`` is a list of per-event
+        ``ak.Array`` objects and ``records`` is a list of corresponding
+        ``MCRecord`` objects.
+    """
     rng = np.random.RandomState(seed)
     key, subkey = random.split(random.PRNGKey(seed))
     # Safe length to that tracks will appear infinite
@@ -532,9 +635,7 @@ def generate_realistic_starting_tracks(
             event_data,
             subkey,
             pprop_func,
-            functools.partial(
-                make_realistic_cascade_source, moliere_rand=True, resolution=0.2
-            ),
+            functools.partial(make_realistic_cascade_source, moliere_rand=True, resolution=0.2),
         )
 
         if (ak.count(track) == 0) & (ak.count(cascade) == 0):

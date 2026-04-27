@@ -1,0 +1,21 @@
+# Auto-generated from pyproject.toml via:
+#   pip install poetry-plugin-export
+#   poetry export --without-hashes -f requirements.txt -o requirements.txt
+#
+# Do not edit by hand. To add/remove dependencies, update pyproject.toml then regenerate.
+#
+# Core, pinned runtime dependencies for Prometheus (CPU)
+numpy==1.26.4
+scipy==1.17.1
+h5py==3.16.0
+pyyaml==6.0.3
+tqdm==4.67.3
+matplotlib==3.10.8
+uproot==5.7.2
+fsspec==2026.3.0
+fennel_seed[jax] @ git+https://github.com/MeighenBergerS/fennel.git@master
+optax==0.2.5
+proposal>=7.6.2,<8
+jax>=0.4.35
+jaxlib>=0.4.35
+pyarrow>=15

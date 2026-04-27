@@ -1,39 +1,36 @@
 import jax.numpy as jnp
-from jax import jit, vmap
 import numpy as np
+from jax import jit, vmap
 
 from ..photon_source import PhotonSource, PhotonSourceType
 
 
-def source_to_model_input_per_module(
-    module_coords, source_pos, source_dir, source_t0, c_medium
-):
+def source_to_model_input_per_module(module_coords, source_pos, source_dir, source_t0, c_medium):
     """Convert photon source and module coordinates into neural net input.
- 
+
     Calculates the distance and viewing angle between the source and the module.
     The viewing angle is the angle of the vector between module and source and the direction
     vector of the source.
 
     Parameters
     ----------
-    module_coords : jax.numpy.ndarray
+    module_coords : jnp.ndarray
         Coordinates of the module.
-    source_pos : jax.numpy.ndarray
+    source_pos : jnp.ndarray
         Position of the photon source.
-    source_dir : jax.numpy.ndarray
+    source_dir : jnp.ndarray
         Direction vector of the photon source.
     source_t0 : float
         Emission time of the photon source.
     c_medium : float
         Speed of light in the medium.
- 
+
     Returns
     -------
-    inp_pars : jax.numpy.ndarray
+    inp_pars : jnp.ndarray
         Array of ``[log10(distance), viewing_angle]``.
     time_geo : float
         Geometric time (expected arrival time for a direct photon).
- 
     """
 
     source_targ_vec = module_coords - source_pos
@@ -51,9 +48,7 @@ def source_to_model_input_per_module(
 
 
 # Vectorize across modules
-source_to_model_input = vmap(
-    source_to_model_input_per_module, in_axes=(0, None, None, None, None)
-)
+source_to_model_input = vmap(source_to_model_input_per_module, in_axes=(0, None, None, None, None))
 
 # Vectorize across sources and jit
 sources_to_model_input = jit(vmap(source_to_model_input, in_axes=(None, 0, 0, 0, None)))
@@ -65,6 +60,25 @@ sources_to_model_input_per_module = vmap(
 
 
 def sources_to_array(sources):
+    """Convert a list of ``PhotonSource`` objects into arrays.
+
+    Parameters
+    ----------
+    sources : list of PhotonSource
+        Photon sources to convert. Only ``STANDARD_CHERENKOV`` type sources
+        are supported.
+
+    Returns
+    -------
+    source_pos : np.ndarray
+        Array of shape ``(N, 3)`` with source positions.
+    source_dir : np.ndarray
+        Array of shape ``(N, 3)`` with source directions.
+    source_time : np.ndarray
+        Array of shape ``(N, 1)`` with source emission times.
+    source_photons : np.ndarray
+        Array of shape ``(N, 1)`` with photon counts per source.
+    """
     source_pos = np.empty((len(sources), 3))
     source_dir = np.empty((len(sources), 3))
     source_time = np.empty((len(sources), 1))
@@ -72,9 +86,7 @@ def sources_to_array(sources):
 
     for i, source in enumerate(sources):
         if source.type != PhotonSourceType.STANDARD_CHERENKOV:
-            raise ValueError(
-                f"Only Cherenkov-like sources are supported. Got {source.type}."
-            )
+            raise ValueError(f"Only Cherenkov-like sources are supported. Got {source.type}.")
         source_pos[i] = source.position
         source_dir[i] = source.direction
         source_time[i] = source.time
@@ -83,6 +95,24 @@ def sources_to_array(sources):
 
 
 def source_array_to_sources(source_pos, source_dir, source_time, source_nphotons):
+    """Convert source arrays into a list of ``PhotonSource`` objects.
+
+    Parameters
+    ----------
+    source_pos : np.ndarray
+        Array of shape ``(N, 3)`` with source positions.
+    source_dir : np.ndarray
+        Array of shape ``(N, 3)`` with source directions.
+    source_time : np.ndarray
+        Array of shape ``(N, 1)`` with source emission times.
+    source_nphotons : np.ndarray
+        Array of shape ``(N, 1)`` with photon counts per source.
+
+    Returns
+    -------
+    sources : list of PhotonSource
+        List of ``PhotonSource`` objects corresponding to the input arrays.
+    """
     sources = []
     for i in range(source_pos.shape[0]):
         source = PhotonSource(

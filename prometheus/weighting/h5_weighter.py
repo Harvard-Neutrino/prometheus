@@ -3,17 +3,18 @@ import LeptonWeighter as LW
 
 from .weighter import Weighter
 
-class H5Weighter(Weighter):
 
-    def get_event_oneweight(self, event_properties:h5.Dataset) -> float:
-        """
-        Get oneweight for event.
-        
+class H5Weighter(Weighter):
+    """Weighter that reads event properties from an HDF5 file."""
+
+    def get_event_oneweight(self, event_properties: h5.Dataset) -> float:
+        """Get oneweight for event.
+
         Oneweight * flux / n_gen_events = rate.
 
         Parameters
         ----------
-        event_properties : h5py.Dataset
+        event_properties : h5.Dataset
             Prometheus output event.
 
         Returns
@@ -35,4 +36,3 @@ class H5Weighter(Weighter):
         lw_event.y = event_properties["y"]
         lw_event.z = event_properties["z"]
         return self._weighter.get_oneweight(lw_event) * self.nevents
-

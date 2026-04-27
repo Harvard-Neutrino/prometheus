@@ -1,7 +1,9 @@
-import numpy as np
 from dataclasses import dataclass
 
+import numpy as np
+
 from ..utils import int_type_to_str
+
 
 @dataclass(frozen=True)
 class Loss:
@@ -16,6 +18,7 @@ class Loss:
     position : np.ndarray
         Position of the loss in meters.
     """
+
     int_type: int
     e: float
     position: np.ndarray

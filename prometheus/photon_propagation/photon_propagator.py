@@ -1,15 +1,14 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
-from ..lepton_propagation import LeptonPropagator
 from ..detector import Detector
+from ..lepton_propagation import LeptonPropagator
 
-class PhotonPropagator:
+
+class PhotonPropagator(ABC):
     """Interface for handling different photon propagators."""
+
     def __init__(
-        self,
-        lepton_propagator: LeptonPropagator,
-        detector: Detector,
-        photon_prop_config: dict
+        self, lepton_propagator: LeptonPropagator, detector: Detector, photon_prop_config: dict
     ):
         """Initialize the photon propagator.
 
@@ -27,7 +26,7 @@ class PhotonPropagator:
         self._config = photon_prop_config
 
     @abstractmethod
-    def propagate(self, particle):
+    def propagate(self, particle, rng_key):
         pass
 
     @property
