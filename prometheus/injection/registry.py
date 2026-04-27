@@ -17,7 +17,7 @@ _INJECTION_CONSTRUCTOR_REGISTRY: dict[str, Callable] = {}
 
 
 def register_injector(name: str, *, constructor: Callable | None = None):
-    """Decorator that registers an injector runner under *name*.
+    """Decorator that registers an injector runner under ``name``.
 
     Parameters
     ----------
@@ -38,12 +38,12 @@ def register_injector(name: str, *, constructor: Callable | None = None):
 
 
 def get_injector(name: str) -> Callable:
-    """Return the injector runner for *name*.
+    """Return the injector runner for ``name``.
 
     Raises
     ------
     ValueError
-        If *name* is not a registered injector.
+        If ``name`` is not a registered injector.
     """
     key = name.lower()
     if key not in _INJECTOR_REGISTRY:

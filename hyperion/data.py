@@ -60,8 +60,7 @@ class SimpleDataset(object):
 
 
 class SubSet(object):
-    """
-    Dataset subset.
+    """Dataset subset.
 
     Parameters
     ----------
@@ -115,8 +114,7 @@ class SubSet(object):
 
 
 def create_random_split(dataset, split_len, rng):
-    """
-    Create a random split.
+    """Create a random split.
 
     Parameters
     ----------
@@ -141,8 +139,7 @@ def create_random_split(dataset, split_len, rng):
 
 
 def randomize_ds(dataset, rng):
-    """
-    Randomize a dataset.
+    """Randomize a dataset.
 
     Parameters
     ----------
@@ -191,8 +188,7 @@ def downsample_ds(dataset, fraction, rng, copy=False):
 
 
 class DataLoader(object):
-    """
-    Iterator over a dataset yielding batches.
+    """Iterator over a dataset yielding batches.
 
     Parameters
     ----------
@@ -265,8 +261,7 @@ class DataLoader(object):
 
 
 class StochasticLoader(object):
-    """
-    Loader that yields batches of unique random indices.
+    """Loader that yields batches of unique random indices.
 
     Parameters
     ----------

@@ -9,7 +9,7 @@ class SPETemplate:
     Attributes
     ----------
     components : list
-        List of scipy.stats distribution components for SPE shapes.
+        List of ``scipy.stats`` distribution components for SPE shapes.
     weights : list
         Mixing weights for each component.
     """

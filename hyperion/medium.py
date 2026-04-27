@@ -1,6 +1,4 @@
-"""
-Collection of functions related to the optical properties of a medium.
-"""
+"""Collection of functions related to the optical properties of a medium."""
 
 import jax
 import jax.numpy as jnp
@@ -9,8 +7,7 @@ from jax.lax import cond
 
 
 def henyey_greenstein_scattering_angle(key, g=0.9):
-    """
-    Henyey-Greenstein scattering in one plane.
+    """Henyey-Greenstein scattering in one plane.
 
     Parameters
     ----------
@@ -30,8 +27,7 @@ def henyey_greenstein_scattering_angle(key, g=0.9):
 
 
 def rayleigh_scattering_angle(key):
-    """
-    Rayleigh scattering. Adapted from clsim.
+    """Rayleigh scattering. Adapted from clsim.
 
     Parameters
     ----------
@@ -59,8 +55,7 @@ def rayleigh_scattering_angle(key):
 
 
 def liu_scattering_angle(key, g=0.95):
-    """
-    Simplified Liu scattering.
+    """Simplified Liu scattering.
 
     Parameters
     ----------
@@ -85,8 +80,7 @@ def liu_scattering_angle(key, g=0.95):
 
 
 def make_mixed_scattering_func(f1, f2, ratio):
-    """
-    Create a mixture model with two sampling functions.
+    """Create a mixture model with two sampling functions.
 
     Parameters
     ----------

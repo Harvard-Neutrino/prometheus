@@ -26,7 +26,7 @@ RESOURCES_DIR = Path(__file__).resolve().parent.parent / "resources"
 class ConfigBase:
     """Mixin that lets dataclass instances be accessed like dicts.
 
-    ``obj["key"]`` normalises *key* to a Python identifier via
+    ``obj["key"]`` normalises ``key`` to a Python identifier via
     ``key.lower().replace(" ", "_").replace("-", "_")`` and then falls back to
     the optional ``_KEY_MAP`` class variable for any remaining exceptions.
     """

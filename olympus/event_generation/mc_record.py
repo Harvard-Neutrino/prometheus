@@ -2,8 +2,7 @@
 
 
 class MCRecord(object):
-    """
-    Stores MC truth information.
+    """Stores MC truth information.
 
     Attributes
     ----------

@@ -1,8 +1,10 @@
-# NOTE: This module is not used by any live code path in prometheus/olympus and
-# has no shipped model weights in resources/.  It is kept here as a reference
-# implementation of the binned-amplitude photon-yield approach (an earlier
-# alternative to the normalizing-flow model in photon_arrival_time_nflow/).
-# It still depends on dm-haiku and has not been migrated to pure JAX.
+"""This module is not used by any live code path in Prometheus/Olympus and
+has no shipped model weights in ``resources/``.
+
+It is kept here as a reference implementation of the binned-amplitude photon-yield approach (an earlier alternative to the normalizing-flow model in photon_arrival_time_nflow/).
+
+It still depends on dm-haiku and has not been migrated to pure JAX.
+"""
 import functools
 import pickle
 
@@ -16,21 +18,7 @@ from hyperion.data import DataLoader
 
 
 class HistMLP(hk.Module):
-    """Histogram MLP module used as a small haiku model.
-
-    Parameters
-    ----------
-    output_size : int
-        Number of output units (histogram bins or channels).
-    layers : sequence of int
-        Hidden layer sizes.
-    dropout : float
-        Dropout rate applied during training.
-    final_activations : callable or None
-        Optional activation applied to final layer outputs.
-    name : str, optional
-        Module name passed to haiku.
-    """
+    """Histogram MLP module used as a small haiku model."""
 
     def __init__(self, output_size, layers, dropout, final_activations, name=None):
         """Initialise the Histogram MLP.

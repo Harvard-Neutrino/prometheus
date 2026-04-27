@@ -67,8 +67,7 @@ def _mlp_apply(params, x, n_hidden_layers):
 
 
 def _normalize_bin_sizes(unnormalized, total_size, min_bin_size=1e-4):
-    """
-    Softmax-normalise bin sizes.
+    """Softmax-normalise bin sizes.
 
     Each bin >= min_bin_size, sum = total_size.
 
@@ -92,8 +91,7 @@ def _normalize_bin_sizes(unnormalized, total_size, min_bin_size=1e-4):
 
 
 def _normalize_knot_slopes(unnormalized, min_knot_slope=1e-4):
-    """
-    Softplus-normalise knot slopes.
+    """Softplus-normalise knot slopes.
 
     Each slope >= min_knot_slope.
 
@@ -115,8 +113,7 @@ def _normalize_knot_slopes(unnormalized, min_knot_slope=1e-4):
 
 
 def _build_rqs_knots_1d(spl_p, rmin, rmax):
-    """
-    Build knot arrays from a 1-D (unbatched) spline parameter vector.
+    """Build knot arrays from a 1-D (unbatched) spline parameter vector.
 
     Parameters
     ----------
@@ -160,8 +157,7 @@ def _build_rqs_knots_1d(spl_p, rmin, rmax):
 
 
 def _build_rqs_knots_batched(spl_params, rmin, rmax):
-    """
-    Build knot arrays from a batched spline parameter matrix.
+    """Build knot arrays from a batched spline parameter matrix.
 
     Parameters
     ----------
@@ -206,8 +202,7 @@ def _build_rqs_knots_batched(spl_params, rmin, rmax):
 
 
 def _rqs_fwd(x, x_pos, y_pos, knot_slopes):
-    """
-    Rational-quadratic spline forward pass for a single scalar x.
+    """Rational-quadratic spline forward pass for a single scalar x.
 
     Parameters
     ----------
@@ -285,8 +280,7 @@ def _safe_quadratic_root(a, b, c):
 
 
 def _rqs_inv(y, x_pos, y_pos, knot_slopes):
-    """
-    Rational-quadratic spline inverse pass for a single scalar y.
+    """Rational-quadratic spline inverse pass for a single scalar y.
 
     Parameters
     ----------
@@ -669,8 +663,7 @@ class _TrafDistBuilder:
 
 
 def traf_dist_builder(flow_num_layers, flow_range, return_base=False):
-    """
-    Return a callable that builds the transformed distribution.
+    """Return a callable that builds the transformed distribution.
 
     Parameters
     ----------
@@ -696,8 +689,7 @@ def traf_dist_builder(flow_num_layers, flow_range, return_base=False):
 
 
 def eval_log_prob(dist_builder, traf_params, samples):
-    """
-    Compute log p(samples | traf_params) under the flow.
+    """Compute log p(samples | traf_params) under the flow.
 
     Parameters
     ----------
@@ -720,8 +712,7 @@ def eval_log_prob(dist_builder, traf_params, samples):
 
 
 def sample_shape_model(dist_builder, traf_params, n_photons, seed):
-    """
-    Sample from the shape model.
+    """Sample from the shape model.
 
     Parameters
     ----------

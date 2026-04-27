@@ -1,17 +1,15 @@
-"""
-Physical constants for event generation.
+"""Physical constants for event generation.
 
 Notes
 -----
-Pandel: https://www.sciencedirect.com/science/article/pii/S0927650507001260
+Pandel: <https://www.sciencedirect.com/science/article/pii/S0927650507001260>
 """
 
 import numpy as np
 
 
 class Constants(object):
-    """
-    Collection of useful constants.
+    """Collection of useful constants.
 
     Attributes
     ----------

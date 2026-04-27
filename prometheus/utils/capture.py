@@ -75,7 +75,7 @@ class _COutputCapture:
 
 
 def capture_native_output(func, *args, **kwargs) -> Tuple[str, str]:
-    """Run *func* while capturing native stdout/stderr and return (out, err).
+    """Run ``func`` while capturing native stdout/stderr and return (out, err).
 
     Useful for tests or short-lived calls where capturing native prints is
     desirable.

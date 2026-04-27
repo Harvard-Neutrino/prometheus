@@ -1,5 +1,4 @@
-"""
-Event generation helpers.
+"""Event generation helpers.
 """
 
 import functools
@@ -66,8 +65,7 @@ def generate_cascade(
     converter_func,
     splitter=100000,
 ):
-    """
-    Generate a single cascade and return detected photon times.
+    """Generate a single cascade and return detected photon times.
 
     Parameters
     ----------
@@ -158,8 +156,7 @@ def generate_cascades(
     converter_func,
     noise_function=simulate_noise,
 ):
-    """
-    Generate a sample of cascades sampled uniformly in a cylinder.
+    """Generate a sample of cascades sampled uniformly in a cylinder.
 
     Parameters
     ----------
@@ -278,12 +275,10 @@ def generate_muon_energy_losses(
         # dist = loss.position.z / 100
         e_loss = loss.energy / 1e3
 
-        """
-        dir = np.asarray([loss.direction.x, loss.direction.y, loss.direction.z])
+        # dir = np.asarray([loss.direction.x, loss.direction.y, loss.direction.z])
         
-        p = position + dist * direction
-        t = dist / Constants.c_vac + time
-        """
+        # p = position + dist * direction
+        # t = dist / Constants.c_vac + time
 
         p = np.asarray([loss.position.x, loss.position.y, loss.position.z]) / 100
         dir = np.asarray([loss.direction.x, loss.direction.y, loss.direction.z])
@@ -351,8 +346,7 @@ def generate_muon_energy_losses(
 
 # @profile
 def generate_realistic_track(det, event_data, key, pprop_func, proposal_prop, splitter=100000):
-    """
-    Generate a realistic muon track using energy losses from PROPOSAL.
+    """Generate a realistic muon track using energy losses from PROPOSAL.
 
     Parameters
     ----------
@@ -462,8 +456,7 @@ def generate_realistic_tracks(
     pprop_func,
     proposal_prop=None,
 ):
-    """
-    Generate realistic muon tracks sampled from the cylinder surface.
+    """Generate realistic muon tracks sampled from the cylinder surface.
 
     Parameters
     ----------
@@ -567,8 +560,7 @@ def generate_realistic_starting_tracks(
     pprop_func,
     proposal_prop=None,
 ):
-    """
-    Generate realistic starting tracks (cascade + track).
+    """Generate realistic starting tracks (cascade + track).
 
     Parameters
     ----------

@@ -1,5 +1,4 @@
-"""
-Detector helpers and re-exports.
+"""Detector helpers and re-exports.
 
 This module re-exports canonical detector classes from ``prometheus.detector``
 and provides sampling utilities used by event generators.
@@ -12,8 +11,7 @@ import numpy as np
 
 
 def sample_cylinder_surface(height, radius, n, rng=np.random.RandomState(1337)):
-    """
-    Sample points on a cylinder surface.
+    """Sample points on a cylinder surface.
 
     Parameters
     ----------
@@ -60,8 +58,7 @@ def sample_cylinder_surface(height, radius, n, rng=np.random.RandomState(1337)):
 
 
 def sample_cylinder_volume(height, radius, n, rng=np.random.RandomState(1337)):
-    """
-    Sample points uniformly inside a cylinder volume.
+    """Sample points uniformly inside a cylinder volume.
 
     Parameters
     ----------
@@ -89,8 +86,7 @@ def sample_cylinder_volume(height, radius, n, rng=np.random.RandomState(1337)):
 
 
 def sample_direction(n_samples, rng=np.random.RandomState(1337)):
-    """
-    Sample uniform unit directions on the sphere.
+    """Sample uniform unit directions on the sphere.
 
     Parameters
     ----------
@@ -117,8 +113,7 @@ def sample_direction(n_samples, rng=np.random.RandomState(1337)):
 
 
 def get_proj_area_for_zen(height, radius, coszen):
-    """
-    Return projected area of a cylinder for a given zenith cosine.
+    """Return projected area of a cylinder for a given zenith cosine.
 
     Parameters
     ----------
@@ -140,8 +135,7 @@ def get_proj_area_for_zen(height, radius, coszen):
 
 
 def generate_noise(det, time_range, rng=np.random.RandomState(1337)):
-    """
-    Generate detector noise within a time range for each module.
+    """Generate detector noise within a time range for each module.
 
     Parameters
     ----------
@@ -168,8 +162,7 @@ def generate_noise(det, time_range, rng=np.random.RandomState(1337)):
 
 
 def trigger(det, event_times, mod_thresh=8, phot_thres=5):
-    """
-    Check a simple multiplicity trigger condition.
+    """Check a simple multiplicity trigger condition.
 
     Trigger is true when at least ``mod_thresh`` modules have measured more than
     ``phot_thres`` photons.

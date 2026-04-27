@@ -1,5 +1,4 @@
-"""
-Light-yield calculations and source factories.
+"""Light-yield calculations and source factories.
 """
 
 import jax
@@ -20,8 +19,7 @@ except AttributeError:
 
 
 def simple_cascade_light_yield(energy, *args):
-    """
-    Approximation for cascade light yield.
+    """Approximation for cascade light yield.
 
     Parameters
     ----------
@@ -34,8 +32,7 @@ def simple_cascade_light_yield(energy, *args):
 
 
 def fennel_total_light_yield(energy, particle_id, wavelength_range):
-    """
-    Calculate total light yield using fennel.
+    """Calculate total light yield using fennel.
 
     Parameters
     ----------
@@ -60,8 +57,7 @@ def fennel_total_light_yield(energy, particle_id, wavelength_range):
 
 
 def fennel_frac_long_light_yield(energy, particle_id, resolution=0.2):
-    """
-    Calculate the longitudinal light yield contribution.
+    """Calculate the longitudinal light yield contribution.
 
     Integrate the longitudinal distribution in steps of ``resolution`` and
     return the relative contributions.
@@ -103,8 +99,7 @@ def make_pointlike_cascade_source(
     particle_id,
     wavelength_range=[290, 700],
 ):
-    """
-    Create a pointlike light source.
+    """Create a pointlike light source.
 
     Parameters
     ----------
@@ -155,8 +150,7 @@ def make_realistic_cascade_source(
     moliere_rand=False,
     wavelength_range=[290, 700],
 ):
-    """
-    Create a realistic (elongated) particle cascade.
+    """Create a realistic (elongated) particle cascade.
 
     The longitudinal profile is approximated by placing point-like light sources
     every ``resolution`` steps.

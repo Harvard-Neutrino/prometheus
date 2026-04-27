@@ -1,5 +1,4 @@
-"""
-Plotting utilities for event visualization.
+"""Plotting utilities for event visualization.
 """
 
 import awkward as ak
@@ -10,8 +9,7 @@ import plotly.graph_objects as go
 
 
 def plot_event(det, hit_times, record=None, plot_tfirst=False, plot_hull=False):
-    """
-    Plot a single event in 3D.
+    """Plot a single event in 3D.
 
     Parameters
     ----------
@@ -123,8 +121,7 @@ def plot_event(det, hit_times, record=None, plot_tfirst=False, plot_hull=False):
 
 
 def plot_events(det, events, labels=None, records=None, plot_tfirst=False, plot_hull=False):
-    """
-    Plot multiple events as subplots.
+    """Plot multiple events as subplots.
 
     Parameters
     ----------

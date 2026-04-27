@@ -2,8 +2,7 @@ class Constants(object):
     """Physical and simulation constants used across Hyperion."""
 
     class CherenkovLightYield(object):
-        """
-        Constants relating to light yield (LY).
+        """Constants relating to light yield (LY).
 
         Attributes
         ----------
@@ -16,19 +15,7 @@ class Constants(object):
         photons_per_GeV = 5.3 * 250 * 1e2
 
         class AngDist(object):
-            """Angular distribution parameters.
-
-            Attributes
-            ----------
-            a : float
-                Parameter a in angular distribution.
-            b : float
-                Parameter b in angular distribution.
-            c : float
-                Parameter c in angular distribution.
-            d : float
-                Parameter d in angular distribution.
-            """
+            """Angular distribution parameters: a, b, c, d."""
 
             a = 4.27033
             b = -6.02527

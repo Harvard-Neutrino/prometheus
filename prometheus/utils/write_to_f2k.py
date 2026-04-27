@@ -6,7 +6,7 @@ PPC_MAGIC_Z = 1948.07
 
 
 def serialize_particle(particle, output_f2k):
-    """Write an ``MC`` header line for a particle to an open f2k file.
+    """Write an MC header line for a particle to an open f2k file.
 
     Parameters
     ----------
@@ -85,7 +85,6 @@ def serialize_to_f2k(particle, fname):
         - It is only required for muons because cascades are treated as point-like sources.
     - ``energy`` is the track's initial energy in GeV.
     - ``time`` is the track's initial time in nanoseconds.
-
     """
     index = 0
     with open(fname, "w") as output_f2k:

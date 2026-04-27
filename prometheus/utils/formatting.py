@@ -19,7 +19,7 @@ def _file_checksum(path: str, algo: str = "sha256") -> str:
 
 
 def _human_size(num: int) -> str:
-    """Return a human-readable size for *num* bytes."""
+    """Return a human-readable size for ``num`` bytes."""
     try:
         n = float(num)
     except Exception:

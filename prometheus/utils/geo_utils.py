@@ -56,8 +56,7 @@ def from_geo(fname):
 
 
 def geo_from_coords(coords, out_path, tol=0.5, medium="ice", dom_radius=30):
-    """
-    Generate a detector geometry file from an array of module coordinates.
+    """Generate a detector geometry file from an array of module coordinates.
 
     Parameters
     ----------

@@ -1,5 +1,4 @@
-"""
-Utility functions for event generation.
+"""Utility functions for event generation.
 """
 
 import logging
@@ -15,8 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def sph_to_cart_jnp(theta, phi=0):
-    """
-    Transform spherical to cartesian coordinates.
+    """Transform spherical to cartesian coordinates.
 
     Parameters
     ----------
@@ -38,8 +36,7 @@ def sph_to_cart_jnp(theta, phi=0):
 
 
 def t_geo(x, t_0, direc, x_0):
-    """
-    Calculate the expected arrival time of unscattered photons at position ``x`` emitted by a muon.
+    """Calculate the expected arrival time of unscattered photons at position ``x`` emitted by a muon.
 
     Parameters
     ----------
@@ -65,8 +62,7 @@ def t_geo(x, t_0, direc, x_0):
 
 
 def proposal_setup():
-    """
-    Set up a PROPOSAL propagator.
+    """Set up a PROPOSAL propagator.
 
     Returns
     -------
@@ -102,8 +98,7 @@ def proposal_setup():
 
 
 def deposited_energy(det, record):
-    """
-    Calculate the deposited energy inside the detector outer hull.
+    """Calculate the deposited energy inside the detector outer hull.
 
     Parameters
     ----------

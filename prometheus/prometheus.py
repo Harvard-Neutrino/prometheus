@@ -46,8 +46,7 @@ logger = logging.getLogger(__name__)
 
 
 class PpcTmpdirExistsError(Exception):
-    """
-    Raised if ppc ``tmpdir`` exists and force not specified.
+    """Raised if ppc ``tmpdir`` exists and force not specified.
 
     Parameters
     ----------
@@ -61,8 +60,7 @@ class PpcTmpdirExistsError(Exception):
 
 
 def regularize(s: str) -> str:
-    """
-    Helper function to regularize strings.
+    """Helper function to regularize strings.
 
     Parameters
     ----------
@@ -81,15 +79,13 @@ def regularize(s: str) -> str:
 
 
 class Prometheus(object):
-    """
-    Class for unifying injection, energy loss calculation, and photon propagation.
+    """Class for unifying injection, energy loss calculation, and photon propagation.
     """
 
     def __init__(
         self, userconfig: Union[None, dict, str] = None, detector: Union[None, Detector] = None
     ) -> None:
-        """
-        Initialize the Prometheus class.
+        """Initialize the Prometheus class.
 
         Parameters
         ----------
@@ -306,8 +302,7 @@ class Prometheus(object):
         return self._injection
 
     def inject(self):
-        """
-        Determine initial neutrino and final particle states according to config.
+        """Determine initial neutrino and final particle states according to config.
         """
         injection_config = config.injection[config.injection.name]
         logger.info(
@@ -351,13 +346,12 @@ class Prometheus(object):
 
     # We should factor out generating losses and photon prop
     def propagate(self, capture: bool = False):
-        """
-        Calculate energy losses, generate photon yields, and propagate photons.
+        """Calculate energy losses, generate photon yields, and propagate photons.
 
         Parameters
         ----------
         capture : bool
-            If True, capture stdout/stderr emitted by downstream modules into
+            If ``True``, capture stdout/stderr emitted by downstream modules into
             `self._propagate_output` instead of letting it print to the console.
         """
         pp_name = config.photon_propagator.name.lower()

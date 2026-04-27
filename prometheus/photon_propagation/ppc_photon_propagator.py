@@ -117,7 +117,7 @@ class PPCPhotonPropagator(PhotonPropagator):
         ----------
         particle : Particle
             Prometheus particle to propagate.
-        rng_key : ignored
-            Accepted for interface compatibility; PPC uses its own internal RNG.
+        rng_key : Any or None
+            The parameter is ignored and accepted for interface compatibility; ppc uses its own internal RNG.
         """
         return ppc_sim(particle, self.detector, self.lepton_propagator, self.config)

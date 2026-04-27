@@ -1,5 +1,4 @@
-"""
-Photon propagation utilities.
+"""Photon propagation utilities.
 
 Provides geometric intersection helpers and Cherenkov spectral sampling.
 """
@@ -18,8 +17,7 @@ from .utils import rotate_to_new_direc
 
 
 def sph_to_cart(theta, phi=0, r=1):
-    """
-    Transform spherical to cartesian coordinates.
+    """Transform spherical to cartesian coordinates.
 
     Parameters
     ----------
@@ -45,8 +43,7 @@ def sph_to_cart(theta, phi=0, r=1):
 def photon_sphere_intersection(
     photon_x, photon_p, target_x, target_r, step_size, dtype=jnp.float64
 ):
-    """
-    Calculate photon-sphere intersection.
+    """Calculate photon-sphere intersection.
 
     Given a photon origin, a photon direction, a step size, a target location, and a
     target radius, determine whether the photon intersects the target and compute
@@ -95,8 +92,7 @@ def photon_sphere_intersection(
 
 
 def make_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.float64):
-    """
-    Create a function that calculates the intersection of a photon path with a sphere.
+    """Create a function that calculates the intersection of a photon path with a sphere.
 
     Parameters
     ----------
@@ -122,8 +118,7 @@ def make_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.float64):
 
 
 def make_multi_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.float64):
-    """
-    Create a function that calculates the intersection of a photon path with multiple spheres.
+    """Create a function that calculates the intersection of a photon path with multiple spheres.
 
     Parameters
     ----------
@@ -262,8 +257,7 @@ def make_photon_circle_intersection(circle_center, circle_normal, circle_r, dtyp
     circle_r = dtype(circle_r)
 
     def photon_circle_intersection(photon_x, photon_p, step_size):
-        """
-        Intersection of line and plane.
+        """Intersection of line and plane.
 
         Given a photon origin, a photon direction, a step size, a target location and a
         target radius, calculate whether the photon intersects the target and the
@@ -313,8 +307,7 @@ def make_photon_circle_intersection(circle_center, circle_normal, circle_r, dtyp
 
 
 def frank_tamm(wavelength, ref_index_func):
-    """
-    Frank–Tamm formula for Cherenkov emission.
+    """Frank-Tamm formula for Cherenkov emission.
 
     Parameters
     ----------
@@ -338,8 +331,7 @@ def frank_tamm(wavelength, ref_index_func):
 
 
 def make_cherenkov_spectral_sampling_func(wl_range, ref_index_func, dtype=jnp.float64):
-    """
-    Create a sampling function that samples from the Frank–Tamm formula over a wavelength range.
+    """Create a sampling function that samples from the Frank–Tamm formula over a wavelength range.
 
     Parameters
     ----------
@@ -353,7 +345,7 @@ def make_cherenkov_spectral_sampling_func(wl_range, ref_index_func, dtype=jnp.fl
     Returns
     -------
     callable
-        Sampling function returning wavelengths sampled according to the Frank–Tamm distribution.
+        Sampling function returning wavelengths sampled according to the Frank-Tamm distribution.
     """
     wls = np.linspace(wl_range[0], wl_range[1], 1000)
 
@@ -383,8 +375,7 @@ def make_cherenkov_spectral_sampling_func(wl_range, ref_index_func, dtype=jnp.fl
 
 
 def calc_new_direction(keys, old_dir, scattering_function):
-    """
-    Calculate new direction after sampling a scattering angle.
+    """Calculate new direction after sampling a scattering angle.
 
     Scattering is calculated in a reference frame local to the photon (e_z)
     and then rotated back to the global coordinate system.
@@ -400,7 +391,7 @@ def calc_new_direction(keys, old_dir, scattering_function):
 
     Returns
     -------
-    jax.numpy.ndarray
+    jnp.ndarray
         New direction vector (shape (3,)).
     """
 
@@ -450,8 +441,7 @@ def make_step_function(
     ref_index_func,
     dtype=jnp.float64,
 ):
-    """
-    Create a photon step function object.
+    """Create a photon step function object.
 
     Returns a function ``f(photon_state, key)`` that performs a photon step
     and returns the new photon state.
@@ -594,7 +584,7 @@ def initialize_direction_isotropic(rng_key):
 
     Returns
     -------
-    jax.numpy.ndarray
+    jnp.ndarray
         Unit direction vector sampled uniformly on the sphere (shape (3,)).
     """
     k1, k2 = random.split(rng_key, 2)
@@ -615,7 +605,7 @@ def initialize_direction_led(rng_key):
 
     Returns
     -------
-    jax.numpy.ndarray
+    jnp.ndarray
         Unit direction vector sampled according to the LED sampling routine.
     """
     k1, k2 = random.split(rng_key, 2)
@@ -651,7 +641,7 @@ def make_initialize_direction_laser(direction):
 
         Returns
         -------
-        jax.numpy.ndarray
+        jnp.ndarray
             The configured direction vector.
         """
         return direction
@@ -685,7 +675,7 @@ def make_initialize_position_sphere(sphere_pos, sphere_radius):
 
         Returns
         -------
-        jax.numpy.ndarray
+        jnp.ndarray
             Position vector on the sphere surface.
         """
         direc_vec = initialize_direction_isotropic(rng_key)
@@ -725,8 +715,7 @@ wl_mono_400nm_init = make_monochromatic_initializer(400)
 def make_fixed_pos_time_initializer(
     initial_pos, initial_time, dir_init, wavelength_init, dtype=jnp.float64
 ):
-    """
-    Initialize with fixed position and time and sample for direction and wavelength.
+    """Initialize with fixed position and time and sample for direction and wavelength.
 
     Parameters
     ----------
@@ -774,8 +763,7 @@ def make_fixed_pos_time_initializer(
 def make_fixed_time_initializer(
     initial_time, pos_init, dir_init, wavelength_init, dtype=jnp.float64
 ):
-    """
-    Initialize with a fixed time, sample for position, direction and wavelength.
+    """Initialize with a fixed time, sample for position, direction and wavelength.
 
     Parameters
     ----------
@@ -829,8 +817,7 @@ def make_track_segment_fixed_time_pos_dir_initializer(
     segment_length,
     dtype=jnp.float64,
 ):
-    """
-    Initialize a track segment with fixed time, position and direction.
+    """Initialize a track segment with fixed time, position and direction.
 
     The photon emission position is sampled uniformly along the track (while adjusting the time).
     Emission angle is calculated from the wavelength.
@@ -998,8 +985,7 @@ def make_photon_trajectory_fun(
     photon_init_function,
     loop_func,
 ):
-    """
-    Create a photon trajectory function.
+    """Create a photon trajectory function.
 
     This function calls the photon step function multiple times until
     some termination condition is reached (defined by ``stepping_mode``).
@@ -1015,8 +1001,7 @@ def make_photon_trajectory_fun(
     """
 
     def make_steps(key):
-        """
-        Create a function that steps a photon until it either intersects or max length is reached.
+        """Create a function that steps a photon until it either intersects or max length is reached.
 
         Parameters
         ----------

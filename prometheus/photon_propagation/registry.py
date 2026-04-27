@@ -13,7 +13,7 @@ _PROPAGATOR_REGISTRY: dict[str, Type] = {}
 
 
 def register_propagator(name: str):
-    """Class decorator that registers a photon propagator under *name*."""
+    """Class decorator that registers a photon propagator under ``name``."""
 
     def decorator(cls):
         _PROPAGATOR_REGISTRY[name.lower()] = cls
@@ -23,18 +23,18 @@ def register_propagator(name: str):
 
 
 def get_propagator(name: str) -> Type:
-    """Return the propagator class for *name*, loading it lazily on first call.
+    """Return the propagator class for ``name``, loading it lazily on first call.
 
     Parameters
     ----------
     name : str
-        Canonical propagator name (case-insensitive), e.g. ``"olympus"``,
-        ``"ppc"``, or ``"ppc_cuda"``.
+        Canonical propagator name (case-insensitive), e.g. "olympus",
+        "ppc", or "ppc_cuda".
 
     Raises
     ------
     UnknownPhotonPropagatorError
-        If *name* is not registered and cannot be resolved by lazy import.
+        If ``name`` is not registered and cannot be resolved by lazy import.
     """
     from ..utils import UnknownPhotonPropagatorError
 

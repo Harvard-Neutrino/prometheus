@@ -236,21 +236,21 @@ def make_cascadia_abs_len_func(sca_len_func):
 
 
 def rotate_to_new_direc(old_dir, new_dir, operand):
-    """Rotate `operand` so that `old_dir` maps to `new_dir` using Rodrigues' formula.
+    """Rotate ``operand`` so that ``old_dir`` maps to ``new_dir`` using Rodrigues' formula.
 
     Parameters
     ----------
     old_dir : jnp.ndarray
         Original direction vector (shape (3,) or (..., 3)).
     new_dir : jnp.ndarray
-        Target direction vector with same shape as `old_dir`.
+        Target direction vector with same shape as ``old_dir``.
     operand : jnp.ndarray
         Vector(s) to rotate. The rotation is applied along the last axis.
 
     Returns
     -------
     jnp.ndarray
-        Rotated vector(s) with same shape as `operand`.
+        Rotated vector(s) with same shape as ``operand``.
     """
 
     def _rotate(operand):

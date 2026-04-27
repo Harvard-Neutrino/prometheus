@@ -13,7 +13,7 @@ _LEPTON_PROPAGATOR_REGISTRY: dict[str, Type] = {}
 
 
 def register_lepton_propagator(name: str):
-    """Class decorator that registers a lepton propagator under *name*.
+    """Class decorator that registers a lepton propagator under ``name``.
 
     The name is normalised to lower-case with spaces replaced by underscores.
     """
@@ -26,18 +26,18 @@ def register_lepton_propagator(name: str):
 
 
 def get_lepton_propagator(name: str) -> Type:
-    """Return the lepton propagator class for *name*, loading it lazily.
+    """Return the lepton propagator class for ``name``, loading it lazily.
 
     Parameters
     ----------
     name : str
-        Canonical propagator name, e.g. ``"new proposal"`` or
-        ``"new_proposal"``.
+        Canonical propagator name, e.g. "new proposal" or
+        "new_proposal".
 
     Raises
     ------
     ValueError
-        If *name* is not registered and cannot be resolved by lazy import.
+        If ``name`` is not registered and cannot be resolved by lazy import.
     """
     name_key = name.lower().replace(" ", "_")
     if name_key not in _LEPTON_PROPAGATOR_REGISTRY:
