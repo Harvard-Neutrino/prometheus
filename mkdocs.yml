@@ -12,6 +12,7 @@ nav:
     - 'Usage': './usage.md'
     - 'Citation': './citation.md'
     - 'Papers Using Prometheus': './papers.md'
+    - 'Containers': './containers.md'
 extra_css:
   - css/custom_rules.css
 extra_javascript:
@@ -27,7 +28,7 @@ plugins:
       autoapi_add_nav_entry: false
       autoapi_generate_api_docs: false
   - api-autonav:
-      modules: ['./prometheus', './olympus', './hyperion']
+      modules: ['./prometheus', './hyperion']
       exclude_private: true
       show_full_namespace: false
       api_root_uri: "api-reference"
