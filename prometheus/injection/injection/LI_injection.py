@@ -47,7 +47,7 @@ def injection_from_LI_output(LI_file: str) -> LIInjection:
     Returns
     -------
     LIInjection
-        Injection object constructed from the LIfile contents.
+        Injection object constructed from the LI file contents.
     """
     with h5.File(LI_file, "r") as h5f:
         injectors = list(h5f.keys())

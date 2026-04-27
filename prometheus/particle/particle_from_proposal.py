@@ -13,7 +13,7 @@ def particle_from_proposal(
 
     Parameters
     ----------
-    pp_particle
+    pp_particle : object
         PROPOSAL particle instance.
     coordinate_offset : np.ndarray
         Coordinate offset to subtract from the particle position.

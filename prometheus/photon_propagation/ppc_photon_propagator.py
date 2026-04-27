@@ -18,8 +18,7 @@ subprocess_statuses = []
 
 
 def ppc_sim(particle: Particle, det: Detector, lp: LeptonPropagator, ppc_config: dict) -> None:
-    """Simulate the propagation of a particle and of any photons resulting from its
-    energy losses.
+    """Simulate the propagation of a particle and of any photons resulting from its energy losses.
 
     Parameters
     ----------
@@ -108,10 +107,11 @@ class PPCPhotonPropagator(PhotonPropagator):
     """Interface for simulating energy losses and light propagation using ppc."""
 
     def propagate(self, particle: Particle, rng_key=None) -> None:
+        # We should make this more consistent, but that is 
+        # a problem for another day.
         """Propagate an input particle using ppc.
 
-        This modifies the state of the input particle in-place. We should make this more
-        consistent, but that is a problem for another day.
+        This modifies the state of the input particle in-place.
 
         Parameters
         ----------

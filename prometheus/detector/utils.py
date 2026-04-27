@@ -15,7 +15,7 @@ def random_serial() -> str:
 
 
 def random_mac() -> str:
-    """Creates a random MAC ID in the form expected by ppc.
+    """Create a random MAC ID in the form expected by ppc.
 
     Returns
     -------

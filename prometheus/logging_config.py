@@ -5,9 +5,9 @@ import logging.config
 def configure_logging(config) -> None:
     """Configure Python logging from a Prometheus config object.
 
-    Reads `config.run.verbosity` (string or int) and optional
-    `config.run.logfile` / `config.run.log_format` to set up a console
-    handler (and optional file handler) using `logging.config.dictConfig`.
+    Reads ``config.run.verbosity`` (string or int) and optional
+    ``config.run.logfile`` / ``config.run.log_format`` to set up a console
+    handler (and optional file handler) using ``logging.config.dictConfig``.
     """
     run_cfg = getattr(config, "run", None)
     level = logging.WARNING

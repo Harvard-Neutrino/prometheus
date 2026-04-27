@@ -11,7 +11,7 @@ class PhotonSourceType(Enum):
 class PhotonSource(object):
     """Representation of a single point-like photon source.
 
-    Parameters
+    Attributes
     ----------
     position : np.ndarray
         Position vector (shape (3,)).

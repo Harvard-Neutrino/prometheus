@@ -23,7 +23,7 @@ class Module:
         key : tuple of int
             Tuple to look up module by. (string index, om index) is the
             convention.
-        noise_rate : float, optional
+        noise_rate : int or float, optional
             Noise of the module in GHz.
         efficiency : float, optional
             Quantum efficiency of module.

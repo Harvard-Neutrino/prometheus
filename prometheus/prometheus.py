@@ -302,8 +302,7 @@ class Prometheus(object):
         return self._injection
 
     def inject(self):
-        """Determine initial neutrino and final particle states according to config.
-        """
+        """Determine initial neutrino and final particle states according to config."""
         injection_config = config.injection[config.injection.name]
         logger.info(
             "Starting injection: mode=%s inject=%s",
@@ -456,8 +455,7 @@ class Prometheus(object):
             clean_ppc_tmpdir(config.photon_propagator.ppc_cuda.paths.ppc_tmpdir)
 
     def sim(self):
-        """Perform injection, calculate energy losses and photon yield, propagate photons,
-        and save resulting photons.
+        """Perform injection, calculate energy losses and photon yield, propagate photons, and save resulting photons.
         """
         logger.info("Starting full simulation run %s", config.run.run_number)
         # Record phase start/end timestamps on self so construct_output can summarise
@@ -563,7 +561,7 @@ class Prometheus(object):
             logger.debug("Failed to produce run summary")
 
     def __del__(self):
-        """What to do when the Prometheus instance is deleted"""
+        """What to do when the Prometheus instance is deleted."""
         # Restore original warning handler if we replaced it
         try:
             if (

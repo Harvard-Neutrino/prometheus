@@ -2,7 +2,7 @@
 
 This module contains the logic to construct and emit the end-of-run
 summary for a Prometheus run. It intentionally operates on a
-`Prometheus` instance passed in to avoid circular imports.
+``Prometheus`` instance passed in to avoid circular imports.
 """
 
 import json
@@ -21,7 +21,7 @@ def emit_run_summary(prom, outfile, end_out, size=None):
     Parameters
     ----------
     prom : Prometheus
-        The Prometheus instance (used only to read attributes; not imported)
+        The Prometheus instance (used only to read attributes; not imported).
     outfile : str
         Path to the output file written by the run.
     end_out : float

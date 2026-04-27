@@ -45,12 +45,12 @@ def parse_rng(rng: Union[None, int, np.random.RandomState]) -> np.random.RandomS
 
 
 def read_medium(geofile) -> Union[Medium, None]:
-    """Figures out detector medium from a geo file.
+    """Figures out detector medium from a geofile.
 
     Parameters
     ----------
     geofile : str
-        Detector geo file path.
+        Detector geofile path.
 
     Returns
     -------
@@ -71,12 +71,12 @@ def read_medium(geofile) -> Union[Medium, None]:
 
 
 def detector_from_geo(geofile: str, efficiency: float = 0.2, noise_rate: float = 1) -> Detector:
-    """Build a detector from a Prometheus geo file.
+    """Build a detector from a Prometheus geofile.
 
     Parameters
     ----------
     geofile : str
-        Path to the geo file to read from.
+        Path to the geofile to read from.
     efficiency : float, optional
         Quantum efficiency of OMs.
     noise_rate : float, optional
@@ -248,7 +248,9 @@ def make_hex_grid(
     rng: Union[int, None, np.random.RandomState] = 1337,
     efficiency: float = 0.2,
 ) -> Detector:
-    """Build a hex detector grid. Strings of detector modules are placed on a hexagonal
+    """Build a hex detector grid.
+    
+    Strings of detector modules are placed on a hexagonal
     grid with number of OMs per string and distance between these modules set by input.
     The vertical center of the detector is at z_cent.
     The noise rate for each module is randomly sampled from a gamma distribution.
@@ -337,7 +339,9 @@ def make_triang(
     baseline_noise_rate: float = 1.0e3,
     efficiency: float = 0.2,
 ) -> Detector:
-    """Build a triangular detector grid. Strings of detector modules are placed
+    """Build a triangular detector grid. 
+    
+    Strings of detector modules are placed
     on a the corners of a equilateral triangle, with input side length,
     number of modules per string, and z-spacing on a string set by input.
     The noise rate for each module is randomly sampled from a gamma distribution.
@@ -353,6 +357,8 @@ def make_triang(
         Vertical spacing between modules.
     z_cent : float
         Z-position of the center of the detector.
+    medium : Medium
+        Medium in which the detector is embedded.
     rng : np.random.RandomState, int or None, optional
         The way to set numpy random state. If a np.random.RandomState instance
         is passed, that will be used. If int or None, random state will be

@@ -94,7 +94,7 @@ class Detector(object):
         return self._offset
 
     def to_f2k(self, geo_file: str, serial_nos: List[str] = [], mac_ids: List[str] = []) -> None:
-        """Write detector corrdinates into f2k format.
+        """Write detector coordinates into f2k format.
 
         Parameters
         ----------
@@ -102,7 +102,7 @@ class Detector(object):
             Filepath of the output geometry file.
         serial_nos : list of str, optional
             Serial numbers for the optical modules. These MUST be in
-            hexadecimal format, but there exact value does not matter. If
+            hexadecimal format, but their exact value does not matter. If
             nothing is provided, these values will be randomly generated.
         mac_ids : list of str, optional
             MAC (I don't think this is actually what this is called) IDs

@@ -225,7 +225,7 @@ def train_net(conf, train_data, test_data, writer, rng):
         Test dataset.
     writer : SummaryWriter or None
         Optional writer for logging metrics.
-    rng : numpy.random.Generator
+    rng : np.random.Generator
         Random number generator.
 
     Returns

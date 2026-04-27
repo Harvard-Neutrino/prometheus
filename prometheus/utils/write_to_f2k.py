@@ -57,14 +57,13 @@ def serialize_to_f2k(particle, fname):
 
     Parameters
     ----------
-    particle : particle
+    particle : Particle
         The particle to serialize.
     fname : str
         File name to write the data to.
 
     Notes
     -----
-
     Details of the output format can be found here:
     <https://www.zeuthen.desy.de/~steffenp/f2000/>.
 

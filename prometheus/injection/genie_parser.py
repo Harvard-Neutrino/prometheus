@@ -191,7 +191,7 @@ def genie_loader(filepath: str) -> pd.DataFrame:
 def genie2prometheus(parsed_events: pd.DataFrame):
     """Reformat parsed GENIE events into a usable format for Prometheus.
 
-    NOTES: Create a standardized scheme function. This could then be used as an interface
+    Create a standardized scheme function. This could then be used as an interface
     to Prometheus for any injector. A user would only need to create a function to
     translate their injector output to the scheme format.
 
@@ -302,8 +302,10 @@ def p2azimuthAndzenith(p: np.array):
 
     Returns
     -------
-    azimuth, zenith : float, float
-        The azimuth and zenith angles in radians.
+    azimuth : float
+        Azimuth angle in radians.
+    zenith : float
+        Zenith angle in radians.
     """
     azimuth = angle(p[:2], np.array([0, 1]))
     zenith = angle(p[1:], np.array([0.0, 1]))

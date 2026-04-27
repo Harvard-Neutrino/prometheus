@@ -555,7 +555,7 @@ def _deep_apply(obj: ConfigBase, data: dict) -> None:
     obj : ConfigBase
         Destination config object to update.
     data : dict
-        Mapping of values to apply onto `obj`.
+        Mapping of values to apply onto ``obj``.
     """
     for key, value in data.items():
         try:

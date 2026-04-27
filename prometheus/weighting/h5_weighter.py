@@ -14,7 +14,7 @@ class H5Weighter(Weighter):
 
         Parameters
         ----------
-        event_properties : h5py.Dataset
+        event_properties : h5.Dataset
             Prometheus output event.
 
         Returns
