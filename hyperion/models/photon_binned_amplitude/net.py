@@ -5,6 +5,7 @@ It is kept here as a reference implementation of the binned-amplitude photon-yie
 
 It still depends on dm-haiku and has not been migrated to pure JAX.
 """  # noqa: E501
+
 import functools
 import pickle
 

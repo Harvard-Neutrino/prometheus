@@ -1,5 +1,4 @@
-"""Utility functions for event generation.
-"""
+"""Utility functions for event generation."""
 
 import logging
 

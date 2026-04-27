@@ -1,5 +1,4 @@
-"""Event generation helpers.
-"""
+"""Event generation helpers."""
 
 import functools
 import logging

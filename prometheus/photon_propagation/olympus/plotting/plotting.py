@@ -1,5 +1,4 @@
-"""Plotting utilities for event visualization.
-"""
+"""Plotting utilities for event visualization."""
 
 import awkward as ak
 import matplotlib

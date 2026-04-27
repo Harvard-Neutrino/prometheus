@@ -1,5 +1,4 @@
-"""Light-yield calculations and source factories.
-"""
+"""Light-yield calculations and source factories."""
 
 import jax
 import jax.numpy as jnp
