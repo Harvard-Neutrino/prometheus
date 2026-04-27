@@ -44,13 +44,13 @@ def t_geo(x, t_0, direc, x_0):
 
     Parameters
     ----------
-    x : (3,1) numpy.ndarray
+    x : (3,1) np.ndarray
         Position of the sensor.
     t_0 : float
         Time at which the muon is at ``x_0``.
-    direc : (3,1) numpy.ndarray
+    direc : (3,1) np.ndarray
         Normalized direction vector of the muon.
-    x_0 : (3, 1) numpy.ndarray
+    x_0 : (3, 1) np.ndarray
         Position of the muon at time ``t_0``.
 
     Returns

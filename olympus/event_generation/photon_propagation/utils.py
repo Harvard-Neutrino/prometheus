@@ -14,11 +14,11 @@ def source_to_model_input_per_module(module_coords, source_pos, source_dir, sour
 
     Parameters
     ----------
-    module_coords : jax.numpy.ndarray
+    module_coords : jnp.ndarray
         Coordinates of the module.
-    source_pos : jax.numpy.ndarray
+    source_pos : jnp.ndarray
         Position of the photon source.
-    source_dir : jax.numpy.ndarray
+    source_dir : jnp.ndarray
         Direction vector of the photon source.
     source_t0 : float
         Emission time of the photon source.
@@ -27,7 +27,7 @@ def source_to_model_input_per_module(module_coords, source_pos, source_dir, sour
 
     Returns
     -------
-    inp_pars : jax.numpy.ndarray
+    inp_pars : jnp.ndarray
         Array of ``[log10(distance), viewing_angle]``.
     time_geo : float
         Geometric time (expected arrival time for a direct photon).
@@ -70,13 +70,13 @@ def sources_to_array(sources):
 
     Returns
     -------
-    source_pos : numpy.ndarray
+    source_pos : np.ndarray
         Array of shape ``(N, 3)`` with source positions.
-    source_dir : numpy.ndarray
+    source_dir : np.ndarray
         Array of shape ``(N, 3)`` with source directions.
-    source_time : numpy.ndarray
+    source_time : np.ndarray
         Array of shape ``(N, 1)`` with source emission times.
-    source_photons : numpy.ndarray
+    source_photons : np.ndarray
         Array of shape ``(N, 1)`` with photon counts per source.
     """
     source_pos = np.empty((len(sources), 3))
@@ -99,13 +99,13 @@ def source_array_to_sources(source_pos, source_dir, source_time, source_nphotons
 
     Parameters
     ----------
-    source_pos : numpy.ndarray
+    source_pos : np.ndarray
         Array of shape ``(N, 3)`` with source positions.
-    source_dir : numpy.ndarray
+    source_dir : np.ndarray
         Array of shape ``(N, 3)`` with source directions.
-    source_time : numpy.ndarray
+    source_time : np.ndarray
         Array of shape ``(N, 1)`` with source emission times.
-    source_nphotons : numpy.ndarray
+    source_nphotons : np.ndarray
         Array of shape ``(N, 1)`` with photon counts per source.
 
     Returns

@@ -108,11 +108,11 @@ def make_pointlike_cascade_source(
 
     Parameters
     ----------
-    pos : numpy.ndarray
+    pos : np.ndarray
         Cascade position (shape (3,)).
     t0 : float
         Cascade time.
-    dir : numpy.ndarray
+    dir : np.ndarray
         Cascade direction (shape (3,)).
     energy : float
         Cascade energy.
@@ -163,11 +163,11 @@ def make_realistic_cascade_source(
 
     Parameters
     ----------
-    pos : numpy.ndarray
+    pos : np.ndarray
         Cascade position (shape (3,)).
     t0 : float
         Cascade time.
-    dir : numpy.ndarray
+    dir : np.ndarray
         Cascade direction (shape (3,)).
     energy : float
         Cascade energy.

@@ -17,9 +17,9 @@ def join_awkward_arrays(arr1, arr2, fields=None):
 
     Parameters
     ----------
-    arr1 : awkward.Array
+    arr1 : ak.Array
         First array to join.
-    arr2 : awkward.Array
+    arr2 : ak.Array
         Second array to join.
     fields : list of str, optional
         Fields to join. If not provided, fields are inferred from the arrays
@@ -27,7 +27,7 @@ def join_awkward_arrays(arr1, arr2, fields=None):
 
     Returns
     -------
-    arr : awkward.Array
+    arr : ak.Array
         Array with the same fields, where each event contains the concatenation
         of corresponding events from ``arr1`` and ``arr2``.
 
@@ -59,13 +59,13 @@ def totals_from_awkward_arr(arr):
 
     Parameters
     ----------
-    arr : awkward.Array
+    arr : ak.Array
         Array with per-particle fields (any field that is not ``event_id``,
         ``mc_truth``, or ``total`` is treated as a particle field).
 
     Returns
     -------
-    outarr : awkward.Array or None
+    outarr : ak.Array or None
         Combined array across all particle fields, or ``None`` if no particle
         fields are present.
     """

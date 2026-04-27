@@ -8,16 +8,16 @@ def rotate_to_new_direc(old_dir, new_dir, operand):
 
     Parameters
     ----------
-    old_dir : jax.numpy.ndarray
+    old_dir : jnp.ndarray
         Original reference direction (unit vector).
-    new_dir : jax.numpy.ndarray
+    new_dir : jnp.ndarray
         Target reference direction (unit vector).
-    operand : jax.numpy.ndarray
+    operand : jnp.ndarray
         Vector to rotate.
 
     Returns
     -------
-    v_rot : jax.numpy.ndarray
+    v_rot : jnp.ndarray
         Rotated vector.
     """
 

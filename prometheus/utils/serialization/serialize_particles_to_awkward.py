@@ -19,7 +19,7 @@ def serialize_particles_to_awkward(det: Detector, injection: Injection):
 
     Returns
     -------
-    outarr : awkward.Array or None
+    outarr : ak.Array or None
         Array with sensor position, sensor ID, hit times, and index fields for
         each event. Returns ``None`` if no hits were recorded.
     """

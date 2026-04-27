@@ -32,14 +32,14 @@ def simulate_noise(det, event):
     ----------
     det : Detector
         Detector instance used to generate noise hits.
-    event : awkward.Array
+    event : ak.Array
         Existing hit-time array for the event.
 
     Returns
     -------
-    event : awkward.Array
+    event : ak.Array
         Hit-time array with noise hits merged and sorted.
-    noise : awkward.Array
+    noise : ak.Array
         Noise-only hit-time array.
     """
     if ak.count(event) == 0:
@@ -89,7 +89,7 @@ def generate_cascade(
     -------
     tuple
         Tuple ``(propagation_result, record)`` where ``propagation_result`` is an
-        ``awkward.Array`` of detected photon times and ``record`` is an
+        ``ak.Array`` of detected photon times and ``record`` is an
         ``MCRecord`` instance.
     """
 
@@ -190,7 +190,7 @@ def generate_cascades(
     -------
     tuple
         Tuple ``(events, records)`` where ``events`` is a list of per-event
-        ``awkward.Array`` objects and ``records`` is a list of corresponding
+        ``ak.Array`` objects and ``records`` is a list of corresponding
         ``MCRecord`` objects.
     """
     rng = np.random.RandomState(seed)
@@ -373,7 +373,7 @@ def generate_realistic_track(det, event_data, key, pprop_func, proposal_prop, sp
     -------
     tuple
         Tuple ``(propagation_result, record)`` where ``propagation_result`` is an
-        ``awkward.Array`` of detected photon times and ``record`` is an
+        ``ak.Array`` of detected photon times and ``record`` is an
         ``MCRecord`` instance, or ``(None, None)`` when no sources remain.
     """
 
@@ -490,7 +490,7 @@ def generate_realistic_tracks(
     -------
     tuple
         Tuple ``(events, records)`` where ``events`` is a list of per-event
-        ``awkward.Array`` objects and ``records`` is a list of corresponding
+        ``ak.Array`` objects and ``records`` is a list of corresponding
         ``MCRecord`` objects.
     """
     rng = np.random.RandomState(seed)
@@ -595,7 +595,7 @@ def generate_realistic_starting_tracks(
     -------
     tuple
         Tuple ``(events, records)`` where ``events`` is a list of per-event
-        ``awkward.Array`` objects and ``records`` is a list of corresponding
+        ``ak.Array`` objects and ``records`` is a list of corresponding
         ``MCRecord`` objects.
     """
     rng = np.random.RandomState(seed)

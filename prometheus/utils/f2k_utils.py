@@ -17,7 +17,7 @@ def from_f2k(fname):
 
     Returns
     -------
-    pos_out : numpy.ndarray
+    pos_out : np.ndarray
         Array of shape ``(N, 3)`` with the (x, y, z) positions of each OM.
     keys : list of tuple of int
         List of (string_id, om_id) keys for each OM.
@@ -75,7 +75,7 @@ def get_xyz(fname):
 
     Returns
     -------
-    coords : numpy.ndarray
+    coords : np.ndarray
         Array of shape ``(N, 3)`` with the (x, y, z) positions.
     """
     # returns 3xn array
@@ -88,12 +88,12 @@ def offset(coords):
 
     Parameters
     ----------
-    coords : numpy.ndarray
+    coords : np.ndarray
         Array of shape ``(N, 3)`` with module positions.
 
     Returns
     -------
-    offset_vec : numpy.ndarray
+    offset_vec : np.ndarray
         Vector such that ``coords + offset_vec`` has a mean of ``[0, 0, 0]``.
     """
     # returns x st x+mean(x,y,z) = <o,o,o>
@@ -106,7 +106,7 @@ def get_cylinder(coords, epsilon=5):
 
     Parameters
     ----------
-    coords : numpy.ndarray
+    coords : np.ndarray
         Array of shape ``(N, 3)`` with module positions.
     epsilon : float, optional
         Tolerance for deciding whether the centroid is already at the origin.
@@ -130,7 +130,7 @@ def get_endcap(coords):
 
     Parameters
     ----------
-    coords : numpy.ndarray
+    coords : np.ndarray
         Array of shape ``(N, 3)`` with module positions.
 
     Returns
@@ -151,7 +151,7 @@ def get_injRadius(coords):
 
     Parameters
     ----------
-    coords : numpy.ndarray
+    coords : np.ndarray
         Array of shape ``(N, 3)`` with module positions.
 
     Returns

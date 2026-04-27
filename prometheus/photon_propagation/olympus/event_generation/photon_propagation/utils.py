@@ -14,11 +14,11 @@ def source_to_model_input_per_module(module_coords, source_pos, source_dir, sour
 
     Parameters
     ----------
-    module_coords : jax.numpy.ndarray
+    module_coords : jnp.ndarray
         Coordinates of the module.
-    source_pos : jax.numpy.ndarray
+    source_pos : jnp.ndarray
         Position of the photon source.
-    source_dir : jax.numpy.ndarray
+    source_dir : jnp.ndarray
         Direction vector of the photon source.
     source_t0 : float
         Emission time of the photon source.
@@ -27,7 +27,7 @@ def source_to_model_input_per_module(module_coords, source_pos, source_dir, sour
 
     Returns
     -------
-    inp_pars : jax.numpy.ndarray
+    inp_pars : jnp.ndarray
         Array of ``[log10(distance), viewing_angle]``.
     time_geo : float
         Geometric time (expected arrival time for a direct photon).

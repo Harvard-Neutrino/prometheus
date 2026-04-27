@@ -39,7 +39,7 @@ class SPETemplate:
 
         Returns
         -------
-        numpy.ndarray
+        np.ndarray
             Array of sampled SPE charges.
         """
         pe = np.ones(size) * (-1.0)
@@ -62,7 +62,7 @@ class SPETemplate:
 
         Returns
         -------
-        numpy.ndarray
+        np.ndarray
             PDF values corresponding to ``xs``.
         """
         return self.weights[0] * self.components[0].pdf(xs) + self.weights[1] * self.components[
@@ -90,7 +90,7 @@ class PulseTemplate:
 
         Parameters
         ----------
-        xs : numpy.ndarray
+        xs : np.ndarray
             Time grid (1-D) for the waveform.
         times : array-like
             Hit times.
@@ -99,7 +99,7 @@ class PulseTemplate:
 
         Returns
         -------
-        numpy.ndarray
+        np.ndarray
             Per-time-bin pulse amplitudes with shape ``(len(xs), len(times))``.
         """
         return charges * scipy.stats.gumbel_r.pdf(xs[:, np.newaxis], loc=times + 2, scale=2)

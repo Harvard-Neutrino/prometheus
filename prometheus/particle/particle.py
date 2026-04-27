@@ -21,9 +21,9 @@ class Particle:
         PDG MC code.
     e : float
         Energy in GeV.
-    position : numpy.ndarray
+    position : np.ndarray
         Particle position in meters.
-    direction : numpy.ndarray
+    direction : np.ndarray
         Unit vector pointing along particle momentum.
     serialization_idx : int
         Index helper for serialization. This will be overwritten at

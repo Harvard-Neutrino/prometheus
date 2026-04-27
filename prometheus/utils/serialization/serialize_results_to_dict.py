@@ -20,7 +20,7 @@ def serialize_results_to_dict(
 
     Returns
     -------
-    outarr : awkward.Array or None
+    outarr : ak.Array or None
         Array with sensor positions, hit times, and loss information. Returns
         ``None`` if no hits were recorded.
     """

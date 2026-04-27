@@ -19,7 +19,7 @@ def calc_tres(t: np.ndarray, det_radius: float, det_dist: float, c_medium: float
 
     Parameters
     ----------
-    t : numpy.ndarray
+    t : np.ndarray
         Measured arrival times.
     det_radius : float
         Detector radius.
@@ -30,7 +30,7 @@ def calc_tres(t: np.ndarray, det_radius: float, det_dist: float, c_medium: float
 
     Returns
     -------
-    tres : numpy.ndarray
+    tres : np.ndarray
         Time residual.
     """
     return t - ((det_dist - det_radius) / c_medium)
@@ -43,14 +43,14 @@ def cherenkov_ang_dist(costheta: np.ndarray, n_ph: float = 1.35) -> np.ndarray:
 
     Parameters
     ----------
-    costheta : numpy.ndarray
+    costheta : np.ndarray
         Cosine of the angle.
     n_ph : float, optional
         Refractive index for photons.
 
     Returns
     -------
-    dist : numpy.ndarray
+    dist : np.ndarray
         Angular distribution values.
     """
     # params for e-
@@ -77,7 +77,7 @@ def cherenkov_ang_dist_int(n_ph, lower=-1, upper=1):
 
     Returns
     -------
-    result : numpy.ndarray
+    result : np.ndarray
         Definite integral of the angular distribution.
     """
 
@@ -102,7 +102,7 @@ def cherenkov_ang_dist_int(n_ph, lower=-1, upper=1):
 
         Returns
         -------
-        numpy.ndarray
+        np.ndarray
             Indefinite integral evaluated at ``x``.
         """
 
@@ -227,7 +227,7 @@ def make_cascadia_abs_len_func(sca_len_func):
 
         Returns
         -------
-        float or numpy.ndarray
+        float or np.ndarray
             Absorption length.
         """
         return 1 / (1 / np.exp(spl(wavelength)) - 1 / sca_len_func(wavelength))
@@ -240,16 +240,16 @@ def rotate_to_new_direc(old_dir, new_dir, operand):
 
     Parameters
     ----------
-    old_dir : jax.numpy.ndarray
+    old_dir : jnp.ndarray
         Original direction vector (shape (3,) or (..., 3)).
-    new_dir : jax.numpy.ndarray
+    new_dir : jnp.ndarray
         Target direction vector with same shape as `old_dir`.
-    operand : jax.numpy.ndarray
+    operand : jnp.ndarray
         Vector(s) to rotate. The rotation is applied along the last axis.
 
     Returns
     -------
-    jax.numpy.ndarray
+    jnp.ndarray
         Rotated vector(s) with same shape as `operand`.
     """
 

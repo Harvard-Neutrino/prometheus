@@ -59,14 +59,14 @@ class HistMLP(hk.Module):
 
         Parameters
         ----------
-        x : jax.numpy.ndarray
+        x : jnp.ndarray
             Input array with shape (..., in_dim).
         is_training : bool
             Whether the module is executed in training mode (applies dropout).
 
         Returns
         -------
-        jax.numpy.ndarray
+        jnp.ndarray
             Output array with last dimension equal to ``output_size``.
         """
         for n_per_layer in self.layers:
@@ -116,7 +116,7 @@ def make_forward_fn(conf):
 
         Returns
         -------
-        jax.numpy.ndarray
+        jnp.ndarray
             Model outputs for the batch.
         """
         inp = jnp.asarray(batch[0], dtype=jnp.float32)
@@ -151,7 +151,7 @@ def make_eval_forward_fn(conf):
 
         Returns
         -------
-        jax.numpy.ndarray
+        jnp.ndarray
             Model outputs.
         """
         return HistMLP(conf["n_out"], layers, conf["dropout"], None)(inp, False)
@@ -295,7 +295,7 @@ def train_net(conf, train_data, test_data, writer, rng):
 
         Returns
         -------
-        jax.numpy.ndarray
+        jnp.ndarray
             Scalar loss value.
         """
         pred, _ = net.apply(params, state, rng_key, batch, is_training)

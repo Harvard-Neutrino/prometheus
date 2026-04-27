@@ -15,14 +15,14 @@ def path_length_sampling(E: float, pdg_id: int) -> float:
 
     Parameters
     ----------
-    E : float or numpy.ndarray
+    E : float or np.ndarray
         The energy of the particle(s).
     pdg_id : int
         The pdg id of the particle.
 
     Returns
     -------
-    dist: float or numpy.ndarray
+    dist: float or np.ndarray
         The sampled travelled distance in cm with the same shape as E.
     """
     # TODO: Add energy dependence

@@ -23,12 +23,12 @@ def sample_cylinder_surface(height, radius, n, rng=np.random.RandomState(1337)):
         Cylinder radius.
     n : int
         Number of samples to draw.
-    rng : numpy.random.RandomState, optional
+    rng : np.random.RandomState, optional
         Random number generator (default seeded RandomState(1337)).
 
     Returns
     -------
-    numpy.ndarray
+    np.ndarray
         Array of shape (n, 3) with sampled Cartesian coordinates on the cylinder surface.
     """
     side_area = 2 * np.pi * radius * height
@@ -71,12 +71,12 @@ def sample_cylinder_volume(height, radius, n, rng=np.random.RandomState(1337)):
         Cylinder radius.
     n : int
         Number of samples.
-    rng : numpy.random.RandomState, optional
+    rng : np.random.RandomState, optional
         Random number generator (default seeded RandomState(1337)).
 
     Returns
     -------
-    numpy.ndarray
+    np.ndarray
         Array of shape (n, 3) with sampled Cartesian coordinates inside the cylinder.
     """
     theta = rng.uniform(0, 2 * np.pi, size=n)
@@ -96,12 +96,12 @@ def sample_direction(n_samples, rng=np.random.RandomState(1337)):
     ----------
     n_samples : int
         Number of direction samples to draw.
-    rng : numpy.random.RandomState, optional
+    rng : np.random.RandomState, optional
         Random number generator (default seeded RandomState(1337)).
 
     Returns
     -------
-    numpy.ndarray
+    np.ndarray
         Array of shape (n_samples, 3) with unit direction vectors.
     """
     cos_theta = rng.uniform(-1, 1, size=n_samples)
@@ -149,12 +149,12 @@ def generate_noise(det, time_range, rng=np.random.RandomState(1337)):
         Detector instance providing `modules` with `noise_rate`.
     time_range : sequence
         Two-element sequence specifying start and end time.
-    rng : numpy.random.RandomState, optional
+    rng : np.random.RandomState, optional
         Random number generator (default seeded RandomState(1337)).
 
     Returns
     -------
-    awkward.Array
+    ak.Array
         Sorted per-module noise hit times.
     """
     all_times_det = []
@@ -178,7 +178,7 @@ def trigger(det, event_times, mod_thresh=8, phot_thres=5):
     ----------
     det : Detector
         Detector instance.
-    event_times : awkward.Array
+    event_times : ak.Array
         Per-module photon arrival times.
     mod_thresh : int, optional
         Threshold for the number of modules which have detected ``phot_thres`` photons.

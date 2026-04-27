@@ -25,7 +25,7 @@ def from_geo(fname):
 
     Returns
     -------
-    pos_out : numpy.ndarray
+    pos_out : np.ndarray
         Array of module positions.
     keys : list of tuple of int
         List of module keys.
@@ -61,7 +61,7 @@ def geo_from_coords(coords, out_path, tol=0.5, medium="ice", dom_radius=30):
 
     Parameters
     ----------
-    coords : numpy.ndarray
+    coords : np.ndarray
         nx3 array of module coordinates.
     out_path : str
         File path to write to.

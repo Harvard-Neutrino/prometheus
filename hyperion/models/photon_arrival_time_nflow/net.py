@@ -40,14 +40,14 @@ def _mlp_apply(params, x, n_hidden_layers):
     ----------
     params : dict
         Parameter dictionary following the haiku naming scheme (weights and biases).
-    x : jax.numpy.ndarray
+    x : jnp.ndarray
         Input array of shape (..., in_dim).
     n_hidden_layers : int
         Number of hidden layers to apply.
 
     Returns
     -------
-    jax.numpy.ndarray
+    jnp.ndarray
         Network output array.
     """
     for i in range(n_hidden_layers):
@@ -74,7 +74,7 @@ def _normalize_bin_sizes(unnormalized, total_size, min_bin_size=1e-4):
 
     Parameters
     ----------
-    unnormalized : jax.numpy.ndarray
+    unnormalized : jnp.ndarray
         Unnormalized bin sizes.
     total_size : float
         Total size to normalize to.
@@ -83,7 +83,7 @@ def _normalize_bin_sizes(unnormalized, total_size, min_bin_size=1e-4):
 
     Returns
     -------
-    jax.numpy.ndarray
+    jnp.ndarray
         Normalized bin sizes.
     """
     num_bins = unnormalized.shape[-1]
@@ -99,14 +99,14 @@ def _normalize_knot_slopes(unnormalized, min_knot_slope=1e-4):
 
     Parameters
     ----------
-    unnormalized : jax.numpy.ndarray
+    unnormalized : jnp.ndarray
         Unnormalized knot slopes.
     min_knot_slope : float, optional
         Minimum knot slope (default is 1e-4).
 
     Returns
     -------
-    jax.numpy.ndarray
+    jnp.ndarray
         Normalized knot slopes.
     """
     # Offset chosen so that unnormalized=0 → normalized slope = 1.
@@ -120,7 +120,7 @@ def _build_rqs_knots_1d(spl_p, rmin, rmax):
 
     Parameters
     ----------
-    spl_p : jax.numpy.ndarray
+    spl_p : jnp.ndarray
         Spline parameters, shape (3*num_bins + 1,).
     rmin : float
         Minimum range value.
@@ -129,11 +129,11 @@ def _build_rqs_knots_1d(spl_p, rmin, rmax):
 
     Returns
     -------
-    x_pos : jax.numpy.ndarray
+    x_pos : jnp.ndarray
         Knot positions in x, shape (num_bins + 1,).
-    y_pos : jax.numpy.ndarray
+    y_pos : jnp.ndarray
         Knot positions in y, shape (num_bins + 1,).
-    knot_slopes : jax.numpy.ndarray
+    knot_slopes : jnp.ndarray
         Knot slopes, shape (num_bins + 1,).
     """
     num_bins = (spl_p.shape[0] - 1) // 3
@@ -165,7 +165,7 @@ def _build_rqs_knots_batched(spl_params, rmin, rmax):
 
     Parameters
     ----------
-    spl_params : jax.numpy.ndarray
+    spl_params : jnp.ndarray
         Array with shape (batch, 3*num_bins + 1).
     rmin : float
         Minimum range value.
@@ -213,7 +213,7 @@ def _rqs_fwd(x, x_pos, y_pos, knot_slopes):
     ----------
     x : float
         Input scalar.
-    x_pos, y_pos, knot_slopes : jax.numpy.ndarray
+    x_pos, y_pos, knot_slopes : jnp.ndarray
         1-D arrays of shape (num_bins + 1,).
 
     Returns
@@ -264,16 +264,16 @@ def _safe_quadratic_root(a, b, c):
 
     Parameters
     ----------
-    a : float or jax.numpy.ndarray
+    a : float or jnp.ndarray
         Quadratic coefficient.
-    b : float or jax.numpy.ndarray
+    b : float or jnp.ndarray
         Linear coefficient.
-    c : float or jax.numpy.ndarray
+    c : float or jnp.ndarray
         Constant term.
 
     Returns
     -------
-    jax.numpy.ndarray
+    jnp.ndarray
         Numerically stable root value (intended for z in [0, 1]).
     """
     sqrt_diff = b**2 - 4.0 * a * c
@@ -292,7 +292,7 @@ def _rqs_inv(y, x_pos, y_pos, knot_slopes):
     ----------
     y : float
         Input scalar in the target space.
-    x_pos, y_pos, knot_slopes : jax.numpy.ndarray
+    x_pos, y_pos, knot_slopes : jnp.ndarray
         1-D arrays of shape (num_bins + 1,).
 
     Returns
@@ -349,7 +349,7 @@ def _gamma_log_prob(x, concentration=1.5, rate=0.1):
 
     Parameters
     ----------
-    x : float or jax.numpy.ndarray
+    x : float or jnp.ndarray
         Value(s) at which to evaluate the log-probability.
     concentration : float, optional
         Shape (concentration) parameter (default is 1.5).
@@ -358,7 +358,7 @@ def _gamma_log_prob(x, concentration=1.5, rate=0.1):
 
     Returns
     -------
-    jax.numpy.ndarray
+    jnp.ndarray
         Log-probability evaluated at ``x``.
     """
     return (
@@ -385,7 +385,7 @@ def _gamma_sample(key, concentration=1.5, rate=0.1, shape=()):
 
     Returns
     -------
-    jax.numpy.ndarray
+    jnp.ndarray
         Samples from the Gamma distribution scaled by ``1 / rate``.
     """
     return jax.random.gamma(key, a=concentration, shape=shape) / rate
@@ -416,12 +416,12 @@ class _ConditionerFn:
         ----------
         params : dict
             Haiku-style parameter dictionary.
-        x : jax.numpy.ndarray
+        x : jnp.ndarray
             Input array with shape (..., in_dim).
 
         Returns
         -------
-        jax.numpy.ndarray
+        jnp.ndarray
             Network output array.
         """
         return _mlp_apply(params, x, self._n)
@@ -474,7 +474,7 @@ def make_spl_flow(spl_params_list, rmin, rmax):
 
     Parameters
     ----------
-    spl_params_list : sequence of jax.numpy.ndarray
+    spl_params_list : sequence of jnp.ndarray
         List of spline parameter arrays; each element has shape (batch, 3*num_bins + 1).
     rmin : float
         Minimum range value for the spline.
@@ -521,7 +521,7 @@ class _TrafDistBuilder:
 
         Parameters
         ----------
-        traf_params : jax.numpy.ndarray
+        traf_params : jnp.ndarray
             Array of transformed flow parameters.
 
         Returns
@@ -537,7 +537,7 @@ class _TrafDistBuilder:
 
         Parameters
         ----------
-        traf_params : jax.numpy.ndarray
+        traf_params : jnp.ndarray
             Flattened flow parameter vector.
 
         Returns
@@ -597,7 +597,7 @@ class _TrafDistBuilder:
 
                 Returns
                 -------
-                jax.numpy.ndarray
+                jnp.ndarray
                     Samples from the base distribution.
                 """
                 return _gamma_sample(seed, concentration=1.5, rate=0.1, shape=sample_shape)
@@ -615,7 +615,7 @@ class _TrafDistBuilder:
 
                 Returns
                 -------
-                jax.numpy.ndarray
+                jnp.ndarray
                     Log-probabilities for each sample.
                 """
                 return builder.log_prob(traf_params, samples)
@@ -649,7 +649,7 @@ class _TrafDistBuilder:
 
             Returns
             -------
-            jax.numpy.ndarray
+            jnp.ndarray
                 Log-probability scalar.
             """
             # tp: (total_params,)   s: scalar
@@ -703,14 +703,14 @@ def eval_log_prob(dist_builder, traf_params, samples):
     ----------
     dist_builder : _TrafDistBuilder or callable
         Object returned by :func:`traf_dist_builder`.
-    traf_params : jax.numpy.ndarray
+    traf_params : jnp.ndarray
         Array with shape (batch, total_flow_params).
-    samples : jax.numpy.ndarray
+    samples : jnp.ndarray
         Array with shape (batch,) of sample values.
 
     Returns
     -------
-    jax.numpy.ndarray
+    jnp.ndarray
         Log-probabilities with shape (batch,).
     """
     if isinstance(dist_builder, _TrafDistBuilder):
@@ -727,7 +727,7 @@ def sample_shape_model(dist_builder, traf_params, n_photons, seed):
     ----------
     dist_builder : callable
         Builder returned by :func:`traf_dist_builder` with ``return_base=True``.
-    traf_params : jax.numpy.ndarray
+    traf_params : jnp.ndarray
         Array with shape (batch, total_flow_params).
     n_photons : int or tuple
         Number of base samples to draw or sample shape.
@@ -736,7 +736,7 @@ def sample_shape_model(dist_builder, traf_params, n_photons, seed):
 
     Returns
     -------
-    jax.numpy.ndarray
+    jnp.ndarray
         Samples drawn from the transformed shape model.
     """
     base_dist, trafo = dist_builder(traf_params)
@@ -879,7 +879,7 @@ def train_shape_model(config, train_loader, test_loader, seed=1337, writer=None)
 
         Returns
         -------
-        jax.numpy.ndarray
+        jnp.ndarray
             Scalar loss value.
         """
         traf_params = shape_conditioner.apply(params, cond)
@@ -982,7 +982,7 @@ def train_counts_model(config, train_loader, test_loader, seed=1337, writer=None
 
         Returns
         -------
-        jax.numpy.ndarray
+        jnp.ndarray
             Scalar loss value.
         """
         inp = jnp.concatenate(batch[:2]).T

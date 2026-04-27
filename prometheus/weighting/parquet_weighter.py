@@ -97,7 +97,7 @@ class ParquetWeighter(Weighter):
 
         Parameters
         ----------
-        event : awkward.Record
+        event : ak.Record
             Prometheus output event.
 
         Returns

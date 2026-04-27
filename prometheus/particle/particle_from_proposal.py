@@ -15,7 +15,7 @@ def particle_from_proposal(
     ----------
     pp_particle
         PROPOSAL particle instance.
-    coordinate_offset : numpy.ndarray
+    coordinate_offset : np.ndarray
         Coordinate offset to subtract from the particle position.
     parent : PropagatableParticle, optional
         Parent particle that created this particle.

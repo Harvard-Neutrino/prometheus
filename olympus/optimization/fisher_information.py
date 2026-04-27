@@ -18,12 +18,12 @@ def pad_event(event):
 
     Parameters
     ----------
-    event : awkward.Array
+    event : ak.Array
         Per-module hit-time arrays to pad.
 
     Returns
     -------
-    ev_np : numpy.ndarray
+    ev_np : np.ndarray
         Padded array with ``numpy.inf`` fill values.
     """
     pad_len = np.int32(np.ceil(ak.max(ak.count(event, axis=1)) / 256) * 256)
@@ -41,14 +41,14 @@ def pad_array_log_bucket(array, base):
 
     Parameters
     ----------
-    array : awkward.Array
+    array : ak.Array
         Array to pad.
     base : int
         Logarithmic bucket base used to determine the target length.
 
     Returns
     -------
-    ev_np : numpy.ndarray
+    ev_np : np.ndarray
         Padded array with ``numpy.inf`` fill values, or an empty float array if
         ``array`` is empty.
     """
@@ -93,7 +93,7 @@ def calc_fisher_info_cascades(
 
     Returns
     -------
-    fisher : numpy.ndarray
+    fisher : np.ndarray
         Estimated Fisher information matrix of shape ``(7, 7)``.
     """
 

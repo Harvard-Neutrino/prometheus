@@ -14,13 +14,13 @@ class PhotonSource(object):
 
     Parameters
     ----------
-    position : numpy.ndarray
+    position : np.ndarray
         Position vector (shape (3,)).
     n_photons : int
         Number of photons emitted by the source.
     time : float
         Emission time.
-    direction : numpy.ndarray
+    direction : np.ndarray
         Direction vector (shape (3,)).
     type : PhotonSourceType, optional
         Source type (default is ``PhotonSourceType.STANDARD_CHERENKOV``).

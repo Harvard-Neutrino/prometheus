@@ -54,17 +54,17 @@ def photon_sphere_intersection(
 
     Parameters
     ----------
-    photon_x : jax.numpy.ndarray
+    photon_x : jnp.ndarray
         Photon origin position (shape (3,)).
-    photon_p : jax.numpy.ndarray
+    photon_p : jnp.ndarray
         Photon direction vector (shape (3,)).
-    target_x : jax.numpy.ndarray
+    target_x : jnp.ndarray
         Target center position (shape (3,)).
     target_r : float
         Target radius.
     step_size : float
         Step size.
-    dtype : jax.numpy.dtype, optional
+    dtype : jnp.dtype, optional
         Data type for computations (default is ``jax.numpy.float64``).
 
     Returns
@@ -100,11 +100,11 @@ def make_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.float64):
 
     Parameters
     ----------
-    target_x : jax.numpy.ndarray
+    target_x : jnp.ndarray
         Target sphere center position (shape (3,)).
     target_r : float
         Target sphere radius.
-    dtype : jax.numpy.dtype, optional
+    dtype : jnp.dtype, optional
         Data type for computations (default is ``jax.numpy.float64``).
 
     Returns
@@ -127,11 +127,11 @@ def make_multi_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.flo
 
     Parameters
     ----------
-    target_x : jax.numpy.ndarray
+    target_x : jnp.ndarray
         Target sphere center positions, shape (N, 3).
-    target_r : jax.numpy.ndarray
+    target_r : jnp.ndarray
         Target sphere radii, shape (N,).
-    dtype : jax.numpy.dtype, optional
+    dtype : jnp.dtype, optional
         Data type for computations (default is ``jax.numpy.float64``).
 
     Returns
@@ -150,9 +150,9 @@ def make_multi_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.flo
 
         Parameters
         ----------
-        photon_x : jax.numpy.ndarray
+        photon_x : jnp.ndarray
             Photon origin position.
-        photon_p : jax.numpy.ndarray
+        photon_p : jnp.ndarray
             Photon direction vector.
         step_size : float
             Maximum step size to consider.
@@ -184,7 +184,7 @@ def make_photon_spherical_shell_intersection(shell_center, shell_radius, dtype=j
         Center of the spherical shell (shape (3,)).
     shell_radius : float
         Radius of the spherical shell.
-    dtype : jax.numpy.dtype, optional
+    dtype : jnp.dtype, optional
         Data type for computations (default is ``jax.numpy.float64``).
 
     Returns
@@ -201,9 +201,9 @@ def make_photon_spherical_shell_intersection(shell_center, shell_radius, dtype=j
 
         Parameters
         ----------
-        photon_x : jax.numpy.ndarray
+        photon_x : jnp.ndarray
             Photon origin position.
-        photon_p : jax.numpy.ndarray
+        photon_p : jnp.ndarray
             Photon direction vector.
         step_size : float
             Maximum step size to consider.
@@ -247,7 +247,7 @@ def make_photon_circle_intersection(circle_center, circle_normal, circle_r, dtyp
         Normal vector of the plane containing the circle.
     circle_r : float
         Radius of the circle.
-    dtype : jax.numpy.dtype, optional
+    dtype : jnp.dtype, optional
         Data type for computations.
 
     Returns
@@ -271,9 +271,9 @@ def make_photon_circle_intersection(circle_center, circle_normal, circle_r, dtyp
 
         Parameters
         ----------
-        photon_x : jax.numpy.ndarray
+        photon_x : jnp.ndarray
             Photon origin position (shape (3,)).
-        photon_p : jax.numpy.ndarray
+        photon_p : jnp.ndarray
             Photon direction vector (shape (3,)).
         step_size : float
             Step size.
@@ -347,7 +347,7 @@ def make_cherenkov_spectral_sampling_func(wl_range, ref_index_func, dtype=jnp.fl
         Lower and upper wavelength range (in nanometres).
     ref_index_func : callable
         Function returning wavelength-dependent refractive index.
-    dtype : jax.numpy.dtype, optional
+    dtype : jnp.dtype, optional
         Data type for computations (default is ``jax.numpy.float64``).
 
     Returns
@@ -393,7 +393,7 @@ def calc_new_direction(keys, old_dir, scattering_function):
     ----------
     keys : sequence
         Sequence of PRNG keys used for sampling.
-    old_dir : jax.numpy.ndarray
+    old_dir : jnp.ndarray
         Incoming direction vector (shape (3,)).
     scattering_function : callable
         Function that returns a scattering angle when given a PRNG key.

@@ -17,7 +17,7 @@ def plot_event(det, hit_times, record=None, plot_tfirst=False, plot_hull=False):
     ----------
     det : object
         Detector object providing `module_coords` (Nx3 array) and `outer_cylinder`.
-    hit_times : awkward.Array
+    hit_times : ak.Array
         Hit times per module as an ``awkward.Array``.
     record : object, optional
         Optional event record containing `sources` with `position` and photon counts.

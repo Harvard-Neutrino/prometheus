@@ -15,7 +15,7 @@ def prometheus_inj_to_li_injection_event(truth: ak.Record) -> LIInjectionEvent:
 
     Parameters
     ----------
-    truth : awkward.Record
+    truth : ak.Record
         Single truth record from a Prometheus parquet output file.
 
     Returns

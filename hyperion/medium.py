@@ -167,7 +167,7 @@ def make_wl_dep_sca_len_func(vol_conc_small_part, vol_conc_large_part):
 
         Returns
         -------
-        float or numpy.ndarray
+        float or np.ndarray
             Scattering length in same units as the input.
         """
         ref_wlen = 550  # nm
