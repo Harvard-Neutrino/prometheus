@@ -15,7 +15,31 @@ from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 from typing import ClassVar, Optional
 
-RESOURCES_DIR = Path(__file__).resolve().parent.parent / "resources"
+
+def _find_resources_dir() -> Path:
+    """Search upward from this file's location to find the Prometheus resources/ directory.
+
+    Returns
+    -------
+    Path
+        Absolute path to the resources/ directory.
+
+    Raises
+    ------
+    RuntimeError
+        If no resources/ directory is found in any parent directory.
+    """
+    for parent in Path(__file__).resolve().parents:
+        candidate = parent / "resources"
+        if candidate.is_dir():
+            return candidate
+    raise RuntimeError(
+        "Cannot find the Prometheus resources/ directory. "
+        "Ensure the environment is installed inside the repository root."
+    )
+
+
+RESOURCES_DIR = _find_resources_dir()
 
 
 # ---------------------------------------------------------------------------
