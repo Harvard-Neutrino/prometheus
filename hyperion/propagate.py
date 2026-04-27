@@ -1012,7 +1012,7 @@ def make_photon_trajectory_fun(
         -------
         tuple
             Tuple ``(initial_photon_state, final_photon_state)`` with photon state dicts.
-        """
+        """  # noqa: E501
         k1, k2 = random.split(key, 2)
 
         # Set initial photon state

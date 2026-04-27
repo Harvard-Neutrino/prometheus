@@ -4,7 +4,7 @@ has no shipped model weights in ``resources/``.
 It is kept here as a reference implementation of the binned-amplitude photon-yield approach (an earlier alternative to the normalizing-flow model in photon_arrival_time_nflow/).
 
 It still depends on dm-haiku and has not been migrated to pure JAX.
-"""
+"""  # noqa: E501
 import functools
 import pickle
 

@@ -2,9 +2,9 @@ import awkward as ak
 import numpy as np
 
 
-class IncompaticleFieldsError(Exception):
+class IncompatibleFieldsError(Exception):
     """Error raised when two ``awkward.Array`` objects cannot be combined because fileds don't match.
-    """
+    """  # noqa: E501
 
     def __init__(self, fields1, fields2):
         self.message = "If `fields` not provided, array fields must fully overlap."
@@ -32,7 +32,7 @@ def join_awkward_arrays(arr1, arr2, fields=None):
 
     Raises
     ------
-    IncompaticleFieldsError
+    IncompatibleFieldsError
         Raised if ``fields`` is not provided and the fields of ``arr1`` and
         ``arr2`` do not fully overlap.
     """
@@ -42,7 +42,7 @@ def join_awkward_arrays(arr1, arr2, fields=None):
             set(arr1.fields).issubset(set(arr2.fields))
             and set(arr2.fields).issubset(set(arr1.fields))
         ):
-            raise IncompaticleFieldsError(arr1.fields, arr2.fields)
+            raise IncompatibleFieldsError(arr1.fields, arr2.fields)
         else:
             fields = arr1.fields
 

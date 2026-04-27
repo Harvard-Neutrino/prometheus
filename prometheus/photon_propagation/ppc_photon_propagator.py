@@ -107,8 +107,6 @@ class PPCPhotonPropagator(PhotonPropagator):
     """Interface for simulating energy losses and light propagation using ppc."""
 
     def propagate(self, particle: Particle, rng_key=None) -> None:
-        # We should make this more consistent, but that is 
-        # a problem for another day.
         """Propagate an input particle using ppc.
 
         This modifies the state of the input particle in-place.
@@ -119,5 +117,5 @@ class PPCPhotonPropagator(PhotonPropagator):
             Prometheus particle to propagate.
         rng_key : Any or None
             The parameter is ignored and accepted for interface compatibility; ppc uses its own internal RNG.
-        """
+        """  # noqa: E501
         return ppc_sim(particle, self.detector, self.lepton_propagator, self.config)

@@ -456,7 +456,7 @@ class Prometheus(object):
 
     def sim(self):
         """Perform injection, calculate energy losses and photon yield, propagate photons, and save resulting photons.
-        """
+        """  # noqa: E501
         logger.info("Starting full simulation run %s", config.run.run_number)
         # Record phase start/end timestamps on self so construct_output can summarise
         self._run_start_time = time()

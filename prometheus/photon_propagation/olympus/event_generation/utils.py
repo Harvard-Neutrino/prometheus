@@ -53,7 +53,7 @@ def t_geo(x, t_0, direc, x_0):
     -------
     float
         Expected arrival time of unscattered photons.
-    """
+    """  # noqa: E501
     q = np.linalg.norm(np.cross((x - x_0), direc))
     return t_0 + 1 / Constants.c_vac * (
         np.dot(direc, (x - x_0))

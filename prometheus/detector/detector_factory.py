@@ -249,7 +249,7 @@ def make_hex_grid(
     efficiency: float = 0.2,
 ) -> Detector:
     """Build a hex detector grid.
-    
+
     Strings of detector modules are placed on a hexagonal
     grid with number of OMs per string and distance between these modules set by input.
     The vertical center of the detector is at z_cent.
@@ -282,7 +282,7 @@ def make_hex_grid(
     -------
     det : Detector
         Hexagonal Prometheus detector.
-    """
+    """  # noqa: E501
 
     modules = []
     line_id = 0
@@ -339,8 +339,8 @@ def make_triang(
     baseline_noise_rate: float = 1.0e3,
     efficiency: float = 0.2,
 ) -> Detector:
-    """Build a triangular detector grid. 
-    
+    """Build a triangular detector grid.
+
     Strings of detector modules are placed
     on a the corners of a equilateral triangle, with input side length,
     number of modules per string, and z-spacing on a string set by input.

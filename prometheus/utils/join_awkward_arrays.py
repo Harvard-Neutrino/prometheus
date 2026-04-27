@@ -1,7 +1,7 @@
 import awkward as ak
 import numpy as np
 
-from .serialization.totals_from_awkward_arr import IncompaticleFieldsError
+from .serialization.totals_from_awkward_arr import IncompatibleFieldsError
 
 
 def join_awkward_arrays(arr1, arr2, fields=None):
@@ -29,7 +29,7 @@ def join_awkward_arrays(arr1, arr2, fields=None):
             set(arr1.fields).issubset(set(arr2.fields))
             and set(arr2.fields).issubset(set(arr1.fields))
         ):
-            raise IncompaticleFieldsError(arr1.fields, arr2.fields)
+            raise IncompatibleFieldsError(arr1.fields, arr2.fields)
         else:
             fields = arr1.fields
 
