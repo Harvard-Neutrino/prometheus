@@ -9,7 +9,6 @@ nav:
   - Documentation:
     - 'Getting Started': './index.md'
     - 'Installation': './installation.md'
-    - 'Containers': './containers.md'
     - 'Usage': './usage.md'
     - 'Citation': './citation.md'
 extra_css:
@@ -21,14 +20,13 @@ extra_javascript:
   - js/extra.js
 markdown_extensions:
   - admonition
-  - attr_list
 plugins:
   - search
   - mkdocs-autoapi:
       autoapi_add_nav_entry: false
       autoapi_generate_api_docs: false
   - api-autonav:
-      modules: ['./prometheus', './hyperion']
+      modules: ['./prometheus', './olympus', './hyperion']
       exclude_private: true
       show_full_namespace: false
       api_root_uri: "api-reference"

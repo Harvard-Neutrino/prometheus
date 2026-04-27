@@ -2,13 +2,6 @@
 
 Welcome to Prometheus, an open-source neutrino telescope simulation.
 
-<!-- Badges: CI, Docs, Coverage, Python versions, License -->
-[![CI](https://github.com/Harvard-Neutrino/prometheus/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Harvard-Neutrino/prometheus/actions/workflows/ci.yml)
-[![Docs](https://github.com/Harvard-Neutrino/prometheus/actions/workflows/deploy-mkdocs.yml/badge.svg?branch=main)](https://harvard-neutrino.github.io/prometheus/)
-[![Coverage](https://codecov.io/gh/Harvard-Neutrino/prometheus/branch/main/graph/badge.svg)](https://codecov.io/gh/Harvard-Neutrino/prometheus)
-[![Python Versions](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)](https://www.python.org/)
-[![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html)
-
 |              |                                                  |
 |--------------|--------------------------------------------------|
 |Repository    | <https://github.com/Harvard-Neutrino/prometheus> |
