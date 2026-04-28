@@ -8,7 +8,10 @@ theme:
 nav:
   - Documentation:
     - 'Getting Started': './index.md'
-    - 'Installation': './installation.md'
+    - 'Installation':
+      - 'Overview': './installation/index.md'
+      - 'Built-in installer': './installation/built-in-installer.md'
+      - 'Containers': './installation/containers.md'
     - 'Usage': './usage.md'
     - 'Citation': './citation.md'
     - 'Papers Using Prometheus': './papers.md'
