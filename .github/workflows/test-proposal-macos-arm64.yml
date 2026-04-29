@@ -35,7 +35,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install C++ dependencies via Homebrew
-        run: brew install cmake hdf5 boost eigen gsl pkg-config
+        run: brew install cmake hdf5 boost eigen gsl pkg-config cfitsio
 
       - name: Build and install photospline
         run: |
