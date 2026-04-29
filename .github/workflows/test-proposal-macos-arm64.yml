@@ -1,10 +1,10 @@
 name: Test dependencies on macOS arm64
-# Minor change
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - .github/workflows/test-proposal-macos-arm64.yml
 
 jobs:
   test-proposal:
