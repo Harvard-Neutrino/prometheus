@@ -3,12 +3,8 @@ name: CI
 on:
   pull_request:
     branches: ["**"]
-    paths-ignore:
-      - .github/workflows/test-proposal-macos-arm64.yml
   push:
     branches: [main]
-    paths-ignore:
-      - .github/workflows/test-proposal-macos-arm64.yml
 
 jobs:
   lint:

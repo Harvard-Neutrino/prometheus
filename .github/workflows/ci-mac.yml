@@ -7,28 +7,6 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths:
-      - install_mac.sh
-      - scripts/install_leptoninjector_mac.sh
-      - scripts/install_proposal.sh
-      - scripts/check_install.sh
-      - scripts/fixes.sh
-      - scripts/activate.sh
-      - resources/LeptonInjector/**
-      - resources/fennel/**
-      - pyproject.toml
-  pull_request:
-    branches: [main]
-    paths:
-      - install_mac.sh
-      - scripts/install_leptoninjector_mac.sh
-      - scripts/install_proposal.sh
-      - scripts/check_install.sh
-      - scripts/fixes.sh
-      - scripts/activate.sh
-      - resources/LeptonInjector/**
-      - resources/fennel/**
-      - pyproject.toml
 
 jobs:
   install:
@@ -40,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run macOS installer
-        run: bash install_mac.sh
+        run: bash install.sh
 
       - name: Run test suite
         run: |
