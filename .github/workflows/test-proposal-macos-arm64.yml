@@ -64,9 +64,15 @@ jobs:
 
           NJOBS=$(sysctl -n hw.logicalcpu)
 
+          PYTHON_LIB=$(python -c "import sysconfig, os; print(os.path.join(sysconfig.get_config_var('LIBDIR'), 'libpython{}.dylib'.format(sysconfig.get_config_var('LDVERSION'))))")
+          PYTHON_INC=$(python -c "import sysconfig; print(sysconfig.get_path('include'))")
+
           cmake \
             -DCMAKE_INSTALL_PREFIX="$VIRTUAL_ENV" \
             -DPython_EXECUTABLE="$VIRTUAL_ENV/bin/python" \
+            -DPYTHON_EXECUTABLE="$VIRTUAL_ENV/bin/python" \
+            -DPYTHON_LIBRARY="$PYTHON_LIB" \
+            -DPYTHON_INCLUDE_DIR="$PYTHON_INC" \
             -DCMAKE_INSTALL_RPATH="$VIRTUAL_ENV/lib;/usr/local/lib" \
             -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
