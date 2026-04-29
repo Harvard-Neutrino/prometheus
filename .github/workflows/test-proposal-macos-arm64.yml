@@ -67,7 +67,7 @@ jobs:
           cmake \
             -DCMAKE_INSTALL_PREFIX="$VIRTUAL_ENV" \
             -DPython_EXECUTABLE="$VIRTUAL_ENV/bin/python" \
-            -DCMAKE_INSTALL_RPATH="$VIRTUAL_ENV/lib" \
+            -DCMAKE_INSTALL_RPATH="$VIRTUAL_ENV/lib;/usr/local/lib" \
             -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
             "$SRC_DIR"
