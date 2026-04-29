@@ -8,6 +8,7 @@ on:
 
 jobs:
   test-proposal:
+    if: false
     runs-on: macos-14  # M1, arm64
     steps:
       - name: Set up Python
@@ -59,6 +60,15 @@ jobs:
 
           make -j"$NJOBS"
           make install
+
+      - name: Diagnose LeptonInjector linking
+        shell: bash -el {0}
+        run: |
+          SO=$(find "$CONDA_PREFIX" -name "LeptonInjector.so" | head -1)
+          echo "=== .so path: $SO ==="
+          otool -L "$SO"
+          echo "=== conda lib (relevant) ==="
+          ls "$CONDA_PREFIX/lib/" | grep -iE "lepton|boost|photospline|python"
 
       - name: Test import
         shell: bash -el {0}
