@@ -69,7 +69,22 @@ jobs:
           otool -L "$SO"
           echo "=== conda lib (relevant) ==="
           ls "$CONDA_PREFIX/lib/" | grep -iE "lepton|boost|photospline|python"
+          echo "=== architecture ==="
+          file "$SO"
+          file "$CONDA_PREFIX/lib/libboost_python312.dylib"
+          file "$CONDA_PREFIX/lib/libpython3.12.dylib"
+          echo "=== python binary ==="
+          which python && python --version
+          file "$(which python)"
+          echo "=== dylib loading ==="
+          DYLD_PRINT_LIBRARIES=1 python -c "import LeptonInjector" 2>&1 | head -60 || true
 
       - name: Test import
         shell: bash -el {0}
-        run: python -c "import LeptonInjector; print('LeptonInjector OK')"
+        run: |
+          python -c "
+          import faulthandler
+          faulthandler.enable()
+          import LeptonInjector
+          print('LeptonInjector OK')
+          "
