@@ -1,4 +1,4 @@
-name: Test PROPOSAL on macOS arm64
+name: Test dependencies on macOS arm64
 
 on:
   workflow_dispatch:
@@ -23,3 +23,38 @@ jobs:
         run: |
           source .venv/bin/activate
           python -c "import proposal; print('PROPOSAL OK:', proposal.__version__)"
+
+  test-leptoninjector:
+    runs-on: macos-14  # M1, arm64
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up micromamba environment
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yml
+          init-shell: bash
+
+      - name: Build LeptonInjector
+        shell: bash -el {0}
+        run: |
+          SRC_DIR="$PWD/resources/LeptonInjector"
+          TMP_DIR=$(mktemp -d)
+          mkdir -p "$TMP_DIR/build"
+          cd "$TMP_DIR/build"
+
+          NJOBS=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu)
+
+          cmake \
+            -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \
+            -DPython_EXECUTABLE="$CONDA_PREFIX/bin/python" \
+            -DCMAKE_PREFIX_PATH="$CONDA_PREFIX" \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+            "$SRC_DIR"
+
+          make -j"$NJOBS"
+          make install
+
+      - name: Test import
+        shell: bash -el {0}
+        run: python -c "import LeptonInjector; print('LeptonInjector OK')"
