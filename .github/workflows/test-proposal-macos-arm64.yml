@@ -79,19 +79,15 @@ jobs:
           echo "=== dylib loading ==="
           DYLD_PRINT_LIBRARIES=1 python -c "import LeptonInjector" 2>&1 | head -60 || true
 
-      - name: Test import (lldb backtrace)
+      - name: Confirm two-runtime hypothesis
         shell: bash -el {0}
         run: |
-          lldb --batch \
-            -o "run" \
-            -o "bt" \
-            -o "quit" \
-            -- python -c "import faulthandler; faulthandler.enable(); import LeptonInjector" \
-            2>&1 || true
+          echo "=== Does Python binary link against libpython? ==="
+          otool -L "$CONDA_PREFIX/bin/python3.12" | grep -i python
+          echo "=== Is _PyRuntime defined in binary (T) or imported (U)? ==="
+          nm -g "$CONDA_PREFIX/bin/python3.12" 2>/dev/null | grep -w "_PyRuntime" || echo "not found"
+          nm -g "$CONDA_PREFIX/lib/libpython3.12.dylib" 2>/dev/null | grep -w "_PyRuntime" || echo "not found"
 
-      - name: Check crash reports
-        if: always()
-        run: |
-          ls ~/Library/Logs/DiagnosticReports/ 2>/dev/null && \
-            cat ~/Library/Logs/DiagnosticReports/python*.ips 2>/dev/null | head -80 || \
-            echo "No crash reports found"
+      - name: Test import (flat namespace)
+        shell: bash -el {0}
+        run: DYLD_FORCE_FLAT_NAMESPACE=1 python -c "import LeptonInjector; print('LeptonInjector OK')"
