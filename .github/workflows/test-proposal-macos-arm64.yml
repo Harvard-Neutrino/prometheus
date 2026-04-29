@@ -1,5 +1,8 @@
 name: Test dependencies on macOS arm64
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 on:
   workflow_dispatch:
 
@@ -29,11 +32,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
       - name: Install C++ dependencies via Homebrew
         run: brew install cmake hdf5 boost boost-python3 eigen gsl pkg-config cfitsio
 
@@ -45,9 +43,9 @@ jobs:
           cmake --build /tmp/photospline/build -j$(sysctl -n hw.logicalcpu)
           sudo cmake --install /tmp/photospline/build
 
-      - name: Create venv
+      - name: Create venv from Homebrew Python
         run: |
-          python -m venv .venv
+          /opt/homebrew/bin/python3 -m venv .venv
           source .venv/bin/activate
           pip install --upgrade pip numpy
 
@@ -60,10 +58,20 @@ jobs:
           cd "$TMP_DIR/build"
 
           NJOBS=$(sysctl -n hw.logicalcpu)
+          PYTHON_PREFIX=$(python -c "import sys; print(sys.base_prefix)")
+          PYTHON_VER=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+          PYTHON_LIB=$(find "$PYTHON_PREFIX" -name "libpython${PYTHON_VER}.dylib" | head -1)
+          PYTHON_INC=$(python -c "import sysconfig; print(sysconfig.get_path('include'))")
+          echo "Python prefix: $PYTHON_PREFIX  lib: $PYTHON_LIB"
 
           cmake \
             -DCMAKE_INSTALL_PREFIX="$VIRTUAL_ENV" \
             -DPython_EXECUTABLE="$VIRTUAL_ENV/bin/python" \
+            -DPYTHON_EXECUTABLE="$VIRTUAL_ENV/bin/python" \
+            -DPYTHON_LIBRARY="$PYTHON_LIB" \
+            -DPYTHON_INCLUDE_DIR="$PYTHON_INC" \
+            -DCMAKE_INSTALL_RPATH="$VIRTUAL_ENV/lib;/opt/homebrew/lib;/usr/local/lib" \
+            -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
             "$SRC_DIR"
 

@@ -9,7 +9,13 @@ case "$ENV_DIR" in
 	*) ENV_DIR="$PWD/$ENV_DIR" ;;
 esac
 
-# Prefer system micromamba if available, otherwise fall back to repository bin/micromamba
+# Plain Python venv (macOS installer) — activate directly.
+if [ -f "$ENV_DIR/bin/activate" ]; then
+	source "$ENV_DIR/bin/activate"
+	return 0 2>/dev/null || exit 0
+fi
+
+# micromamba environment (Linux/WSL2 installer).
 if command -v micromamba >/dev/null 2>&1; then
 	MICO=micromamba
 else

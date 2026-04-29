@@ -1,0 +1,26 @@
+name: CI macOS
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  install:
+    name: Full install on macOS arm64
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Run macOS installer
+        run: bash install.sh
+
+      - name: Run test suite
+        run: |
+          source scripts/activate.sh .prometheus_env
+          python -m pytest --tb=short -q
