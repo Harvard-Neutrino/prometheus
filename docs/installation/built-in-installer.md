@@ -1,12 +1,12 @@
 # Install with Built-in Installer
 
-The built-in installer sets up Prometheus and all its dependencies automatically. It works on Linux and WSL2 — if you're on macOS or Windows (without WSL2), use [containers](containers.md) instead.
+The built-in installer sets up Prometheus and all its dependencies automatically. It works on Linux, macOS, and WSL2 — if you're on Windows (without WSL2), use [containers](containers.md) instead.
 
 | Platform      | Status         |
 | ------------- | -------------- |
 | Linux x86-64  | Supported      |
 | Linux aarch64 | Supported      |
-| macOS         | Use containers |
+| macOS         | Supported      |
 | Windows       | Use containers |
 | WSL2          | Supported      |
 
