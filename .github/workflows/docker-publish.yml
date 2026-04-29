@@ -66,6 +66,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.version=${{ inputs.version }}
 
@@ -109,6 +110,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.version=${{ inputs.version }}-gpu
             org.opencontainers.image.description=Prometheus GPU (SM ${{ inputs.sm_arch }})
