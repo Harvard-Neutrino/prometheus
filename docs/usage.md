@@ -1,6 +1,6 @@
 # Usage
 
-## Running simulations
+## Running Simulations
 
 The [examples directory](https://github.com/Harvard-Neutrino/prometheus/tree/main/examples) of the Prometheus GitHub repository contains small, runnable scripts that demonstrate typical Prometheus workflows.
 
@@ -25,7 +25,7 @@ python examples/<SCRIPT_NAME>
 
 Replace `<SCRIPT_NAME>` with the name of your script: `01_basic_water.py` or `02_basic_ice.py` for a quick-start option.
 
-## Getting help
+## Getting Help
 
 If something is not working as expected, or you have a question about using this software, feel free to create [a discussion on GitHub](https://github.com/Harvard-Neutrino/prometheus/discussions) and we will address it as soon as we can.
 
