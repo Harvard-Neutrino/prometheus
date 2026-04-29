@@ -32,31 +32,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up micromamba environment
+        uses: mamba-org/setup-micromamba@v2
         with:
-          python-version: "3.12"
-
-      - name: Install C++ dependencies via Homebrew
-        run: brew install cmake hdf5 boost boost-python3 eigen gsl pkg-config cfitsio
-
-      - name: Build and install photospline
-        run: |
-          git clone https://github.com/icecube/photospline.git /tmp/photospline
-          cmake -S /tmp/photospline -B /tmp/photospline/build \
-            -DCMAKE_INSTALL_PREFIX=/usr/local
-          cmake --build /tmp/photospline/build -j$(sysctl -n hw.logicalcpu)
-          sudo cmake --install /tmp/photospline/build
-
-      - name: Create venv
-        run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          pip install --upgrade pip numpy
+          environment-file: environment.yml
+          init-shell: bash
 
       - name: Build LeptonInjector
+        shell: bash -el {0}
         run: |
-          source .venv/bin/activate
           SRC_DIR="$PWD/resources/LeptonInjector"
           TMP_DIR=$(mktemp -d)
           mkdir -p "$TMP_DIR/build"
@@ -64,17 +48,11 @@ jobs:
 
           NJOBS=$(sysctl -n hw.logicalcpu)
 
-          PYTHON_VER=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
-          PYTHON_LIB="$Python_ROOT_DIR/lib/libpython${PYTHON_VER}.dylib"
-          PYTHON_INC=$(python -c "import sysconfig; print(sysconfig.get_path('include'))")
-
           cmake \
-            -DCMAKE_INSTALL_PREFIX="$VIRTUAL_ENV" \
-            -DPython_EXECUTABLE="$VIRTUAL_ENV/bin/python" \
-            -DPYTHON_EXECUTABLE="$VIRTUAL_ENV/bin/python" \
-            -DPYTHON_LIBRARY="$PYTHON_LIB" \
-            -DPYTHON_INCLUDE_DIR="$PYTHON_INC" \
-            -DCMAKE_INSTALL_RPATH="$VIRTUAL_ENV/lib;/usr/local/lib;$Python_ROOT_DIR/lib" \
+            -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \
+            -DPython_EXECUTABLE="$CONDA_PREFIX/bin/python" \
+            -DPYTHON_EXECUTABLE="$CONDA_PREFIX/bin/python" \
+            -DCMAKE_INSTALL_RPATH="$CONDA_PREFIX/lib" \
             -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
             "$SRC_DIR"
@@ -83,6 +61,5 @@ jobs:
           make install
 
       - name: Test import
-        run: |
-          source .venv/bin/activate
-          python -c "import LeptonInjector; print('LeptonInjector OK')"
+        shell: bash -el {0}
+        run: python -c "import LeptonInjector; print('LeptonInjector OK')"
