@@ -1,4 +1,4 @@
-# Install with built-in installer
+# Install with Built-in Installer
 
 The built-in installer sets up Prometheus and all its dependencies automatically. It works on Linux and WSL2 — if you're on macOS or Windows (without WSL2), use [containers](containers.md) instead.
 
@@ -18,15 +18,15 @@ Before you start, make sure you have:
 - A POSIX-compatible shell, such as bash or zsh
 - [curl](https://curl.se/) (used by the installer to download dependencies)
 
-## Installation steps
+## Installation Steps
 
-### 1. Clone and navigate into the Prometheus repository
+### 1. Clone and Navigate into the Prometheus Repository
 
 ```sh
 git clone https://github.com/Harvard-Neutrino/prometheus.git && cd prometheus
 ```
 
-### 2. Run the installer
+### 2. Run the Installer
 
 ```sh
 bash install.sh
@@ -38,7 +38,7 @@ This sets up a water-based simulation environment, which is the recommended star
 bash install.sh --with-ppc
 ```
 
-## What gets installed
+## What Gets Installed
 
 The installer takes care of everything automatically:
 
@@ -49,7 +49,7 @@ The installer takes care of everything automatically:
     - **[LeptonInjector](https://github.com/icecube/LeptonInjector)** — neutrino interaction generation
 - Optionally builds **[ppc](https://github.com/icecube/ppc)** — photon propagation for ice simulations (when run with `--with-ppc`).
 
-## Activate the environment
+## Activate the Environment
 
 Once the installation is done, activate the environment:
 
@@ -60,7 +60,7 @@ source scripts/activate.sh .prometheus_env
 !!! note
     You'll need to activate the environment in every new terminal session. To avoid this, add the command above to your shell profile (`~/.bashrc` or `~/.zshrc`).
 
-## Verify the installation
+## Verify the Installation
 
 With the environment active, run an example:
 
@@ -75,6 +75,6 @@ If everything went well, you should see simulation output without errors. If you
 - **Build failures (PROPOSAL / LeptonInjector)**: [Install with Containers](containers.md) instead.
 - **Missing optional Python packages**: Some examples require `uproot` (for reading ROOT files) or `pandas` (for data manipulation). If you see an `ImportError` for either, install them with `pip install uproot` or `pip install pandas`.
 
-## Getting help
+## Getting Help
 
 If you're having issues installing Prometheus, feel free to create [a discussion on GitHub](https://github.com/Harvard-Neutrino/prometheus/discussions) and we'll get back to you as soon as we can.

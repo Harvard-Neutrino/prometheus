@@ -17,7 +17,9 @@ If you're on a personal machine, go with Docker; if you're on a cluster, Apptain
 
 ## Using Docker
 
-If you need help getting started with Docker, see the [Docker documentation](https://docs.docker.com/desktop/). Here is an outline of the steps to set things up:
+If you need help getting started with Docker, see the [Docker documentation](https://docs.docker.com/desktop/). 
+
+Here is an outline of the steps to set things up:
 
 1. **Pull the image**
 
@@ -37,7 +39,9 @@ If you need help getting started with Docker, see the [Docker documentation](htt
     docker run --rm -v "$PWD/output:/output" ghcr.io/harvard-neutrino/prometheus:latest python /opt/prometheus/examples/01_basic_water.py
     ```
 
-    Use volume mounting (`-v "$PWD/output:/output"`) to access output files on your local machine. For more container running options, refer to the [Docker containers documentation](https://docs.docker.com/engine/containers/run/).
+    The `-v "$PWD/output:/output"` part of the command enables [volume mounting](https://docs.docker.com/engine/storage/volumes/#mounting-a-volume-over-existing-data) to access output files on your local machine.
+    
+For more container running options, refer to the [Docker containers documentation](https://docs.docker.com/engine/containers/run/).
 
 ### GPU Support
 
