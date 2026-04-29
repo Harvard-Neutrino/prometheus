@@ -1,6 +1,8 @@
 # Install with Containers
 
-If you need to run simulations on a computing cluster, or the built-in installer doesn't work for you, pre-built Docker and Apptainer images with all dependencies are available on the [GitHub Container Registry](https://github.com/Harvard-Neutrino/prometheus/pkgs/container/prometheus). If you're on a personal machine, go with Docker; if you're on a cluster, Apptainer is usually the better fit (and is often already installed).
+If you need to run simulations on a computing cluster, or the built-in installer doesn't work for you, pre-built Docker and Apptainer images with all dependencies are available on the [GitHub Container Registry](https://github.com/Harvard-Neutrino/prometheus/pkgs/container/prometheus).
+
+If you're on a personal machine, go with Docker; if you're on a cluster, Apptainer is usually the better fit (and is often already installed).
 
 !!! note
     The provided images are built for x86_64 and are not compatible with ARM-based architectures (e.g., Apple M-series Macs). If you are a Mac user on Apple Silicon, install from source instead.
