@@ -62,11 +62,11 @@ Apptainer (formerly Singularity) is particularly useful for running simulations 
 2. **Pull the container image**
 
     ```sh
-    singularity pull docker://ghcr.io/harvard-neutrino/prometheus:latest
+    apptainer pull docker://ghcr.io/harvard-neutrino/prometheus:latest
     ```
 
 3. **Run an example**
 
     ```sh
-    singularity exec prometheus_latest.sif python /opt/prometheus/examples/01_basic_water.py
+    apptainer exec prometheus_latest.sif python /opt/prometheus/examples/01_basic_water.py
     ```
