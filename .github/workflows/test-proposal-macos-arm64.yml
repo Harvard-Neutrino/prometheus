@@ -1,5 +1,5 @@
 name: Test dependencies on macOS arm64
-
+# Minor change
 on:
   workflow_dispatch:
   push:
