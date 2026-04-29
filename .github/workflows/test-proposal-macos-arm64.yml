@@ -79,12 +79,19 @@ jobs:
           echo "=== dylib loading ==="
           DYLD_PRINT_LIBRARIES=1 python -c "import LeptonInjector" 2>&1 | head -60 || true
 
-      - name: Test import
+      - name: Test import (lldb backtrace)
         shell: bash -el {0}
         run: |
-          python -c "
-          import faulthandler
-          faulthandler.enable()
-          import LeptonInjector
-          print('LeptonInjector OK')
-          "
+          lldb --batch \
+            -o "run" \
+            -o "bt" \
+            -o "quit" \
+            -- python -c "import faulthandler; faulthandler.enable(); import LeptonInjector" \
+            2>&1 || true
+
+      - name: Check crash reports
+        if: always()
+        run: |
+          ls ~/Library/Logs/DiagnosticReports/ 2>/dev/null && \
+            cat ~/Library/Logs/DiagnosticReports/python*.ips 2>/dev/null | head -80 || \
+            echo "No crash reports found"
