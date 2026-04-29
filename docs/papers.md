@@ -2,6 +2,8 @@
 
 The following papers use Prometheus for neutrino telescope simulation. They are grouped by how they use Prometheus to give you an idea of what the package can be used for. For a complete and up-to-date list, see [INSPIRE HEP](https://inspirehep.net/literature?sort=mostrecent&size=25&page=1&q=refersto%3Arecid%3A2655303).
 
+Want your paper featured on this list? Let us know in [discussions](https://github.com/Harvard-Neutrino/prometheus/discussions)!
+
 ## Detector Design and Optimization
 
 These papers use Prometheus to simulate and evaluate new neutrino telescope geometries.
