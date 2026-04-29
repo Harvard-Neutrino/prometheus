@@ -69,6 +69,11 @@ pkgs/
 .install_logs
 
 ########################
+# Benchmarks
+########################
+benchmarks/
+
+########################
 # Testing / coverage / tooling
 ########################
 .pytest_cache/
