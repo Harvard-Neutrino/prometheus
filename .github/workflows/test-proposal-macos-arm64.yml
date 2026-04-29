@@ -2,6 +2,9 @@ name: Test dependencies on macOS arm64
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/test-proposal-macos-arm64.yml
 
 jobs:
   test-proposal:
