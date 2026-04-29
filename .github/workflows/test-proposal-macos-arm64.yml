@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  test-proposal:
     runs-on: macos-14  # M1, arm64
     steps:
       - name: Set up Python
@@ -29,26 +29,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up micromamba environment
-        uses: mamba-org/setup-micromamba@v2
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          environment-file: environment.yml
-          init-shell: bash
+          python-version: "3.12"
+
+      - name: Install C++ dependencies via Homebrew
+        run: brew install cmake hdf5 boost eigen gsl pkg-config
+
+      - name: Build and install photospline
+        run: |
+          git clone https://github.com/icecube/photospline.git /tmp/photospline
+          cmake -S /tmp/photospline -B /tmp/photospline/build \
+            -DCMAKE_INSTALL_PREFIX=/usr/local
+          cmake --build /tmp/photospline/build -j$(sysctl -n hw.logicalcpu)
+          sudo cmake --install /tmp/photospline/build
+
+      - name: Create venv
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
 
       - name: Build LeptonInjector
-        shell: bash -el {0}
         run: |
+          source .venv/bin/activate
           SRC_DIR="$PWD/resources/LeptonInjector"
           TMP_DIR=$(mktemp -d)
           mkdir -p "$TMP_DIR/build"
           cd "$TMP_DIR/build"
 
-          NJOBS=$(nproc 2>/dev/null || sysctl -n hw.logicalcpu)
+          NJOBS=$(sysctl -n hw.logicalcpu)
 
           cmake \
-            -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \
-            -DPython_EXECUTABLE="$CONDA_PREFIX/bin/python" \
-            -DCMAKE_PREFIX_PATH="$CONDA_PREFIX" \
+            -DCMAKE_INSTALL_PREFIX="$VIRTUAL_ENV" \
+            -DPython_EXECUTABLE="$VIRTUAL_ENV/bin/python" \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
             "$SRC_DIR"
 
@@ -56,5 +71,6 @@ jobs:
           make install
 
       - name: Test import
-        shell: bash -el {0}
-        run: python -c "import LeptonInjector; print('LeptonInjector OK')"
+        run: |
+          source .venv/bin/activate
+          python -c "import LeptonInjector; print('LeptonInjector OK')"
