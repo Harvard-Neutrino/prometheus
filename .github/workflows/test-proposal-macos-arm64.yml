@@ -1,0 +1,25 @@
+name: Test PROPOSAL on macOS arm64
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: macos-14  # M1, arm64
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PROPOSAL in a plain venv
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install proposal
+
+      - name: Test import
+        run: |
+          source .venv/bin/activate
+          python -c "import proposal; print('PROPOSAL OK:', proposal.__version__)"
