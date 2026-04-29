@@ -35,7 +35,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install C++ dependencies via Homebrew
-        run: brew install cmake hdf5 boost eigen gsl pkg-config cfitsio
+        run: brew install cmake hdf5 boost boost-python3 eigen gsl pkg-config cfitsio
 
       - name: Build and install photospline
         run: |
@@ -49,7 +49,7 @@ jobs:
         run: |
           python -m venv .venv
           source .venv/bin/activate
-          pip install --upgrade pip
+          pip install --upgrade pip numpy
 
       - name: Build LeptonInjector
         run: |
