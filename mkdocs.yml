@@ -8,10 +8,14 @@ theme:
 nav:
   - Documentation:
     - 'Getting Started': './index.md'
-    - 'Installation': './installation.md'
+    - 'Installation':
+      - 'Overview': './installation/index.md'
+      - 'Built-in installer': './installation/built-in-installer.md'
+      - 'Containers': './installation/containers.md'
     - 'Usage': './usage.md'
     - 'Citation': './citation.md'
     - 'Papers Using Prometheus': './papers.md'
+    - 'Containers': './containers.md'
 extra_css:
   - css/custom_rules.css
 extra_javascript:
@@ -27,7 +31,7 @@ plugins:
       autoapi_add_nav_entry: false
       autoapi_generate_api_docs: false
   - api-autonav:
-      modules: ['./prometheus', './olympus', './hyperion']
+      modules: ['./prometheus', './hyperion']
       exclude_private: true
       show_full_namespace: false
       api_root_uri: "api-reference"
