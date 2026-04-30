@@ -12,11 +12,15 @@ The built-in installer sets up Prometheus and all its dependencies automatically
 
 ## Requirements
 
+!!! caution
+    For the built-in installer to work, you will need 4-5GB of free space on your machine. This is due to the size of external dependencies necessary to run Prometheus.
+
 Before you start, make sure you have:
 
 - [Python](https://realpython.com/installing-python/) 3.11 or higher
 - A POSIX-compatible shell, such as bash or zsh
-- [curl](https://curl.se/) (used by the installer to download dependencies)
+- [curl](https://curl.se/) - used by the installer to download dependencies
+- [Homebrew](https://brew.sh/) - package manager, only needed for macOS
 
 ## Installation Steps
 
@@ -45,8 +49,8 @@ The installer takes care of everything automatically:
 - Creates an isolated environment in the `.prometheus_env` directory.
 - Installs all Python dependencies.
 - Builds the required scientific libraries:
-    - **[PROPOSAL](https://github.com/tudo-astroparticlephysics/PROPOSAL)** — lepton propagation
-    - **[LeptonInjector](https://github.com/icecube/LeptonInjector)** — neutrino interaction generation
+  - **[PROPOSAL](https://github.com/tudo-astroparticlephysics/PROPOSAL)** — lepton propagation
+  - **[LeptonInjector](https://github.com/icecube/LeptonInjector)** — neutrino interaction generation
 - Optionally builds **[ppc](https://github.com/icecube/ppc)** — photon propagation for ice simulations (when run with `--with-ppc`).
 
 ## Activate the Environment
