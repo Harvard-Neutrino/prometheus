@@ -517,7 +517,7 @@ class Prometheus(object):
     def construct_output(self):
         """Construct a parquet file with metadata from the generated files.
 
-        Currently this still treats olympus and ppc output differently.
+        Currently this still treats Olympus and ppc output differently.
         """
         # sim_switch = config["photon propagator"]["name"]
 

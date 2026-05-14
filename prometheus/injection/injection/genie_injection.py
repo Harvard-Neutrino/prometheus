@@ -64,7 +64,7 @@ def _decay_pi0(
     position : np.ndarray
         Decay vertex position in metres.
     parent : Particle
-        Parent particle of the π⁰ (used to set the parent field on the photons).
+        Parent particle of the π⁰ (used to set the ``parent`` field on the photons).
 
     Returns
     -------
@@ -159,10 +159,10 @@ def injection_from_genie_output(
     genie_root_file : str
         Path to the GENIE gRooTracker ROOT file.
     simulation_config : GENIESimConfig, optional
-        Placement and seed configuration. Uses placement='fixed' at the
+        Placement and seed configuration. Uses ``placement='fixed'`` at the
         origin when not provided.
     detector : Detector, optional
-        Detector object, required for placement='random'.
+        Detector object, required for ``placement='random'``.
     detector_offset : np.ndarray, optional
         Detector centre in metres, used as the origin for random placement.
         Defaults to zero if not provided.
@@ -197,9 +197,7 @@ def injection_from_genie_output(
             )
         radius, height = detector.outer_cylinder
         half_height = height / 2.0
-        vertices = [
-            _sample_cylinder(rng, radius, half_height) + offset for _ in range(n_events)
-        ]
+        vertices = [_sample_cylinder(rng, radius, half_height) + offset for _ in range(n_events)]
     elif placement == "fixed":
         if positions is None:
             vertices = [offset.copy() for _ in range(n_events)]
@@ -231,14 +229,22 @@ def injection_from_genie_output(
         for pdg, energy, p3 in zip(row["final_ids"], row["final_e"], row["final_p"]):
             if int(pdg) == 111:
                 final_states.extend(
-                    _decay_pi0(rng, float(energy), np.asarray(p3, dtype=float),
-                               vertex, initial_state)
+                    _decay_pi0(
+                        rng, float(energy), np.asarray(p3, dtype=float), vertex, initial_state
+                    )
                 )
             else:
                 direction = _direction_from_p3(np.asarray(p3, dtype=float))
-                final_states.append(PropagatableParticle(
-                    int(pdg), float(energy), vertex.copy(), direction, None, initial_state,
-                ))
+                final_states.append(
+                    PropagatableParticle(
+                        int(pdg),
+                        float(energy),
+                        vertex.copy(),
+                        direction,
+                        None,
+                        initial_state,
+                    )
+                )
 
         interaction = _interaction_from_descr(str(row["event_descr"]))
         injection_events.append(

@@ -10,7 +10,7 @@ def make_new_genie_injection(
 ) -> None:
     """Validate a GENIE ROOT file before the simulation loop runs.
 
-    Unlike LeptonInjector, GENIE events are read directly from the ROOT file
+    Unlike ``LeptonInjector``, GENIE events are read directly from the ROOT file
     at construction time, so no output file is generated here. This function
     confirms the file is readable and logs a summary.
 
@@ -38,8 +38,6 @@ def make_new_genie_injection(
     logger.info("Validating GENIE ROOT file: %s", genie_file)
     with uproot.open(genie_file) as f:
         if "gRooTracker" not in f:
-            raise ValueError(
-                f"{genie_file!r} does not contain the expected 'gRooTracker' tree"
-            )
+            raise ValueError(f"{genie_file!r} does not contain the expected 'gRooTracker' tree")
         n_events = f["gRooTracker"].num_entries
     logger.info("GENIE ROOT file OK: %d events, placement=%s", n_events, placement)

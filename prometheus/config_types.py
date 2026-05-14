@@ -339,10 +339,10 @@ class GENIESimConfig(ConfigBase):
     placement : str
         How to place event vertices. ``'random'`` samples uniformly inside
         the detector bounding cylinder; ``'fixed'`` uses ``positions``.
-    positions : list or None, optional
+    positions : list, optional
         For ``placement='fixed'``: a single ``[x, y, z]`` applied to all
         events, or a list of ``[x, y, z]`` with one entry per event.
-    random_state_seed : int or None, optional
+    random_state_seed : int, optional
         Seed for the NumPy RNG used when ``placement='random'``.
     """
 
