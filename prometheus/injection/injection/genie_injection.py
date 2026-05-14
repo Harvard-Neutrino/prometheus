@@ -176,21 +176,34 @@ def injection_from_genie_output(
     """
     placement = "fixed"
     positions = None
+    n_simulate = None
     seed = None
 
     if simulation_config is not None:
         placement = getattr(simulation_config, "placement", "fixed")
         positions = getattr(simulation_config, "positions", None)
+        n_simulate = getattr(simulation_config, "n_events", None)
         seed = getattr(simulation_config, "random_state_seed", None)
 
     offset = np.zeros(3) if detector_offset is None else np.asarray(detector_offset, dtype=float)
 
     logger.info("Loading GENIE events from %s (placement=%s)", genie_root_file, placement)
     events_df = genie_loader(genie_root_file)
-    n_events = len(events_df)
-    logger.info("Loaded %d GENIE events", n_events)
+    n_file = len(events_df)
+    logger.info("Loaded %d GENIE events from file", n_file)
 
     rng = np.random.default_rng(seed)
+
+    if n_simulate is not None and n_simulate != n_file:
+        indices = rng.choice(n_file, size=n_simulate, replace=True)
+        events_df = events_df.iloc[indices].reset_index(drop=True)
+        logger.info(
+            "Resampled to %d events (with replacement) from %d source events",
+            n_simulate,
+            n_file,
+        )
+
+    n_events = len(events_df)
 
     if placement == "random":
         if detector is None:

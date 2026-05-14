@@ -342,15 +342,22 @@ class GENIESimConfig(ConfigBase):
     positions : list, optional
         For ``placement='fixed'``: a single ``[x, y, z]`` applied to all
         events, or a list of ``[x, y, z]`` with one entry per event.
+    n_events : int, optional
+        Number of events to simulate. When larger than the number of events
+        in the ROOT file, events are resampled with replacement. When
+        ``None``, all events in the file are used exactly once.
     random_state_seed : int, optional
-        Seed for the NumPy RNG used when ``placement='random'``.
+        Seed for the NumPy RNG used when ``placement='random'`` or when
+        resampling is active.
     """
 
     placement: str = "fixed"
     positions: Optional[list] = None
+    n_events: Optional[int] = None
     random_state_seed: Optional[int] = None
 
     _KEY_MAP: ClassVar[dict[str, str]] = {
+        "n events": "n_events",
         "random state seed": "random_state_seed",
     }
 
