@@ -26,7 +26,7 @@ def apply_detector_offset(injection_file: str, detector_offset: np.ndarray) -> N
 
 
 def make_new_LI_injection(
-    path_dict: dict, injection_specs: dict, detector_offset: np.ndarray
+    path_dict: dict, injection_specs: dict, detector_offset: np.ndarray, **_
 ) -> None:
     """Create a new injection with LeptonInjector.
 

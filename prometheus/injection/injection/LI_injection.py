@@ -36,7 +36,7 @@ class LIInjection(Injection):
         return d
 
 
-def injection_from_LI_output(LI_file: str) -> LIInjection:
+def injection_from_LI_output(LI_file: str, **_) -> LIInjection:
     """Create an injection object from a saved LI file.
 
     Parameters

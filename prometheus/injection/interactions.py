@@ -8,6 +8,7 @@ class Interactions(Enum):
     CHARGED_CURRENT = 1
     NEUTRAL_CURRENT = 2
     DIMUON = 3
+    OTHER = 4
 
 
 # Maps (final_state_1, final_state_2) name strings to interaction-type labels.

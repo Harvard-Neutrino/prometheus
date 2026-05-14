@@ -49,6 +49,8 @@ def get_injector(name: str) -> Callable:
     if key not in _INJECTOR_REGISTRY:
         if key == "leptoninjector":
             from .lepton_injector_utils import make_new_LI_injection  # noqa: F401
+        elif key == "genie":
+            from .genie_injector import make_new_genie_injection  # noqa: F401
         else:
             raise ValueError(f"Unknown injector: {name!r}")
     try:

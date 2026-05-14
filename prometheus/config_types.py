@@ -320,13 +320,58 @@ class SimpleInjectorConfig(ConfigBase):
 
 
 @dataclass
+class GENIEInjectorPathsConfig(ConfigBase):
+    """GENIE injector file path configuration."""
+
+    injection_file: Optional[str] = None
+
+    _KEY_MAP: ClassVar[dict[str, str]] = {
+        "injection file": "injection_file",
+    }
+
+
+@dataclass
+class GENIESimConfig(ConfigBase):
+    """GENIE simulation parameters configuration.
+
+    Parameters
+    ----------
+    placement : str
+        How to place event vertices. ``'random'`` samples uniformly inside
+        the detector bounding cylinder; ``'fixed'`` uses ``positions``.
+    positions : list, optional
+        For ``placement='fixed'``: a single ``[x, y, z]`` applied to all
+        events, or a list of ``[x, y, z]`` with one entry per event.
+    random_state_seed : int, optional
+        Seed for the NumPy RNG used when ``placement='random'``.
+    """
+
+    placement: str = "fixed"
+    positions: Optional[list] = None
+    random_state_seed: Optional[int] = None
+
+    _KEY_MAP: ClassVar[dict[str, str]] = {
+        "random state seed": "random_state_seed",
+    }
+
+
+@dataclass
+class GENIEInjectorConfig(ConfigBase):
+    """Top-level GENIE injector configuration."""
+
+    inject: bool = False
+    paths: GENIEInjectorPathsConfig = field(default_factory=GENIEInjectorPathsConfig)
+    simulation: GENIESimConfig = field(default_factory=GENIESimConfig)
+
+
+@dataclass
 class InjectionConfig(ConfigBase):
     """Injection configuration."""
 
     name: str = "LeptonInjector"
     lepton_injector: LeptonInjectorConfig = field(default_factory=LeptonInjectorConfig)
     prometheus_injector: SimpleInjectorConfig = field(default_factory=SimpleInjectorConfig)
-    genie: SimpleInjectorConfig = field(default_factory=SimpleInjectorConfig)
+    genie: GENIEInjectorConfig = field(default_factory=GENIEInjectorConfig)
 
     _KEY_MAP: ClassVar[dict[str, str]] = {
         "LeptonInjector": "lepton_injector",

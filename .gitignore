@@ -53,6 +53,12 @@ examples/output/
 *.sif
 *.tmp
 *.pdf
+*.root
+
+########################
+# Data / outputs to keep
+########################
+!tests/resources/genie_example.root
 
 ########################
 # PROPOSAL / PPC / binary artifacts
