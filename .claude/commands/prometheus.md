@@ -7,23 +7,23 @@ code, the project structure, and the conventions you must follow.
 
 ## Environment
 
-**Python interpreter** (use this path directly in every Bash tool call — never rely on
-`python` or `python3` being on PATH):
+**Python interpreter** (use paths relative to repo root — never rely on `python` or
+`python3` being on PATH):
 
 ```
-/home/smeighenberger/projects/prometheus/.prometheus_env/bin/python
+.prometheus_env/bin/python
 ```
 
 **Pytest binary:**
 
 ```
-/home/smeighenberger/projects/prometheus/.prometheus_env/bin/pytest
+.prometheus_env/bin/pytest
 ```
 
 **pip:**
 
 ```
-/home/smeighenberger/projects/prometheus/.prometheus_env/bin/pip
+.prometheus_env/bin/pip
 ```
 
 **Activate for interactive terminal sessions** (not needed when using full paths above):
@@ -34,9 +34,9 @@ source scripts/activate.sh .prometheus_env
 
 The environment is a micromamba-managed conda env at `.prometheus_env/` (Python 3.12).
 
-**Working directory:** Always run commands from the repo root
-(`/home/smeighenberger/projects/prometheus`). `conftest.py` enforces this for pytest,
-and resource paths (geo files, model pickles) are relative to the repo root.
+**Working directory:** Always run commands from the repo root. `conftest.py` enforces
+this for pytest, and resource paths (geo files, model pickles) are relative to the
+repo root.
 
 ---
 
@@ -44,24 +44,23 @@ and resource paths (geo files, model pickles) are relative to the repo root.
 
 ```sh
 # Standard suite (fast tests only)
-/home/smeighenberger/projects/prometheus/.prometheus_env/bin/pytest tests/ -x
+.prometheus_env/bin/pytest tests/ -x
 
 # Single file, verbose, with stdout
-/home/smeighenberger/projects/prometheus/.prometheus_env/bin/pytest tests/test_compare_norm_flow.py -s -v
+.prometheus_env/bin/pytest tests/test_compare_norm_flow.py -s -v
 
 # Timing benchmarks (prints table to stdout)
-/home/smeighenberger/projects/prometheus/.prometheus_env/bin/pytest tests/test_bench_water.py --timing -s
+.prometheus_env/bin/pytest tests/test_bench_water.py --timing -s
 
 # Full end-to-end (slow, ~minutes)
-/home/smeighenberger/projects/prometheus/.prometheus_env/bin/pytest tests/test_e2e.py --run-slow
+.prometheus_env/bin/pytest tests/test_e2e.py --run-slow
 
 # Linting
-/home/smeighenberger/projects/prometheus/.prometheus_env/bin/ruff check prometheus/ tests/
+.prometheus_env/bin/ruff check prometheus/ tests/
 ```
 
 Pytest markers (defined in `pyproject.toml`):
 - `slow` — end-to-end simulation tests; deselected unless `--run-slow` is passed
-- `timing` — timing benchmarks; deselected unless `--timing` is passed
 
 ---
 
@@ -70,9 +69,17 @@ Pytest markers (defined in `pyproject.toml`):
 ```
 prometheus/                        # main Python package
 ├── prometheus.py                  # Prometheus class; .sim() is the top-level entry point
-├── config.py / config_types.py    # dataclass-based config; OlympusSimConfig, etc.
+├── config.py / config_types.py    # dataclass-based config; typed config tree
 ├── detector/                      # Detector, Medium enum, module definitions
-├── injection/                     # LeptonInjector wrapper
+├── injection/                     # Injection pipeline (LeptonInjector and GENIE modes)
+│   ├── __init__.py                # INJECTORS registry (InjectorPlugin per injector)
+│   ├── genie_injector.py          # GENIE ROOT file validator (runner for GENIE mode)
+│   ├── genie_parser.py            # uproot-based gRooTracker reader → DataFrame
+│   ├── lepton_injector_utils.py   # LeptonInjector runner
+│   ├── registered_injectors.py    # RegisteredInjectors enum
+│   └── injection/                 # Injection constructors
+│       ├── genie_injection.py     # GENIEInjection, injection_from_genie_output()
+│       └── LI_injection.py        # LIInjection, injection_from_LI_output()
 ├── lepton_propagation/            # PROPOSAL wrapper
 ├── particle/                      # Particle representations
 └── photon_propagation/
@@ -85,7 +92,6 @@ prometheus/                        # main Python package
         ├── constants.py                   # c_vac, etc.
         └── photon_propagation/
             ├── norm_flow_photons.py       # REFERENCE implementation of generate_norm_flow_photons
-            ├── norm_flow_photons_fast.py  # FAST variant (vectorised batch sampling; smb-water-speed branch)
             └── utils.py                   # sources_to_model_input (jit+vmap)
 
 hyperion/                          # internal JAX normalizing-flow models
@@ -101,20 +107,25 @@ resources/
 
 tests/
 ├── conftest.py                    # chdir to repo root, --run-slow / --timing flags
+├── resources/genie_example.root   # small gRooTracker ROOT file for GENIE tests
 ├── test_compare_norm_flow.py      # correctness + perf: reference vs fast norm flow
 ├── test_bench_water.py            # wall-time benchmark (--timing flag)
+├── test_dataclasses.py            # unit tests for config dataclasses and enums
 ├── test_e2e.py                    # full pipeline end-to-end (--run-slow flag)
 └── test_nflow_model.py            # unit tests for the normalizing flow model
 
 examples/
 ├── 01_basic_water.py              # minimal single-event water simulation
+├── 05_genie_injection.py          # Prometheus run driven by a GENIE ROOT file
 ├── water_config.toml              # example TOML config for water sims
 └── legacy/                        # old scripts; excluded from ruff, not maintained
 ```
 
 ---
 
-## Simulation pipeline (water)
+## Simulation pipeline
+
+### LeptonInjector → Olympus (water)
 
 ```
 Prometheus.sim()
@@ -138,8 +149,41 @@ Prometheus.sim()
                       └─ sample arrival times per pair → ak.Array (ragged, per module)
 ```
 
+### GENIE ROOT file injection
+
+```
+Prometheus.sim()
+└─ inject()            ← reads gRooTracker ROOT file via uproot (no LeptonInjector)
+   └─ injection_from_genie_output()
+      ├─ genie_loader() → DataFrame of events
+      ├─ vertex placement: "fixed" (user position / detector centre)
+      │                 or "random" (uniform inside detector bounding cylinder)
+      └─ π⁰ (PDG 111) decayed instantaneously to γγ at injection time
+└─ propagate()         ← same photon propagation pipeline as above
+```
+
+**π⁰ note:** GENIE events may contain π⁰ final states. These are decayed to γγ at
+injection time (instantaneous approximation; cτ ≈ 25 nm is negligible). A
+`logger.warning` is emitted per π⁰ so users are aware.
+
 **Output format:** `ak.Array` of shape `(n_modules,)` with ragged inner lists of float32
 arrival times in nanoseconds. Modules with no hits have empty lists.
+
+---
+
+## Injector registry
+
+New injectors are registered in `prometheus/injection/__init__.py`:
+
+```python
+INJECTORS: dict[RegisteredInjectors, InjectorPlugin] = {
+    RegisteredInjectors.LEPTONINJECTOR: InjectorPlugin(runner=..., constructor=...),
+    RegisteredInjectors.GENIE:          InjectorPlugin(runner=..., constructor=...),
+}
+```
+
+`InjectorPlugin.runner` validates/runs injection before the simulation loop.
+`InjectorPlugin.constructor` reads the injection data and returns an `Injection` object.
 
 ---
 
@@ -158,31 +202,6 @@ arrival times in nanoseconds. Modules with no hits have empty lists.
 
 ---
 
-## Current branch: `smb-water-speed`
-
-Focus: memory and calculation-time optimisation of `generate_norm_flow_photons`.
-
-Completed changes:
-- Replaced per-pair `jnp.repeat` approach with per-pair sequential sampling loop
-  (avoids O(total_photons × num_flow_params) memory)
-- Power-of-2 bucketing for JAX kernel reuse across events
-- Removed broken `splitter` module-splitting logic from `generate_cascade` and
-  `generate_realistic_track` (was using `%` instead of `//`, dead code for realistic detectors)
-
-In progress:
-- `norm_flow_photons_fast.py` — vectorised batch sampling via `jax.vmap` over all pairs
-  (reduces n_masked sequential JAX dispatches to O(log max_photons) kernel calls)
-- `tests/test_compare_norm_flow.py` — correctness + performance comparison harness
-  (photon counts must be bit-for-bit identical; arrival times checked by KS test)
-
-Pending improvements (see session context):
-- Replace O(n_sources × n_modules) distance matrix in `generate_realistic_track` with KDTree
-- Pre-split all PRNG keys before sampling loop (already in fast variant)
-- CPU-side scatter for `n_ph_per_mod` (already in fast variant)
-- Merged early-exit: single device sync for both the zero-count check and the loop
-
----
-
 ## Docstring style
 
 NumPy format. Summary line must not start with "make". Use "create" or "build" for
@@ -198,5 +217,6 @@ factory functions. See memory file `feedback_docstring_style.md` for full rules.
 | `proposal` ≥ 7.6.2 | Muon/tau energy loss (`pp.particle`, `propagator.propagate`) |
 | `fennel_seed` | Cherenkov light yield integrals (`Fennel`, `auto_yields`) |
 | `awkward` ≥ 2.6 | Ragged per-module photon time arrays (`ak.Array`) |
+| `uproot` | Reads GENIE gRooTracker ROOT files |
 | `LeptonInjector` | Neutrino event injection (C++ extension, loaded via injection/) |
 | `hyperion` | JAX normalizing-flow model definitions (internal, at `hyperion/`) |
