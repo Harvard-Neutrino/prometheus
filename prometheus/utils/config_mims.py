@@ -75,6 +75,7 @@ def config_mims(config, detector) -> None:
     config.detector.offset = [detector._offset[0], detector._offset[1], detector._offset[2]]
 
     injection_config_mims(
+        config.injection.name,
         config.injection[config.injection.name],
         detector,
         config.run.nevents,
@@ -112,10 +113,10 @@ def check_consistency(config) -> None:
         )
 
     inj_cfg = config.injection[config.injection.name]
-    if inj_cfg.inject:
+    if inj_cfg.inject and config.injection.name.upper() != "GENIE":
         sim = inj_cfg.simulation
-        min_e = sim.minimal_energy
-        max_e = sim.maximal_energy
+        min_e = getattr(sim, "minimal_energy", None)
+        max_e = getattr(sim, "maximal_energy", None)
         if min_e is not None and max_e is not None and min_e >= max_e:
             raise ValueError(
                 f"injection minimal energy ({min_e}) must be < maximal energy ({max_e})"
@@ -163,6 +164,7 @@ def lepton_prop_config_mims(config, detector, earth_model_file: str) -> None:
 
 
 def injection_config_mims(
+    injector_name: str,
     config,
     detector,
     nevents: int,
@@ -174,6 +176,30 @@ def injection_config_mims(
     if not config.inject:
         return
 
+    if injector_name.upper() == "GENIE":
+        _genie_injection_config_mims(config)
+        return
+
+    _li_injection_config_mims(config, detector, nevents, seed, output_prefix, earth_model_file)
+
+
+def _genie_injection_config_mims(config) -> None:
+    """Validate GENIE injector config has the required ROOT file path."""
+    if config.paths.injection_file is None:
+        raise ValueError(
+            "config.injection.genie.paths.injection_file must point to a GENIE ROOT file"
+        )
+
+
+def _li_injection_config_mims(
+    config,
+    detector,
+    nevents: int,
+    seed: int,
+    output_prefix: str,
+    earth_model_file: str,
+) -> None:
+    """Fill in computed fields for the LeptonInjector config."""
     if config.paths.earth_model_location is None:
         config.paths.earth_model_location = str(
             RESOURCES_DIR / "earthparams" / "densities" / earth_model_file

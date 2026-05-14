@@ -212,7 +212,10 @@ class TestInteractions:
         assert Interactions.DIMUON.value == 3
 
     def test_enum_members_count(self):
-        assert len(list(Interactions)) == 4
+        assert len(list(Interactions)) == 5
+
+    def test_other_member(self):
+        assert Interactions.OTHER.value == 4
 
 
 # ---------------------------------------------------------------------------

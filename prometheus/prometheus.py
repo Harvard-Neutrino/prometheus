@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 from .config import config
 from .detector import Detector
-from .injection import INJECTION_CONSTRUCTOR_DICT, RegisteredInjectors
+from .injection import INJECTORS, RegisteredInjectors
 from .logging.handlers import LogCounterHandler
 from .logging_config import configure_logging
 from .photon_propagation import (
@@ -309,23 +309,25 @@ class Prometheus(object):
             injection_config.inject,
         )
         with time_block("injection", logger):
+            if self._injector not in INJECTORS:
+                raise InjectorNotImplementedError(
+                    str(self._injector) + " is not a registered injector"
+                )
+            plugin = INJECTORS[self._injector]
             if injection_config.inject:
-                from .injection import INJECTOR_DICT
-
-                if self._injector not in INJECTOR_DICT.keys():
-                    raise InjectorNotImplementedError(
-                        str(self._injector) + " is not a registered injector"
-                    )
-
                 injection_config.simulation.random_state_seed = config.run.random_state_seed
-                INJECTOR_DICT[self._injector](
+                plugin.runner(
                     injection_config.paths,
                     injection_config.simulation,
                     detector_offset=self.detector.offset,
+                    detector=self._detector,
                 )
             try:
-                self._injection = INJECTION_CONSTRUCTOR_DICT[self._injector](
-                    injection_config.paths.injection_file
+                self._injection = plugin.constructor(
+                    injection_config.paths.injection_file,
+                    simulation_config=injection_config.simulation,
+                    detector=self._detector,
+                    detector_offset=self.detector.offset,
                 )
             except Exception:
                 logger.exception(
@@ -532,6 +534,11 @@ class Prometheus(object):
                 }
             )
         else:
+            logger.warning(
+                "No photon hits were recorded for any event. "
+                "Output will contain mc_truth only. "
+                "Check that event vertices are within the detector volume."
+            )
             outarr = ak.Array({"mc_truth": self.injection.to_awkward()})
         outfile = config.run.outfile
         # Converting to pyarrow table

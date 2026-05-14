@@ -56,6 +56,11 @@ examples/output/
 *.root
 
 ########################
+# Data / outputs to keep
+########################
+!tests/resources/genie_example.root
+
+########################
 # PROPOSAL / PPC / binary artifacts
 ########################
 PROPOSAL_tables/
