@@ -53,6 +53,7 @@ examples/output/
 *.sif
 *.tmp
 *.pdf
+*.root
 
 ########################
 # PROPOSAL / PPC / binary artifacts
