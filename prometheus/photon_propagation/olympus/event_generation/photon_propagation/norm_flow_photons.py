@@ -126,11 +126,17 @@ def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_mediu
             times = [] * module_coords.shape[0]
             return ak.Array(times)
 
+        # Only run the flow conditioner on pairs that actually detected photons.
+        nonzero_mask = n_photons_masked > 0
+        inp_params_nonzero = inp_params_masked[nonzero_mask]
+        time_geo_nonzero = time_geo_masked[nonzero_mask]
+        n_photons_nonzero = n_photons_masked[nonzero_mask]
+
         # Obtain flow parameters and repeat them for each detected photon
-        traf_params = apply_fn(shape_params, inp_params_masked)
-        traf_params_rep = jnp.repeat(traf_params, n_photons_masked, axis=0)
+        traf_params = apply_fn(shape_params, inp_params_nonzero)
+        traf_params_rep = jnp.repeat(traf_params, n_photons_nonzero, axis=0)
         # Also repeat the geometric time for each detected photon
-        time_geo_rep = jnp.repeat(time_geo_masked, n_photons_masked, axis=0).squeeze()
+        time_geo_rep = jnp.repeat(time_geo_nonzero, n_photons_nonzero, axis=0).squeeze()
 
         # Calculate number of photons per module
         # Start with zero array and fill in the poisson samples using distance mask
@@ -142,6 +148,7 @@ def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_mediu
         # Sample times from flow
         key, subkey = random.split(key)
         samples = sample_model(traf_params_rep, subkey)
+
         times = np.atleast_1d(np.asarray(samples.squeeze() + time_geo_rep))
 
         if len(times) == 1:

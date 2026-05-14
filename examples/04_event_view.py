@@ -254,7 +254,7 @@ def draw_event(
 
     title = (
         f"Event {event_idx}  |  {pname}  CC  "
-        f"E = {energy_gev / 1e3:.1f} TeV  |  "
+        f"E = {energy_gev :.1f} GeV  |  "
         f"{total_hits} photons on {n_oms_hit} OMs  |  {fg_label}"
     )
     ax.set_title(title, color=text_color, fontsize=9, pad=8)

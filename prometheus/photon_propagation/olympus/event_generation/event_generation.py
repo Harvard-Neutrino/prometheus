@@ -86,6 +86,15 @@ def generate_cascade(
         key=k1,
     )
 
+    # Drop sources whose photon budget is negligible — they cannot produce
+    # detected hits (detection efficiency << 1) and dominate the flat
+    # (n_sources × n_modules) matrix built in the photon propagator.
+    photon_mask = np.asarray(source_nphotons).squeeze() >= 1.0
+    source_pos = source_pos[photon_mask]
+    source_dir = source_dir[photon_mask]
+    source_time = source_time[photon_mask]
+    source_nphotons = source_nphotons[photon_mask]
+
     record = MCRecord(
         "cascade",
         source_array_to_sources(source_pos, source_dir, source_time, source_nphotons),
