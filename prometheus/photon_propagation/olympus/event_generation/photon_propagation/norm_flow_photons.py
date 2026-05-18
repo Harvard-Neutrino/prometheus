@@ -19,7 +19,7 @@ from .utils import sources_to_model_input, sources_to_model_input_per_module
 
 
 # @profile
-def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_medium):
+def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_medium, max_distance=300.0):
     shape_config, shape_params = haiku_load(shape_model_path)
     counts_config, counts_params = haiku_load(counts_model_path)
 
@@ -100,9 +100,7 @@ def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_mediu
         source_photons = jnp.tile(source_nphotons, module_coords.shape[0]).T.ravel()
         mod_eff_factor = jnp.repeat(module_efficiencies, source_pos.shape[0])
 
-        # Normalizing flows only built up to 300
-        # TODO: Check lower bound as well
-        distance_mask = inp_pars[:, 0] < np.log10(300)
+        distance_mask = inp_pars[:, 0] < np.log10(max_distance)
 
         inp_params_masked = inp_pars[distance_mask]
         time_geo_masked = time_geo[distance_mask]
@@ -132,8 +130,15 @@ def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_mediu
         time_geo_nonzero = time_geo_masked[nonzero_mask]
         n_photons_nonzero = n_photons_masked[nonzero_mask]
 
-        # Obtain flow parameters and repeat them for each detected photon
-        traf_params = apply_fn(shape_params, inp_params_nonzero)
+        # Obtain flow parameters and repeat them for each detected photon.
+        # Pad to the next power-of-4 bucket so apply_fn is JIT-compiled once
+        # per bucket size rather than once per unique n_nonzero (same strategy
+        # already used by sample_model for sample_model_inner).
+        _n = inp_params_nonzero.shape[0]
+        _base = 4
+        _pad_len = int(np.power(_base, np.ceil(np.log(_n) / np.log(_base))))
+        _padded = jnp.pad(inp_params_nonzero, ((0, _pad_len - _n), (0, 0)))
+        traf_params = apply_fn(shape_params, _padded)[:_n]
         traf_params_rep = jnp.repeat(traf_params, n_photons_nonzero, axis=0)
         # Also repeat the geometric time for each detected photon
         time_geo_rep = jnp.repeat(time_geo_nonzero, n_photons_nonzero, axis=0).squeeze()

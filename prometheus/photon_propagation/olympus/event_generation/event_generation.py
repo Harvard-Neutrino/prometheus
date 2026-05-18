@@ -48,6 +48,7 @@ def generate_cascade(
     pprop_func,
     converter_func,
     splitter=100000,
+    max_distance=300.0,
 ):
     """Generate a single cascade and return detected photon times.
 
@@ -66,6 +67,9 @@ def generate_cascade(
         directions, times and photon counts.
     splitter : int, optional
         Number of modules per subset for memory-efficient propagation.
+    max_distance : float, optional
+        Maximum source-to-module distance in metres.  Source positions farther
+        than this from every module are dropped before photon propagation.
 
     Returns
     -------
@@ -94,6 +98,19 @@ def generate_cascade(
     source_dir = source_dir[photon_mask]
     source_time = source_time[photon_mask]
     source_nphotons = source_nphotons[photon_mask]
+
+    # Drop sources farther than max_distance from every module.
+    if source_pos.shape[0] > 0:
+        dist_matrix = np.linalg.norm(
+            np.asarray(source_pos)[:, np.newaxis, :]
+            - det.module_coords[np.newaxis, :, :],
+            axis=-1,
+        )
+        distance_mask = np.any(dist_matrix < max_distance, axis=1)
+        source_pos = source_pos[distance_mask]
+        source_dir = source_dir[distance_mask]
+        source_time = source_time[distance_mask]
+        source_nphotons = source_nphotons[distance_mask]
 
     record = MCRecord(
         "cascade",
@@ -338,7 +355,7 @@ def generate_muon_energy_losses(
 
 
 # @profile
-def generate_realistic_track(det, event_data, key, pprop_func, proposal_prop, splitter=100000):
+def generate_realistic_track(det, event_data, key, pprop_func, proposal_prop, splitter=100000, max_distance=300.0):
     """Generate a realistic muon track using energy losses from PROPOSAL.
 
     Parameters
@@ -355,6 +372,9 @@ def generate_realistic_track(det, event_data, key, pprop_func, proposal_prop, sp
         PROPOSAL propagator instance.
     splitter : int, optional
         Split size for detector modules to reduce memory usage.
+    max_distance : float, optional
+        Maximum source-to-module distance in metres.  Energy-loss sources
+        farther than this from every module are dropped before propagation.
 
     Returns
     -------
@@ -393,7 +413,7 @@ def generate_realistic_track(det, event_data, key, pprop_func, proposal_prop, sp
         source_pos[:, np.newaxis, ...] - det.module_coords[np.newaxis, ...], axis=-1
     )
 
-    mask = np.any(dist_matrix < 300, axis=1)
+    mask = np.any(dist_matrix < max_distance, axis=1)
     source_pos = source_pos[mask]
     source_dir = source_dir[mask]
     source_time = source_time[mask]

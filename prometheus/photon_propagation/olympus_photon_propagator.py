@@ -112,6 +112,7 @@ class OlympusPhotonPropagator(PhotonPropagator):
             flow_path,
             counts_path,
             c_medium=self._c_medium_f(self.config["simulation"]["wavelength"]) / 1e9,
+            max_distance=self.config["simulation"]["max_distance"],
         )
 
     def propagate(self, particle: Particle, rng_key):
@@ -159,6 +160,7 @@ class OlympusPhotonPropagator(PhotonPropagator):
                 pprop_func=self._gen_ph,
                 proposal_prop=proposal_prop,
                 splitter=self.config["simulation"]["splitter"],
+                max_distance=self.config["simulation"]["max_distance"],
             )
         # Cascades
         else:
@@ -173,6 +175,7 @@ class OlympusPhotonPropagator(PhotonPropagator):
                 ),
                 pprop_func=self._gen_ph,
                 splitter=self.config["simulation"]["splitter"],
+                max_distance=self.config["simulation"]["max_distance"],
             )
 
         hits = []

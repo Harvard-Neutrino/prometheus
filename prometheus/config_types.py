@@ -523,6 +523,7 @@ class OlympusSimConfig(ConfigBase):
     files: bool = True
     wavelength: int = 700
     splitter: int = 100000
+    max_distance: float = 300.0
 
 
 @dataclass
