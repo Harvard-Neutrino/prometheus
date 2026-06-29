@@ -11,7 +11,7 @@ Welcome to Prometheus, an open-source neutrino telescope simulation.
 |              |                                                  |
 |--------------|--------------------------------------------------|
 |Repository    | <https://github.com/Harvard-Neutrino/prometheus> |
-|ArXiv paper   | <http://arxiv.org/abs/2304.1452>                 |
+|ArXiv paper   | <https://arxiv.org/pdf/2304.14526>                 |
 |Documentation | <https://harvard-neutrino.github.io/prometheus/> |
 
 ## Summary
