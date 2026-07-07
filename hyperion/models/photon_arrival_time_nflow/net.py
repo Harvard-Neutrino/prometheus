@@ -856,8 +856,8 @@ def train_shape_model(config, train_loader, test_loader, seed=1337, writer=None)
         return optax.incremental_update(params, avg_params, step_size=0.001)
 
     @jax.jit
-    def loss_fn(params, cond, samples):
-        """Compute negative log-likelihood loss for a batch.
+    def loss_fn(params, cond, samples, weights):
+        """Compute weighted negative log-likelihood loss for a batch.
 
         Parameters
         ----------
@@ -867,6 +867,9 @@ def train_shape_model(config, train_loader, test_loader, seed=1337, writer=None)
             Conditioning inputs.
         samples : array-like
             Observed sample values.
+        weights : array-like
+            Per-sample absorption survival weights.  The loss is
+            ``-sum(w_i * log p(t_i)) / sum(w_i)``.
 
         Returns
         -------
@@ -875,10 +878,12 @@ def train_shape_model(config, train_loader, test_loader, seed=1337, writer=None)
         """
         traf_params = shape_conditioner.apply(params, cond)
         lprobs = eval_log_prob(dist_builder, traf_params, samples)
-        return -jnp.mean(lprobs * jnp.isfinite(lprobs))
+        finite = jnp.isfinite(lprobs)
+        w = weights * finite
+        return -jnp.sum(w * lprobs * finite) / (jnp.sum(w) + 1e-8)
 
     @jax.jit
-    def update(params, opt_state, cond, samples):
+    def update(params, opt_state, cond, samples, weights):
         """Perform a single optimization step.
 
         Parameters
@@ -891,13 +896,15 @@ def train_shape_model(config, train_loader, test_loader, seed=1337, writer=None)
             Conditioning inputs for the batch.
         samples : array-like
             Observed samples for the batch.
+        weights : array-like
+            Per-sample absorption survival weights.
 
         Returns
         -------
         tuple
             ``(new_params, new_opt_state, loss_value)``.
         """
-        lval, grads = jax.value_and_grad(loss_fn)(params, cond, samples)
+        lval, grads = jax.value_and_grad(loss_fn)(params, cond, samples, weights)
         updates, new_opt_state = optimizer.update(grads, opt_state)
         return optax.apply_updates(params, updates), new_opt_state, lval
 
@@ -915,13 +922,14 @@ def train_shape_model(config, train_loader, test_loader, seed=1337, writer=None)
         train = next(train_iter)
         cond = jnp.concatenate(train[:2]).T
         samples = jnp.squeeze(train[2])
-        params, opt_state, train_loss = update(params, opt_state, cond, samples)
+        weights = jnp.squeeze(train[3])
+        params, opt_state, train_loss = update(params, opt_state, cond, samples, weights)
         avg_params = ema_update(params, avg_params)
 
         if i % 100 == 0:
             test_loss = (
                 sum(
-                    loss_fn(avg_params, jnp.concatenate(t[:2]).T, jnp.squeeze(t[2]))
+                    loss_fn(avg_params, jnp.concatenate(t[:2]).T, jnp.squeeze(t[2]), jnp.squeeze(t[3]))
                     for t in test_loader
                 )
                 / test_loader._n_batches
@@ -962,14 +970,17 @@ def train_counts_model(config, train_loader, test_loader, seed=1337, writer=None
 
     @jax.jit
     def loss_fn(params, batch):
-        """Mean-squared error loss for a batch.
+        """Weighted mean-squared error loss for a batch.
+
+        Each bin is weighted by its detected-photon count so that noisy
+        large-distance bins (few hits) contribute proportionally less.
 
         Parameters
         ----------
         params : dict
             Model parameters.
         batch : tuple
-            Batch data (inputs, targets, ...).
+            Batch data ``(log10_dist, angle, log10_survival, n_detected)``.
 
         Returns
         -------
@@ -978,7 +989,9 @@ def train_counts_model(config, train_loader, test_loader, seed=1337, writer=None
         """
         inp = jnp.concatenate(batch[:2]).T
         out = net_fn.apply(params, inp).squeeze()
-        return 0.5 * jnp.average((out - batch[2]) ** 2)
+        w = jnp.sqrt(jnp.squeeze(batch[3]) + 1.0)
+        w = w / (jnp.sum(w) + 1e-8)
+        return 0.5 * jnp.sum(w * (out - jnp.squeeze(batch[2])) ** 2)
 
     @jax.jit
     def update(params, opt_state, batch):

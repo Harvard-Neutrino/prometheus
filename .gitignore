@@ -94,6 +94,7 @@ htmlcov/
 ########################
 event_view.png
 LI           # project-local artifact (confirm intent)
+examples/genie_config/
 
 ########################
 # Keep some model/config files committed (negations override *.pickle below)
@@ -101,6 +102,8 @@ LI           # project-local artifact (confirm intent)
 *.pickle
 !photon_arrival_time_counts_params.pickle
 !photon_arrival_time_nflow_params.pickle
+!antares_counts_params_low_E.pickle
+!antares_nflow_params_low_E.pickle
 
 !pone_config.json
 

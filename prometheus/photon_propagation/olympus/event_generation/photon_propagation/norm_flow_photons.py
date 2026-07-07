@@ -1,3 +1,4 @@
+import logging
 import pickle
 
 import awkward as ak
@@ -15,11 +16,17 @@ from hyperion.models.photon_arrival_time_nflow.net import (
 )
 from prometheus.compat.haiku_unpickler import load as haiku_load
 
-from .utils import sources_to_model_input, sources_to_model_input_per_module
+from .utils import (
+    next_bucket,
+    sources_to_model_input,
+    sources_to_model_input_per_module,
+)
+
+logger = logging.getLogger(__name__)
 
 
 # @profile
-def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_medium, max_distance=300.0):
+def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_medium, max_distance=300.0, min_distance=0.1):
     shape_config, shape_params = haiku_load(shape_model_path)
     counts_config, counts_params = haiku_load(counts_model_path)
 
@@ -42,20 +49,16 @@ def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_mediu
 
     counts_net = make_counts_net_fn(counts_config)
 
-    # def sample_model(traf_params, key):
-    # return sample_shape_model(dist_builder, traf_params,
-    # traf_params.shape[0], key)
+    @jax.jit
+    def counts_apply_fn(params, x):
+        return counts_net.apply(params, x)
 
     @jax.jit
     def sample_model_inner(traf_params, key):
         return sample_shape_model(dist_builder, traf_params, traf_params.shape[0], key)
 
     def sample_model(traf_params, key):
-
-        base = 4
-        log_cnt = np.log(traf_params.shape[0]) / np.log(base)
-        pad_len = int(np.power(base, np.ceil(log_cnt)))
-
+        pad_len = next_bucket(traf_params.shape[0], base=4)
         padded = jnp.pad(traf_params, ((0, pad_len - traf_params.shape[0]), (0, 0)))
 
         result = sample_model_inner(padded, key)
@@ -72,8 +75,6 @@ def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_mediu
         seed=31337,
     ):
 
-        # TODO: Reimplement using padding / bucket compile (jax.mask???)
-
         if isinstance(seed, int):
             key = random.PRNGKey(seed)
         else:
@@ -87,42 +88,63 @@ def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_mediu
             c_medium,
         )
 
-        inp_pars = jnp.swapaxes(inp_pars, 0, 1)
-        time_geo = jnp.swapaxes(time_geo, 0, 1)
+        # All shape bookkeeping (masking, gathers, repeats) happens in numpy on
+        # the host: eagerly executed jnp ops compile one XLA kernel per
+        # data-dependent shape, and those compilations dominate the runtime of
+        # the propagation loop.  JAX is only used for the bucket-padded neural
+        # net evaluations and samplers below.
+        inp_pars = np.asarray(inp_pars)
+        time_geo = np.asarray(time_geo)
+        n_mod = module_coords.shape[0]
+        n_src = source_pos.shape[0]
+
+        inp_pars = np.swapaxes(inp_pars, 0, 1)
+        time_geo = np.swapaxes(time_geo, 0, 1)
 
         # flatten [densely pack [modules, sources] in 1D array]
-        inp_pars = inp_pars.reshape(
-            (source_pos.shape[0] * module_coords.shape[0], inp_pars.shape[-1])
-        )
-        time_geo = time_geo.reshape(
-            (source_pos.shape[0] * module_coords.shape[0], time_geo.shape[-1])
-        )
-        source_photons = jnp.tile(source_nphotons, module_coords.shape[0]).T.ravel()
-        mod_eff_factor = jnp.repeat(module_efficiencies, source_pos.shape[0])
+        inp_pars = inp_pars.reshape((n_src * n_mod, inp_pars.shape[-1]))
+        time_geo = time_geo.reshape((n_src * n_mod, time_geo.shape[-1]))
+        source_photons = np.tile(np.asarray(source_nphotons), n_mod).T.ravel()
+        mod_eff_factor = np.repeat(np.asarray(module_efficiencies), n_src)
 
-        distance_mask = inp_pars[:, 0] < np.log10(max_distance)
+        distance_mask = (inp_pars[:, 0] < np.log10(max_distance)) & (inp_pars[:, 0] >= np.log10(min_distance))
 
         inp_params_masked = inp_pars[distance_mask]
         time_geo_masked = time_geo[distance_mask]
         source_photons_masked = source_photons[distance_mask]
         mod_eff_factor_masked = mod_eff_factor[distance_mask]
 
-        # Eval count net to obtain survival fraction
-        ph_frac = jnp.power(10, counts_net.apply(counts_params, inp_params_masked)).squeeze()
+        n_pairs = inp_params_masked.shape[0]
+        if n_pairs == 0:
+            return ak.Array([[] for _ in range(n_mod)])
 
-        # Sample number of detected photons
-        n_photons_masked = ph_frac * source_photons_masked * mod_eff_factor_masked
+        # Pad the surviving pairs to a power-of-two bucket so the counts net
+        # and the Poisson sampler compile once per bucket size rather than
+        # once per unique pair count.  Padded pairs carry zero source photons
+        # and therefore cannot contribute hits.
+        pair_pad = next_bucket(n_pairs, minimum=16) - n_pairs
+        inp_params_padded = np.pad(inp_params_masked, ((0, pair_pad), (0, 0)))
+        source_photons_padded = np.pad(source_photons_masked, (0, pair_pad))
+        mod_eff_factor_padded = np.pad(mod_eff_factor_masked, (0, pair_pad))
 
-        key, subkey = random.split(key)
-        n_photons_masked = (
-            random.poisson(subkey, n_photons_masked, shape=n_photons_masked.shape)
-            .squeeze()
-            .astype(jnp.int32)
+        # Eval count net to obtain survival fraction (clamped to ≤ 1)
+        ph_frac = np.minimum(
+            1.0,
+            np.power(
+                10, np.asarray(counts_apply_fn(counts_params, inp_params_padded))
+            ).squeeze(),
         )
 
-        if jnp.all(n_photons_masked == 0):
-            times = [] * module_coords.shape[0]
-            return ak.Array(times)
+        # Sample number of detected photons
+        n_photons_padded = ph_frac * source_photons_padded * mod_eff_factor_padded
+
+        key, subkey = random.split(key)
+        n_photons_masked = np.asarray(
+            random.poisson(subkey, n_photons_padded, shape=n_photons_padded.shape)
+        ).squeeze().astype(np.int32)[:n_pairs]
+
+        if not np.any(n_photons_masked):
+            return ak.Array([[] for _ in range(n_mod)])
 
         # Only run the flow conditioner on pairs that actually detected photons.
         nonzero_mask = n_photons_masked > 0
@@ -130,35 +152,58 @@ def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_mediu
         time_geo_nonzero = time_geo_masked[nonzero_mask]
         n_photons_nonzero = n_photons_masked[nonzero_mask]
 
+        # Debug: report any suspiciously large photon counts before allocating.
+        # Gated on the logger level because the count reduction forces a device
+        # sync per call, which adds up over thousands of particle propagations.
+        if logger.isEnabledFor(logging.DEBUG):
+            _nph = np.asarray(n_photons_nonzero)
+            _max_ph = int(_nph.max())
+            _total_ph = int(_nph.sum())
+            if _total_ph > 100_000:
+                _log10d = np.asarray(inp_params_nonzero[:, 0])
+                _angle = np.asarray(inp_params_nonzero[:, 1])
+                _top = np.argsort(_nph)[-5:][::-1]
+                logger.debug(
+                    "total photons=%s max/pair=%s", f"{_total_ph:,}", f"{_max_ph:,}"
+                )
+                logger.debug("Top-5 (log10_dist, angle_rad, n_photons):")
+                for _i in _top:
+                    logger.debug(
+                        "  d=10^%.3f=%.2fm angle=%.1fdeg n=%s",
+                        _log10d[_i],
+                        10 ** _log10d[_i],
+                        np.degrees(_angle[_i]),
+                        f"{_nph[_i]:,}",
+                    )
+
         # Obtain flow parameters and repeat them for each detected photon.
         # Pad to the next power-of-4 bucket so apply_fn is JIT-compiled once
         # per bucket size rather than once per unique n_nonzero (same strategy
         # already used by sample_model for sample_model_inner).
         _n = inp_params_nonzero.shape[0]
-        _base = 4
-        _pad_len = int(np.power(_base, np.ceil(np.log(_n) / np.log(_base))))
-        _padded = jnp.pad(inp_params_nonzero, ((0, _pad_len - _n), (0, 0)))
-        traf_params = apply_fn(shape_params, _padded)[:_n]
-        traf_params_rep = jnp.repeat(traf_params, n_photons_nonzero, axis=0)
+        _pad_len = next_bucket(_n, base=4)
+        _padded = np.pad(inp_params_nonzero, ((0, _pad_len - _n), (0, 0)))
+        traf_params = np.asarray(apply_fn(shape_params, _padded))[:_n]
+        traf_params_rep = np.repeat(traf_params, n_photons_nonzero, axis=0)
         # Also repeat the geometric time for each detected photon
-        time_geo_rep = jnp.repeat(time_geo_nonzero, n_photons_nonzero, axis=0).squeeze()
+        time_geo_rep = np.repeat(time_geo_nonzero, n_photons_nonzero, axis=0).squeeze()
 
         # Calculate number of photons per module
         # Start with zero array and fill in the poisson samples using distance mask
-        n_photons = jnp.zeros(source_pos.shape[0] * module_coords.shape[0], dtype=jnp.int32)
-        n_photons = n_photons.at[distance_mask].set(n_photons_masked)
-        n_photons = n_photons.reshape(module_coords.shape[0], source_pos.shape[0])
+        n_photons = np.zeros(n_src * n_mod, dtype=np.int32)
+        n_photons[distance_mask] = n_photons_masked
+        n_photons = n_photons.reshape(n_mod, n_src)
         n_ph_per_mod = np.sum(n_photons, axis=1)
 
         # Sample times from flow
         key, subkey = random.split(key)
         samples = sample_model(traf_params_rep, subkey)
 
-        times = np.atleast_1d(np.asarray(samples.squeeze() + time_geo_rep))
+        times = np.atleast_1d(np.asarray(samples).squeeze() + time_geo_rep)
 
         if len(times) == 1:
             ix = np.argwhere(n_ph_per_mod).squeeze()
-            times = [[] if i != ix else times for i in range(module_coords.shape[0])]
+            times = [[] if i != ix else times for i in range(n_mod)]
         else:
             # Split per module and convert to awkward.Array
             times = np.split(times, np.cumsum(n_ph_per_mod)[:-1])
@@ -254,8 +299,8 @@ def make_nflow_photon_likelihood_per_module(
 
         t_res = time - time_geo
 
-        ph_frac = jnp.power(10, counts_net_apply_fn(counts_params, inp_pars)).reshape(
-            source_pos.shape[0]
+        ph_frac = jnp.minimum(
+            1.0, jnp.power(10, counts_net_apply_fn(counts_params, inp_pars)).reshape(source_pos.shape[0])
         )
 
         noise_window_len = 5000
@@ -380,8 +425,10 @@ def make_nflow_photon_likelihood(shape_model_path, counts_model_path):
             mask, eval_l_p(traf_params_rep, t_res), jnp.zeros_like(distance_mask_rep)
         )
 
-        ph_frac = jnp.power(10, counts_net_apply_fn(counts_params, inp_pars)).reshape(
-            source_pos.shape[0], module_coords.shape[0]
+        ph_frac = jnp.minimum(
+            1.0, jnp.power(10, counts_net_apply_fn(counts_params, inp_pars)).reshape(
+                source_pos.shape[0], module_coords.shape[0]
+            )
         )
 
         n_photons = ph_frac * source_photons

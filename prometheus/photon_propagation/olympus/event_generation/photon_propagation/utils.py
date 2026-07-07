@@ -5,6 +5,33 @@ from jax import jit, vmap
 from ..photon_source import PhotonSource, PhotonSourceType
 
 
+def next_bucket(n: int, base: int = 2, minimum: int = 1) -> int:
+    """Return the smallest power of ``base`` that is >= both ``n`` and ``minimum``.
+
+    Array shapes padded to bucket sizes let jitted functions compile once per
+    bucket instead of once per unique shape, which otherwise dominates the
+    runtime of the photon propagation loop.
+
+    Parameters
+    ----------
+    n : int
+        Number of elements that must fit in the bucket.
+    base : int
+        Bucket growth factor.
+    minimum : int
+        Smallest bucket size to return.
+
+    Returns
+    -------
+    int
+        Bucket size.
+    """
+    bucket = minimum
+    while bucket < n:
+        bucket *= base
+    return bucket
+
+
 def source_to_model_input_per_module(module_coords, source_pos, source_dir, source_t0, c_medium):
     """Convert photon source and module coordinates into neural net input.
 

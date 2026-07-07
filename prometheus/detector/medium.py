@@ -6,3 +6,4 @@ class Medium(ExtendedEnum):
 
     WATER = 1
     ICE = 2
+    MEDITERRANEAN = 3

@@ -1,5 +1,5 @@
 ### Metadata ###
-Medium: water
+Medium: mediterranean
 DOM Radius [cm]:	30
 ### Modules ###
 -4.28	3.92	0.00	0	0

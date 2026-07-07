@@ -349,12 +349,17 @@ class GENIESimConfig(ConfigBase):
     random_state_seed : int, optional
         Seed for the NumPy RNG used when ``placement='random'`` or when
         resampling is active.
+    interaction_filter : str, optional
+        If set, only GENIE events whose ``EvtCode`` description contains this
+        substring are kept before resampling. Typical values: ``'CC'``,
+        ``'NC'``.
     """
 
     placement: str = "fixed"
     positions: Optional[list] = None
     n_events: Optional[int] = None
     random_state_seed: Optional[int] = None
+    interaction_filter: Optional[str] = None
 
     _KEY_MAP: ClassVar[dict[str, str]] = {
         "n events": "n_events",
@@ -524,6 +529,7 @@ class OlympusSimConfig(ConfigBase):
     wavelength: int = 700
     splitter: int = 100000
     max_distance: float = 300.0
+    min_distance_from_dom: float = 0.1
 
 
 @dataclass

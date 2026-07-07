@@ -22,6 +22,7 @@ class GENIEInjection(Injection):
 
 
 _M_PI0 = 0.134977  # GeV — π⁰ mass
+_pi0_decay_warned = False
 
 
 def _direction_from_p3(p3: np.ndarray) -> np.ndarray:
@@ -71,11 +72,14 @@ def _decay_pi0(
     list of PropagatableParticle
         Two photon particles produced by the decay.
     """
-    logger.warning(
-        "π⁰ (PDG 111, E=%.4f GeV) is decayed instantaneously to γγ at the event vertex. "
-        "Prometheus does not propagate π⁰ directly.",
-        energy,
-    )
+    global _pi0_decay_warned
+    if not _pi0_decay_warned:
+        logger.warning(
+            "π⁰ (PDG 111) is decayed instantaneously to γγ at the event vertex. "
+            "Prometheus does not propagate π⁰ directly. "
+            "(This message is shown once per run.)"
+        )
+        _pi0_decay_warned = True
 
     p3 = np.asarray(p3, dtype=float)
     p_mag = np.linalg.norm(p3)
@@ -178,12 +182,14 @@ def injection_from_genie_output(
     positions = None
     n_simulate = None
     seed = None
+    interaction_filter = None
 
     if simulation_config is not None:
         placement = getattr(simulation_config, "placement", "fixed")
         positions = getattr(simulation_config, "positions", None)
         n_simulate = getattr(simulation_config, "n_events", None)
         seed = getattr(simulation_config, "random_state_seed", None)
+        interaction_filter = getattr(simulation_config, "interaction_filter", None)
 
     offset = np.zeros(3) if detector_offset is None else np.asarray(detector_offset, dtype=float)
 
@@ -192,10 +198,26 @@ def injection_from_genie_output(
     n_file = len(events_df)
     logger.info("Loaded %d GENIE events from file", n_file)
 
+    if interaction_filter is not None:
+        mask = events_df["event_descr"].str.contains(interaction_filter, case=False)
+        events_df = events_df[mask].reset_index(drop=True)
+        logger.info(
+            "Filtered to %d events matching interaction_filter=%r (from %d)",
+            len(events_df), interaction_filter, n_file,
+        )
+        if len(events_df) == 0:
+            raise ValueError(
+                f"No GENIE events remaining after filtering for {interaction_filter!r}. "
+                "Check the ROOT file and interaction_filter value."
+            )
+
+    # Use post-filter count as the pool size for resampling.
+    n_pool = len(events_df)
+
     rng = np.random.default_rng(seed)
 
-    if n_simulate is not None and n_simulate != n_file:
-        indices = rng.choice(n_file, size=n_simulate, replace=True)
+    if n_simulate is not None and n_simulate != n_pool:
+        indices = rng.choice(n_pool, size=n_simulate, replace=True)
         events_df = events_df.iloc[indices].reset_index(drop=True)
         logger.info(
             "Resampled to %d events (with replacement) from %d source events",

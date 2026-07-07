@@ -27,6 +27,7 @@ from .registry import register_propagator
 # falls back to the Cascadia Basin (P-ONE) water model and emits a warning.
 _WATER_MEDIUM_MAP: dict = {
     Medium.WATER: "pone",
+    Medium.MEDITERRANEAN: "antares",
 }
 
 # Map medium_collections keys to (flow_filename, counts_filename) pairs.
@@ -38,10 +39,10 @@ _FLOW_MODEL_MAP: dict[str, tuple[str, str]] = {
         "photon_arrival_time_nflow_params.pickle",
         "photon_arrival_time_counts_params.pickle",
     ),
-    # "antares": (
-    #     "antares_nflow_params.pickle",
-    #     "antares_counts_params.pickle",
-    # ),
+    "antares": (
+        "antares_nflow_params_low_E.pickle",
+        "antares_counts_params_low_E.pickle",
+    ),
 }
 
 # Default filenames used to detect whether the user has overridden them.
@@ -113,6 +114,7 @@ class OlympusPhotonPropagator(PhotonPropagator):
             counts_path,
             c_medium=self._c_medium_f(self.config["simulation"]["wavelength"]) / 1e9,
             max_distance=self.config["simulation"]["max_distance"],
+            min_distance=self.config["simulation"]["min_distance_from_dom"],
         )
 
     def propagate(self, particle: Particle, rng_key):
@@ -179,17 +181,22 @@ class OlympusPhotonPropagator(PhotonPropagator):
             )
 
         hits = []
-        nstrings = len(set([mod.key[0] for mod in self.detector.modules]))
-        string_idx = 0
-        om_idx = 0
-        oms_per_string = len(self.detector.modules) / nstrings
-        for dom_hits in res_event:
-            if om_idx == oms_per_string:
-                om_idx = 0
-                string_idx += 1
-            for hit in dom_hits:
-                hits.append(Hit(string_idx, om_idx, float(hit), None, None, None, None, None))
-            om_idx += 1
+        # generate_realistic_track returns (None, None) when PROPOSAL yields no
+        # energy losses at all; treat that as an event with no hits.
+        if res_event is not None:
+            nstrings = len(set([mod.key[0] for mod in self.detector.modules]))
+            string_idx = 0
+            om_idx = 0
+            oms_per_string = len(self.detector.modules) / nstrings
+            for dom_hits in res_event:
+                if om_idx == oms_per_string:
+                    om_idx = 0
+                    string_idx += 1
+                for hit in dom_hits:
+                    hits.append(
+                        Hit(string_idx, om_idx, float(hit), None, None, None, None, None)
+                    )
+                om_idx += 1
         particle.hits = hits
         for child in particle.children:
             if child.e < 1:
