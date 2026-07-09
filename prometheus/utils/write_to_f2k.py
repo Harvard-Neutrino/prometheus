@@ -32,7 +32,8 @@ def serialize_loss(loss, parent, output_f2k):
     loss : Loss
         Energy loss to serialize.
     parent : Particle
-        Parent particle that produced the loss; its direction is used.
+        Parent particle that produced the loss; its direction and start
+        time are used.
     output_f2k : file-like object
         Open file to write to.
     """
@@ -42,7 +43,10 @@ def serialize_loss(loss, parent, output_f2k):
     phi = np.arctan2(parent.direction[1], parent.direction[0])
     c = SpeedOfLight
     c /= s_to_ns
-    dt = d / c
+    # Offset by the parent's start time so decay-product light is timed from the
+    # decay vertex (reached at ~L_decay/c), not from t=0. The primary has
+    # time=0, leaving its own losses unchanged.
+    dt = parent.time + d / c
     line = (
         f"TR 0 {0} {loss} {offpos[0]} {offpos[1]} {offpos[2] + PPC_MAGIC_Z}"
         f" {theta} {phi} 0 {loss.e} {dt} \n"

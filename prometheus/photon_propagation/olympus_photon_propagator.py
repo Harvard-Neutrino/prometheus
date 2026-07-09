@@ -138,7 +138,7 @@ class OlympusPhotonPropagator(PhotonPropagator):
         )
 
         injection_event = {
-            "time": 0.0,
+            "time": particle.time,
             "theta": particle.theta,
             "phi": particle.phi,
             "pos": particle.position,

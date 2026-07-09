@@ -59,6 +59,7 @@ def prometheus_inj_to_li_injection_event(truth: ak.Record) -> LIInjectionEvent:
                 ]
             ),
             initial_state,
+            time=0.0,  # interaction-vertex particle starts at t=0
         )
         final_states.append(final_state)
     interaction = Interactions(truth["interaction"])

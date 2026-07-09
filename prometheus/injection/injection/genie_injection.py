@@ -84,8 +84,10 @@ def _decay_pi0(
     if p_mag < 1e-9 or energy <= _M_PI0:
         dir0 = np.array([0.0, 0.0, 1.0])
         return [
-            PropagatableParticle(22, energy / 2.0, position.copy(), dir0.copy(), None, parent),
-            PropagatableParticle(22, energy / 2.0, position.copy(), -dir0, None, parent),
+            PropagatableParticle(
+                22, energy / 2.0, position.copy(), dir0.copy(), None, parent, time=0.0
+            ),
+            PropagatableParticle(22, energy / 2.0, position.copy(), -dir0, None, parent, time=0.0),
         ]
 
     # Boost parameters.
@@ -124,8 +126,8 @@ def _decay_pi0(
     dir2 /= np.linalg.norm(dir2)
 
     return [
-        PropagatableParticle(22, e1, position.copy(), dir1, None, parent),
-        PropagatableParticle(22, e2, position.copy(), dir2, None, parent),
+        PropagatableParticle(22, e1, position.copy(), dir1, None, parent, time=0.0),
+        PropagatableParticle(22, e2, position.copy(), dir2, None, parent, time=0.0),
     ]
 
 
@@ -243,6 +245,7 @@ def injection_from_genie_output(
                         direction,
                         None,
                         initial_state,
+                        time=0.0,  # interaction-vertex particle starts at t=0
                     )
                 )
 
