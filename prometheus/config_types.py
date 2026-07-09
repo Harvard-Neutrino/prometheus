@@ -353,6 +353,12 @@ class GENIESimConfig(ConfigBase):
         If set, only GENIE events whose ``EvtCode`` description contains this
         substring are kept before resampling. Typical values: ``'CC'``,
         ``'NC'``.
+    direction_mode : str
+        How to orient events. ``'as-is'`` keeps the momenta from the ROOT
+        file; ``'isotropic'`` applies a uniform random rotation per event to
+        the initial state and all final states. Use ``'isotropic'`` for
+        atmospheric-neutrino files generated with a fixed gevgen beam
+        direction; the rotation is exact for events on an unpolarized target.
     """
 
     placement: str = "fixed"
@@ -360,10 +366,12 @@ class GENIESimConfig(ConfigBase):
     n_events: Optional[int] = None
     random_state_seed: Optional[int] = None
     interaction_filter: Optional[str] = None
+    direction_mode: str = "as-is"
 
     _KEY_MAP: ClassVar[dict[str, str]] = {
         "n events": "n_events",
         "random state seed": "random_state_seed",
+        "direction mode": "direction_mode",
     }
 
 

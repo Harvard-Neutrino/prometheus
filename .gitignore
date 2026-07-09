@@ -95,6 +95,7 @@ htmlcov/
 event_view.png
 LI           # project-local artifact (confirm intent)
 examples/genie_config/
+.jax_cache/
 
 ########################
 # Keep some model/config files committed (negations override *.pickle below)

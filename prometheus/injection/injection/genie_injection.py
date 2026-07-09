@@ -143,6 +143,32 @@ def _interaction_from_descr(descr: str) -> Interactions:
     return Interactions.OTHER
 
 
+def _random_rotation(rng: np.random.Generator) -> np.ndarray:
+    """Return a rotation matrix drawn uniformly from SO(3).
+
+    Sampled via a uniform random unit quaternion (a normalised 4-vector of
+    standard normals is uniform on the 3-sphere).
+
+    Parameters
+    ----------
+    rng : np.random.Generator
+        Random number generator.
+
+    Returns
+    -------
+    np.ndarray
+        Shape (3, 3) rotation matrix.
+    """
+    q = rng.normal(size=4)
+    q /= np.linalg.norm(q)
+    w, x, y, z = q
+    return np.array([
+        [1.0 - 2.0 * (y * y + z * z), 2.0 * (x * y - w * z), 2.0 * (x * z + w * y)],
+        [2.0 * (x * y + w * z), 1.0 - 2.0 * (x * x + z * z), 2.0 * (y * z - w * x)],
+        [2.0 * (x * z - w * y), 2.0 * (y * z + w * x), 1.0 - 2.0 * (x * x + y * y)],
+    ])
+
+
 def _sample_cylinder(rng: np.random.Generator, radius: float, half_height: float) -> np.ndarray:
     r = radius * np.sqrt(rng.uniform())
     theta = rng.uniform(0.0, 2.0 * np.pi)
@@ -183,6 +209,7 @@ def injection_from_genie_output(
     n_simulate = None
     seed = None
     interaction_filter = None
+    direction_mode = "as-is"
 
     if simulation_config is not None:
         placement = getattr(simulation_config, "placement", "fixed")
@@ -190,6 +217,12 @@ def injection_from_genie_output(
         n_simulate = getattr(simulation_config, "n_events", None)
         seed = getattr(simulation_config, "random_state_seed", None)
         interaction_filter = getattr(simulation_config, "interaction_filter", None)
+        direction_mode = getattr(simulation_config, "direction_mode", "as-is") or "as-is"
+
+    if direction_mode not in ("as-is", "isotropic"):
+        raise ValueError(
+            f"Unknown direction_mode: {direction_mode!r}. Use 'as-is' or 'isotropic'."
+        )
 
     offset = np.zeros(3) if detector_offset is None else np.asarray(detector_offset, dtype=float)
 
@@ -253,7 +286,18 @@ def injection_from_genie_output(
 
     injection_events = []
     for (_, row), vertex in zip(events_df.iterrows(), vertices):
-        init_dir = _direction_from_p3(np.asarray(row["init_inj_p"], dtype=float))
+        init_p3 = np.asarray(row["init_inj_p"], dtype=float)
+        final_p3s = [np.asarray(p3, dtype=float) for p3 in row["final_p"]]
+
+        # One common rotation per event keeps all intra-event angles intact,
+        # so kinematics are unchanged while the event orientation becomes
+        # isotropic (exact for interactions on an unpolarized target).
+        if direction_mode == "isotropic":
+            rotation = _random_rotation(rng)
+            init_p3 = rotation @ init_p3
+            final_p3s = [rotation @ p3 for p3 in final_p3s]
+
+        init_dir = _direction_from_p3(init_p3)
         initial_state = Particle(
             int(row["init_inj_id"]),
             float(row["init_inj_e"]),
@@ -263,15 +307,13 @@ def injection_from_genie_output(
         )
 
         final_states = []
-        for pdg, energy, p3 in zip(row["final_ids"], row["final_e"], row["final_p"]):
+        for pdg, energy, p3 in zip(row["final_ids"], row["final_e"], final_p3s):
             if int(pdg) == 111:
                 final_states.extend(
-                    _decay_pi0(
-                        rng, float(energy), np.asarray(p3, dtype=float), vertex, initial_state
-                    )
+                    _decay_pi0(rng, float(energy), p3, vertex, initial_state)
                 )
             else:
-                direction = _direction_from_p3(np.asarray(p3, dtype=float))
+                direction = _direction_from_p3(p3)
                 final_states.append(
                     PropagatableParticle(
                         int(pdg),
