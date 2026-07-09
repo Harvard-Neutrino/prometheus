@@ -41,16 +41,20 @@ def ppc_sim(particle: Particle, det: Detector, lp: LeptonPropagator, ppc_config:
     if abs(int(particle)) in [11, 13, 15]:  # It's a charged lepton
         lp.energy_losses(particle, det)
     # All of these we consider as point depositions
-    elif abs(int(particle)) == 111:  # It's a neutral pion
-        # TODO handle this correctl by converting to photons after prop
-        return
-    elif abs(int(particle)) == 211 or abs(int(particle)) == 321:  # It's a charged pion
+    elif abs(int(particle)) in (211, 311, 321) or int(particle) == 111:  # pion or kaon
+        # Point-deposit a pion or kaon. A particle and its antiparticle deposit
+        # the same cascade light, so we normalise to the positive code with
+        # abs(); the f2k cascade type then follows from int_type_to_str via
+        # Loss.__str__:
+        #   111 -> "epair" (EM cascade; pi0 -> gamma gamma)
+        #   211 / 311 / 321 -> "hadr" (hadronic cascade)
+        # pi0 is its own antiparticle, so only +111 is physical (a nonsense
+        # -111 falls through to the else: raise below). Depositing here (instead
+        # of the old early return) is the Issue #2 fix: it stops neutral-hadron
+        # (pi0/K0) decay-product light from being silently dropped.
         if np.linalg.norm(particle.position - det.offset) <= r_inice:
-            loss = Loss(int(particle), particle.e, particle.position)
+            loss = Loss(abs(int(particle)), particle.e, particle.position)
             particle.losses.append(loss)
-    elif abs(int(particle)) == 311:  # It's a neutral kaon
-        # TODO handle this correctl by converting to photons after prop
-        return
     elif int(particle) == -2000001006 or int(particle) == 2212:  # Hadrons
         if np.linalg.norm(particle.position - det.offset) <= r_inice:
             loss = Loss(int(particle), particle.e, particle.position)
