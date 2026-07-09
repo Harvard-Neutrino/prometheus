@@ -24,7 +24,7 @@ def _make_propagatable(pdg=13, e=1e3, pos=None, direction=None, idx=0, parent=No
         pos = np.array([0.0, 0.0, 0.0])
     if direction is None:
         direction = np.array([0.0, 0.0, 1.0])
-    return PropagatableParticle(pdg, e, pos, direction, idx, parent)
+    return PropagatableParticle(pdg, e, pos, direction, idx, parent, time=0.0)
 
 
 class TestParticle:

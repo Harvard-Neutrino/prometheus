@@ -65,6 +65,12 @@ class PropagatableParticle(Particle):
     ----------
     parent : Particle
         Particle which created this particle.
+    time : float
+        Time in ns at which this particle starts, relative to the primary
+        interaction vertex. 0.0 for interaction-vertex particles; the parent's
+        flight time to the decay vertex for decay products. Required (no
+        default) so that every propagated particle must state its start time —
+        a silently-defaulted time is the Issue #4 bug class.
     children : list of Particle
         Particles that this one spawned.
     losses : list
@@ -74,6 +80,7 @@ class PropagatableParticle(Particle):
     """
 
     parent: Particle
+    time: float
     children: List[Particle] = field(default_factory=list)
     losses: List = field(default_factory=list)
     hits: List = field(default_factory=list)
