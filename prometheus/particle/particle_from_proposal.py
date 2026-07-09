@@ -1,6 +1,6 @@
 import numpy as np
 
-from ..utils.units import MeV_to_GeV, cm_to_m
+from ..utils.units import MeV_to_GeV, cm_to_m, s_to_ns
 from .particle import PropagatableParticle
 
 
@@ -34,5 +34,8 @@ def particle_from_proposal(
     direction = np.array(
         [pp_particle.direction.x, pp_particle.direction.y, pp_particle.direction.z]
     )
-    child = PropagatableParticle(pdg_code, e, position, direction, None, parent)
+    # PROPOSAL times are in seconds, relative to the propagation start (the
+    # parent's own start), so this is the parent's flight time to this vertex.
+    time = pp_particle.time * s_to_ns
+    child = PropagatableParticle(pdg_code, e, position, direction, None, parent, time=time)
     return child

@@ -109,6 +109,7 @@ def injection_event_from_LI(injection: h5.Group, idx: int) -> LIInjectionEvent:
             ),
             None,
             initial_state,
+            time=0.0,  # interaction-vertex particle starts at t=0
         )
         final_states.append(final_state)
     interaction = INTERACTION_CONVERTER[
