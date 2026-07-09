@@ -39,7 +39,7 @@ def _min_config():
 def _run_dispatch(pdg, monkeypatch):
     """Run ppc_sim far enough to exercise the deposit, then bail before PPC."""
     monkeypatch.setattr(ppc_mod, "should_propagate", lambda p: False)
-    particle = PropagatableParticle(pdg, 1000.0, np.zeros(3), np.array([0.0, 0.0, 1.0]), 0, None)
+    particle = PropagatableParticle(pdg, 1000.0, np.zeros(3), np.array([0.0, 0.0, 1.0]), 0, None, 0.0)
     # lp=None is safe: only charged leptons (11/13/15) touch the propagator.
     ppc_mod.ppc_sim(particle, _FakeDetector(), None, _min_config())
     return particle
@@ -70,7 +70,7 @@ def test_antipi0_falls_through_to_raise(monkeypatch):
     # pi0 is its own antiparticle; a nonsense -111 must NOT be silently
     # deposited. It should hit the else: raise ValueError, not a KeyError.
     monkeypatch.setattr(ppc_mod, "should_propagate", lambda p: False)
-    p = PropagatableParticle(-111, 1000.0, np.zeros(3), np.array([0.0, 0.0, 1.0]), 0, None)
+    p = PropagatableParticle(-111, 1000.0, np.zeros(3), np.array([0.0, 0.0, 1.0]), 0, None, 0.0)
     with pytest.raises(ValueError):
         ppc_mod.ppc_sim(p, _FakeDetector(), None, _min_config())
 
@@ -84,7 +84,7 @@ def test_neutral_hadrons_do_not_raise(monkeypatch):
 
 def test_serialize_emits_correct_tr_names(tmp_path):
     for pdg, expected in ((111, "epair"), (311, "hadr")):
-        p = PropagatableParticle(pdg, 500.0, np.zeros(3), np.array([0.0, 0.0, 1.0]), 0, None)
+        p = PropagatableParticle(pdg, 500.0, np.zeros(3), np.array([0.0, 0.0, 1.0]), 0, None, 0.0)
         p.losses.append(Loss(pdg, 500.0, np.zeros(3)))
         fname = tmp_path / f"out_{pdg}.f2k"
         serialize_to_f2k(p, str(fname))
