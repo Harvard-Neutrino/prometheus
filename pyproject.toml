@@ -63,3 +63,8 @@ select = ["E", "F", "W", "I"]
 "*/__init__.py" = ["F401"]
 "tests/*.py" = ["E402"]
 
+[tool.pydoclint]
+style = 'numpy'
+allow-init-docstring = true
+quiet = true
+

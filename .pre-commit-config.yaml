@@ -1,0 +1,24 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-toml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  # Ruff is already the project's linter/formatter (see [tool.ruff] in
+  # pyproject.toml and .github/workflows/ci.yml). These hooks mirror CI's
+  # `ruff check .` and `ruff format --check .` so violations are caught locally.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.20
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+  # pydoclint checks that each docstring's Parameters/Returns/Raises match the
+  # signature — something ruff does not do. Config in [tool.pydoclint].
+  - repo: https://github.com/jsh9/pydoclint
+    rev: 0.8.3
+    hooks:
+      - id: pydoclint
+        args: ['--config=pyproject.toml']
