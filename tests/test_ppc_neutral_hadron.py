@@ -39,7 +39,9 @@ def _min_config():
 def _run_dispatch(pdg, monkeypatch):
     """Run ppc_sim far enough to exercise the deposit, then bail before PPC."""
     monkeypatch.setattr(ppc_mod, "should_propagate", lambda p: False)
-    particle = PropagatableParticle(pdg, 1000.0, np.zeros(3), np.array([0.0, 0.0, 1.0]), 0, None, 0.0)
+    particle = PropagatableParticle(
+        pdg, 1000.0, np.zeros(3), np.array([0.0, 0.0, 1.0]), 0, None, 0.0
+    )
     # lp=None is safe: only charged leptons (11/13/15) touch the propagator.
     ppc_mod.ppc_sim(particle, _FakeDetector(), None, _min_config())
     return particle
