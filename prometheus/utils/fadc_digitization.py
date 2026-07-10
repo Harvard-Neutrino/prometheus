@@ -33,7 +33,7 @@ TOT_THRESHOLD_PE = _cfg.tot_threshold_pe  # discriminator threshold, PE-equivale
 TOT_MAX_NS = _cfg.tot_max_ns              # 8-bit TDC saturation cap
 
 PMT_DARK_RATE_HZ = _cfg.pmt_dark_rate_hz  # per-PMT rate in seawater (thermal + ⁴⁰K), [Hz]
-                                           # 18 000 Hz total / 24 PMTs 
+                                           # 18 000 Hz total / 24 PMTs
 
 
 def dark_noise(t_min: float, t_max: float, rate_hz: float,
@@ -146,11 +146,11 @@ def generate_fadc_response(
 ) -> tuple[np.ndarray, np.ndarray, int, np.ndarray, np.ndarray]:
     """Apply QE, TTS, dark noise, FADC digitisation, and ToT hit extraction.
 
-    Mirrors ``generate_fast_fadc_response`` from
-    ``a reference implementation``, plus
-    a discriminator threshold-crossing pass over the same analog trace to
-    produce ToT hits (leading-edge time, Time-over-Threshold duration) — the
-    only readout a real KM3NeT DOM front-end provides.
+    Applies QE filtering, TTS smearing, dark-noise injection, and SPE-template
+    FADC digitisation, plus a discriminator threshold-crossing pass over the
+    same analog trace to produce ToT hits (leading-edge time, Time-over-
+    Threshold duration) — the only readout a real KM3NeT DOM front-end
+    provides.
 
     Parameters
     ----------

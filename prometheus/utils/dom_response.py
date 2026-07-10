@@ -5,7 +5,7 @@
 """Optical-module response model: photons to digitised FADC pulses.
 
 Converts raw photon arrival times at a module into per-PMT digitised pulses,
-mirroring the model used in a reference DOM-response implementation:
+via a KM3NeT-style mDOM response model:
 
 1. Quantum efficiency (QE) binomial filter
 2. Photon assignment to individual mDOM PMTs (Lambert cosine-law visibility)

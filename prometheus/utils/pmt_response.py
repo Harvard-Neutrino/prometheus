@@ -65,8 +65,8 @@ def emission_length(pdg: int, energy: float) -> float:
 def fibonacci_sphere(n: int) -> np.ndarray:
     """Return (n, 3) unit vectors uniformly distributed on the sphere.
 
-    Uses the Fibonacci / golden-angle spiral for even coverage of the sphere.
-    The z-axis is taken as the string (vertical) direction.
+    Uses the Fibonacci / golden-angle spiral for even coverage of the
+    sphere. The z-axis is taken as the string (vertical) direction.
 
     Parameters
     ----------

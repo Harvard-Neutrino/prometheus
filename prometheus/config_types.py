@@ -646,8 +646,8 @@ class DOMResponseConfig(ConfigBase):
     Parameters shared by the mDOM response pipeline (QE filtering, per-PMT
     assignment, TTS smearing, dark noise, FADC digitisation, and ToT hit
     extraction) in ``prometheus.utils.dom_response`` and its
-    ``pmt_response``/``fadc_digitization`` siblings. Defaults match the
-    values used by ``a reference DOM-response implementation``.
+    ``pmt_response``/``fadc_digitization`` siblings. Defaults match a
+    KM3NeT-style mDOM.
     """
 
     qe: float = 0.25
