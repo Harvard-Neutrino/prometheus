@@ -121,7 +121,7 @@ def parse_args() -> argparse.Namespace:
                    help="Base random seed for vertex placement.")
     p.add_argument("--run-number", type=int, default=10, metavar="N",
                    help="Run number embedded in output parquet filenames.")
-    p.add_argument("--out", default=str(REPO_ROOT / "output" / "10_effective_volume_genie.csv"),
+    p.add_argument("--out", default=str(REPO_ROOT / "examples" / "output" / "genie" / "effective_volume.csv"),
                    metavar="FILE",
                    help="Output CSV file for per-layer results.")
     p.add_argument("--out-dir", default=None, metavar="DIR",

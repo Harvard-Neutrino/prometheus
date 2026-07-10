@@ -34,8 +34,8 @@ from prometheus.utils.dom_response import process_event
 logger = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-INPUT_FILE = REPO_ROOT / "output" / "10_photons.parquet"
-OUTPUT_FILE = REPO_ROOT / "output" / "11_pulses.parquet"
+INPUT_FILE = REPO_ROOT / "examples" / "output" / "pmts" / "10_photons.parquet"
+OUTPUT_FILE = REPO_ROOT / "examples" / "output" / "pmts" / "11_pulses.parquet"
 
 
 # ---------------------------------------------------------------------------

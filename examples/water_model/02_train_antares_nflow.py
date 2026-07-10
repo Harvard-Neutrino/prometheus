@@ -75,7 +75,7 @@ _TRAIN_FRAC = 0.9
 _SEED = 42
 
 _HERE = Path(__file__).parent
-_DATA_DIR = _HERE.parent / "output" / "photon_mc"
+_DATA_DIR = _HERE.parent / "output" / "water_model"
 _RESOURCE_DIR = _HERE.parent.parent / "resources" / "olympus_resources"
 
 

@@ -27,12 +27,15 @@ python examples/04_event_view.py examples/output/1_photons.parquet \\
 import argparse
 import logging
 import sys
+from pathlib import Path
 
 import matplotlib
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 — registers 3-D projection
 
 logger = logging.getLogger(__name__)
@@ -85,7 +88,7 @@ def parse_args() -> argparse.Namespace:
     )
     p.add_argument(
         "--out",
-        default="event_view.png",
+        default=str(REPO_ROOT / "examples" / "output" / "event_view.png"),
         metavar="FILE",
         help="Output image file.  Set to '' to skip saving.",
     )
@@ -332,12 +335,9 @@ def main() -> None:
 args = parse_args()
 
 # Resolve geo path relative to the repo root when a relative path isn't found
-from pathlib import Path  # noqa: E402
-
 if args.geo:
     _g = Path(args.geo)
     if not _g.is_absolute() and not _g.exists():
-        REPO_ROOT = Path(__file__).resolve().parent.parent
         args.geo = str(REPO_ROOT / args.geo)
 
 if __name__ == "__main__":

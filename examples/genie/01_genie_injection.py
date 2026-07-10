@@ -58,6 +58,7 @@ def main():
 
     config.run.run_number = 1
     config.run.random_state_seed = 1
+    config.run.storage_prefix = str(REPO_ROOT / "examples" / "output" / "genie") + "/"
 
     # --- Detector ---
     config.detector.geo_file = str(GEO_FILE)

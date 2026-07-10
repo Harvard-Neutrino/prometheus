@@ -1,23 +1,22 @@
 #!/usr/bin/env python3
-"""mdom_pmt_view.py
+"""03_mdom_view.py
 Per-PMT hit-pattern visualisation for mDOM signal events.
 
-Three panels:
+Two panels, plus a companion FADC-curves figure:
 
   - **Left:** 3-D detector map.  Each hit module is a sphere whose colour
     encodes its first FADC pulse time and whose size is proportional to the
     total detected PE across all 24 PMTs.
 
-  - **Middle:** Angular hit map on the 24-PMT Fibonacci sphere for the
+  - **Right:** Angular hit map on the 24-PMT Fibonacci sphere for the
     selected module shown as an azimuth × elevation sky map.  Circle area is
     proportional to detected PE; unhit PMTs are shown as small gray dots.  A
     gold ★ marks the photon source direction (vertex → module, reversed).
     The charge-weighted angular discriminant α and the dipole score D are
     printed in the panel title.
 
-  - **Right:** Per-PMT FADC bubble waveform for the selected module (rows =
-    individual PMTs, sorted earliest → latest, same bubble style as
-    08_pulse_view.py).
+  - **Companion figure:** filled FADC step-curves for the most-hit PMTs on
+    the selected module (see ``draw_pmt_curves``).
 
 Input files
 -----------
@@ -58,8 +57,8 @@ from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 — registers 3-D projecti
 logger = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-_DEFAULT_PULSES  = str(REPO_ROOT / "output" / "signal_genie_example_layer0_r10_pulses_mdom.parquet")
-_DEFAULT_PHOTONS = str(REPO_ROOT / "output" / "signal_genie_example_layer0_r10.parquet")
+_DEFAULT_PULSES  = str(REPO_ROOT / "examples" / "output" / "pmts" / "signal_genie_example_layer0_r10_pulses_mdom.parquet")
+_DEFAULT_PHOTONS = str(REPO_ROOT / "examples" / "output" / "genie" / "signal_genie_example_layer0_r10.parquet")
 
 _N_PMTS = 24
 _BG = "#06305a"
@@ -142,8 +141,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--module", type=str, default=None, metavar="STR:DOM",
                    help="string_id:sensor_id of module to show; defaults to "
                         "module with most PE in the selected event")
-    p.add_argument("--out",  default="mdom_pmt_view.png", metavar="FILE",
-                   help="Output image path ('' to skip saving)")
+    p.add_argument("--out",  default=str(REPO_ROOT / "examples" / "output" / "pmts" / "mdom_view.png"),
+                   metavar="FILE", help="Output image path ('' to skip saving)")
     p.add_argument("--show", action="store_true", default=False,
                    help="Open interactive matplotlib window")
     p.add_argument("--dpi",  type=int, default=150)
@@ -412,62 +411,6 @@ def draw_pmt_sphere(ax: plt.Axes,
     leg2.get_title().set_color("white")
 
 
-def draw_pmt_waveforms(ax: plt.Axes, pmt_df: pd.DataFrame) -> None:
-    """Bubble waveform per hit PMT, sorted by first-hit time.
-
-    Each row is one PMT; each bubble is one FADC bin (3.3 ns), area ∝ charge.
-    Mirrors ``draw_waveforms`` in 08_pulse_view.py.
-    """
-    active = pmt_df[pmt_df["total_q"] > 0].sort_values("first_t").reset_index(drop=True)
-    if active.empty:
-        ax.text(0.5, 0.5, "No hits on this module",
-                transform=ax.transAxes, ha="center", color="white", fontsize=9)
-        return
-
-    ax.set_facecolor(_BG)
-
-    all_t = np.concatenate([r for r in active["fadc_t"] if len(r) > 0])
-    all_q = np.concatenate([r for r in active["fadc_q"] if len(r) > 0])
-    t_min_val, t_max_val = all_t.min(), all_t.max()
-    q_max = all_q.max() if all_q.max() > 0 else 1.0
-    norm  = mcolors.Normalize(vmin=t_min_val, vmax=t_max_val)
-
-    for rank, row in active.iterrows():
-        ft = np.asarray(row["fadc_t"])
-        fq = np.asarray(row["fadc_q"])
-        if len(ft) == 0:
-            continue
-        sizes = np.clip(fq / q_max * 280.0, 4.0, 400.0)
-        ax.scatter(ft, np.full(len(ft), rank),
-                   s=sizes, c=TIME_CMAP(norm(ft)),
-                   linewidths=0, zorder=3, alpha=0.9)
-        ax.axhline(rank, color="white", lw=0.3, alpha=0.2, zorder=1)
-
-    n = len(active)
-    ax.set_yticks(range(n))
-    ax.set_yticklabels(
-        [f"PMT {int(r.pmt_id):02d}  ({int(r.n_pe)} PE)" for _, r in active.iterrows()],
-        fontsize=7,
-    )
-    ax.set_xlim(t_min_val - 20.0, t_max_val + 20.0)
-    ax.set_ylim(-0.7, n - 0.3)
-    ax.set_xlabel("Time  [ns]", fontsize=9, color="white")
-    ax.set_title("Per-PMT FADC pulses  (earliest → latest)",
-                 fontsize=9, color="white")
-    ax.tick_params(colors="white", labelsize=7)
-    for spine in ax.spines.values():
-        spine.set_color("white")
-    ax.grid(axis="x", alpha=0.15, linestyle="--", color="white")
-
-    # Charge bubble size legend
-    for frac, label in ((0.1, "10 %"), (0.5, "50 %"), (1.0, "100 %")):
-        ax.scatter([], [], s=frac * 280.0, c="gray", alpha=0.8, label=f"{label} q_max")
-    leg = ax.legend(title="Charge", fontsize=7, title_fontsize=7,
-                    loc="lower right", framealpha=0.3,
-                    facecolor=_BG, labelcolor="white")
-    leg.get_title().set_color("white")
-
-
 # ---------------------------------------------------------------------------
 # FADC step-curves (companion to pulse_view_curves)
 # ---------------------------------------------------------------------------
@@ -629,24 +572,22 @@ def main() -> None:
     print(f"  α = {alpha_val:.2f}°   D = {dipole_val:.3f}")
 
     # ---- Layout ----
-    fig = plt.figure(figsize=(16, 6), facecolor=_BG)
+    fig = plt.figure(figsize=(12, 6), facecolor=_BG)
     gs  = gridspec.GridSpec(
-        1, 3,
-        width_ratios=[3, 2.2, 2.5],
+        1, 2,
+        width_ratios=[3, 2.5],
         figure=fig,
-        wspace=0.40,
+        wspace=0.30,
         left=0.04, right=0.97,
     )
 
     ax3d = fig.add_subplot(gs[0], projection="3d", facecolor=_BG)
     ax3d.set_facecolor(_BG)
     ax_sphere = fig.add_subplot(gs[1])
-    ax_wf     = fig.add_subplot(gs[2])
 
     draw_detector_3d(ax3d, module_df, event_idx, vertex, sel_key)
     draw_pmt_sphere(ax_sphere, pmt_df, source_dir,
                     sel_key[0], sel_key[1], alpha_val, dipole_val)
-    draw_pmt_waveforms(ax_wf, pmt_df)
 
     # ---- Save / show main figure ----
     if args.out:

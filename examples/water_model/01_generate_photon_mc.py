@@ -16,8 +16,8 @@ Usage
     .prometheus_env/bin/python examples/generate_photon_mc.py
 
     # Custom settings
-    .prometheus_env/bin/python examples/generate_photon_mc.py \\
-        --n-photons 200000 --n-distances 60 --d-max 200 --out-dir examples/output/photon_mc
+    .prometheus_env/bin/python examples/water_model/01_generate_photon_mc.py \\
+        --n-photons 200000 --n-distances 60 --d-max 200 --out-dir examples/output/water_model
 """
 
 import argparse
@@ -75,7 +75,7 @@ def parse_args():
     p.add_argument("--seed", type=int, default=0, help="Random seed.")
     p.add_argument(
         "--out-dir",
-        default=str(REPO_ROOT / "examples" / "output" / "photon_mc"),
+        default=str(REPO_ROOT / "examples" / "output" / "water_model"),
         metavar="DIR",
         help="Output directory for NPZ training data.",
     )

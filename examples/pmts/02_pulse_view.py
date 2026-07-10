@@ -42,8 +42,8 @@ from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 — registers 3-D projecti
 logger = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-_DEFAULT_PULSES = str(REPO_ROOT / "output" / "11_pulses.parquet")
-_DEFAULT_PHOTONS = str(REPO_ROOT / "output" / "10_photons.parquet")
+_DEFAULT_PULSES = str(REPO_ROOT / "examples" / "output" / "pmts" / "11_pulses.parquet")
+_DEFAULT_PHOTONS = str(REPO_ROOT / "examples" / "output" / "pmts" / "10_photons.parquet")
 
 # Shared colormap (same as 04_event_view)
 TIME_CMAP = mcolors.LinearSegmentedColormap.from_list(
@@ -72,8 +72,8 @@ def parse_args() -> argparse.Namespace:
                    help="Path to 10_photons.parquet (sensor positions).")
     p.add_argument("--event", type=int, default=None, metavar="IDX",
                    help="0-based event index.  Defaults to brightest by signal PE.")
-    p.add_argument("--out", default="pulse_view.png", metavar="FILE",
-                   help="Output image.  Set to '' to skip saving.")
+    p.add_argument("--out", default=str(REPO_ROOT / "examples" / "output" / "pmts" / "pulse_view.png"),
+                   metavar="FILE", help="Output image.  Set to '' to skip saving.")
     p.add_argument("--show", action="store_true", default=False,
                    help="Open an interactive matplotlib window.")
     p.add_argument("--geo", default=None, metavar="FILE",
