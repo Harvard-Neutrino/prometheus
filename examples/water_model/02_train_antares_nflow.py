@@ -1,12 +1,14 @@
-"""Train KM3NeT/ANTARES normalizing-flow photon models.
+"""02_train_antares_nflow.py
+Train KM3NeT/ANTARES normalizing-flow photon models.
 
-Loads shape_data.npz and counts_data.npz produced by generate_photon_mc.py,
-trains the shape (timing) and counts (survival probability) models, and saves
-the results as pickle files ready for use in the Prometheus photon propagator.
+Loads shape_data.npz and counts_data.npz produced by
+``examples/water_model/01_generate_photon_mc.py``, trains the shape (timing)
+and counts (survival probability) models, and saves the results as pickle
+files ready for use in the Prometheus photon propagator.
 
 Usage
 -----
-    .prometheus_env/bin/python examples/train_antares_nflow.py
+    .prometheus_env/bin/python examples/water_model/02_train_antares_nflow.py
 
 Output
 ------

@@ -20,23 +20,23 @@ Two panels, plus a companion FADC-curves figure:
 
 Input files
 -----------
-``--pulses``  : mDOM pulse parquet from ``07_photon_to_pulses.py``
-                (e.g. ``output/signal_genie_example_layer0_r10_pulses_mdom.parquet``)
-``--photons`` : raw photon parquet from prometheus
-                (e.g. ``output/signal_genie_example_layer0_r10.parquet``)
+``--pulses``  : mDOM pulse parquet from ``examples/pmts/01_photon_to_pulses.py``
+                (e.g. ``examples/output/pmts/signal_genie_example_layer0_r10_pulses_mdom.parquet``)
+``--photons`` : raw photon parquet from Prometheus
+                (e.g. ``examples/output/genie/signal_genie_example_layer0_r10.parquet``)
 
 Usage
 -----
 Run from the repository root::
 
-    .prometheus_env/bin/python examples/mdom_pmt_view.py \\
-        --pulses  output/signal_genie_example_layer0_r10_pulses_mdom.parquet \\
-        --photons output/signal_genie_example_layer0_r10.parquet
+    .prometheus_env/bin/python examples/pmts/03_mdom_view.py \\
+        --pulses  examples/output/pmts/signal_genie_example_layer0_r10_pulses_mdom.parquet \\
+        --photons examples/output/genie/signal_genie_example_layer0_r10.parquet
 
     # Choose a specific event and module
-    .prometheus_env/bin/python examples/mdom_pmt_view.py \\
-        --pulses  output/signal_genie_example_layer0_r10_pulses_mdom.parquet \\
-        --photons output/signal_genie_example_layer0_r10.parquet \\
+    .prometheus_env/bin/python examples/pmts/03_mdom_view.py \\
+        --pulses  examples/output/pmts/signal_genie_example_layer0_r10_pulses_mdom.parquet \\
+        --photons examples/output/genie/signal_genie_example_layer0_r10.parquet \\
         --event 5 --module 3:12
 """
 
@@ -71,7 +71,7 @@ TIME_CMAP = mcolors.LinearSegmentedColormap.from_list(
 
 
 # ---------------------------------------------------------------------------
-# PMT geometry (must match 07_photon_to_pulses.py)
+# PMT geometry (must match examples/pmts/01_photon_to_pulses.py)
 # ---------------------------------------------------------------------------
 
 def _fibonacci_sphere(n: int) -> np.ndarray:
@@ -133,9 +133,9 @@ def parse_args() -> argparse.Namespace:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     p.add_argument("--pulses",  default=_DEFAULT_PULSES,  metavar="FILE",
-                   help="mDOM pulse parquet from 07_photon_to_pulses.py")
+                   help="mDOM pulse parquet from examples/pmts/01_photon_to_pulses.py")
     p.add_argument("--photons", default=_DEFAULT_PHOTONS, metavar="FILE",
-                   help="Raw photon parquet from prometheus")
+                   help="Raw photon parquet from Prometheus")
     p.add_argument("--event",  type=int, default=None, metavar="IDX",
                    help="0-based event index; defaults to event with most PE")
     p.add_argument("--module", type=str, default=None, metavar="STR:DOM",

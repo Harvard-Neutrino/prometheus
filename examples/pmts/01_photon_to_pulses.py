@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""07_photon_to_pulses.py
+"""01_photon_to_pulses.py
 Convert Prometheus photon hits to digitised FADC pulses.
 
 Loads ``output/10_photons.parquet`` produced by an upstream Prometheus run
-(e.g. example 05), groups photon arrival times by module (string_id,
-sensor_id), and applies a KM3NeT-style mDOM response model:
+(e.g. ``examples/genie/01_genie_injection.py``), groups photon arrival
+times by module (string_id, sensor_id), and applies a KM3NeT-style mDOM
+response model:
 
   1. Quantum efficiency (QE) binomial filter
   2. Transit-time spread (TTS) Gaussian smearing
@@ -18,7 +19,7 @@ Usage
 -----
 Run from the repository root::
 
-    .prometheus_env/bin/python examples/07_photon_to_pulses.py
+    .prometheus_env/bin/python examples/pmts/01_photon_to_pulses.py
 """
 
 import argparse

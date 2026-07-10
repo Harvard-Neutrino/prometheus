@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""05_genie_injection.py
+"""01_genie_injection.py
 Example showing how to drive Prometheus with GENIE event data.
 
 Instead of running ``LeptonInjector``, this example reads pre-generated GENIE
@@ -19,7 +19,7 @@ Usage
 -----
 Run from the repository root::
 
-    /path/to/.prometheus_env/bin/python examples/05_genie_injection.py
+    /path/to/.prometheus_env/bin/python examples/genie/01_genie_injection.py
 """
 
 import argparse

@@ -337,7 +337,7 @@ def generate_training_data(
     # --- JIT-compile batch propagator (compiled once, reused for all distances) ---
     @jax.jit
     def run_batch(keys, source_pos):
-        """Propagate N photons from source_pos; return (init_dirs, final_states)."""
+        """Propagate N photons from ``source_pos``; return ``(init_dirs, final_states)``."""
 
         def run_one(key):
             k_dir, k_wl, k_prop = random.split(key, 3)

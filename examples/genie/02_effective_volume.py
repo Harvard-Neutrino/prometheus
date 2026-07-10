@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""10_effective_volume_genie.py
+"""02_effective_volume.py
 Estimate the effective detection volume for GENIE-injected events.
 
 Uses a layered simulation strategy that exploits the approximate translational
@@ -46,10 +46,10 @@ Usage
 -----
 Run from the repository root::
 
-    .prometheus_env/bin/python examples/10_effective_volume_genie.py
+    .prometheus_env/bin/python examples/genie/02_effective_volume.py
 
     # Custom file, geometry, and statistics
-    .prometheus_env/bin/python examples/10_effective_volume_genie.py \\
+    .prometheus_env/bin/python examples/genie/02_effective_volume.py \\
         --file tests/resources/genie_example.root \\
         --geo resources/geofiles/arca.geo \\
         --n-events 500 --n-layers 3 --min-hits 5

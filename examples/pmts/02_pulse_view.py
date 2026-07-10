@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""08_pulse_view.py
+"""02_pulse_view.py
 Visualise digitised module responses for one event.
 
 Produces two figures:
@@ -12,18 +12,18 @@ Produces two figures:
   - **FADC charge curves.**  Filled step-plot of charge vs time for the 3
     most-hit modules, one figure with all three curves overlaid.
 
-Reads ``output/11_pulses.parquet`` (from example 07) and
-``output/10_photons.parquet`` (from an upstream Prometheus run, used only for
-sensor positions).
+Reads ``output/11_pulses.parquet`` (from
+``examples/pmts/01_photon_to_pulses.py``) and ``output/10_photons.parquet``
+(from an upstream Prometheus run, used only for sensor positions).
 
 Usage
 -----
 Run from the repository root::
 
-    .prometheus_env/bin/python examples/08_pulse_view.py
+    .prometheus_env/bin/python examples/pmts/02_pulse_view.py
 
     # Specific event index
-    .prometheus_env/bin/python examples/08_pulse_view.py --event 3
+    .prometheus_env/bin/python examples/pmts/02_pulse_view.py --event 3
 """
 
 import argparse
@@ -318,7 +318,8 @@ def main() -> None:
         if not Path(path).exists():
             logger.error("File not found: %s", path)
             logger.info("Run an upstream Prometheus injection/propagation "
-                        "script (e.g. example 05) followed by example 07 first.")
+                        "script (e.g. examples/genie/01_genie_injection.py) "
+                        "followed by examples/pmts/01_photon_to_pulses.py first.")
             sys.exit(1)
 
     event_idx, pulses_row, photons_row = load_event(

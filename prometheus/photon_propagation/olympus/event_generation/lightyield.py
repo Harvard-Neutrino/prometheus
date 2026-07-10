@@ -65,7 +65,7 @@ _PDG_REMAP: dict = {
 
 
 def _remap_pdg(particle_id: int) -> int:
-    """Return the fennel-supported PDG code closest to *particle_id*."""
+    """Return the fennel-supported PDG code closest to ``particle_id``."""
     return _PDG_REMAP.get(particle_id, particle_id)
 
 

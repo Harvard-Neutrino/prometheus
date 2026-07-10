@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""generate_photon_mc.py
+"""01_generate_photon_mc.py
 Generate KM3NeT Olympus training data using photon Monte Carlo.
 
 Thin CLI wrapper around
@@ -13,7 +13,7 @@ Output
 
 Usage
 -----
-    .prometheus_env/bin/python examples/generate_photon_mc.py
+    .prometheus_env/bin/python examples/water_model/01_generate_photon_mc.py
 
     # Custom settings
     .prometheus_env/bin/python examples/water_model/01_generate_photon_mc.py \\
@@ -38,7 +38,7 @@ try:
         generate_training_data,
     )
 except Exception:
-    logger.exception("hyperion/JAX not available — run from the prometheus repository root.")
+    logger.exception("hyperion/JAX not available — run from the Prometheus repository root.")
     sys.exit(1)
 
 
