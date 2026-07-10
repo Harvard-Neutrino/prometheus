@@ -9,411 +9,53 @@ mirroring the model used in a reference DOM-response implementation:
 
 1. Quantum efficiency (QE) binomial filter
 2. Photon assignment to individual mDOM PMTs (Lambert cosine-law visibility)
+   -- :mod:`prometheus.utils.pmt_response`
 3. Transit-time spread (TTS) Gaussian smearing
 4. Dark noise injection (thermal + correlated radioactive bursts)
 5. SPE-template convolution and FADC digitisation (3.3 ns bins)
+   -- :mod:`prometheus.utils.fadc_digitization`
+
+This module keeps the top-level orchestrator, :func:`process_event`, and
+re-exports the building blocks from ``pmt_response``/``fadc_digitization``
+(plus their constants, now sourced from
+:class:`prometheus.config_types.DOMResponseConfig`) so existing
+``from prometheus.utils.dom_response import X`` call sites keep working.
 """
 
 from collections import defaultdict
 
 import numpy as np
-import scipy.signal
 
-# iDOM / module-level parameters
-QE = 0.25           # total module quantum efficiency
-TTS_NS = 2.0        # transit-time spread sigma [ns]
-FADC_BIN_NS = 3.3
-SIM_DT_NS = 0.1
-PULSE_WIDTH_NS = 2.5
-SPE_MEAN = 1.0
-SPE_SIGMA = 0.3
+from prometheus.config_types import DOMResponseConfig
+from prometheus.utils.fadc_digitization import (  # noqa: F401
+    FADC_BIN_NS,
+    PMT_DARK_RATE_HZ,
+    PULSE_WIDTH_NS,
+    SIM_DT_NS,
+    SPE_MEAN,
+    SPE_SIGMA,
+    TOT_MAX_NS,
+    TOT_THRESHOLD_PE,
+    TTS_NS,
+    _threshold_crossings,
+    dark_noise,
+    generate_fadc_response,
+)
+from prometheus.utils.pmt_response import (  # noqa: F401
+    EC_WATER_GEV,
+    LAMBDA_I_WATER_M,
+    MUON_DEDX_GEV_PER_M,
+    MUON_MASS_GEV,
+    N_PMTS,
+    PMT_DIRS,
+    X0_WATER_M,
+    assign_to_pmts,
+    assign_to_pmts_per_hit,
+    emission_length,
+    fibonacci_sphere,
+)
 
-# Front-end discriminator / ToT digitisation (real KM3NeT DOMs report only a
-# leading-edge hit time and a Time-over-Threshold duration, not a charge).
-TOT_THRESHOLD_PE = 0.3   # discriminator threshold, PE-equivalent amplitude
-TOT_MAX_NS = 255.0       # 8-bit TDC saturation cap
-
-# mDOM multi-PMT parameters 
-N_PMTS = 24                # PMTs per mDOM
-PMT_DARK_RATE_HZ = 750.0   # per-PMT rate in seawater (thermal + ⁴⁰K), [Hz]
-                           # 18 000 Hz total / 24 PMTs 
-
-# Shower / track development in water, for emission-point estimates
-X0_WATER_M = 0.361         # radiation length [m]
-EC_WATER_GEV = 0.0787      # EM critical energy [GeV]
-LAMBDA_I_WATER_M = 0.83    # nuclear interaction length [m]
-MUON_DEDX_GEV_PER_M = 0.2  # minimum-ionising dE/dx [GeV/m]
-MUON_MASS_GEV = 0.10566
-
-
-def emission_length(pdg: int, energy: float) -> float:
-    """Return the distance from the vertex to the mean light-emission point [m].
-
-    Photons reaching a module travel in straight lines from where they were
-    emitted, so the arrival direction at the module is set by the emission
-    point, not by the Cherenkov angle.  This helper places each particle's
-    light at a characteristic depth: shower maximum for EM showers, the track
-    midpoint for muons, and roughly one half interaction length for hadrons.
-
-    Parameters
-    ----------
-    pdg : int
-        Particle PDG code.
-    energy : float
-        Total particle energy [GeV].
-
-    Returns
-    -------
-    float
-        Emission distance along the particle direction [m].
-    """
-    a = abs(int(pdg))
-    if a in (11, 22):
-        return X0_WATER_M * max(np.log(max(energy, 1e-3) / EC_WATER_GEV), 0.5)
-    if a == 13:
-        e_kin = max(energy - MUON_MASS_GEV, 0.0)
-        return 0.5 * e_kin / MUON_DEDX_GEV_PER_M
-    return 0.5 * LAMBDA_I_WATER_M
-
-
-def fibonacci_sphere(n: int) -> np.ndarray:
-    """Return (n, 3) unit vectors uniformly distributed on the sphere.
-
-    Uses the Fibonacci / golden-angle spiral for even coverage of the sphere.
-    The z-axis is taken as the string (vertical) direction.
-
-    Parameters
-    ----------
-    n : int
-        Number of directions.
-
-    Returns
-    -------
-    np.ndarray
-        Shape (n, 3) unit vectors.
-    """
-    golden = (1.0 + np.sqrt(5.0)) / 2.0
-    i = np.arange(n, dtype=float)
-    theta = np.arccos(1.0 - 2.0 * (i + 0.5) / n)   # polar  [0, π]
-    phi   = 2.0 * np.pi * i / golden                  # azimuthal
-    return np.column_stack([
-        np.sin(theta) * np.cos(phi),
-        np.sin(theta) * np.sin(phi),
-        np.cos(theta),
-    ])
-
-
-# Pre-computed PMT directions in the module frame (fixed, z-axis = string axis).
-PMT_DIRS: np.ndarray = fibonacci_sphere(N_PMTS)   # shape (24, 3)
-
-
-def dark_noise(t_min: float, t_max: float, rate_hz: float,
-               correlated_frac: float = 0.2,
-               rng: np.random.Generator | None = None) -> np.ndarray:
-    """Sample dark-noise hit times in a window.
-
-    Combines a uniform thermal component with correlated radioactive bursts
-    (exponentially spaced secondaries).
-
-    Parameters
-    ----------
-    t_min, t_max : float
-        Window bounds [ns].
-    rate_hz : float
-        Total dark-noise rate [Hz].
-    correlated_frac : float
-        Fraction of the rate attributed to correlated bursts.
-    rng : np.random.Generator, optional
-        Random number generator.
-
-    Returns
-    -------
-    np.ndarray
-        Sorted noise hit times [ns].
-    """
-    if rng is None:
-        rng = np.random.default_rng()
-    dt_s = max(0.0, t_max - t_min) * 1e-9
-
-    n_th = rng.poisson(rate_hz * (1.0 - correlated_frac) * dt_s)
-    thermal = rng.uniform(t_min, t_max, n_th)
-
-    burst_rate = rate_hz * correlated_frac / 2.5
-    burst_times: list[float] = []
-    for _ in range(rng.poisson(burst_rate * dt_s)):
-        t0 = float(rng.uniform(t_min, t_max))
-        burst_times.append(t0)
-        n_sec = rng.poisson(1.5)
-        if n_sec > 0:
-            burst_times.extend((t0 + rng.exponential(15.0, n_sec)).tolist())
-
-    parts = [thermal]
-    if burst_times:
-        parts.append(np.asarray(burst_times))
-    return np.sort(np.concatenate(parts)) if len(parts) > 1 or n_th > 0 else np.array([])
-
-
-def _threshold_crossings(
-    amplitude: np.ndarray,
-    t_analog: np.ndarray,
-    threshold_pe: float,
-    max_tot_ns: float,
-) -> tuple[np.ndarray, np.ndarray]:
-    """Return leading-edge times and ToT durations from an amplitude trace.
-
-    Mirrors a real front-end discriminator: a hit is any contiguous run of
-    samples above ``threshold_pe``; its ToT is the run's duration, floored to
-    whole nanoseconds (a discriminator/TDC cannot report sub-ns durations)
-    with a 1 ns floor, and capped at ``max_tot_ns`` (TDC saturation).
-    Overlapping pulses (pile-up) merge into one longer run automatically
-    since they are already summed in ``amplitude``.
-
-    Parameters
-    ----------
-    amplitude : np.ndarray
-        Instantaneous pulse amplitude, PE-equivalent (peak = 1 for an
-        isolated single-PE hit), sampled on ``t_analog``.
-    t_analog : np.ndarray
-        Sample times [ns] of ``amplitude``.
-    threshold_pe : float
-        Discriminator threshold, PE-equivalent amplitude.
-    max_tot_ns : float
-        ToT saturation cap [ns].
-
-    Returns
-    -------
-    hit_t : np.ndarray
-        Leading-edge time of each hit [ns].
-    tot_ns : np.ndarray
-        ToT duration of each hit [ns].
-    """
-    above = amplitude > threshold_pe
-    if not np.any(above):
-        return np.array([]), np.array([])
-
-    edges = np.diff(above.astype(np.int8))
-    starts = np.where(edges == 1)[0] + 1
-    ends = np.where(edges == -1)[0] + 1
-    if above[0]:
-        starts = np.r_[0, starts]
-    if above[-1]:
-        ends = np.r_[ends, len(above)]
-
-    dt = t_analog[1] - t_analog[0]
-    hit_t = t_analog[starts]
-    duration = t_analog[ends - 1] - hit_t + dt
-    tot_ns = np.minimum(np.maximum(np.floor(duration), 1.0), max_tot_ns)
-    return hit_t, tot_ns
-
-
-def generate_fadc_response(
-    photon_times: np.ndarray,
-    qe: float = 1.0,          # QE already applied upstream when qe=1
-    tts_ns: float = TTS_NS,
-    dark_rate_hz: float = PMT_DARK_RATE_HZ,
-    rng: np.random.Generator | None = None,
-    tot_threshold_pe: float = TOT_THRESHOLD_PE,
-    tot_max_ns: float = TOT_MAX_NS,
-) -> tuple[np.ndarray, np.ndarray, int, np.ndarray, np.ndarray]:
-    """Apply QE, TTS, dark noise, FADC digitisation, and ToT hit extraction.
-
-    Mirrors ``generate_fast_fadc_response`` from
-    ``a reference implementation``, plus
-    a discriminator threshold-crossing pass over the same analog trace to
-    produce ToT hits (leading-edge time, Time-over-Threshold duration) — the
-    only readout a real KM3NeT DOM front-end provides.
-
-    Parameters
-    ----------
-    photon_times : ndarray
-        Photon arrival times at the module face [ns].
-    qe : float
-        Quantum efficiency (detection probability per photon).
-    tts_ns : float
-        Transit-time spread sigma [ns].
-    dark_rate_hz : float
-        Total PMT dark-noise rate [Hz].
-    rng : numpy.random.Generator, optional
-        Random number generator.
-    tot_threshold_pe : float
-        Discriminator threshold, PE-equivalent amplitude.
-    tot_max_ns : float
-        ToT saturation cap [ns].
-
-    Returns
-    -------
-    fadc_t : ndarray
-        FADC bin centre times [ns].
-    fadc_q : ndarray
-        Charge in each non-zero bin [PE].
-    n_signal_pe : int
-        Number of detected signal photoelectrons before dark noise.
-    hit_t : ndarray
-        Leading-edge time of each ToT hit [ns].
-    tot_ns : ndarray
-        ToT duration of each hit [ns].
-    """
-    if rng is None:
-        rng = np.random.default_rng()
-    times = np.asarray(photon_times, dtype=float)
-
-    # QE filter (only applied when qe < 1; for per-PMT calls qe=1 since
-    # assignment already encoded the geometric + QE probability)
-    detected = rng.random(len(times)) < qe
-    signal_t = times[detected] + rng.normal(0.0, tts_ns, detected.sum())
-    n_signal_pe = len(signal_t)
-
-    if n_signal_pe > 0:
-        win_min = float(np.floor(signal_t.min())) - 100.0
-        win_max = float(np.ceil(signal_t.max())) + 100.0
-    else:
-        win_min, win_max = 0.0, 1000.0
-
-    noise_t = dark_noise(win_min, win_max, dark_rate_hz, rng=rng)
-    all_t = np.sort(np.concatenate([signal_t, noise_t])) if len(noise_t) else np.sort(signal_t)
-
-    if len(all_t) == 0:
-        return np.array([]), np.array([]), n_signal_pe, np.array([]), np.array([])
-
-    charges = np.clip(rng.normal(SPE_MEAN, SPE_SIGMA, len(all_t)), 0.1, None)
-
-    # Sparse clustering to avoid allocating dense arrays over large windows
-    gaps = np.diff(all_t)
-    split_idx = np.where(gaps > 50.0)[0] + 1
-    t_clusters = np.split(all_t, split_idx)
-    q_clusters = np.split(charges, split_idx)
-
-    template_t = np.arange(-15.0, 15.0, SIM_DT_NS)
-    spe_template_raw = np.exp(-0.5 * (template_t / PULSE_WIDTH_NS) ** 2)
-    template_peak_scale = spe_template_raw.sum()
-    spe_template = spe_template_raw / template_peak_scale
-
-    fadc_t_parts: list[np.ndarray] = []
-    fadc_q_parts: list[np.ndarray] = []
-    hit_t_parts: list[np.ndarray] = []
-    tot_ns_parts: list[np.ndarray] = []
-
-    for ct, cq in zip(t_clusters, q_clusters):
-        if len(ct) == 0:
-            continue
-        c_min = np.floor((ct[0] - 20.0) / FADC_BIN_NS) * FADC_BIN_NS
-        c_max = np.ceil((ct[-1] + 20.0) / FADC_BIN_NS) * FADC_BIN_NS
-
-        hi_bins = np.arange(c_min, c_max + SIM_DT_NS, SIM_DT_NS)
-        hi_sig, _ = np.histogram(ct, bins=hi_bins, weights=cq)
-        analog = scipy.signal.fftconvolve(hi_sig, spe_template, mode="same")
-        t_analog = hi_bins[:-1] + SIM_DT_NS / 2.0
-
-        fadc_bins = np.arange(c_min, c_max + FADC_BIN_NS, FADC_BIN_NS)
-        digi_q, _ = np.histogram(t_analog, bins=fadc_bins, weights=analog)
-        fadc_t_cluster = fadc_bins[:-1] + FADC_BIN_NS / 2.0
-
-        mask = digi_q > 0.05
-        fadc_t_parts.append(fadc_t_cluster[mask])
-        fadc_q_parts.append(digi_q[mask])
-
-        # ToT: threshold-crossing on the (un-normalised) amplitude trace, so
-        # an isolated single-PE hit peaks at ~1.0 PE-equivalent amplitude.
-        amplitude = analog * template_peak_scale
-        hit_t_cluster, tot_ns_cluster = _threshold_crossings(
-            amplitude, t_analog, tot_threshold_pe, tot_max_ns
-        )
-        hit_t_parts.append(hit_t_cluster)
-        tot_ns_parts.append(tot_ns_cluster)
-
-    if not fadc_t_parts:
-        return np.array([]), np.array([]), n_signal_pe, np.array([]), np.array([])
-
-    fadc_t = np.concatenate(fadc_t_parts)
-    fadc_q = np.concatenate(fadc_q_parts)
-    order = np.argsort(fadc_t)
-
-    hit_t = np.concatenate(hit_t_parts)
-    tot_ns = np.concatenate(tot_ns_parts)
-    tot_order = np.argsort(hit_t)
-
-    return (fadc_t[order], fadc_q[order], n_signal_pe,
-            hit_t[tot_order], tot_ns[tot_order])
-
-
-def assign_to_pmts(
-    photon_times: np.ndarray,
-    source_dir: np.ndarray,
-    pmt_dirs: np.ndarray,
-    qe: float,
-    rng: np.random.Generator,
-) -> dict:
-    """Assign photons to individual PMTs using Lambert's cosine-law visibility.
-
-    Parameters
-    ----------
-    photon_times : ndarray
-        Arrival times at the module centre [ns].
-    source_dir : ndarray, shape (3,)
-        Unit vector pointing FROM the module TOWARD the photon source (vertex).
-        PMTs whose normals align with this direction are the "lit" ones.
-    pmt_dirs : ndarray, shape (N_PMT, 3)
-        Outward-facing unit normals of each PMT.
-    qe : float
-        Total module quantum efficiency.
-    rng : numpy.random.Generator
-        Random number generator.
-
-    Returns
-    -------
-    dict
-        Mapping of pmt_index -> array of detected photon times.
-    """
-    source_dirs = np.broadcast_to(source_dir, (len(photon_times), 3))
-    return assign_to_pmts_per_hit(photon_times, source_dirs, pmt_dirs, qe, rng)
-
-
-def assign_to_pmts_per_hit(
-    photon_times: np.ndarray,
-    source_dirs: np.ndarray,
-    pmt_dirs: np.ndarray,
-    qe: float,
-    rng: np.random.Generator,
-) -> dict:
-    """Assign photons to PMTs with a per-photon arrival direction.
-
-    Generalises :func:`assign_to_pmts`: each photon carries its own unit
-    vector pointing from the module toward its emission point, so photons
-    from different particles of the same event illuminate different PMT
-    subsets.  This is what preserves event topology in the intra-module hit
-    pattern.
-
-    Parameters
-    ----------
-    photon_times : ndarray
-        Arrival times at the module centre [ns].
-    source_dirs : ndarray, shape (n_photons, 3)
-        Per-photon unit vectors from the module toward the emission point.
-    pmt_dirs : ndarray, shape (N_PMT, 3)
-        Outward-facing unit normals of each PMT.
-    qe : float
-        Total module quantum efficiency.
-    rng : numpy.random.Generator
-        Random number generator.
-
-    Returns
-    -------
-    dict
-        Mapping of pmt_index -> array of detected photon times.
-    """
-    n_pmts = len(pmt_dirs)
-    uniform = np.ones(n_pmts) / n_pmts
-
-    pmt_times: dict[int, list] = defaultdict(list)
-    for t, s_dir in zip(photon_times, source_dirs):
-        if rng.random() >= qe:
-            continue
-        vis = np.maximum(0.0, pmt_dirs @ s_dir)
-        vis_sum = vis.sum()
-        p = vis / vis_sum if vis_sum > 0.0 else uniform
-        pmt_idx = int(rng.choice(n_pmts, p=p))
-        pmt_times[pmt_idx].append(float(t))
-    return {k: np.array(v) for k, v in pmt_times.items()}
+QE = DOMResponseConfig().qe  # total module quantum efficiency
 
 
 def process_event(
