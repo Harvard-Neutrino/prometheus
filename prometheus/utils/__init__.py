@@ -10,7 +10,6 @@ from .error_handling import (
 )
 from .extended_enum import ExtendedEnum
 from .find_cog import find_cog
-
 from .iter_or_rep import iter_or_rep
 from .layered_sim import (
     CellGeometry,
