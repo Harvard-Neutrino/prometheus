@@ -6,6 +6,7 @@ Runs a single-event CPU-only simulation using the demo ice geo file
 and the south-pole PPC ice tables bundled in resources/.
 """
 
+import argparse
 import logging
 import sys
 
@@ -34,6 +35,8 @@ except Exception:
 
 
 def main():
+    argparse.ArgumentParser(description=__doc__).parse_args()
+
     # Minimal runtime configuration
     config.run.run_number = 2
     config.run.random_state_seed = 2
