@@ -28,6 +28,11 @@ PULSE_WIDTH_NS = 2.5
 SPE_MEAN = 1.0
 SPE_SIGMA = 0.3
 
+# Front-end discriminator / ToT digitisation (real KM3NeT DOMs report only a
+# leading-edge hit time and a Time-over-Threshold duration, not a charge).
+TOT_THRESHOLD_PE = 0.3   # discriminator threshold, PE-equivalent amplitude
+TOT_MAX_NS = 255.0       # 8-bit TDC saturation cap
+
 # mDOM multi-PMT parameters 
 N_PMTS = 24                # PMTs per mDOM
 PMT_DARK_RATE_HZ = 750.0   # per-PMT rate in seawater (thermal + ⁴⁰K), [Hz]
@@ -148,17 +153,75 @@ def dark_noise(t_min: float, t_max: float, rate_hz: float,
     return np.sort(np.concatenate(parts)) if len(parts) > 1 or n_th > 0 else np.array([])
 
 
+def _threshold_crossings(
+    amplitude: np.ndarray,
+    t_analog: np.ndarray,
+    threshold_pe: float,
+    max_tot_ns: float,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Return leading-edge times and ToT durations from an amplitude trace.
+
+    Mirrors a real front-end discriminator: a hit is any contiguous run of
+    samples above ``threshold_pe``; its ToT is the run's duration, floored to
+    whole nanoseconds (a discriminator/TDC cannot report sub-ns durations)
+    with a 1 ns floor, and capped at ``max_tot_ns`` (TDC saturation).
+    Overlapping pulses (pile-up) merge into one longer run automatically
+    since they are already summed in ``amplitude``.
+
+    Parameters
+    ----------
+    amplitude : np.ndarray
+        Instantaneous pulse amplitude, PE-equivalent (peak = 1 for an
+        isolated single-PE hit), sampled on ``t_analog``.
+    t_analog : np.ndarray
+        Sample times [ns] of ``amplitude``.
+    threshold_pe : float
+        Discriminator threshold, PE-equivalent amplitude.
+    max_tot_ns : float
+        ToT saturation cap [ns].
+
+    Returns
+    -------
+    hit_t : np.ndarray
+        Leading-edge time of each hit [ns].
+    tot_ns : np.ndarray
+        ToT duration of each hit [ns].
+    """
+    above = amplitude > threshold_pe
+    if not np.any(above):
+        return np.array([]), np.array([])
+
+    edges = np.diff(above.astype(np.int8))
+    starts = np.where(edges == 1)[0] + 1
+    ends = np.where(edges == -1)[0] + 1
+    if above[0]:
+        starts = np.r_[0, starts]
+    if above[-1]:
+        ends = np.r_[ends, len(above)]
+
+    dt = t_analog[1] - t_analog[0]
+    hit_t = t_analog[starts]
+    duration = t_analog[ends - 1] - hit_t + dt
+    tot_ns = np.minimum(np.maximum(np.floor(duration), 1.0), max_tot_ns)
+    return hit_t, tot_ns
+
+
 def generate_fadc_response(
     photon_times: np.ndarray,
     qe: float = 1.0,          # QE already applied upstream when qe=1
     tts_ns: float = TTS_NS,
     dark_rate_hz: float = PMT_DARK_RATE_HZ,
     rng: np.random.Generator | None = None,
-) -> tuple[np.ndarray, np.ndarray, int]:
-    """Apply QE, TTS, dark noise, and FADC digitisation to photon arrival times.
+    tot_threshold_pe: float = TOT_THRESHOLD_PE,
+    tot_max_ns: float = TOT_MAX_NS,
+) -> tuple[np.ndarray, np.ndarray, int, np.ndarray, np.ndarray]:
+    """Apply QE, TTS, dark noise, FADC digitisation, and ToT hit extraction.
 
     Mirrors ``generate_fast_fadc_response`` from
-    ``a reference implementation``.
+    ``a reference implementation``, plus
+    a discriminator threshold-crossing pass over the same analog trace to
+    produce ToT hits (leading-edge time, Time-over-Threshold duration) — the
+    only readout a real KM3NeT DOM front-end provides.
 
     Parameters
     ----------
@@ -172,6 +235,10 @@ def generate_fadc_response(
         Total PMT dark-noise rate [Hz].
     rng : numpy.random.Generator, optional
         Random number generator.
+    tot_threshold_pe : float
+        Discriminator threshold, PE-equivalent amplitude.
+    tot_max_ns : float
+        ToT saturation cap [ns].
 
     Returns
     -------
@@ -181,6 +248,10 @@ def generate_fadc_response(
         Charge in each non-zero bin [PE].
     n_signal_pe : int
         Number of detected signal photoelectrons before dark noise.
+    hit_t : ndarray
+        Leading-edge time of each ToT hit [ns].
+    tot_ns : ndarray
+        ToT duration of each hit [ns].
     """
     if rng is None:
         rng = np.random.default_rng()
@@ -202,7 +273,7 @@ def generate_fadc_response(
     all_t = np.sort(np.concatenate([signal_t, noise_t])) if len(noise_t) else np.sort(signal_t)
 
     if len(all_t) == 0:
-        return np.array([]), np.array([]), n_signal_pe
+        return np.array([]), np.array([]), n_signal_pe, np.array([]), np.array([])
 
     charges = np.clip(rng.normal(SPE_MEAN, SPE_SIGMA, len(all_t)), 0.1, None)
 
@@ -213,11 +284,14 @@ def generate_fadc_response(
     q_clusters = np.split(charges, split_idx)
 
     template_t = np.arange(-15.0, 15.0, SIM_DT_NS)
-    spe_template = np.exp(-0.5 * (template_t / PULSE_WIDTH_NS) ** 2)
-    spe_template /= spe_template.sum()
+    spe_template_raw = np.exp(-0.5 * (template_t / PULSE_WIDTH_NS) ** 2)
+    template_peak_scale = spe_template_raw.sum()
+    spe_template = spe_template_raw / template_peak_scale
 
     fadc_t_parts: list[np.ndarray] = []
     fadc_q_parts: list[np.ndarray] = []
+    hit_t_parts: list[np.ndarray] = []
+    tot_ns_parts: list[np.ndarray] = []
 
     for ct, cq in zip(t_clusters, q_clusters):
         if len(ct) == 0:
@@ -238,13 +312,28 @@ def generate_fadc_response(
         fadc_t_parts.append(fadc_t_cluster[mask])
         fadc_q_parts.append(digi_q[mask])
 
+        # ToT: threshold-crossing on the (un-normalised) amplitude trace, so
+        # an isolated single-PE hit peaks at ~1.0 PE-equivalent amplitude.
+        amplitude = analog * template_peak_scale
+        hit_t_cluster, tot_ns_cluster = _threshold_crossings(
+            amplitude, t_analog, tot_threshold_pe, tot_max_ns
+        )
+        hit_t_parts.append(hit_t_cluster)
+        tot_ns_parts.append(tot_ns_cluster)
+
     if not fadc_t_parts:
-        return np.array([]), np.array([]), n_signal_pe
+        return np.array([]), np.array([]), n_signal_pe, np.array([]), np.array([])
 
     fadc_t = np.concatenate(fadc_t_parts)
     fadc_q = np.concatenate(fadc_q_parts)
     order = np.argsort(fadc_t)
-    return fadc_t[order], fadc_q[order], n_signal_pe
+
+    hit_t = np.concatenate(hit_t_parts)
+    tot_ns = np.concatenate(tot_ns_parts)
+    tot_order = np.argsort(hit_t)
+
+    return (fadc_t[order], fadc_q[order], n_signal_pe,
+            hit_t[tot_order], tot_ns[tot_order])
 
 
 def assign_to_pmts(
@@ -334,6 +423,8 @@ def process_event(
     qe: float = QE,
     dark_rate_hz: float = PMT_DARK_RATE_HZ,
     source_points: np.ndarray = None,
+    tot_threshold_pe: float = TOT_THRESHOLD_PE,
+    tot_max_ns: float = TOT_MAX_NS,
 ) -> dict:
     """Group photon hits by module, assign to individual PMTs, build FADC pulses.
 
@@ -356,13 +447,21 @@ def process_event(
         that produced each hit, see :func:`emission_length`).  When given,
         every photon is assigned to PMTs using its own arrival direction,
         which preserves the event topology in the intra-module hit pattern.
+    tot_threshold_pe : float
+        Discriminator threshold for ToT hit extraction, PE-equivalent
+        amplitude.
+    tot_max_ns : float
+        ToT saturation cap [ns].
 
     Returns
     -------
     dict
         One entry per *PMT* that fired, with keys ``string_id``, ``sensor_id``,
         ``sensor_pos_x/y/z``, ``pmt_id``, ``pmt_dir_x/y/z``, ``n_pe``,
-        ``fadc_t``, ``fadc_q``.
+        ``fadc_t``, ``fadc_q``, ``hit_t``, ``tot_ns``.  ``hit_t``/``tot_ns``
+        are the ToT hits (leading-edge time, ToT duration) a real KM3NeT DOM
+        front-end would report; ``fadc_t``/``fadc_q`` are the idealized
+        analog charge readout, retained for debugging/visualization only.
     """
     string_ids = np.asarray(photons["string_id"])
     sensor_ids = np.asarray(photons["sensor_id"])
@@ -397,6 +496,7 @@ def process_event(
         "pmt_id": [],
         "pmt_dir_x": [], "pmt_dir_y": [], "pmt_dir_z": [],
         "n_pe": [], "fadc_t": [], "fadc_q": [],
+        "hit_t": [], "tot_ns": [],
     }
 
     for (sid, mid), info in module_hits.items():
@@ -415,9 +515,10 @@ def process_event(
         )
 
         for pmt_idx, hit_times in pmt_hits.items():
-            # Per-PMT FADC (qe=1 since assignment already applied QE)
-            fadc_t, fadc_q, n_pe = generate_fadc_response(
-                hit_times, qe=1.0, dark_rate_hz=dark_rate_hz, rng=rng
+            # Per-PMT FADC + ToT (qe=1 since assignment already applied QE)
+            fadc_t, fadc_q, n_pe, hit_t, tot_ns = generate_fadc_response(
+                hit_times, qe=1.0, dark_rate_hz=dark_rate_hz, rng=rng,
+                tot_threshold_pe=tot_threshold_pe, tot_max_ns=tot_max_ns,
             )
             pmt_dir = PMT_DIRS[pmt_idx]
             out["string_id"].append(sid)
@@ -432,4 +533,6 @@ def process_event(
             out["n_pe"].append(n_pe)
             out["fadc_t"].append(fadc_t.tolist())
             out["fadc_q"].append(fadc_q.tolist())
+            out["hit_t"].append(hit_t.tolist())
+            out["tot_ns"].append(tot_ns.tolist())
     return out
