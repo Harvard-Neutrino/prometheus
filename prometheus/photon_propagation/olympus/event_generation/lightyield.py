@@ -16,6 +16,60 @@ try:
 except AttributeError:
     jax_trapz = jax.scipy.integrate.trapezoid
 
+# ---------------------------------------------------------------------------
+# PDG-code normalisation for particles not natively supported by fennel.
+# ---------------------------------------------------------------------------
+
+# GENIE pseudo-particles and nuclear remnants: carry no trackable energy
+# deposition and produce no Cherenkov light — silently skip them.
+_PDG_SKIP: frozenset = frozenset(
+    [
+        1000080160,  # ¹⁶O nuclear remnant
+        2000000002,  # GENIE nucleon-cluster pseudo-particle
+        2000000101,  # GENIE "bindino" (nuclear binding-energy accounting)
+    ]
+)
+
+# Map unsupported PDG codes to the closest fennel-supported equivalent.
+# fennel knows: muons (±13), e/γ (±11, 22), π± (±211), K_long (130),
+#               p/p̄ (±2212), n (2112).
+_PDG_REMAP: dict = {
+    # LeptonInjector pseudo-hadron (pre-existing patch, centralised here)
+    -2000001006: 2212,
+    # Charged kaons → K_long (same hadronic light-yield family)
+    321: 130,  # K+
+    -321: 130,  # K−
+    310: 130,  # K_short
+    311: 130,  # K⁰
+    -311: 130,  # K̄⁰
+    # Strange baryons → proton / neutron
+    3112: 2212,  # Σ−
+    3122: 2212,  # Λ⁰
+    3212: 2112,  # Σ⁰
+    3222: 2212,  # Σ+
+    -3112: -2212,  # Σ̄+
+    -3122: -2212,  # Λ̄⁰
+    -3212: -2112,  # Σ̄⁰
+    -3222: -2212,  # Σ̄−
+    # Charmed mesons → pion / K_long
+    411: 211,  # D+
+    -411: -211,  # D−
+    421: 130,  # D⁰
+    -421: 130,  # D̄⁰
+    # Charmed baryons → proton
+    4122: 2212,  # Λc+
+    -4122: -2212,
+    4212: 2212,
+    -4212: -2212,
+    4222: 2212,  # Σc++
+    -4222: -2212,
+}
+
+
+def _remap_pdg(particle_id: int) -> int:
+    """Return the fennel-supported PDG code closest to ``particle_id``."""
+    return _PDG_REMAP.get(particle_id, particle_id)
+
 
 def simple_cascade_light_yield(energy, *args):
     """Approximation for cascade light yield.
@@ -43,9 +97,9 @@ def fennel_total_light_yield(energy, particle_id, wavelength_range):
         Wavelength interval (nm).
     """
 
-    # Patch to fix LI Hadrons treatment
-    if particle_id == -2000001006:
-        particle_id = 2212
+    if particle_id in _PDG_SKIP:
+        return 0.0
+    particle_id = _remap_pdg(particle_id)
     funcs = fennel_instance.auto_yields(energy, particle_id, function=True)
     counts_func = funcs[0]
 
@@ -70,9 +124,10 @@ def fennel_frac_long_light_yield(energy, particle_id, resolution=0.2):
     resolution : float, optional
         Step length in m for evaluating the longitudinal distribution.
     """
-    # Patch to fix LI Hadrons treatment
-    if particle_id == -2000001006:
-        particle_id = 2212
+    if particle_id in _PDG_SKIP:
+        dummy_grid = jnp.arange(1e-3, 25, resolution)
+        return jnp.zeros(len(dummy_grid) - 1), dummy_grid
+    particle_id = _remap_pdg(particle_id)
     funcs = fennel_instance.auto_yields(energy, particle_id, function=True)
     long_func = funcs[4]
     int_grid = jnp.arange(1e-3, 25, resolution)
@@ -121,9 +176,10 @@ def make_pointlike_cascade_source(
         Tuple ``(source_pos, source_dir, source_time, source_nphotons)`` where
         arrays are returned in JAX-friendly form for downstream propagation.
     """
-    # Patch to fix LI Hadrons treatment
-    if particle_id == -2000001006:
-        particle_id = 2212
+    if particle_id in _PDG_SKIP:
+        empty = jnp.empty((0, 3))
+        return empty, empty, jnp.empty((0, 1)), jnp.empty((0, 1))
+    particle_id = _remap_pdg(particle_id)
     source_nphotons = jnp.asarray(
         [fennel_total_light_yield(energy, particle_id, wavelength_range)]
     )[np.newaxis, :]
@@ -181,9 +237,10 @@ def make_realistic_cascade_source(
         Tuple ``(source_pos, source_dir, source_time, source_nphotons)`` where
         arrays are returned in JAX-friendly form for downstream propagation.
     """
-    # Patch to fix LI Hadrons treatment
-    if particle_id == -2000001006:
-        particle_id = 2212
+    if particle_id in _PDG_SKIP:
+        empty = jnp.empty((0, 3))
+        return empty, empty, jnp.empty((0, 1)), jnp.empty((0, 1))
+    particle_id = _remap_pdg(particle_id)
     n_photons_total = fennel_total_light_yield(energy, particle_id, wavelength_range)
     frac_yields, grid = fennel_frac_long_light_yield(energy, particle_id, resolution)
 

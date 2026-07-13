@@ -342,16 +342,36 @@ class GENIESimConfig(ConfigBase):
     positions : list, optional
         For ``placement='fixed'``: a single ``[x, y, z]`` applied to all
         events, or a list of ``[x, y, z]`` with one entry per event.
+    n_events : int, optional
+        Number of events to simulate. When larger than the number of events
+        in the ROOT file, events are resampled with replacement. When
+        ``None``, all events in the file are used exactly once.
     random_state_seed : int, optional
-        Seed for the NumPy RNG used when ``placement='random'``.
+        Seed for the NumPy RNG used when ``placement='random'`` or when
+        resampling is active.
+    interaction_filter : str, optional
+        If set, only GENIE events whose ``EvtCode`` description contains this
+        substring are kept before resampling. Typical values: ``'CC'``,
+        ``'NC'``.
+    direction_mode : str
+        How to orient events. ``'as-is'`` keeps the momenta from the ROOT
+        file; ``'isotropic'`` applies a uniform random rotation per event to
+        the initial state and all final states. Use ``'isotropic'`` for
+        atmospheric-neutrino files generated with a fixed gevgen beam
+        direction; the rotation is exact for events on an unpolarized target.
     """
 
     placement: str = "fixed"
     positions: Optional[list] = None
+    n_events: Optional[int] = None
     random_state_seed: Optional[int] = None
+    interaction_filter: Optional[str] = None
+    direction_mode: str = "as-is"
 
     _KEY_MAP: ClassVar[dict[str, str]] = {
+        "n events": "n_events",
         "random state seed": "random_state_seed",
+        "direction mode": "direction_mode",
     }
 
 
@@ -516,6 +536,8 @@ class OlympusSimConfig(ConfigBase):
     files: bool = True
     wavelength: int = 700
     splitter: int = 100000
+    max_distance: float = 300.0
+    min_distance_from_dom: float = 0.1
 
 
 @dataclass
@@ -608,6 +630,59 @@ class PhotonPropagatorConfig(ConfigBase):
         "photon field name": "photon_field_name",
         "PPC": "ppc",
         "PPC_CUDA": "ppc_cuda",
+    }
+
+
+# ---------------------------------------------------------------------------
+# DOM / mDOM response (standalone -- post-processing, outside the
+# PrometheusConfig run pipeline)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class DOMResponseConfig(ConfigBase):
+    """Optical-module response model configuration.
+
+    Parameters shared by the mDOM response pipeline (QE filtering, per-PMT
+    assignment, TTS smearing, dark noise, FADC digitisation, and ToT hit
+    extraction) in ``prometheus.utils.dom_response`` and its
+    ``pmt_response``/``fadc_digitization`` siblings. Defaults match a
+    KM3NeT-style mDOM.
+    """
+
+    qe: float = 0.25
+    tts_ns: float = 2.0
+    fadc_bin_ns: float = 3.3
+    sim_dt_ns: float = 0.1
+    pulse_width_ns: float = 2.5
+    spe_mean: float = 1.0
+    spe_sigma: float = 0.3
+    tot_threshold_pe: float = 0.3
+    tot_max_ns: float = 255.0
+    n_pmts: int = 24
+    pmt_dark_rate_hz: float = 750.0
+    x0_water_m: float = 0.361
+    ec_water_gev: float = 0.0787
+    lambda_i_water_m: float = 0.83
+    muon_dedx_gev_per_m: float = 0.2
+    muon_mass_gev: float = 0.10566
+
+    _KEY_MAP: ClassVar[dict[str, str]] = {
+        "tts": "tts_ns",
+        "fadc bin ns": "fadc_bin_ns",
+        "sim dt ns": "sim_dt_ns",
+        "pulse width ns": "pulse_width_ns",
+        "spe mean": "spe_mean",
+        "spe sigma": "spe_sigma",
+        "tot threshold pe": "tot_threshold_pe",
+        "tot max ns": "tot_max_ns",
+        "n pmts": "n_pmts",
+        "pmt dark rate hz": "pmt_dark_rate_hz",
+        "x0 water m": "x0_water_m",
+        "ec water gev": "ec_water_gev",
+        "lambda i water m": "lambda_i_water_m",
+        "muon dedx gev per m": "muon_dedx_gev_per_m",
+        "muon mass gev": "muon_mass_gev",
     }
 
 

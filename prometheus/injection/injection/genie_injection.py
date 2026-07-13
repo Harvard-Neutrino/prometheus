@@ -22,6 +22,7 @@ class GENIEInjection(Injection):
 
 
 _M_PI0 = 0.134977  # GeV — π⁰ mass
+_pi0_decay_warned = False
 
 
 def _direction_from_p3(p3: np.ndarray) -> np.ndarray:
@@ -71,11 +72,14 @@ def _decay_pi0(
     list of PropagatableParticle
         Two photon particles produced by the decay.
     """
-    logger.warning(
-        "π⁰ (PDG 111, E=%.4f GeV) is decayed instantaneously to γγ at the event vertex. "
-        "Prometheus does not propagate π⁰ directly.",
-        energy,
-    )
+    global _pi0_decay_warned
+    if not _pi0_decay_warned:
+        logger.warning(
+            "π⁰ (PDG 111) is decayed instantaneously to γγ at the event vertex. "
+            "Prometheus does not propagate π⁰ directly. "
+            "(This message is shown once per run.)"
+        )
+        _pi0_decay_warned = True
 
     p3 = np.asarray(p3, dtype=float)
     p_mag = np.linalg.norm(p3)
@@ -139,6 +143,34 @@ def _interaction_from_descr(descr: str) -> Interactions:
     return Interactions.OTHER
 
 
+def _random_rotation(rng: np.random.Generator) -> np.ndarray:
+    """Return a rotation matrix drawn uniformly from SO(3).
+
+    Sampled via a uniform random unit quaternion (a normalised 4-vector of
+    standard normals is uniform on the 3-sphere).
+
+    Parameters
+    ----------
+    rng : np.random.Generator
+        Random number generator.
+
+    Returns
+    -------
+    np.ndarray
+        Shape (3, 3) rotation matrix.
+    """
+    q = rng.normal(size=4)
+    q /= np.linalg.norm(q)
+    w, x, y, z = q
+    return np.array(
+        [
+            [1.0 - 2.0 * (y * y + z * z), 2.0 * (x * y - w * z), 2.0 * (x * z + w * y)],
+            [2.0 * (x * y + w * z), 1.0 - 2.0 * (x * x + z * z), 2.0 * (y * z - w * x)],
+            [2.0 * (x * z - w * y), 2.0 * (y * z + w * x), 1.0 - 2.0 * (x * x + y * y)],
+        ]
+    )
+
+
 def _sample_cylinder(rng: np.random.Generator, radius: float, half_height: float) -> np.ndarray:
     r = radius * np.sqrt(rng.uniform())
     theta = rng.uniform(0.0, 2.0 * np.pi)
@@ -176,21 +208,59 @@ def injection_from_genie_output(
     """
     placement = "fixed"
     positions = None
+    n_simulate = None
     seed = None
+    interaction_filter = None
+    direction_mode = "as-is"
 
     if simulation_config is not None:
         placement = getattr(simulation_config, "placement", "fixed")
         positions = getattr(simulation_config, "positions", None)
+        n_simulate = getattr(simulation_config, "n_events", None)
         seed = getattr(simulation_config, "random_state_seed", None)
+        interaction_filter = getattr(simulation_config, "interaction_filter", None)
+        direction_mode = getattr(simulation_config, "direction_mode", "as-is") or "as-is"
+
+    if direction_mode not in ("as-is", "isotropic"):
+        raise ValueError(f"Unknown direction_mode: {direction_mode!r}. Use 'as-is' or 'isotropic'.")
 
     offset = np.zeros(3) if detector_offset is None else np.asarray(detector_offset, dtype=float)
 
     logger.info("Loading GENIE events from %s (placement=%s)", genie_root_file, placement)
     events_df = genie_loader(genie_root_file)
-    n_events = len(events_df)
-    logger.info("Loaded %d GENIE events", n_events)
+    n_file = len(events_df)
+    logger.info("Loaded %d GENIE events from file", n_file)
+
+    if interaction_filter is not None:
+        mask = events_df["event_descr"].str.contains(interaction_filter, case=False)
+        events_df = events_df[mask].reset_index(drop=True)
+        logger.info(
+            "Filtered to %d events matching interaction_filter=%r (from %d)",
+            len(events_df),
+            interaction_filter,
+            n_file,
+        )
+        if len(events_df) == 0:
+            raise ValueError(
+                f"No GENIE events remaining after filtering for {interaction_filter!r}. "
+                "Check the ROOT file and interaction_filter value."
+            )
+
+    # Use post-filter count as the pool size for resampling.
+    n_pool = len(events_df)
 
     rng = np.random.default_rng(seed)
+
+    if n_simulate is not None and n_simulate != n_pool:
+        indices = rng.choice(n_pool, size=n_simulate, replace=True)
+        events_df = events_df.iloc[indices].reset_index(drop=True)
+        logger.info(
+            "Resampled to %d events (with replacement) from %d source events",
+            n_simulate,
+            n_file,
+        )
+
+    n_events = len(events_df)
 
     if placement == "random":
         if detector is None:
@@ -218,7 +288,18 @@ def injection_from_genie_output(
 
     injection_events = []
     for (_, row), vertex in zip(events_df.iterrows(), vertices):
-        init_dir = _direction_from_p3(np.asarray(row["init_inj_p"], dtype=float))
+        init_p3 = np.asarray(row["init_inj_p"], dtype=float)
+        final_p3s = [np.asarray(p3, dtype=float) for p3 in row["final_p"]]
+
+        # One common rotation per event keeps all intra-event angles intact,
+        # so kinematics are unchanged while the event orientation becomes
+        # isotropic (exact for interactions on an unpolarized target).
+        if direction_mode == "isotropic":
+            rotation = _random_rotation(rng)
+            init_p3 = rotation @ init_p3
+            final_p3s = [rotation @ p3 for p3 in final_p3s]
+
+        init_dir = _direction_from_p3(init_p3)
         initial_state = Particle(
             int(row["init_inj_id"]),
             float(row["init_inj_e"]),
@@ -228,15 +309,11 @@ def injection_from_genie_output(
         )
 
         final_states = []
-        for pdg, energy, p3 in zip(row["final_ids"], row["final_e"], row["final_p"]):
+        for pdg, energy, p3 in zip(row["final_ids"], row["final_e"], final_p3s):
             if int(pdg) == 111:
-                final_states.extend(
-                    _decay_pi0(
-                        rng, float(energy), np.asarray(p3, dtype=float), vertex, initial_state
-                    )
-                )
+                final_states.extend(_decay_pi0(rng, float(energy), p3, vertex, initial_state))
             else:
-                direction = _direction_from_p3(np.asarray(p3, dtype=float))
+                direction = _direction_from_p3(p3)
                 final_states.append(
                     PropagatableParticle(
                         int(pdg),

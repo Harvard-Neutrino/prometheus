@@ -6,6 +6,7 @@ Runs a single-event CPU-only simulation using the demo ice geo file
 and the south-pole PPC ice tables bundled in resources/.
 """
 
+import argparse
 import logging
 import sys
 
@@ -34,6 +35,8 @@ except Exception:
 
 
 def main():
+    argparse.ArgumentParser(description=__doc__).parse_args()
+
     # Minimal runtime configuration
     config.run.run_number = 2
     config.run.random_state_seed = 2
@@ -52,10 +55,11 @@ def main():
 
     _geo_default = "resources/geofiles/demo_ice.geo"
     _geo_path = Path(_geo_default)
+    REPO_ROOT = Path(__file__).resolve().parent.parent
     if not _geo_path.is_absolute() and not _geo_path.exists():
-        REPO_ROOT = Path(__file__).resolve().parent.parent
         _geo_default = str(REPO_ROOT / _geo_default)
     config.detector.geo_file = _geo_default
+    config.run.storage_prefix = str(REPO_ROOT / "examples" / "output") + "/"
 
     # Force PPC as the photon propagator and allow re-use of a stale tmp dir
     config.photon_propagator.name = "PPC"

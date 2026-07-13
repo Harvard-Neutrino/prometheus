@@ -291,3 +291,128 @@ def test_counts_net_monotone_with_distance(counts_model):
     out = np.array(net.apply(params, TEST_INPUTS)).squeeze()
     # Each row has larger log10_dist than previous
     assert out[0] > out[1] > out[2], "Log-survival fraction must decrease with distance"
+
+
+# ---------------------------------------------------------------------------
+# Counts net physics invariants
+# ---------------------------------------------------------------------------
+#
+# These tests check physical plausibility of the trained model.  All four
+# invariants must hold for any well-trained Cherenkov-light counts model,
+# regardless of the medium:
+#
+#   1. Forward dominance: survival(~0°) ≥ 100× survival(90°).
+#   2. No backward peak: survival(~180°) ≤ survival(~0°).
+#   3. No 90° local maximum: survival(90°) ≤ min(survival(85°), survival(95°)).
+#   4. Forward survival decreases monotonically with distance.
+#
+# Probe distances are 5, 24, 50, 100 m — the 24 m point is specifically
+# chosen because the MLP 90°/180° artifact is most visible there.
+
+_PHYSICS_LOG10_DISTS = jnp.array(
+    [np.log10(5.0), np.log10(24.0), np.log10(50.0), np.log10(100.0)],
+    dtype=jnp.float32,
+)
+_N_PHYS = len(_PHYSICS_LOG10_DISTS)
+
+
+def _counts_predict(net, params, log10_dists, angle_rad):
+    """Return squeezed log10_survival predictions for a fixed angle."""
+    angles = jnp.full((_N_PHYS,), angle_rad, dtype=jnp.float32)
+    x = jnp.stack([log10_dists, angles], axis=1)
+    return np.array(net.apply(params, x)).squeeze()
+
+
+def test_counts_physics_forward_dominates_sideways(counts_model):
+    """Survival at ~3° must strictly exceed survival at 90° at every distance.
+
+    Cherenkov light is forward-peaked; forward emission must always dominate
+    sideways emission.  Different media can produce very different angular
+    profiles (e.g. heavily-scattering P-ONE vs clear ANTARES water) so we
+    require only a positive margin, not a fixed factor.  A negative ratio
+    (survival(90°) > survival(0°)) is unambiguously unphysical.
+    """
+    from hyperion.models.photon_arrival_time_nflow.net import make_counts_net_fn
+
+    config, params = counts_model
+    net = make_counts_net_fn(config)
+
+    ls_fwd = _counts_predict(net, params, _PHYSICS_LOG10_DISTS, np.radians(3.0))
+    ls_side = _counts_predict(net, params, _PHYSICS_LOG10_DISTS, np.pi / 2)
+
+    ratios = ls_fwd - ls_side  # log10 units; must be > 0 at every distance
+    assert np.all(ratios > 0.0), (
+        f"Forward survival (3°) must exceed sideways survival (90°) at all "
+        f"distances. Got per-distance ratios: {np.round(ratios, 3).tolist()}"
+    )
+
+
+def test_counts_physics_no_backward_peak(counts_model):
+    """Survival at exactly 180° must never exceed survival at ~0°.
+
+    A track moving directly away from a module cannot produce more light at
+    that module than the same track moving toward it.  We probe at exactly
+    180° (not 177°) because the MLP extrapolation spike, if present, appears
+    right at the boundary of the training grid.
+    """
+    from hyperion.models.photon_arrival_time_nflow.net import make_counts_net_fn
+
+    config, params = counts_model
+    net = make_counts_net_fn(config)
+
+    ls_fwd = _counts_predict(net, params, _PHYSICS_LOG10_DISTS, np.radians(3.0))
+    ls_bwd = _counts_predict(net, params, _PHYSICS_LOG10_DISTS, np.pi)
+
+    excess = ls_bwd - ls_fwd  # must be ≤ 0 everywhere
+    assert np.all(excess <= 0.0), (
+        f"Backward survival (180°) must not exceed forward survival (3°). "
+        f"Got per-distance excess: {np.round(excess, 3).tolist()}"
+    )
+
+
+def test_counts_physics_no_90deg_spike(counts_model):
+    """Survival at 90° must not be a local maximum between 85° and 95°.
+
+    An MLP can hallucinate a spike at exactly 90° if that angle is absent from
+    the training grid (the default 6°-spaced grid skips 90°).  A local maximum
+    requires survival(90°) to exceed BOTH neighbours simultaneously; a smooth
+    monotone fall-off where 85° > 90° > 95° is perfectly physical.
+    """
+    from hyperion.models.photon_arrival_time_nflow.net import make_counts_net_fn
+
+    config, params = counts_model
+    net = make_counts_net_fn(config)
+
+    ls_85 = _counts_predict(net, params, _PHYSICS_LOG10_DISTS, np.radians(85.0))
+    ls_90 = _counts_predict(net, params, _PHYSICS_LOG10_DISTS, np.pi / 2)
+    ls_95 = _counts_predict(net, params, _PHYSICS_LOG10_DISTS, np.radians(95.0))
+
+    is_local_max = (ls_90 > ls_85) & (ls_90 > ls_95)
+    assert not np.any(is_local_max), (
+        f"Survival at 90° is a local maximum (exceeds both 85° and 95°) at "
+        f"distances {np.round(10 ** np.array(_PHYSICS_LOG10_DISTS)[is_local_max], 1).tolist()} m. "
+        f"ls_85={np.round(ls_85, 3).tolist()}, "
+        f"ls_90={np.round(ls_90, 3).tolist()}, "
+        f"ls_95={np.round(ls_95, 3).tolist()}"
+    )
+
+
+def test_counts_physics_forward_monotone_distance(counts_model):
+    """Forward survival must decrease strictly with increasing distance.
+
+    At a fixed forward angle (~3°) each successive distance step must yield a
+    more negative log10_survival.  This is the pure-distance version of the
+    existing diagonal test and isolates the distance dependence.
+    """
+    from hyperion.models.photon_arrival_time_nflow.net import make_counts_net_fn
+
+    config, params = counts_model
+    net = make_counts_net_fn(config)
+
+    ls_fwd = _counts_predict(net, params, _PHYSICS_LOG10_DISTS, np.radians(3.0))
+    diffs = np.diff(ls_fwd)
+
+    assert np.all(diffs < 0.0), (
+        f"Forward survival (3°) must decrease monotonically with distance. "
+        f"Consecutive differences: {np.round(diffs, 3).tolist()} (all must be < 0)"
+    )

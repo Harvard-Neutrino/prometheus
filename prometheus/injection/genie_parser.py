@@ -2,11 +2,38 @@
 # Authors: Stephan Meighen-Berger
 # Utility functions to load and parse GENIE data
 
+import functools
+
 import numpy as np
 import pandas as pd
 import uproot
 
 # from schema import Schema, And, Use, Optional, SchemaError
+
+
+def _object_array(items) -> np.ndarray:
+    """Build a 1-D object array with one entry per event.
+
+    ``np.array(items, dtype=object)`` silently produces a multi-dimensional
+    array when every per-event entry happens to have the same length (e.g. a
+    decay channel with exactly two final states in every event), which pandas
+    rejects as a DataFrame column.  Filling a pre-allocated object array keeps
+    the result 1-D regardless of raggedness.
+
+    Parameters
+    ----------
+    items : sequence
+        Per-event entries (arrays or lists of any, possibly uniform, length).
+
+    Returns
+    -------
+    np.ndarray
+        Shape (n_events,) object array.
+    """
+    arr = np.empty(len(items), dtype=object)
+    for i, item in enumerate(items):
+        arr[i] = item
+    return arr
 
 
 def genie_parser(events) -> pd.DataFrame:
@@ -54,10 +81,9 @@ def genie_parser(events) -> pd.DataFrame:
         15: "final nuclear",
         16: "nucleon cluster target",
     }
-    new_arr = np.array(
-        [[particle_dic[particle] for particle in event] for event in tmp], dtype=object
+    dic["event_status"] = _object_array(
+        [np.array([particle_dic[particle] for particle in event]) for event in tmp]
     )
-    dic["event_status"] = new_arr
     return pd.DataFrame.from_dict(dic)
 
 
@@ -79,54 +105,41 @@ def final_parser(parsed_events: pd.DataFrame) -> pd.DataFrame:
     inital_energies_target = np.array([event[1][3] for event in parsed_events["event_momenta"]])
     inital_id_inj = np.array([event[0] for event in parsed_events["event_pdg_id"]])
     inital_id_target = np.array([event[1] for event in parsed_events["event_pdg_id"]])
-    final_ids = np.array(
+    final_ids = _object_array(
         [
             np.where(event == np.array("final"), True, False)
             for event in parsed_events["event_status"]
-        ],
-        dtype=object,
+        ]
     )
-    children_ids = np.array(
-        [
-            event[final_ids[id_event]]
-            for id_event, event in enumerate(parsed_events["event_pdg_id"])
-        ],
-        dtype=object,
+    children_ids = _object_array(
+        [event[final_ids[id_event]] for id_event, event in enumerate(parsed_events["event_pdg_id"])]
     )
-    children_energy = np.array(
+    children_energy = _object_array(
         [
             event[:, 3][final_ids[id_event]]
             for id_event, event in enumerate(parsed_events["event_momenta"])
-        ],
-        dtype=object,
+        ]
     )
-    children_momenta = np.array(
+    children_momenta = _object_array(
         [
             event[:, :3][final_ids[id_event]]
             for id_event, event in enumerate(parsed_events["event_momenta"])
-        ],
-        dtype=object,
+        ]
     )
-    final_ids = np.array(
+    final_ids = _object_array(
         [
             np.where(event == np.array("final nuclear"), True, False)
             for event in parsed_events["event_status"]
-        ],
-        dtype=object,
+        ]
     )
-    children_nuc_ids = np.array(
-        [
-            event[final_ids[id_event]]
-            for id_event, event in enumerate(parsed_events["event_pdg_id"])
-        ],
-        dtype=object,
+    children_nuc_ids = _object_array(
+        [event[final_ids[id_event]] for id_event, event in enumerate(parsed_events["event_pdg_id"])]
     )
-    children_nuc_energy = np.array(
+    children_nuc_energy = _object_array(
         [
             event[:, 3][final_ids[id_event]]
             for id_event, event in enumerate(parsed_events["event_momenta"])
-        ],
-        dtype=object,
+        ]
     )
     dic = {}
     dic["event_descr"] = parsed_events["event_description"]
@@ -145,8 +158,36 @@ def final_parser(parsed_events: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame.from_dict(dic)
 
 
+@functools.lru_cache(maxsize=1)
+def _cached_genie_loader(filepath: str) -> pd.DataFrame:
+    with uproot.open(filepath) as file:
+        return final_parser(genie_parser(file["gRooTracker"]))
+
+
 def genie_loader(filepath: str) -> pd.DataFrame:
     """Load and parse GENIE data.
+
+    A gRooTracker file with O(10^5) events parses into a DataFrame with
+    hundreds of MB of ragged, object-dtype momentum/status arrays, and
+    reparsing it repeatedly (e.g. once per layer batch in the layered
+    simulation scripts) causes the process RSS to climb steadily — CPython's
+    allocator does not always return the memory of many small freed objects
+    to the OS, so back-to-back parse/discard cycles fragment the heap rather
+    than staying flat.  Caching the parsed result per file path means a batch
+    loop over the same file parses it exactly once.
+
+    The cache holds a single file (``maxsize=1``): every batch loop in this
+    codebase (layers within a signal channel, CC/NC within a background
+    flavour) processes one file at a time, so this fully covers the access
+    pattern while capping per-worker memory to one parsed file — important
+    when running with ``--jobs N``, since each worker process holds its own
+    cache. Switching to a different file simply evicts the previous one
+    rather than accumulating every file ever loaded in the process.
+
+    .. warning::
+        The returned DataFrame is shared by every caller for the same
+        ``filepath``. Callers must treat it as read-only — filter or
+        resample into a new DataFrame instead of mutating it in place.
 
     Parameters
     ----------
@@ -158,8 +199,7 @@ def genie_loader(filepath: str) -> pd.DataFrame:
     pd.DataFrame
         The parsed GENIE data.
     """
-    with uproot.open(filepath) as file:
-        return final_parser(genie_parser(file["gRooTracker"]))
+    return _cached_genie_loader(str(filepath))
 
 
 # def schema_check(std_schema: Schema, to_check)->bool:

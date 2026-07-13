@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""05_genie_injection.py
+"""01_genie_injection.py
 Example showing how to drive Prometheus with GENIE event data.
 
 Instead of running ``LeptonInjector``, this example reads pre-generated GENIE
@@ -19,9 +19,10 @@ Usage
 -----
 Run from the repository root::
 
-    /path/to/.prometheus_env/bin/python examples/05_genie_injection.py
+    /path/to/.prometheus_env/bin/python examples/genie/01_genie_injection.py
 """
 
+import argparse
 import logging
 import sys
 from pathlib import Path
@@ -47,14 +48,17 @@ try:
 except Exception:
     pass
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 GENIE_FILE = REPO_ROOT / "tests" / "resources" / "genie_example.root"
 GEO_FILE = REPO_ROOT / "resources" / "geofiles" / "demo_water.geo"
 
 
 def main():
+    argparse.ArgumentParser(description=__doc__).parse_args()
+
     config.run.run_number = 1
     config.run.random_state_seed = 1
+    config.run.storage_prefix = str(REPO_ROOT / "examples" / "output" / "genie") + "/"
 
     # --- Detector ---
     config.detector.geo_file = str(GEO_FILE)

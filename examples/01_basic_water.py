@@ -5,6 +5,7 @@ Minimal water-case example to validate a Prometheus install.
 Runs a single-event CPU-only simulation using the demo geo file.
 """
 
+import argparse
 import logging
 import sys
 
@@ -33,6 +34,8 @@ except Exception:
 
 
 def main():
+    argparse.ArgumentParser(description=__doc__).parse_args()
+
     # Minimal runtime configuration
     config.run.run_number = 1
     config.run.random_state_seed = 1
@@ -49,6 +52,7 @@ def main():
 
     REPO_ROOT = Path(__file__).resolve().parent.parent
     config.detector.geo_file = str(REPO_ROOT / "resources" / "geofiles" / "demo_water.geo")
+    config.run.storage_prefix = str(REPO_ROOT / "examples" / "output") + "/"
 
     print("Initializing Prometheus (minimal)")
     prom = Prometheus()
