@@ -3,7 +3,6 @@ fadc_digitization).
 """
 
 import numpy as np
-import pytest
 
 from prometheus.utils.dom_response import (
     PMT_DIRS,
@@ -11,7 +10,6 @@ from prometheus.utils.dom_response import (
     generate_fadc_response,
     process_event,
 )
-
 
 # ---------------------------------------------------------------------------
 # generate_fadc_response
