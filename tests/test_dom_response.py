@@ -30,9 +30,7 @@ class TestGenerateFadcResponse:
     def test_qe_one_detects_all_before_noise(self):
         rng = np.random.default_rng(2)
         photon_times = np.sort(rng.uniform(0, 500, 100))
-        _, _, n_pe, _, _ = generate_fadc_response(
-            photon_times, qe=1.0, dark_rate_hz=0.0, rng=rng
-        )
+        _, _, n_pe, _, _ = generate_fadc_response(photon_times, qe=1.0, dark_rate_hz=0.0, rng=rng)
         assert n_pe == 100
 
     def test_dark_noise_adds_hits_with_no_signal(self):
@@ -64,9 +62,7 @@ class TestAssignToPmtsPerHit:
         n = 300
         photon_times = rng.uniform(0, 500, n)
         source_dirs = np.tile([0.0, 0.0, 1.0], (n, 1))
-        pmt_hits = assign_to_pmts_per_hit(
-            photon_times, source_dirs, PMT_DIRS, qe=1.0, rng=rng
-        )
+        pmt_hits = assign_to_pmts_per_hit(photon_times, source_dirs, PMT_DIRS, qe=1.0, rng=rng)
         assert sum(len(v) for v in pmt_hits.values()) == n
 
     def test_qe_zero_assigns_nothing(self):
@@ -74,9 +70,7 @@ class TestAssignToPmtsPerHit:
         n = 100
         photon_times = rng.uniform(0, 500, n)
         source_dirs = np.tile([0.0, 0.0, 1.0], (n, 1))
-        pmt_hits = assign_to_pmts_per_hit(
-            photon_times, source_dirs, PMT_DIRS, qe=0.0, rng=rng
-        )
+        pmt_hits = assign_to_pmts_per_hit(photon_times, source_dirs, PMT_DIRS, qe=0.0, rng=rng)
         assert pmt_hits == {}
 
     def test_direction_changes_illuminated_pmts(self):
@@ -120,18 +114,31 @@ class TestProcessEvent:
         photons = self._make_photons(rng)
         result = process_event(photons, np.array([5.0, 5.0, -20.0]), rng=rng)
         assert set(result) == {
-            "string_id", "sensor_id",
-            "sensor_pos_x", "sensor_pos_y", "sensor_pos_z",
-            "pmt_id", "pmt_dir_x", "pmt_dir_y", "pmt_dir_z",
-            "n_pe", "fadc_t", "fadc_q", "hit_t", "tot_ns",
+            "string_id",
+            "sensor_id",
+            "sensor_pos_x",
+            "sensor_pos_y",
+            "sensor_pos_z",
+            "pmt_id",
+            "pmt_dir_x",
+            "pmt_dir_y",
+            "pmt_dir_z",
+            "n_pe",
+            "fadc_t",
+            "fadc_q",
+            "hit_t",
+            "tot_ns",
         }
 
     def test_empty_event_produces_no_pmt_entries(self):
         rng = np.random.default_rng(9)
         photons = {
-            "string_id": np.array([]), "sensor_id": np.array([]),
-            "t": np.array([]), "sensor_pos_x": np.array([]),
-            "sensor_pos_y": np.array([]), "sensor_pos_z": np.array([]),
+            "string_id": np.array([]),
+            "sensor_id": np.array([]),
+            "t": np.array([]),
+            "sensor_pos_x": np.array([]),
+            "sensor_pos_y": np.array([]),
+            "sensor_pos_z": np.array([]),
         }
         result = process_event(photons, np.array([0.0, 0.0, 0.0]), rng=rng)
         assert len(result["pmt_id"]) == 0

@@ -58,7 +58,10 @@ logger = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 _DEFAULT_PULSES = str(
-    REPO_ROOT / "examples" / "output" / "pmts"
+    REPO_ROOT
+    / "examples"
+    / "output"
+    / "pmts"
     / "signal_genie_example_layer0_r10_pulses_mdom.parquet"
 )
 _DEFAULT_PHOTONS = str(
@@ -69,9 +72,7 @@ _N_PMTS = 24
 _BG = "#06305a"
 TIME_CMAP = mcolors.LinearSegmentedColormap.from_list(
     "time_cmap",
-    [(0.00, (0.00, 0.00, 0.00)),
-     (0.50, (0.44, 0.18, 0.63)),
-     (1.00, (1.00, 0.60, 0.10))],
+    [(0.00, (0.00, 0.00, 0.00)), (0.50, (0.44, 0.18, 0.63)), (1.00, (1.00, 0.60, 0.10))],
 )
 
 
@@ -79,16 +80,19 @@ TIME_CMAP = mcolors.LinearSegmentedColormap.from_list(
 # PMT geometry (must match examples/pmts/01_photon_to_pulses.py)
 # ---------------------------------------------------------------------------
 
+
 def _fibonacci_sphere(n: int) -> np.ndarray:
     golden = (1.0 + np.sqrt(5.0)) / 2.0
     i = np.arange(n, dtype=float)
     theta = np.arccos(1.0 - 2.0 * (i + 0.5) / n)
-    phi   = 2.0 * np.pi * i / golden
-    return np.column_stack([
-        np.sin(theta) * np.cos(phi),
-        np.sin(theta) * np.sin(phi),
-        np.cos(theta),
-    ])
+    phi = 2.0 * np.pi * i / golden
+    return np.column_stack(
+        [
+            np.sin(theta) * np.cos(phi),
+            np.sin(theta) * np.sin(phi),
+            np.cos(theta),
+        ]
+    )
 
 
 _PMT_DIRS: np.ndarray = _fibonacci_sphere(_N_PMTS)  # (24, 3)
@@ -97,6 +101,7 @@ _PMT_DIRS: np.ndarray = _fibonacci_sphere(_N_PMTS)  # (24, 3)
 # ---------------------------------------------------------------------------
 # Angular discriminant observables
 # ---------------------------------------------------------------------------
+
 
 def angular_discriminant(q: np.ndarray, dirs: np.ndarray) -> float:
     """Charge-weighted mean pairwise opening angle α [deg].
@@ -113,7 +118,7 @@ def angular_discriminant(q: np.ndarray, dirs: np.ndarray) -> float:
         for j in range(i + 1, n):
             cos_ij = np.clip(np.dot(dirs[i], dirs[j]), -1.0, 1.0)
             w = q[i] * q[j]
-            numerator   += w * np.degrees(np.arccos(cos_ij))
+            numerator += w * np.degrees(np.arccos(cos_ij))
             denominator += w
     return numerator / denominator if denominator > 0 else float("nan")
 
@@ -132,38 +137,61 @@ def dipole_score(q: np.ndarray, dirs: np.ndarray) -> float:
 # Data loading
 # ---------------------------------------------------------------------------
 
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
         description="mDOM per-PMT hit-pattern view (3-panel figure)",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    p.add_argument("--pulses",  default=_DEFAULT_PULSES,  metavar="FILE",
-                   help="mDOM pulse parquet from examples/pmts/01_photon_to_pulses.py")
-    p.add_argument("--photons", default=_DEFAULT_PHOTONS, metavar="FILE",
-                   help="Raw photon parquet from Prometheus")
-    p.add_argument("--event",  type=int, default=None, metavar="IDX",
-                   help="0-based event index; defaults to event with most PE")
-    p.add_argument("--module", type=str, default=None, metavar="STR:DOM",
-                   help="string_id:sensor_id of module to show; defaults to "
-                        "module with most PE in the selected event")
-    p.add_argument("--out",
-                   default=str(REPO_ROOT / "examples" / "output" / "pmts" / "mdom_view.png"),
-                   metavar="FILE", help="Output image path ('' to skip saving)")
-    p.add_argument("--show", action="store_true", default=False,
-                   help="Open interactive matplotlib window")
-    p.add_argument("--dpi",  type=int, default=150)
+    p.add_argument(
+        "--pulses",
+        default=_DEFAULT_PULSES,
+        metavar="FILE",
+        help="mDOM pulse parquet from examples/pmts/01_photon_to_pulses.py",
+    )
+    p.add_argument(
+        "--photons",
+        default=_DEFAULT_PHOTONS,
+        metavar="FILE",
+        help="Raw photon parquet from Prometheus",
+    )
+    p.add_argument(
+        "--event",
+        type=int,
+        default=None,
+        metavar="IDX",
+        help="0-based event index; defaults to event with most PE",
+    )
+    p.add_argument(
+        "--module",
+        type=str,
+        default=None,
+        metavar="STR:DOM",
+        help="string_id:sensor_id of module to show; defaults to "
+        "module with most PE in the selected event",
+    )
+    p.add_argument(
+        "--out",
+        default=str(REPO_ROOT / "examples" / "output" / "pmts" / "mdom_view.png"),
+        metavar="FILE",
+        help="Output image path ('' to skip saving)",
+    )
+    p.add_argument(
+        "--show", action="store_true", default=False, help="Open interactive matplotlib window"
+    )
+    p.add_argument("--dpi", type=int, default=150)
     return p.parse_args()
 
 
-def load_event(pulses_path: str, photons_path: str,
-               event_idx: int | None) -> tuple[int, object, object]:
-    pulses  = ak.from_parquet(pulses_path)
+def load_event(
+    pulses_path: str, photons_path: str, event_idx: int | None
+) -> tuple[int, object, object]:
+    pulses = ak.from_parquet(pulses_path)
     photons = ak.from_parquet(photons_path)
     if event_idx is None:
         total_pe = [int(ak.sum(pulses[i]["n_pe"])) for i in range(len(pulses))]
         event_idx = int(np.argmax(total_pe))
-        logger.info("Auto-selected event %d  (%d total PE)",
-                    event_idx, total_pe[event_idx])
+        logger.info("Auto-selected event %d  (%d total PE)", event_idx, total_pe[event_idx])
     return event_idx, pulses[event_idx], photons[event_idx]
 
 
@@ -172,21 +200,23 @@ def get_sensor_positions(photons_row) -> dict[tuple[int, int], tuple[float, floa
     ph = ak.to_list(photons_row["photons"])
     pos: dict[tuple[int, int], tuple[float, float, float]] = {}
     for sid, mid, x, y, z in zip(
-        ph["string_id"], ph["sensor_id"],
-        ph["sensor_pos_x"], ph["sensor_pos_y"], ph["sensor_pos_z"],
+        ph["string_id"],
+        ph["sensor_id"],
+        ph["sensor_pos_x"],
+        ph["sensor_pos_y"],
+        ph["sensor_pos_z"],
     ):
         pos[(int(sid), int(mid))] = (float(x), float(y), float(z))
     return pos
 
 
-def build_module_df(pulses_row,
-                    pos_map: dict[tuple[int, int], tuple]) -> pd.DataFrame:
+def build_module_df(pulses_row, pos_map: dict[tuple[int, int], tuple]) -> pd.DataFrame:
     """Per-module aggregate: sum PE / charge across all PMTs in each module."""
     string_ids = ak.to_list(pulses_row["string_id"])
     sensor_ids = ak.to_list(pulses_row["sensor_id"])
-    n_pes      = ak.to_list(pulses_row["n_pe"])
-    fadc_ts    = ak.to_list(pulses_row["fadc_t"])
-    fadc_qs    = ak.to_list(pulses_row["fadc_q"])
+    n_pes = ak.to_list(pulses_row["n_pe"])
+    fadc_ts = ak.to_list(pulses_row["fadc_t"])
+    fadc_qs = ak.to_list(pulses_row["fadc_q"])
 
     agg: dict[tuple[int, int], dict] = {}
     for sid, mid, n_pe, ft, fq in zip(string_ids, sensor_ids, n_pes, fadc_ts, fadc_qs):
@@ -195,7 +225,7 @@ def build_module_df(pulses_row,
         ft_arr = np.asarray(ft, dtype=float)
         if key not in agg:
             agg[key] = {"n_pe": 0, "total_q": 0.0, "first_t": np.inf}
-        agg[key]["n_pe"]    += int(n_pe)
+        agg[key]["n_pe"] += int(n_pe)
         agg[key]["total_q"] += float(fq_arr.sum())
         if len(ft_arr) > 0:
             agg[key]["first_t"] = min(agg[key]["first_t"], float(ft_arr.min()))
@@ -203,13 +233,18 @@ def build_module_df(pulses_row,
     rows = []
     for (sid, mid), v in agg.items():
         x, y, z = pos_map.get((sid, mid), (np.nan, np.nan, np.nan))
-        rows.append({
-            "string_id": sid, "sensor_id": mid,
-            "x": x, "y": y, "z": z,
-            "n_pe":    v["n_pe"],
-            "total_q": v["total_q"],
-            "first_t": v["first_t"] if v["first_t"] < np.inf else np.nan,
-        })
+        rows.append(
+            {
+                "string_id": sid,
+                "sensor_id": mid,
+                "x": x,
+                "y": y,
+                "z": z,
+                "n_pe": v["n_pe"],
+                "total_q": v["total_q"],
+                "first_t": v["first_t"] if v["first_t"] < np.inf else np.nan,
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -217,24 +252,26 @@ def build_pmt_df(pulses_row, string_id: int, sensor_id: int) -> pd.DataFrame:
     """Per-PMT records for a single module."""
     string_ids = np.asarray(ak.to_list(pulses_row["string_id"]))
     sensor_ids = np.asarray(ak.to_list(pulses_row["sensor_id"]))
-    pmt_ids    = np.asarray(ak.to_list(pulses_row["pmt_id"]))
-    n_pes      = np.asarray(ak.to_list(pulses_row["n_pe"]))
-    fadc_ts    = ak.to_list(pulses_row["fadc_t"])
-    fadc_qs    = ak.to_list(pulses_row["fadc_q"])
+    pmt_ids = np.asarray(ak.to_list(pulses_row["pmt_id"]))
+    n_pes = np.asarray(ak.to_list(pulses_row["n_pe"]))
+    fadc_ts = ak.to_list(pulses_row["fadc_t"])
+    fadc_qs = ak.to_list(pulses_row["fadc_q"])
 
     mask = (string_ids == string_id) & (sensor_ids == sensor_id)
     rows = []
     for idx in np.where(mask)[0]:
         ft_arr = np.asarray(fadc_ts[idx], dtype=float)
         fq_arr = np.asarray(fadc_qs[idx], dtype=float)
-        rows.append({
-            "pmt_id":  int(pmt_ids[idx]),
-            "n_pe":    int(n_pes[idx]),
-            "total_q": float(fq_arr.sum()),
-            "first_t": float(ft_arr.min()) if len(ft_arr) > 0 else np.nan,
-            "fadc_t":  ft_arr,
-            "fadc_q":  fq_arr,
-        })
+        rows.append(
+            {
+                "pmt_id": int(pmt_ids[idx]),
+                "n_pe": int(n_pes[idx]),
+                "total_q": float(fq_arr.sum()),
+                "first_t": float(ft_arr.min()) if len(ft_arr) > 0 else np.nan,
+                "fadc_t": ft_arr,
+                "fadc_q": fq_arr,
+            }
+        )
     if not rows:
         return pd.DataFrame()
     return pd.DataFrame(rows).sort_values("pmt_id").reset_index(drop=True)
@@ -244,8 +281,10 @@ def build_pmt_df(pulses_row, string_id: int, sensor_id: int) -> pd.DataFrame:
 # Drawing
 # ---------------------------------------------------------------------------
 
-def draw_detector_3d(ax, module_df: pd.DataFrame, event_idx: int,
-                     vertex: tuple, sel_key: tuple[int, int]) -> None:
+
+def draw_detector_3d(
+    ax, module_df: pd.DataFrame, event_idx: int, vertex: tuple, sel_key: tuple[int, int]
+) -> None:
     """3-D scatter of hit modules; selected module highlighted."""
     active = module_df[module_df["total_q"] > 0].dropna(subset=["x"]).copy()
     if active.empty:
@@ -272,33 +311,57 @@ def draw_detector_3d(ax, module_df: pd.DataFrame, event_idx: int,
     ax.set_ylabel("y  [m]", labelpad=4)
     ax.set_zlabel("z  [m]", labelpad=4)
 
-    ax.scatter(active["x"], active["y"], active["z"],
-               s=sizes, c=colors, depthshade=False, zorder=2,
-               edgecolors="none", alpha=0.85)
+    ax.scatter(
+        active["x"],
+        active["y"],
+        active["z"],
+        s=sizes,
+        c=colors,
+        depthshade=False,
+        zorder=2,
+        edgecolors="none",
+        alpha=0.85,
+    )
 
     # Highlight the selected module
-    sel = module_df[(module_df["string_id"] == sel_key[0]) &
-                    (module_df["sensor_id"] == sel_key[1])]
+    sel = module_df[(module_df["string_id"] == sel_key[0]) & (module_df["sensor_id"] == sel_key[1])]
     if not sel.empty and not np.isnan(sel.iloc[0]["x"]):
-        ax.scatter(sel["x"], sel["y"], sel["z"],
-                   s=160, marker="D", c="#00FFAA",
-                   edgecolors="white", linewidths=0.8,
-                   depthshade=False, zorder=4, label="selected mDOM")
+        ax.scatter(
+            sel["x"],
+            sel["y"],
+            sel["z"],
+            s=160,
+            marker="D",
+            c="#00FFAA",
+            edgecolors="white",
+            linewidths=0.8,
+            depthshade=False,
+            zorder=4,
+            label="selected mDOM",
+        )
 
     # Vertex
-    ax.scatter(*vertex, s=140, c="#FFD700", marker="*",
-               edgecolors="white", linewidths=0.5,
-               depthshade=False, zorder=5, label="vertex")
+    ax.scatter(
+        *vertex,
+        s=140,
+        c="#FFD700",
+        marker="*",
+        edgecolors="white",
+        linewidths=0.5,
+        depthshade=False,
+        zorder=5,
+        label="vertex",
+    )
 
     n_pe_total = int(active["n_pe"].sum())
     ax.set_title(
         f"Event {event_idx}  |  {len(active)} modules  |  {n_pe_total:,} PE",
-        color="white", fontsize=9, pad=6,
+        color="white",
+        fontsize=9,
+        pad=6,
     )
 
-    sm = plt.cm.ScalarMappable(
-        cmap=TIME_CMAP, norm=mcolors.Normalize(vmin=t_min, vmax=t_max)
-    )
+    sm = plt.cm.ScalarMappable(cmap=TIME_CMAP, norm=mcolors.Normalize(vmin=t_min, vmax=t_max))
     sm.set_array([])
     cbar = ax.get_figure().colorbar(sm, ax=ax, pad=0.07, shrink=0.55, aspect=18)
     cbar.set_label("First pulse time  [ns]", color="white", fontsize=8)
@@ -306,11 +369,15 @@ def draw_detector_3d(ax, module_df: pd.DataFrame, event_idx: int,
     plt.setp(cbar.ax.yaxis.get_ticklabels(), color="white")
 
 
-def draw_pmt_sphere(ax: plt.Axes,
-                    pmt_df: pd.DataFrame,
-                    source_dir: np.ndarray,
-                    string_id: int, sensor_id: int,
-                    alpha_val: float, dipole_val: float) -> None:
+def draw_pmt_sphere(
+    ax: plt.Axes,
+    pmt_df: pd.DataFrame,
+    source_dir: np.ndarray,
+    string_id: int,
+    sensor_id: int,
+    alpha_val: float,
+    dipole_val: float,
+) -> None:
     """Azimuth × elevation sky map of the 24 PMTs for one module.
 
     Circle area ∝ detected PE.  Unhit PMTs are drawn as small gray rings.
@@ -320,20 +387,20 @@ def draw_pmt_sphere(ax: plt.Axes,
     ax.set_facecolor(_BG)
 
     # ---- Build 24-element PE and first_t arrays ----
-    n_pe_arr  = np.zeros(_N_PMTS)
+    n_pe_arr = np.zeros(_N_PMTS)
     first_t_arr = np.full(_N_PMTS, np.nan)
     if not pmt_df.empty:
         for _, row in pmt_df.iterrows():
             pid = int(row["pmt_id"])
-            n_pe_arr[pid]   = row["n_pe"]
+            n_pe_arr[pid] = row["n_pe"]
             first_t_arr[pid] = row["first_t"]
 
     # ---- Convert PMT directions to azimuth [deg] and elevation [deg] ----
-    phi_deg  = np.degrees(np.arctan2(_PMT_DIRS[:, 1], _PMT_DIRS[:, 0]))   # [-180, 180]
-    elev_deg = np.degrees(np.arcsin(np.clip(_PMT_DIRS[:, 2], -1.0, 1.0))) # [-90,  90]
+    phi_deg = np.degrees(np.arctan2(_PMT_DIRS[:, 1], _PMT_DIRS[:, 0]))  # [-180, 180]
+    elev_deg = np.degrees(np.arcsin(np.clip(_PMT_DIRS[:, 2], -1.0, 1.0)))  # [-90,  90]
 
     # ---- Source direction marker ----
-    phi_src  = np.degrees(np.arctan2(source_dir[1], source_dir[0]))
+    phi_src = np.degrees(np.arctan2(source_dir[1], source_dir[0]))
     elev_src = np.degrees(np.arcsin(np.clip(source_dir[2], -1.0, 1.0)))
 
     # ---- Colour: first-hit time (only for hit PMTs) ----
@@ -350,9 +417,16 @@ def draw_pmt_sphere(ax: plt.Axes,
 
     # ---- Unhit PMTs ----
     if (~has_hit).any():
-        ax.scatter(phi_deg[~has_hit], elev_deg[~has_hit],
-                   s=25, c="none", edgecolors="gray",
-                   linewidths=0.8, alpha=0.5, zorder=2)
+        ax.scatter(
+            phi_deg[~has_hit],
+            elev_deg[~has_hit],
+            s=25,
+            c="none",
+            edgecolors="gray",
+            linewidths=0.8,
+            alpha=0.5,
+            zorder=2,
+        )
 
     # ---- Hit PMTs ----
     if has_hit.any():
@@ -362,22 +436,43 @@ def draw_pmt_sphere(ax: plt.Axes,
         t_norm = np.nan_to_num(t_norm, nan=0.5)
         colors = TIME_CMAP(np.clip(t_norm, 0.0, 1.0))
 
-        ax.scatter(phi_deg[has_hit], elev_deg[has_hit],
-                   s=sizes, c=colors,
-                   edgecolors="white", linewidths=0.5,
-                   alpha=0.9, zorder=3)
+        ax.scatter(
+            phi_deg[has_hit],
+            elev_deg[has_hit],
+            s=sizes,
+            c=colors,
+            edgecolors="white",
+            linewidths=0.5,
+            alpha=0.9,
+            zorder=3,
+        )
 
         # PE labels inside each hit PMT circle
         for pidx in np.where(has_hit)[0]:
-            ax.text(phi_deg[pidx], elev_deg[pidx],
-                    str(int(n_pe_arr[pidx])),
-                    color="white", fontsize=6, ha="center", va="center",
-                    fontweight="bold", zorder=4)
+            ax.text(
+                phi_deg[pidx],
+                elev_deg[pidx],
+                str(int(n_pe_arr[pidx])),
+                color="white",
+                fontsize=6,
+                ha="center",
+                va="center",
+                fontweight="bold",
+                zorder=4,
+            )
 
     # ---- Source direction ----
-    ax.scatter([phi_src], [elev_src], s=250, marker="*",
-               c="#FFD700", edgecolors="white", linewidths=0.5,
-               zorder=5, label="source dir")
+    ax.scatter(
+        [phi_src],
+        [elev_src],
+        s=250,
+        marker="*",
+        c="#FFD700",
+        edgecolors="white",
+        linewidths=0.5,
+        zorder=5,
+        label="source dir",
+    )
 
     # ---- Formatting ----
     ax.set_xlim(-185, 185)
@@ -391,28 +486,45 @@ def draw_pmt_sphere(ax: plt.Axes,
     ax.set_ylabel("Elevation ε [°]", color="white", fontsize=8)
     ax.grid(alpha=0.2, color="white", linestyle="--")
 
-    n_hit  = int(has_hit.sum())
-    Q_tot  = int(n_pe_arr.sum())
-    a_str  = f"α = {alpha_val:.1f}°" if not np.isnan(alpha_val) else "α = —"
-    d_str  = f"D = {dipole_val:.3f}" if not np.isnan(dipole_val) else "D = —"
+    n_hit = int(has_hit.sum())
+    Q_tot = int(n_pe_arr.sum())
+    a_str = f"α = {alpha_val:.1f}°" if not np.isnan(alpha_val) else "α = —"
+    d_str = f"D = {dipole_val:.3f}" if not np.isnan(dipole_val) else "D = —"
     ax.set_title(
         f"str {string_id} / dom {sensor_id}  |  "
         f"{n_hit} / {_N_PMTS} PMTs  |  {Q_tot} PE\n"
         f"{a_str}     {d_str}",
-        color="white", fontsize=8, pad=5,
+        color="white",
+        fontsize=8,
+        pad=5,
     )
 
-    leg = ax.legend(fontsize=7, framealpha=0.3, facecolor=_BG,
-                    labelcolor="white", loc="lower right")
+    leg = ax.legend(
+        fontsize=7, framealpha=0.3, facecolor=_BG, labelcolor="white", loc="lower right"
+    )
     leg.get_frame().set_edgecolor("white")
 
     # Size legend (bottom-left)
     for frac, label in ((0.2, "20% PE_max"), (0.6, "60%"), (1.0, "100%")):
-        ax.scatter([], [], s=60 + frac * 350, c="gray", alpha=0.7,
-                   edgecolors="white", linewidths=0.4, label=label)
-    leg2 = ax.legend(fontsize=6, framealpha=0.3, facecolor=_BG,
-                     labelcolor="white", loc="lower left",
-                     title="PE / PE_max", title_fontsize=6)
+        ax.scatter(
+            [],
+            [],
+            s=60 + frac * 350,
+            c="gray",
+            alpha=0.7,
+            edgecolors="white",
+            linewidths=0.4,
+            label=label,
+        )
+    leg2 = ax.legend(
+        fontsize=6,
+        framealpha=0.3,
+        facecolor=_BG,
+        labelcolor="white",
+        loc="lower left",
+        title="PE / PE_max",
+        title_fontsize=6,
+    )
     leg2.get_frame().set_edgecolor("white")
     leg2.get_title().set_color("white")
 
@@ -423,13 +535,24 @@ def draw_pmt_sphere(ax: plt.Axes,
 
 # 12-colour palette cycling across up to 24 PMTs
 _PMT_COLORS = [
-    "#4fc3f7", "#ff8a65", "#a5d6a7", "#ce93d8", "#fff176", "#80cbc4",
-    "#ffcc80", "#ef9a9a", "#b0bec5", "#80deea", "#f48fb1", "#c5e1a5",
+    "#4fc3f7",
+    "#ff8a65",
+    "#a5d6a7",
+    "#ce93d8",
+    "#fff176",
+    "#80cbc4",
+    "#ffcc80",
+    "#ef9a9a",
+    "#b0bec5",
+    "#80deea",
+    "#f48fb1",
+    "#c5e1a5",
 ]
 
 
-def _expand_sparse_bins(t: np.ndarray, q: np.ndarray,
-                        bin_width: float = 3.3) -> tuple[np.ndarray, np.ndarray]:
+def _expand_sparse_bins(
+    t: np.ndarray, q: np.ndarray, bin_width: float = 3.3
+) -> tuple[np.ndarray, np.ndarray]:
     """Insert explicit zero samples at gap boundaries for a clean step display."""
     if len(t) == 0:
         return np.array([]), np.array([])
@@ -446,9 +569,9 @@ def _expand_sparse_bins(t: np.ndarray, q: np.ndarray,
     return np.array(t_out), np.array(q_out)
 
 
-def draw_pmt_curves(ax: plt.Axes, pmt_df: pd.DataFrame,
-                    string_id: int, sensor_id: int,
-                    n_pmts: int = 8) -> None:
+def draw_pmt_curves(
+    ax: plt.Axes, pmt_df: pd.DataFrame, string_id: int, sensor_id: int, n_pmts: int = 8
+) -> None:
     """Filled FADC step-curves for the N most-hit PMTs on one module.
 
     Each PMT gets its own colour; curves share the same axes so the relative
@@ -461,8 +584,9 @@ def draw_pmt_curves(ax: plt.Axes, pmt_df: pd.DataFrame,
         .reset_index(drop=True)
     )
     if active.empty:
-        ax.text(0.5, 0.5, "No pulses", transform=ax.transAxes,
-                ha="center", color="white", fontsize=9)
+        ax.text(
+            0.5, 0.5, "No pulses", transform=ax.transAxes, ha="center", color="white", fontsize=9
+        )
         return
 
     ax.set_facecolor(_BG)
@@ -477,9 +601,7 @@ def draw_pmt_curves(ax: plt.Axes, pmt_df: pd.DataFrame,
 
     for i, (_, row) in enumerate(active.iterrows()):
         color = _PMT_COLORS[int(row["pmt_id"]) % len(_PMT_COLORS)]
-        ft, fq = _expand_sparse_bins(
-            np.asarray(row["fadc_t"]), np.asarray(row["fadc_q"])
-        )
+        ft, fq = _expand_sparse_bins(np.asarray(row["fadc_t"]), np.asarray(row["fadc_q"]))
         label = f"PMT {int(row.pmt_id):02d}  ({int(row.n_pe)} PE)"
         if len(ft) > 0:
             ax.step(ft, fq, where="mid", color=color, lw=1.5, label=label)
@@ -499,15 +621,21 @@ def draw_pmt_curves(ax: plt.Axes, pmt_df: pd.DataFrame,
         spine.set_color("white")
     ax.grid(alpha=0.15, linestyle="--", color="white")
 
-    leg = ax.legend(fontsize=8, framealpha=0.3, facecolor=_BG,
-                    labelcolor="white", loc="upper right",
-                    ncols=2 if len(active) > 6 else 1)
+    leg = ax.legend(
+        fontsize=8,
+        framealpha=0.3,
+        facecolor=_BG,
+        labelcolor="white",
+        loc="upper right",
+        ncols=2 if len(active) > 6 else 1,
+    )
     leg.get_frame().set_edgecolor("white")
 
 
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main() -> None:
     args = parse_args()
@@ -523,9 +651,7 @@ def main() -> None:
             sys.exit(1)
 
     # ---- Load data ----
-    event_idx, pulses_row, photons_row = load_event(
-        args.pulses, args.photons, args.event
-    )
+    event_idx, pulses_row, photons_row = load_event(args.pulses, args.photons, args.event)
 
     mc = ak.to_list(photons_row["mc_truth"])
     vertex = (
@@ -534,7 +660,7 @@ def main() -> None:
         float(mc["initial_state_z"]),
     )
 
-    pos_map   = get_sensor_positions(photons_row)
+    pos_map = get_sensor_positions(photons_row)
     module_df = build_module_df(pulses_row, pos_map)
 
     # ---- Select module ----
@@ -545,31 +671,35 @@ def main() -> None:
         # Brightest module by total PE
         best = module_df.loc[module_df["n_pe"].idxmax()]
         sel_key = (int(best["string_id"]), int(best["sensor_id"]))
-        logger.info("Auto-selected module str %d / dom %d  (%d PE)",
-                    sel_key[0], sel_key[1], int(best["n_pe"]))
+        logger.info(
+            "Auto-selected module str %d / dom %d  (%d PE)",
+            sel_key[0],
+            sel_key[1],
+            int(best["n_pe"]),
+        )
 
     pmt_df = build_pmt_df(pulses_row, sel_key[0], sel_key[1])
 
     # ---- Source direction for the selected module ----
     mod_pos = np.array(pos_map.get(sel_key, (0.0, 0.0, 0.0)))
-    v_pos   = np.array(vertex)
+    v_pos = np.array(vertex)
     diff = v_pos - mod_pos
     norm = np.linalg.norm(diff)
     source_dir = diff / norm if norm > 0 else np.array([0.0, 0.0, 1.0])
 
     # ---- Compute discriminants ----
-    q_arr   = np.zeros(_N_PMTS)
+    q_arr = np.zeros(_N_PMTS)
     dir_arr = _PMT_DIRS.copy()
     if not pmt_df.empty:
         for _, row in pmt_df.iterrows():
             q_arr[int(row["pmt_id"])] = row["n_pe"]
-    alpha_val  = angular_discriminant(q_arr, dir_arr)
+    alpha_val = angular_discriminant(q_arr, dir_arr)
     dipole_val = dipole_score(q_arr, dir_arr)
 
     # ---- Summary ----
     n_hit_pmts = int((q_arr > 0).sum())
-    Q_module   = int(q_arr.sum())
-    mod_dist   = float(np.linalg.norm(mod_pos - v_pos))
+    Q_module = int(q_arr.sum())
+    mod_dist = float(np.linalg.norm(mod_pos - v_pos))
     print(
         f"Event {event_idx}  |  str {sel_key[0]} / dom {sel_key[1]}"
         f"  |  {n_hit_pmts}/{_N_PMTS} PMTs  |  {Q_module} PE"
@@ -579,12 +709,14 @@ def main() -> None:
 
     # ---- Layout ----
     fig = plt.figure(figsize=(12, 6), facecolor=_BG)
-    gs  = gridspec.GridSpec(
-        1, 2,
+    gs = gridspec.GridSpec(
+        1,
+        2,
         width_ratios=[3, 2.5],
         figure=fig,
         wspace=0.30,
-        left=0.04, right=0.97,
+        left=0.04,
+        right=0.97,
     )
 
     ax3d = fig.add_subplot(gs[0], projection="3d", facecolor=_BG)
@@ -592,19 +724,17 @@ def main() -> None:
     ax_sphere = fig.add_subplot(gs[1])
 
     draw_detector_3d(ax3d, module_df, event_idx, vertex, sel_key)
-    draw_pmt_sphere(ax_sphere, pmt_df, source_dir,
-                    sel_key[0], sel_key[1], alpha_val, dipole_val)
+    draw_pmt_sphere(ax_sphere, pmt_df, source_dir, sel_key[0], sel_key[1], alpha_val, dipole_val)
 
     # ---- Save / show main figure ----
     if args.out:
         out_path = Path(args.out)
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        fig.savefig(str(out_path), dpi=args.dpi, bbox_inches="tight",
-                    facecolor=_BG)
+        fig.savefig(str(out_path), dpi=args.dpi, bbox_inches="tight", facecolor=_BG)
         print(f"Saved: {out_path}")
 
     # ---- Curves figure (companion to pulse_view_curves.png) ----
-    n_show = min(len(pmt_df[pmt_df['total_q'] > 0]), 8)
+    n_show = min(len(pmt_df[pmt_df["total_q"] > 0]), 8)
     fig2, ax2 = plt.subplots(figsize=(10, 4), facecolor=_BG)
     fig2.suptitle(
         f"Event {event_idx}  —  per-PMT FADC charge vs time"
@@ -612,14 +742,14 @@ def main() -> None:
         f"  |  {n_hit_pmts}/{_N_PMTS} PMTs fired"
         f"  |  dist to vertex {mod_dist:.1f} m"
         f"  |  α = {alpha_val:.1f}°   D = {dipole_val:.3f}",
-        color="white", fontsize=9,
+        color="white",
+        fontsize=9,
     )
     draw_pmt_curves(ax2, pmt_df, sel_key[0], sel_key[1], n_pmts=n_show)
 
     if args.out:
         curves_path = out_path.with_stem(out_path.stem + "_curves")
-        fig2.savefig(str(curves_path), dpi=args.dpi, bbox_inches="tight",
-                     facecolor=_BG)
+        fig2.savefig(str(curves_path), dpi=args.dpi, bbox_inches="tight", facecolor=_BG)
         print(f"Saved: {curves_path}")
 
     if args.show:

@@ -48,28 +48,38 @@ def parse_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     p.add_argument(
-        "--n-photons", type=int, default=100_000,
+        "--n-photons",
+        type=int,
+        default=100_000,
         help="Photons emitted per source distance.",
     )
     p.add_argument(
-        "--n-distances", type=int, default=50,
+        "--n-distances",
+        type=int,
+        default=50,
         help="Number of source distances (log-uniform from d-min to d-max).",
     )
     p.add_argument(
-        "--n-angle-bins", type=int, default=20,
+        "--n-angle-bins",
+        type=int,
+        default=20,
         help="Emission-angle bins for counts data.",
     )
     p.add_argument(
-        "--d-min", type=float, default=DOM_RADIUS + 0.01,
+        "--d-min",
+        type=float,
+        default=DOM_RADIUS + 0.01,
         help="Min source distance [m]. Must be > DOM radius (0.30 m) to avoid the "
-             "source sitting exactly on the sphere surface, which causes d=0 "
-             "intersection tests to fail the strict d>0 check and suppresses hits.",
+        "source sitting exactly on the sphere surface, which causes d=0 "
+        "intersection tests to fail the strict d>0 check and suppresses hits.",
     )
     p.add_argument("--d-max", type=float, default=150.0, help="Max source distance [m].")
     p.add_argument("--wl-min", type=float, default=290.0, help="Min Cherenkov wavelength [nm].")
     p.add_argument("--wl-max", type=float, default=700.0, help="Max Cherenkov wavelength [nm].")
     p.add_argument(
-        "--max-time", type=float, default=3000.0,
+        "--max-time",
+        type=float,
+        default=3000.0,
         help="Max photon propagation time [ns] (cutoff for un-intersected photons).",
     )
     p.add_argument("--seed", type=int, default=0, help="Random seed.")

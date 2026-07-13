@@ -141,8 +141,9 @@ def partition_layers(radii: np.ndarray, n_layers: int) -> list:
     return np.array_split(order, n_layers)
 
 
-def representative_string(strings: np.ndarray, radii: np.ndarray,
-                          indices: np.ndarray) -> np.ndarray:
+def representative_string(
+    strings: np.ndarray, radii: np.ndarray, indices: np.ndarray
+) -> np.ndarray:
     """Return the string position closest to the median radius in this layer.
 
     Parameters
@@ -188,11 +189,13 @@ def build_layers(detector, n_layers: int):
 
     layers = []
     for indices in partition_layers(radii, n_layers):
-        layers.append({
-            "n_strings": len(indices),
-            "r_range": (float(radii[indices].min()), float(radii[indices].max())),
-            "rep_xy": representative_string(strings, radii, indices),
-        })
+        layers.append(
+            {
+                "n_strings": len(indices),
+                "r_range": (float(radii[indices].min()), float(radii[indices].max())),
+                "rep_xy": representative_string(strings, radii, indices),
+            }
+        )
     return layers, cell
 
 
@@ -213,11 +216,11 @@ def cell_manifest_dict(cell: CellGeometry) -> dict:
     return {
         "n_strings": cell.n_strings,
         "R_outer_m": cell.R_outer,
-        "R_det_m":   cell.R_det,
-        "d_nn_m":    cell.d_nn,
+        "R_det_m": cell.R_det,
+        "d_nn_m": cell.d_nn,
         "V_cell_m3": cell.V_cell,
-        "r_cell_m":  cell.r_cell,
-        "z_min_m":   cell.z_min,
-        "z_max_m":   cell.z_max,
-        "H_m":       cell.H,
+        "r_cell_m": cell.r_cell,
+        "z_min_m": cell.z_min,
+        "z_max_m": cell.z_max,
+        "H_m": cell.H,
     }

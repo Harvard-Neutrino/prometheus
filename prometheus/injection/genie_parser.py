@@ -112,10 +112,7 @@ def final_parser(parsed_events: pd.DataFrame) -> pd.DataFrame:
         ]
     )
     children_ids = _object_array(
-        [
-            event[final_ids[id_event]]
-            for id_event, event in enumerate(parsed_events["event_pdg_id"])
-        ]
+        [event[final_ids[id_event]] for id_event, event in enumerate(parsed_events["event_pdg_id"])]
     )
     children_energy = _object_array(
         [
@@ -136,10 +133,7 @@ def final_parser(parsed_events: pd.DataFrame) -> pd.DataFrame:
         ]
     )
     children_nuc_ids = _object_array(
-        [
-            event[final_ids[id_event]]
-            for id_event, event in enumerate(parsed_events["event_pdg_id"])
-        ]
+        [event[final_ids[id_event]] for id_event, event in enumerate(parsed_events["event_pdg_id"])]
     )
     children_nuc_energy = _object_array(
         [

@@ -337,7 +337,7 @@ def test_counts_physics_forward_dominates_sideways(counts_model):
     config, params = counts_model
     net = make_counts_net_fn(config)
 
-    ls_fwd  = _counts_predict(net, params, _PHYSICS_LOG10_DISTS, np.radians(3.0))
+    ls_fwd = _counts_predict(net, params, _PHYSICS_LOG10_DISTS, np.radians(3.0))
     ls_side = _counts_predict(net, params, _PHYSICS_LOG10_DISTS, np.pi / 2)
 
     ratios = ls_fwd - ls_side  # log10 units; must be > 0 at every distance
@@ -390,7 +390,7 @@ def test_counts_physics_no_90deg_spike(counts_model):
     is_local_max = (ls_90 > ls_85) & (ls_90 > ls_95)
     assert not np.any(is_local_max), (
         f"Survival at 90° is a local maximum (exceeds both 85° and 95°) at "
-        f"distances {np.round(10**np.array(_PHYSICS_LOG10_DISTS)[is_local_max], 1).tolist()} m. "
+        f"distances {np.round(10 ** np.array(_PHYSICS_LOG10_DISTS)[is_local_max], 1).tolist()} m. "
         f"ls_85={np.round(ls_85, 3).tolist()}, "
         f"ls_90={np.round(ls_90, 3).tolist()}, "
         f"ls_95={np.round(ls_95, 3).tolist()}"

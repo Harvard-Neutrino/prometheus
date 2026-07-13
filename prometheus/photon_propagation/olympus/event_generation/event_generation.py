@@ -207,8 +207,7 @@ def generate_cascade(
     module_mask = np.zeros(det.module_coords.shape[0], dtype=bool)
     if source_pos.shape[0] > 0:
         dist_matrix = np.linalg.norm(
-            np.asarray(source_pos)[:, np.newaxis, :]
-            - det.module_coords[np.newaxis, :, :],
+            np.asarray(source_pos)[:, np.newaxis, :] - det.module_coords[np.newaxis, :, :],
             axis=-1,
         )
         distance_mask = np.any(dist_matrix < max_distance, axis=1)

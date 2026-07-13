@@ -162,11 +162,13 @@ def _random_rotation(rng: np.random.Generator) -> np.ndarray:
     q = rng.normal(size=4)
     q /= np.linalg.norm(q)
     w, x, y, z = q
-    return np.array([
-        [1.0 - 2.0 * (y * y + z * z), 2.0 * (x * y - w * z), 2.0 * (x * z + w * y)],
-        [2.0 * (x * y + w * z), 1.0 - 2.0 * (x * x + z * z), 2.0 * (y * z - w * x)],
-        [2.0 * (x * z - w * y), 2.0 * (y * z + w * x), 1.0 - 2.0 * (x * x + y * y)],
-    ])
+    return np.array(
+        [
+            [1.0 - 2.0 * (y * y + z * z), 2.0 * (x * y - w * z), 2.0 * (x * z + w * y)],
+            [2.0 * (x * y + w * z), 1.0 - 2.0 * (x * x + z * z), 2.0 * (y * z - w * x)],
+            [2.0 * (x * z - w * y), 2.0 * (y * z + w * x), 1.0 - 2.0 * (x * x + y * y)],
+        ]
+    )
 
 
 def _sample_cylinder(rng: np.random.Generator, radius: float, half_height: float) -> np.ndarray:
@@ -220,9 +222,7 @@ def injection_from_genie_output(
         direction_mode = getattr(simulation_config, "direction_mode", "as-is") or "as-is"
 
     if direction_mode not in ("as-is", "isotropic"):
-        raise ValueError(
-            f"Unknown direction_mode: {direction_mode!r}. Use 'as-is' or 'isotropic'."
-        )
+        raise ValueError(f"Unknown direction_mode: {direction_mode!r}. Use 'as-is' or 'isotropic'.")
 
     offset = np.zeros(3) if detector_offset is None else np.asarray(detector_offset, dtype=float)
 
@@ -236,7 +236,9 @@ def injection_from_genie_output(
         events_df = events_df[mask].reset_index(drop=True)
         logger.info(
             "Filtered to %d events matching interaction_filter=%r (from %d)",
-            len(events_df), interaction_filter, n_file,
+            len(events_df),
+            interaction_filter,
+            n_file,
         )
         if len(events_df) == 0:
             raise ValueError(
@@ -309,9 +311,7 @@ def injection_from_genie_output(
         final_states = []
         for pdg, energy, p3 in zip(row["final_ids"], row["final_e"], final_p3s):
             if int(pdg) == 111:
-                final_states.extend(
-                    _decay_pi0(rng, float(energy), p3, vertex, initial_state)
-                )
+                final_states.extend(_decay_pi0(rng, float(energy), p3, vertex, initial_state))
             else:
                 direction = _direction_from_p3(p3)
                 final_states.append(

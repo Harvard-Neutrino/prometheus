@@ -84,12 +84,8 @@ _RESOURCE_DIR = _HERE.parent.parent / "resources" / "olympus_resources"
 def _make_loaders(dataset, batch_size, rng, train_frac=_TRAIN_FRAC):
     n_train = int(train_frac * len(dataset))
     train_ds, test_ds = create_random_split(dataset, n_train, rng)
-    train_loader = DataLoader(
-        train_ds, batch_size=batch_size, rng=rng, shuffle=True, infinite=True
-    )
-    test_loader = DataLoader(
-        test_ds, batch_size=batch_size, rng=rng, shuffle=False, infinite=False
-    )
+    train_loader = DataLoader(train_ds, batch_size=batch_size, rng=rng, shuffle=True, infinite=True)
+    test_loader = DataLoader(test_ds, batch_size=batch_size, rng=rng, shuffle=False, infinite=False)
     return train_loader, test_loader
 
 
@@ -108,25 +104,33 @@ def main():
         help="Directory to write trained pickle files.",
     )
     parser.add_argument(
-        "--shape-steps", type=int, default=_SHAPE_CONFIG["steps"],
-        help="Training steps for the shape model."
+        "--shape-steps",
+        type=int,
+        default=_SHAPE_CONFIG["steps"],
+        help="Training steps for the shape model.",
     )
     parser.add_argument(
-        "--counts-steps", type=int, default=_COUNTS_CONFIG["steps"],
-        help="Training steps for the counts model."
+        "--counts-steps",
+        type=int,
+        default=_COUNTS_CONFIG["steps"],
+        help="Training steps for the counts model.",
     )
     parser.add_argument("--seed", type=int, default=_SEED)
     parser.add_argument(
-        "--counts-only", action="store_true",
-        help="Skip shape model training; only retrain the counts model."
+        "--counts-only",
+        action="store_true",
+        help="Skip shape model training; only retrain the counts model.",
     )
     parser.add_argument(
-        "--large-counts", action="store_true",
+        "--large-counts",
+        action="store_true",
         help="Use the large counts MLP (500 units, 3 layers). Not recommended: "
-             "overfits severely on the ~1,400-row counts dataset.",
+        "overfits severely on the ~1,400-row counts dataset.",
     )
     parser.add_argument(
-        "--counts-out", type=str, default="antares_counts_params_low_E.pickle",
+        "--counts-out",
+        type=str,
+        default="antares_counts_params_low_E.pickle",
         help="Output filename for the counts model pickle (relative to --out-dir).",
     )
     args = parser.parse_args()
@@ -162,9 +166,7 @@ def main():
     counts_path = args.data_dir / "counts_data.npz"
     print(f"\nLoading counts data from {counts_path}")
     c = np.load(counts_path)
-    counts_ds = SimpleDataset(
-        c["log10_dist"], c["angle"], c["log10_survival"], c["n_detected"]
-    )
+    counts_ds = SimpleDataset(c["log10_dist"], c["angle"], c["log10_survival"], c["n_detected"])
     print(f"  {len(counts_ds):,} samples")
 
     base_config = _COUNTS_CONFIG if args.large_counts else _COUNTS_CONFIG_SMALL

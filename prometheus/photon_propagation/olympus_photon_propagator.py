@@ -193,9 +193,7 @@ class OlympusPhotonPropagator(PhotonPropagator):
                     om_idx = 0
                     string_idx += 1
                 for hit in dom_hits:
-                    hits.append(
-                        Hit(string_idx, om_idx, float(hit), None, None, None, None, None)
-                    )
+                    hits.append(Hit(string_idx, om_idx, float(hit), None, None, None, None, None))
                 om_idx += 1
         particle.hits = hits
         for child in particle.children:

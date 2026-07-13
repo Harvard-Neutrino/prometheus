@@ -32,9 +32,7 @@ from prometheus.utils.layered_sim import (
 def grid_detector():
     # 4x4 square grid of strings, 100 m spacing, 3 modules/string spanning
     # z in [-10, 10].
-    return make_grid(
-        n_side=4, dist=100.0, n_z=3, dist_z=10.0, z_cent=0.0, medium=Medium.WATER
-    )
+    return make_grid(n_side=4, dist=100.0, n_z=3, dist_z=10.0, z_cent=0.0, medium=Medium.WATER)
 
 
 # ---------------------------------------------------------------------------
@@ -206,9 +204,7 @@ class TestWilsonSigma:
         assert wilson_sigma(50, 100, z=1.0) == pytest.approx(0.04975185951049946)
 
     def test_known_value_nondefault_z(self):
-        assert wilson_sigma(3, 20, z=1.959963984540054) == pytest.approx(
-            0.15402505942227016
-        )
+        assert wilson_sigma(3, 20, z=1.959963984540054) == pytest.approx(0.15402505942227016)
 
 
 # ---------------------------------------------------------------------------

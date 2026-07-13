@@ -134,18 +134,18 @@ def make_generate_norm_flow_photons(
         # Eval count net to obtain survival fraction (clamped to ≤ 1)
         ph_frac = np.minimum(
             1.0,
-            np.power(
-                10, np.asarray(counts_apply_fn(counts_params, inp_params_padded))
-            ).squeeze(),
+            np.power(10, np.asarray(counts_apply_fn(counts_params, inp_params_padded))).squeeze(),
         )
 
         # Sample number of detected photons
         n_photons_padded = ph_frac * source_photons_padded * mod_eff_factor_padded
 
         key, subkey = random.split(key)
-        n_photons_masked = np.asarray(
-            random.poisson(subkey, n_photons_padded, shape=n_photons_padded.shape)
-        ).squeeze().astype(np.int32)[:n_pairs]
+        n_photons_masked = (
+            np.asarray(random.poisson(subkey, n_photons_padded, shape=n_photons_padded.shape))
+            .squeeze()
+            .astype(np.int32)[:n_pairs]
+        )
 
         if not np.any(n_photons_masked):
             return ak.Array([[] for _ in range(n_mod)])
@@ -167,9 +167,7 @@ def make_generate_norm_flow_photons(
                 _log10d = np.asarray(inp_params_nonzero[:, 0])
                 _angle = np.asarray(inp_params_nonzero[:, 1])
                 _top = np.argsort(_nph)[-5:][::-1]
-                logger.debug(
-                    "total photons=%s max/pair=%s", f"{_total_ph:,}", f"{_max_ph:,}"
-                )
+                logger.debug("total photons=%s max/pair=%s", f"{_total_ph:,}", f"{_max_ph:,}")
                 logger.debug("Top-5 (log10_dist, angle_rad, n_photons):")
                 for _i in _top:
                     logger.debug(
@@ -433,9 +431,10 @@ def make_nflow_photon_likelihood(shape_model_path, counts_model_path):
         )
 
         ph_frac = jnp.minimum(
-            1.0, jnp.power(10, counts_net_apply_fn(counts_params, inp_pars)).reshape(
+            1.0,
+            jnp.power(10, counts_net_apply_fn(counts_params, inp_pars)).reshape(
                 source_pos.shape[0], module_coords.shape[0]
-            )
+            ),
         )
 
         n_photons = ph_frac * source_photons

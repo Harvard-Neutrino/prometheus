@@ -407,9 +407,9 @@ def generate_training_data(
         if i_d == 0:
             logger.info("First-call (compile + run): %.1f s", wall_time() - t_compile)
 
-        init_dirs_np = np.asarray(init_dirs)          # (N, 3)
-        isec_np = np.asarray(final_states["isec"])    # (N,) bool
-        time_np = np.asarray(final_states["time"])    # (N,) float64
+        init_dirs_np = np.asarray(init_dirs)  # (N, 3)
+        isec_np = np.asarray(final_states["isec"])  # (N,) bool
+        time_np = np.asarray(final_states["time"])  # (N,) float64
         weight_np = np.asarray(final_states["weight"])  # (N,) float64
 
         n_detected = int(isec_np.sum())
@@ -427,8 +427,8 @@ def generate_training_data(
         if n_detected == 0:
             continue
 
-        em_angle_det = em_angle_all[isec_np]       # angles of detected photons
-        weight_det = weight_np[isec_np]            # absorption weights of detected photons
+        em_angle_det = em_angle_all[isec_np]  # angles of detected photons
+        weight_det = weight_np[isec_np]  # absorption weights of detected photons
         t_res_det = time_np[isec_np] - d / c_ref  # time residuals [ns]
 
         # --- Shape data: keep all detected photons with absorption weights ---

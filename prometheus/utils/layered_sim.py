@@ -27,12 +27,14 @@ from prometheus.utils.detector_layers import (  # noqa: F401
 )
 
 
-def sample_cell_vertices(rng: np.random.Generator,
-                         string_xy: np.ndarray,
-                         r_cell: float,
-                         z_min: float,
-                         z_max: float,
-                         n: int) -> np.ndarray:
+def sample_cell_vertices(
+    rng: np.random.Generator,
+    string_xy: np.ndarray,
+    r_cell: float,
+    z_min: float,
+    z_max: float,
+    n: int,
+) -> np.ndarray:
     """Sample vertex positions uniformly inside a cylindrical Voronoi cell.
 
     Parameters
@@ -103,7 +105,7 @@ def count_hits_particle(particle) -> tuple:
     n_hits = len(hits)
     modules = {(h.string_id, h.om_id) for h in hits}
 
-    for child in (getattr(particle, "children", None) or []):
+    for child in getattr(particle, "children", None) or []:
         c_hits, c_mods = count_hits_particle(child)
         n_hits += c_hits
         modules |= c_mods
@@ -169,9 +171,7 @@ def run_batch(prom, config, rng, rep_xy, n_events, cell, seed, outfile):
     tuple of (np.ndarray, np.ndarray)
         Per-event total hit counts and distinct module counts.
     """
-    positions = sample_cell_vertices(
-        rng, rep_xy, cell.r_cell, cell.z_min, cell.z_max, n_events
-    )
+    positions = sample_cell_vertices(rng, rep_xy, cell.r_cell, cell.z_min, cell.z_max, n_events)
     config.injection.genie.simulation.positions = positions.tolist()
     config.injection.genie.simulation.n_events = n_events
     # inject() copies the run seed into the injection config, and propagate()
@@ -183,6 +183,7 @@ def run_batch(prom, config, rng, rep_xy, n_events, cell, seed, outfile):
     # construction; re-seeding per batch makes muon energy losses reproducible
     # independent of how many batches ran before this one.
     import proposal as pp
+
     pp.RandomGenerator.get().set_seed(seed)
 
     prom.inject()

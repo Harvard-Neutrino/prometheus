@@ -77,59 +77,104 @@ except Exception:
 
 try:
     import jax
+
     jax.config.update("jax_enable_x64", True)
     jax.config.update("jax_platform_name", "cpu")
-    jax.config.update("jax_compilation_cache_dir",
-                      str(Path(__file__).resolve().parent.parent.parent / ".jax_cache"))
+    jax.config.update(
+        "jax_compilation_cache_dir",
+        str(Path(__file__).resolve().parent.parent.parent / ".jax_cache"),
+    )
     jax.config.update("jax_persistent_cache_min_compile_time_secs", 0.0)
 except Exception:
     pass
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 _DEFAULT_FILE = REPO_ROOT / "tests" / "resources" / "genie_example.root"
-_DEFAULT_GEO  = REPO_ROOT / "resources" / "geofiles" / "arca.geo"
+_DEFAULT_GEO = REPO_ROOT / "resources" / "geofiles" / "arca.geo"
 
 
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
         description="Estimate effective detection volume for GENIE-injected events.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    p.add_argument("--file", default=str(_DEFAULT_FILE), metavar="ROOT",
-                   help="GENIE gRooTracker ROOT file to sample from.")
-    p.add_argument("--geo", default=str(_DEFAULT_GEO), metavar="GEO",
-                   help="Detector geometry file.")
-    p.add_argument("--n-events", type=int, default=200, metavar="N",
-                   help="Mean events per layer; the total budget is "
-                        "n-events × n-layers.")
-    p.add_argument("--n-layers", type=int, default=3, metavar="N",
-                   help="Number of radial layers to partition strings into.")
-    p.add_argument("--no-adaptive", action="store_true",
-                   help="Disable adaptive event allocation and simulate exactly "
-                        "n-events per layer in a single batch.")
-    p.add_argument("--min-hits", type=int, default=5, metavar="N",
-                   help="Minimum total raw photon hits to count an event as detected.")
-    p.add_argument("--min-modules", type=int, default=1, metavar="N",
-                   help="Minimum number of distinct modules hit to count an event as detected.")
-    p.add_argument("--max-distance", type=float, default=100.0, metavar="M",
-                   help="Maximum source–module distance passed to the Olympus propagator [m].")
-    p.add_argument("--seed", type=int, default=42, metavar="N",
-                   help="Base random seed for vertex placement.")
-    p.add_argument("--run-number", type=int, default=10, metavar="N",
-                   help="Run number embedded in output parquet filenames.")
-    p.add_argument("--out",
-                   default=str(
-                       REPO_ROOT / "examples" / "output" / "genie" / "effective_volume.csv"
-                   ),
-                   metavar="FILE",
-                   help="Output CSV file for per-layer results.")
-    p.add_argument("--out-dir", default=None, metavar="DIR",
-                   help="Directory for per-layer parquet files. "
-                        "Defaults to the same directory as --out.")
+    p.add_argument(
+        "--file",
+        default=str(_DEFAULT_FILE),
+        metavar="ROOT",
+        help="GENIE gRooTracker ROOT file to sample from.",
+    )
+    p.add_argument(
+        "--geo", default=str(_DEFAULT_GEO), metavar="GEO", help="Detector geometry file."
+    )
+    p.add_argument(
+        "--n-events",
+        type=int,
+        default=200,
+        metavar="N",
+        help="Mean events per layer; the total budget is n-events × n-layers.",
+    )
+    p.add_argument(
+        "--n-layers",
+        type=int,
+        default=3,
+        metavar="N",
+        help="Number of radial layers to partition strings into.",
+    )
+    p.add_argument(
+        "--no-adaptive",
+        action="store_true",
+        help="Disable adaptive event allocation and simulate exactly "
+        "n-events per layer in a single batch.",
+    )
+    p.add_argument(
+        "--min-hits",
+        type=int,
+        default=5,
+        metavar="N",
+        help="Minimum total raw photon hits to count an event as detected.",
+    )
+    p.add_argument(
+        "--min-modules",
+        type=int,
+        default=1,
+        metavar="N",
+        help="Minimum number of distinct modules hit to count an event as detected.",
+    )
+    p.add_argument(
+        "--max-distance",
+        type=float,
+        default=100.0,
+        metavar="M",
+        help="Maximum source–module distance passed to the Olympus propagator [m].",
+    )
+    p.add_argument(
+        "--seed", type=int, default=42, metavar="N", help="Base random seed for vertex placement."
+    )
+    p.add_argument(
+        "--run-number",
+        type=int,
+        default=10,
+        metavar="N",
+        help="Run number embedded in output parquet filenames.",
+    )
+    p.add_argument(
+        "--out",
+        default=str(REPO_ROOT / "examples" / "output" / "genie" / "effective_volume.csv"),
+        metavar="FILE",
+        help="Output CSV file for per-layer results.",
+    )
+    p.add_argument(
+        "--out-dir",
+        default=None,
+        metavar="DIR",
+        help="Directory for per-layer parquet files. Defaults to the same directory as --out.",
+    )
     return p.parse_args()
 
 
@@ -137,12 +182,13 @@ def parse_args() -> argparse.Namespace:
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main() -> None:
     logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(message)s")
     args = parse_args()
 
     genie_file = Path(args.file)
-    geo_file   = Path(args.geo)
+    geo_file = Path(args.geo)
 
     for path, label in [(genie_file, "GENIE"), (geo_file, "geo")]:
         if not path.exists():
@@ -157,31 +203,35 @@ def main() -> None:
 
     print(f"Geo file    : {geo_file.name}")
     print(f"Strings     : {cell.n_strings}  |  Modules: {len(detector.module_coords)}")
-    print(f"Outer radius: {cell.R_outer:.1f} m (+{0.5 * cell.d_nn:.1f} m skirt)  "
-          f"|  Height: {cell.H:.1f} m")
+    print(
+        f"Outer radius: {cell.R_outer:.1f} m (+{0.5 * cell.d_nn:.1f} m skirt)  "
+        f"|  Height: {cell.H:.1f} m"
+    )
     print(f"Cell radius : {cell.r_cell:.1f} m  |  V_cell: {cell.V_cell:.2e} m³")
 
     print(f"\nLayers ({args.n_layers}):")
     for i, lay in enumerate(layers):
-        print(f"  Layer {i}: {lay['n_strings']:4d} strings  "
-              f"r = {lay['r_range'][0]:6.1f}–{lay['r_range'][1]:6.1f} m  "
-              f"rep = ({lay['rep_xy'][0]:+.1f}, {lay['rep_xy'][1]:+.1f})")
+        print(
+            f"  Layer {i}: {lay['n_strings']:4d} strings  "
+            f"r = {lay['r_range'][0]:6.1f}–{lay['r_range'][1]:6.1f} m  "
+            f"rep = ({lay['rep_xy'][0]:+.1f}, {lay['rep_xy'][1]:+.1f})"
+        )
 
     # ------------------------------------------------------------------
     # Prometheus initialisation (once — loads JAX models)
     # ------------------------------------------------------------------
-    out_path   = Path(args.out)
+    out_path = Path(args.out)
     parquet_dir = Path(args.out_dir) if args.out_dir else out_path.parent
     parquet_dir.mkdir(parents=True, exist_ok=True)
     channel = genie_file.stem  # used to label output parquet filenames
 
-    config.run.run_number                               = args.run_number
-    config.run.random_state_seed                        = args.seed
-    config.detector.geo_file                            = str(geo_file)
-    config.injection.name                               = "GENIE"
-    config.injection.genie.paths.injection_file         = str(genie_file)
-    config.injection.genie.inject                       = True
-    config.injection.genie.simulation.placement         = "fixed"
+    config.run.run_number = args.run_number
+    config.run.random_state_seed = args.seed
+    config.detector.geo_file = str(geo_file)
+    config.injection.name = "GENIE"
+    config.injection.genie.paths.injection_file = str(genie_file)
+    config.injection.genie.inject = True
+    config.injection.genie.simulation.placement = "fixed"
     config.photon_propagator.olympus.simulation.max_distance = args.max_distance
 
     print("\nInitialising Prometheus …")
@@ -205,25 +255,33 @@ def main() -> None:
     layer_stats = []
     batch_idx = 0
     for i, lay in enumerate(layers):
-        parquet_file = (
-            parquet_dir / f"signal_{channel}_layer{i}_pilot_r{args.run_number}.parquet"
-        )
+        parquet_file = parquet_dir / f"signal_{channel}_layer{i}_pilot_r{args.run_number}.parquet"
         t_batch = time()
         hit_counts, mod_counts = run_batch(
-            prom, config, rng, lay["rep_xy"], n_pilot, cell,
-            args.seed + batch_idx, parquet_file,
+            prom,
+            config,
+            rng,
+            lay["rep_xy"],
+            n_pilot,
+            cell,
+            args.seed + batch_idx,
+            parquet_file,
         )
         batch_idx += 1
 
         detected = (hit_counts >= args.min_hits) & (mod_counts >= args.min_modules)
-        layer_stats.append({
-            "n": n_pilot,
-            "k": int(detected.sum()),
-            "hits": [hit_counts],
-            "mods": [mod_counts],
-        })
-        print(f"  Layer {i}: {layer_stats[i]['k']:4d}/{n_pilot} detected  "
-              f"[{time() - t_batch:.0f} s]  → {parquet_file.name}")
+        layer_stats.append(
+            {
+                "n": n_pilot,
+                "k": int(detected.sum()),
+                "hits": [hit_counts],
+                "mods": [mod_counts],
+            }
+        )
+        print(
+            f"  Layer {i}: {layer_stats[i]['k']:4d}/{n_pilot} detected  "
+            f"[{time() - t_batch:.0f} s]  → {parquet_file.name}"
+        )
 
     # Stage 2 — spend the remaining budget where it shrinks the total V_eff
     # error the most.  A layer's contribution to sigma_V_eff scales with
@@ -239,8 +297,10 @@ def main() -> None:
             )
             n_main = np.rint(remaining * weights / weights.sum()).astype(int)
 
-            print(f"\nStage 2 — adaptive top-up ({remaining} events): "
-                  + ", ".join(f"layer {i}: {n}" for i, n in enumerate(n_main)))
+            print(
+                f"\nStage 2 — adaptive top-up ({remaining} events): "
+                + ", ".join(f"layer {i}: {n}" for i, n in enumerate(n_main))
+            )
             for i, (lay, n_ev) in enumerate(zip(layers, n_main)):
                 if n_ev <= 0:
                     continue
@@ -249,8 +309,14 @@ def main() -> None:
                 )
                 t_batch = time()
                 hit_counts, mod_counts = run_batch(
-                    prom, config, rng, lay["rep_xy"], int(n_ev), cell,
-                    args.seed + batch_idx, parquet_file,
+                    prom,
+                    config,
+                    rng,
+                    lay["rep_xy"],
+                    int(n_ev),
+                    cell,
+                    args.seed + batch_idx,
+                    parquet_file,
                 )
                 batch_idx += 1
 
@@ -260,8 +326,10 @@ def main() -> None:
                 s["k"] += int(detected.sum())
                 s["hits"].append(hit_counts)
                 s["mods"].append(mod_counts)
-                print(f"  Layer {i}: {int(detected.sum()):4d}/{int(n_ev)} detected  "
-                      f"[{time() - t_batch:.0f} s]  → {parquet_file.name}")
+                print(
+                    f"  Layer {i}: {int(detected.sum()):4d}/{int(n_ev)} detected  "
+                    f"[{time() - t_batch:.0f} s]  → {parquet_file.name}"
+                )
 
     # ------------------------------------------------------------------
     # Per-layer efficiencies and effective volumes
@@ -270,41 +338,47 @@ def main() -> None:
     for i, (lay, s) in enumerate(zip(layers, layer_stats)):
         hit_counts = np.concatenate(s["hits"])
         mod_counts = np.concatenate(s["mods"])
-        eff       = s["k"] / s["n"]
+        eff = s["k"] / s["n"]
         sigma_eff = wilson_sigma(s["k"], s["n"])
 
-        V_eff_layer       = lay["n_strings"] * eff * cell.V_cell
+        V_eff_layer = lay["n_strings"] * eff * cell.V_cell
         sigma_V_eff_layer = lay["n_strings"] * sigma_eff * cell.V_cell
 
-        print(f"\nLayer {i} — {lay['n_strings']} strings  "
-              f"r = {lay['r_range'][0]:.0f}–{lay['r_range'][1]:.0f} m")
+        print(
+            f"\nLayer {i} — {lay['n_strings']} strings  "
+            f"r = {lay['r_range'][0]:.0f}–{lay['r_range'][1]:.0f} m"
+        )
         print(f"  detected : {s['k']}/{s['n']}  eff = {eff:.4f} ± {sigma_eff:.4f}")
-        print(f"  V_eff    : {V_eff_layer:.3e} ± {sigma_V_eff_layer:.3e} m³  "
-              f"({V_eff_layer/1e9:.5f} km³)")
+        print(
+            f"  V_eff    : {V_eff_layer:.3e} ± {sigma_V_eff_layer:.3e} m³  "
+            f"({V_eff_layer / 1e9:.5f} km³)"
+        )
 
-        results.append({
-            "layer":              i,
-            "n_strings":          lay["n_strings"],
-            "r_min_m":            lay["r_range"][0],
-            "r_max_m":            lay["r_range"][1],
-            "rep_x_m":            lay["rep_xy"][0],
-            "rep_y_m":            lay["rep_xy"][1],
-            "n_events":           s["n"],
-            "n_pilot":            n_pilot,
-            "n_detected":         s["k"],
-            "eff":                eff,
-            "sigma_eff":          sigma_eff,
-            "V_eff_m3":           V_eff_layer,
-            "sigma_V_eff_m3":     sigma_V_eff_layer,
-            "median_hits":        float(np.median(hit_counts)),
-            "median_modules":     float(np.median(mod_counts)),
-        })
+        results.append(
+            {
+                "layer": i,
+                "n_strings": lay["n_strings"],
+                "r_min_m": lay["r_range"][0],
+                "r_max_m": lay["r_range"][1],
+                "rep_x_m": lay["rep_xy"][0],
+                "rep_y_m": lay["rep_xy"][1],
+                "n_events": s["n"],
+                "n_pilot": n_pilot,
+                "n_detected": s["k"],
+                "eff": eff,
+                "sigma_eff": sigma_eff,
+                "V_eff_m3": V_eff_layer,
+                "sigma_V_eff_m3": sigma_V_eff_layer,
+                "median_hits": float(np.median(hit_counts)),
+                "median_modules": float(np.median(mod_counts)),
+            }
+        )
 
     # ------------------------------------------------------------------
     # Total effective volume
     # ------------------------------------------------------------------
-    V_eff_total       = sum(r["V_eff_m3"]       for r in results)
-    sigma_V_eff_total = np.sqrt(sum(r["sigma_V_eff_m3"]**2 for r in results))
+    V_eff_total = sum(r["V_eff_m3"] for r in results)
+    sigma_V_eff_total = np.sqrt(sum(r["sigma_V_eff_m3"] ** 2 for r in results))
 
     print("\n" + "=" * 60)
     print("EFFECTIVE VOLUME SUMMARY")
@@ -314,17 +388,20 @@ def main() -> None:
     print(f"  Threshold    : ≥ {args.min_hits} photon hits, ≥ {args.min_modules} modules")
     print(f"  max_distance : {args.max_distance} m")
     print()
-    header = (f"{'Layer':>5}  {'n_str':>6}  {'r [m]':>13}  {'n_ev':>6}  "
-              f"{'eff':>8}  {'V_eff [m³]':>14}")
+    header = (
+        f"{'Layer':>5}  {'n_str':>6}  {'r [m]':>13}  {'n_ev':>6}  {'eff':>8}  {'V_eff [m³]':>14}"
+    )
     print(header)
     print("-" * len(header))
     for r in results:
-        print(f"  {r['layer']:3d}    {r['n_strings']:4d}  "
-              f"{r['r_min_m']:5.0f}–{r['r_max_m']:5.0f}  {r['n_events']:6d}  "
-              f"{r['eff']:7.4f}  {r['V_eff_m3']:14.3e}")
+        print(
+            f"  {r['layer']:3d}    {r['n_strings']:4d}  "
+            f"{r['r_min_m']:5.0f}–{r['r_max_m']:5.0f}  {r['n_events']:6d}  "
+            f"{r['eff']:7.4f}  {r['V_eff_m3']:14.3e}"
+        )
     print("-" * len(header))
     print(f"  Total V_eff = {V_eff_total:.3e} ± {sigma_V_eff_total:.3e} m³")
-    print(f"             = {V_eff_total/1e9:.5f} ± {sigma_V_eff_total/1e9:.5f} km³")
+    print(f"             = {V_eff_total / 1e9:.5f} ± {sigma_V_eff_total / 1e9:.5f} km³")
     print("=" * 60)
 
     # ------------------------------------------------------------------
@@ -332,32 +409,43 @@ def main() -> None:
     # ------------------------------------------------------------------
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
-    fieldnames = list(results[0].keys()) + ["V_cell_m3", "r_cell_m", "R_outer_m", "R_det_m",
-                                             "d_nn_m", "H_m",
-                                             "min_hits_threshold", "min_modules_threshold",
-                                             "max_distance_m",
-                                             "V_eff_total_m3", "sigma_V_eff_total_m3",
-                                             "geo_file", "genie_file"]
+    fieldnames = list(results[0].keys()) + [
+        "V_cell_m3",
+        "r_cell_m",
+        "R_outer_m",
+        "R_det_m",
+        "d_nn_m",
+        "H_m",
+        "min_hits_threshold",
+        "min_modules_threshold",
+        "max_distance_m",
+        "V_eff_total_m3",
+        "sigma_V_eff_total_m3",
+        "geo_file",
+        "genie_file",
+    ]
     with open(out_path, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         for r in results:
             row = dict(r)
-            row.update({
-                "V_cell_m3":              cell.V_cell,
-                "r_cell_m":               cell.r_cell,
-                "R_outer_m":              cell.R_outer,
-                "R_det_m":                cell.R_det,
-                "d_nn_m":                 cell.d_nn,
-                "H_m":                    cell.H,
-                "min_hits_threshold":     args.min_hits,
-                "min_modules_threshold":  args.min_modules,
-                "max_distance_m":         args.max_distance,
-                "V_eff_total_m3":         V_eff_total,
-                "sigma_V_eff_total_m3":   sigma_V_eff_total,
-                "geo_file":               geo_file.name,
-                "genie_file":             genie_file.name,
-            })
+            row.update(
+                {
+                    "V_cell_m3": cell.V_cell,
+                    "r_cell_m": cell.r_cell,
+                    "R_outer_m": cell.R_outer,
+                    "R_det_m": cell.R_det,
+                    "d_nn_m": cell.d_nn,
+                    "H_m": cell.H,
+                    "min_hits_threshold": args.min_hits,
+                    "min_modules_threshold": args.min_modules,
+                    "max_distance_m": args.max_distance,
+                    "V_eff_total_m3": V_eff_total,
+                    "sigma_V_eff_total_m3": sigma_V_eff_total,
+                    "geo_file": geo_file.name,
+                    "genie_file": genie_file.name,
+                }
+            )
             writer.writerow(row)
 
     print(f"\nSaved: {out_path}")

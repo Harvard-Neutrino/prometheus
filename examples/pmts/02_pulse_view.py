@@ -61,24 +61,40 @@ _BG = "#06305a"
 # CLI
 # ---------------------------------------------------------------------------
 
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
         description="3-D + FADC waveform view of digitised module responses.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    p.add_argument("--pulses", default=_DEFAULT_PULSES, metavar="FILE",
-                   help="Path to 11_pulses.parquet.")
-    p.add_argument("--photons", default=_DEFAULT_PHOTONS, metavar="FILE",
-                   help="Path to 10_photons.parquet (sensor positions).")
-    p.add_argument("--event", type=int, default=None, metavar="IDX",
-                   help="0-based event index.  Defaults to brightest by signal PE.")
-    p.add_argument("--out",
-                   default=str(REPO_ROOT / "examples" / "output" / "pmts" / "pulse_view.png"),
-                   metavar="FILE", help="Output image.  Set to '' to skip saving.")
-    p.add_argument("--show", action="store_true", default=False,
-                   help="Open an interactive matplotlib window.")
-    p.add_argument("--geo", default=None, metavar="FILE",
-                   help="Geo file to show unhit modules as gray dots.")
+    p.add_argument(
+        "--pulses", default=_DEFAULT_PULSES, metavar="FILE", help="Path to 11_pulses.parquet."
+    )
+    p.add_argument(
+        "--photons",
+        default=_DEFAULT_PHOTONS,
+        metavar="FILE",
+        help="Path to 10_photons.parquet (sensor positions).",
+    )
+    p.add_argument(
+        "--event",
+        type=int,
+        default=None,
+        metavar="IDX",
+        help="0-based event index.  Defaults to brightest by signal PE.",
+    )
+    p.add_argument(
+        "--out",
+        default=str(REPO_ROOT / "examples" / "output" / "pmts" / "pulse_view.png"),
+        metavar="FILE",
+        help="Output image.  Set to '' to skip saving.",
+    )
+    p.add_argument(
+        "--show", action="store_true", default=False, help="Open an interactive matplotlib window."
+    )
+    p.add_argument(
+        "--geo", default=None, metavar="FILE", help="Geo file to show unhit modules as gray dots."
+    )
     p.add_argument("--dpi", type=int, default=150)
     return p.parse_args()
 
@@ -87,14 +103,17 @@ def parse_args() -> argparse.Namespace:
 # Data loading
 # ---------------------------------------------------------------------------
 
+
 def load_detector(geo_path: str) -> np.ndarray | None:
     """Return (N, 3) array of all module positions from a geo file, or None on failure."""
     try:
         from prometheus.detector import detector_from_geo
+
         return detector_from_geo(geo_path).module_coords
     except Exception as exc:
         logger.warning("Could not load geo file %s: %s", geo_path, exc)
         return None
+
 
 def load_event(pulses_path: str, photons_path: str, event_idx: int | None):
     pulses = ak.from_parquet(pulses_path)
@@ -103,8 +122,7 @@ def load_event(pulses_path: str, photons_path: str, event_idx: int | None):
     if event_idx is None:
         total_pe = [int(ak.sum(pulses[i]["n_pe"])) for i in range(len(pulses))]
         event_idx = int(np.argmax(total_pe))
-        logger.info("Auto-selected event %d (total signal PE = %d)",
-                    event_idx, total_pe[event_idx])
+        logger.info("Auto-selected event %d (total signal PE = %d)", event_idx, total_pe[event_idx])
 
     return event_idx, pulses[event_idx], photons[event_idx]
 
@@ -130,8 +148,11 @@ def build_module_df(photons_row, pulses_row) -> pd.DataFrame:
     pos_map: dict[tuple[int, int], tuple[float, float, float]] = {}
     photon_counts: dict[tuple[int, int], int] = {}
     for sid, mid, x, y, z in zip(
-        ph["string_id"], ph["sensor_id"],
-        ph["sensor_pos_x"], ph["sensor_pos_y"], ph["sensor_pos_z"],
+        ph["string_id"],
+        ph["sensor_id"],
+        ph["sensor_pos_x"],
+        ph["sensor_pos_y"],
+        ph["sensor_pos_z"],
     ):
         key = (int(sid), int(mid))
         photon_counts[key] = photon_counts.get(key, 0) + 1
@@ -150,17 +171,21 @@ def build_module_df(photons_row, pulses_row) -> pd.DataFrame:
         fq_arr = np.asarray(fq, dtype=float)
         x, y, z = pos_map.get((int(sid), int(mid)), (np.nan, np.nan, np.nan))
         key = (int(sid), int(mid))
-        rows.append({
-            "string_id":  int(sid),
-            "sensor_id":  int(mid),
-            "x": x, "y": y, "z": z,
-            "n_photons":  photon_counts.get(key, 0),
-            "n_pe":       int(n_pe),
-            "total_q":    float(fq_arr.sum()),
-            "first_t":    float(ft_arr.min()) if len(ft_arr) > 0 else np.nan,
-            "fadc_t":     ft_arr,
-            "fadc_q":     fq_arr,
-        })
+        rows.append(
+            {
+                "string_id": int(sid),
+                "sensor_id": int(mid),
+                "x": x,
+                "y": y,
+                "z": z,
+                "n_photons": photon_counts.get(key, 0),
+                "n_pe": int(n_pe),
+                "total_q": float(fq_arr.sum()),
+                "first_t": float(ft_arr.min()) if len(ft_arr) > 0 else np.nan,
+                "fadc_t": ft_arr,
+                "fadc_q": fq_arr,
+            }
+        )
 
     return pd.DataFrame(rows)
 
@@ -169,11 +194,17 @@ def build_module_df(photons_row, pulses_row) -> pd.DataFrame:
 # Plotting
 # ---------------------------------------------------------------------------
 
-def draw_3d(ax: "Axes3D", df: pd.DataFrame, event_idx: int,
-            n_photons_total: int, n_pe_total: int,
-            vertex: tuple[float, float, float] | None = None,
-            min_dist: float | None = None,
-            all_module_coords: np.ndarray | None = None) -> None:
+
+def draw_3d(
+    ax: "Axes3D",
+    df: pd.DataFrame,
+    event_idx: int,
+    n_photons_total: int,
+    n_pe_total: int,
+    vertex: tuple[float, float, float] | None = None,
+    min_dist: float | None = None,
+    all_module_coords: np.ndarray | None = None,
+) -> None:
     """3-D scatter: colour = first pulse time, size ∝ signal PE."""
     active = df[df["total_q"] > 0].copy()
     if active.empty:
@@ -202,16 +233,40 @@ def draw_3d(ax: "Axes3D", df: pd.DataFrame, event_idx: int,
 
     # Draw order: unhit modules → hit modules → vertex (each layer on top of previous)
     if all_module_coords is not None:
-        ax.scatter(all_module_coords[:, 0], all_module_coords[:, 1], all_module_coords[:, 2],
-                   s=2, c="black", alpha=0.3, depthshade=False, zorder=1)
+        ax.scatter(
+            all_module_coords[:, 0],
+            all_module_coords[:, 1],
+            all_module_coords[:, 2],
+            s=2,
+            c="black",
+            alpha=0.3,
+            depthshade=False,
+            zorder=1,
+        )
 
-    ax.scatter(active["x"], active["y"], active["z"],
-               s=sizes, c=colors, depthshade=False, zorder=2, edgecolors="none")
+    ax.scatter(
+        active["x"],
+        active["y"],
+        active["z"],
+        s=sizes,
+        c=colors,
+        depthshade=False,
+        zorder=2,
+        edgecolors="none",
+    )
 
     if vertex is not None:
-        ax.scatter(*vertex, s=120, c="#FFD700", marker="*",
-                   edgecolors="white", linewidths=0.5,
-                   depthshade=False, zorder=3, label="vertex")
+        ax.scatter(
+            *vertex,
+            s=120,
+            c="#FFD700",
+            marker="*",
+            edgecolors="white",
+            linewidths=0.5,
+            depthshade=False,
+            zorder=3,
+            label="vertex",
+        )
 
     eff = n_pe_total / n_photons_total if n_photons_total > 0 else 0.0
     dist_str = f"  |  closest module {min_dist:.1f} m" if min_dist is not None else ""
@@ -219,12 +274,12 @@ def draw_3d(ax: "Axes3D", df: pd.DataFrame, event_idx: int,
         f"Event {event_idx}  |  {len(active)} modules  |  "
         f"{n_photons_total:,} photons  →  {n_pe_total:,} PE  (QE {eff:.0%})"
         f"{dist_str}",
-        color="white", fontsize=9, pad=6,
+        color="white",
+        fontsize=9,
+        pad=6,
     )
 
-    sm = plt.cm.ScalarMappable(
-        cmap=TIME_CMAP, norm=mcolors.Normalize(vmin=t_min, vmax=t_max)
-    )
+    sm = plt.cm.ScalarMappable(cmap=TIME_CMAP, norm=mcolors.Normalize(vmin=t_min, vmax=t_max))
     sm.set_array([])
     cbar = ax.get_figure().colorbar(sm, ax=ax, pad=0.07, shrink=0.55, aspect=18)
     cbar.set_label("First pulse time  [ns]", color="white", fontsize=8)
@@ -235,8 +290,9 @@ def draw_3d(ax: "Axes3D", df: pd.DataFrame, event_idx: int,
 _CURVE_COLORS = ["#4fc3f7", "#ff8a65", "#a5d6a7"]  # light-blue, orange, green
 
 
-def _expand_sparse_bins(t: np.ndarray, q: np.ndarray,
-                        bin_width: float = 3.3) -> tuple[np.ndarray, np.ndarray]:
+def _expand_sparse_bins(
+    t: np.ndarray, q: np.ndarray, bin_width: float = 3.3
+) -> tuple[np.ndarray, np.ndarray]:
     """Insert explicit zero samples at gap boundaries for a clean step display."""
     if len(t) == 0:
         return np.array([]), np.array([])
@@ -302,14 +358,16 @@ def draw_pe_curves(ax: plt.Axes, df: pd.DataFrame) -> None:
         spine.set_color("white")
     ax.grid(alpha=0.15, linestyle="--", color="white")
 
-    leg = ax.legend(fontsize=8, framealpha=0.3, facecolor=_BG,
-                    labelcolor="white", loc="upper right")
+    leg = ax.legend(
+        fontsize=8, framealpha=0.3, facecolor=_BG, labelcolor="white", loc="upper right"
+    )
     leg.get_frame().set_edgecolor("white")
 
 
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main() -> None:
     if not args.show:
@@ -318,14 +376,14 @@ def main() -> None:
     for path in (args.pulses, args.photons):
         if not Path(path).exists():
             logger.error("File not found: %s", path)
-            logger.info("Run an upstream Prometheus injection/propagation "
-                        "script (e.g. examples/genie/01_genie_injection.py) "
-                        "followed by examples/pmts/01_photon_to_pulses.py first.")
+            logger.info(
+                "Run an upstream Prometheus injection/propagation "
+                "script (e.g. examples/genie/01_genie_injection.py) "
+                "followed by examples/pmts/01_photon_to_pulses.py first."
+            )
             sys.exit(1)
 
-    event_idx, pulses_row, photons_row = load_event(
-        args.pulses, args.photons, args.event
-    )
+    event_idx, pulses_row, photons_row = load_event(args.pulses, args.photons, args.event)
     df = build_module_df(photons_row, pulses_row)
 
     mc = photons_row["mc_truth"]
@@ -335,9 +393,7 @@ def main() -> None:
         float(mc["initial_state_z"]),
     )
     df["dist_to_vertex"] = np.sqrt(
-        (df["x"] - vertex[0]) ** 2
-        + (df["y"] - vertex[1]) ** 2
-        + (df["z"] - vertex[2]) ** 2
+        (df["x"] - vertex[0]) ** 2 + (df["y"] - vertex[1]) ** 2 + (df["z"] - vertex[2]) ** 2
     )
     min_dist = float(df["dist_to_vertex"].min())
 
@@ -355,15 +411,21 @@ def main() -> None:
 
     all_module_coords = load_detector(args.geo) if args.geo else None
 
-    draw_3d(ax3d, df, event_idx, n_photons_total, n_pe_total,
-            vertex=vertex, min_dist=min_dist,
-            all_module_coords=all_module_coords)
+    draw_3d(
+        ax3d,
+        df,
+        event_idx,
+        n_photons_total,
+        n_pe_total,
+        vertex=vertex,
+        min_dist=min_dist,
+        all_module_coords=all_module_coords,
+    )
 
     if args.out:
         out_path = Path(args.out)
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        fig.savefig(str(out_path), dpi=args.dpi, bbox_inches="tight",
-                    facecolor=_BG)
+        fig.savefig(str(out_path), dpi=args.dpi, bbox_inches="tight", facecolor=_BG)
         print(f"Saved: {out_path}")
 
     # Second figure: PE vs time curves for the 3 most-hit modules
@@ -371,14 +433,14 @@ def main() -> None:
     fig2.suptitle(
         f"Event {event_idx}  —  FADC charge vs time (top 3 modules by photon count)"
         f"  |  closest module {min_dist:.1f} m from vertex",
-        color="white", fontsize=10,
+        color="white",
+        fontsize=10,
     )
     draw_pe_curves(ax_curves, df)
 
     if args.out:
         curves_path = out_path.with_stem(out_path.stem + "_curves")
-        fig2.savefig(str(curves_path), dpi=args.dpi, bbox_inches="tight",
-                     facecolor=_BG)
+        fig2.savefig(str(curves_path), dpi=args.dpi, bbox_inches="tight", facecolor=_BG)
         print(f"Saved: {curves_path}")
 
     if args.show:

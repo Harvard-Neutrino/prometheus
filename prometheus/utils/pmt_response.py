@@ -25,8 +25,8 @@ _cfg = DOMResponseConfig()
 N_PMTS = _cfg.n_pmts
 
 # Shower / track development in water, for emission-point estimates
-X0_WATER_M = _cfg.x0_water_m             # radiation length [m]
-EC_WATER_GEV = _cfg.ec_water_gev          # EM critical energy [GeV]
+X0_WATER_M = _cfg.x0_water_m  # radiation length [m]
+EC_WATER_GEV = _cfg.ec_water_gev  # EM critical energy [GeV]
 LAMBDA_I_WATER_M = _cfg.lambda_i_water_m  # nuclear interaction length [m]
 MUON_DEDX_GEV_PER_M = _cfg.muon_dedx_gev_per_m  # minimum-ionising dE/dx [GeV/m]
 MUON_MASS_GEV = _cfg.muon_mass_gev
@@ -80,17 +80,19 @@ def fibonacci_sphere(n: int) -> np.ndarray:
     """
     golden = (1.0 + np.sqrt(5.0)) / 2.0
     i = np.arange(n, dtype=float)
-    theta = np.arccos(1.0 - 2.0 * (i + 0.5) / n)   # polar  [0, π]
-    phi   = 2.0 * np.pi * i / golden                  # azimuthal
-    return np.column_stack([
-        np.sin(theta) * np.cos(phi),
-        np.sin(theta) * np.sin(phi),
-        np.cos(theta),
-    ])
+    theta = np.arccos(1.0 - 2.0 * (i + 0.5) / n)  # polar  [0, π]
+    phi = 2.0 * np.pi * i / golden  # azimuthal
+    return np.column_stack(
+        [
+            np.sin(theta) * np.cos(phi),
+            np.sin(theta) * np.sin(phi),
+            np.cos(theta),
+        ]
+    )
 
 
 # Pre-computed PMT directions in the module frame (fixed, z-axis = string axis).
-PMT_DIRS: np.ndarray = fibonacci_sphere(N_PMTS)   # shape (24, 3)
+PMT_DIRS: np.ndarray = fibonacci_sphere(N_PMTS)  # shape (24, 3)
 
 
 def assign_to_pmts(

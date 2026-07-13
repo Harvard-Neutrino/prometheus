@@ -22,11 +22,13 @@ except AttributeError:
 
 # GENIE pseudo-particles and nuclear remnants: carry no trackable energy
 # deposition and produce no Cherenkov light — silently skip them.
-_PDG_SKIP: frozenset = frozenset([
-    1000080160,   # ¹⁶O nuclear remnant
-    2000000002,   # GENIE nucleon-cluster pseudo-particle
-    2000000101,   # GENIE "bindino" (nuclear binding-energy accounting)
-])
+_PDG_SKIP: frozenset = frozenset(
+    [
+        1000080160,  # ¹⁶O nuclear remnant
+        2000000002,  # GENIE nucleon-cluster pseudo-particle
+        2000000101,  # GENIE "bindino" (nuclear binding-energy accounting)
+    ]
+)
 
 # Map unsupported PDG codes to the closest fennel-supported equivalent.
 # fennel knows: muons (±13), e/γ (±11, 22), π± (±211), K_long (130),
@@ -35,25 +37,25 @@ _PDG_REMAP: dict = {
     # LeptonInjector pseudo-hadron (pre-existing patch, centralised here)
     -2000001006: 2212,
     # Charged kaons → K_long (same hadronic light-yield family)
-    321: 130,    # K+
-    -321: 130,   # K−
-    310: 130,    # K_short
-    311: 130,    # K⁰
-    -311: 130,   # K̄⁰
+    321: 130,  # K+
+    -321: 130,  # K−
+    310: 130,  # K_short
+    311: 130,  # K⁰
+    -311: 130,  # K̄⁰
     # Strange baryons → proton / neutron
     3112: 2212,  # Σ−
     3122: 2212,  # Λ⁰
     3212: 2112,  # Σ⁰
     3222: 2212,  # Σ+
-    -3112: -2212, # Σ̄+
-    -3122: -2212, # Λ̄⁰
-    -3212: -2112, # Σ̄⁰
-    -3222: -2212, # Σ̄−
+    -3112: -2212,  # Σ̄+
+    -3122: -2212,  # Λ̄⁰
+    -3212: -2112,  # Σ̄⁰
+    -3222: -2212,  # Σ̄−
     # Charmed mesons → pion / K_long
-    411: 211,    # D+
+    411: 211,  # D+
     -411: -211,  # D−
-    421: 130,    # D⁰
-    -421: 130,   # D̄⁰
+    421: 130,  # D⁰
+    -421: 130,  # D̄⁰
     # Charmed baryons → proton
     4122: 2212,  # Λc+
     -4122: -2212,

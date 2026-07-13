@@ -43,14 +43,20 @@ OUTPUT_FILE = REPO_ROOT / "examples" / "output" / "pmts" / "11_pulses.parquet"
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
     parser = argparse.ArgumentParser(description="Convert photon hits to FADC pulses")
-    parser.add_argument("--input", type=Path, default=INPUT_FILE,
-                        help="Input parquet file (default: %(default)s)")
-    parser.add_argument("--output", type=Path, default=OUTPUT_FILE,
-                        help="Output parquet file (default: %(default)s)")
+    parser.add_argument(
+        "--input", type=Path, default=INPUT_FILE, help="Input parquet file (default: %(default)s)"
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=OUTPUT_FILE,
+        help="Output parquet file (default: %(default)s)",
+    )
     args = parser.parse_args()
     input_file = args.input
     output_file = args.output
@@ -69,13 +75,15 @@ def main() -> None:
 
     for i in range(n_events):
         ev = events[i]
-        photons   = ak.to_list(ev["photons"])
-        mc        = ak.to_list(ev["mc_truth"])
-        vertex_pos = np.array([
-            mc["initial_state_x"],
-            mc["initial_state_y"],
-            mc["initial_state_z"],
-        ])
+        photons = ak.to_list(ev["photons"])
+        mc = ak.to_list(ev["mc_truth"])
+        vertex_pos = np.array(
+            [
+                mc["initial_state_x"],
+                mc["initial_state_y"],
+                mc["initial_state_z"],
+            ]
+        )
         record = process_event(photons, vertex_pos, rng)
         pulse_records.append(record)
         if (i + 1) % 20 == 0:

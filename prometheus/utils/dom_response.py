@@ -107,38 +107,47 @@ def process_event(
     """
     string_ids = np.asarray(photons["string_id"])
     sensor_ids = np.asarray(photons["sensor_id"])
-    times      = np.asarray(photons["t"], dtype=float)
-    mod_pos    = np.column_stack([
-        np.asarray(photons["sensor_pos_x"], dtype=float),
-        np.asarray(photons["sensor_pos_y"], dtype=float),
-        np.asarray(photons["sensor_pos_z"], dtype=float),
-    ]) if len(times) else np.empty((0, 3))
+    times = np.asarray(photons["t"], dtype=float)
+    mod_pos = (
+        np.column_stack(
+            [
+                np.asarray(photons["sensor_pos_x"], dtype=float),
+                np.asarray(photons["sensor_pos_y"], dtype=float),
+                np.asarray(photons["sensor_pos_z"], dtype=float),
+            ]
+        )
+        if len(times)
+        else np.empty((0, 3))
+    )
 
     if source_points is None:
-        source_points = np.broadcast_to(
-            np.asarray(vertex_pos, dtype=float), (len(times), 3)
-        )
+        source_points = np.broadcast_to(np.asarray(vertex_pos, dtype=float), (len(times), 3))
     else:
         source_points = np.asarray(source_points, dtype=float)
 
     # Group by module
-    module_hits: dict[tuple, dict] = defaultdict(
-        lambda: {"times": [], "points": [], "pos": None}
-    )
-    for sid, mid, t, pos, point in zip(string_ids, sensor_ids, times, mod_pos,
-                                       source_points):
+    module_hits: dict[tuple, dict] = defaultdict(lambda: {"times": [], "points": [], "pos": None})
+    for sid, mid, t, pos, point in zip(string_ids, sensor_ids, times, mod_pos, source_points):
         key = (int(sid), int(mid))
         module_hits[key]["times"].append(float(t))
         module_hits[key]["points"].append(point)
         module_hits[key]["pos"] = pos
 
     out: dict[str, list] = {
-        "string_id": [], "sensor_id": [],
-        "sensor_pos_x": [], "sensor_pos_y": [], "sensor_pos_z": [],
+        "string_id": [],
+        "sensor_id": [],
+        "sensor_pos_x": [],
+        "sensor_pos_y": [],
+        "sensor_pos_z": [],
         "pmt_id": [],
-        "pmt_dir_x": [], "pmt_dir_y": [], "pmt_dir_z": [],
-        "n_pe": [], "fadc_t": [], "fadc_q": [],
-        "hit_t": [], "tot_ns": [],
+        "pmt_dir_x": [],
+        "pmt_dir_y": [],
+        "pmt_dir_z": [],
+        "n_pe": [],
+        "fadc_t": [],
+        "fadc_q": [],
+        "hit_t": [],
+        "tot_ns": [],
     }
 
     for (sid, mid), info in module_hits.items():
@@ -147,20 +156,22 @@ def process_event(
         # Per-photon unit vectors from the module toward the emission points
         diffs = np.asarray(info["points"]) - mod_centre
         norms = np.linalg.norm(diffs, axis=1, keepdims=True)
-        source_dirs = np.divide(diffs, norms,
-                                out=np.tile([[0.0, 0.0, 1.0]], (len(diffs), 1)),
-                                where=norms > 0)
+        source_dirs = np.divide(
+            diffs, norms, out=np.tile([[0.0, 0.0, 1.0]], (len(diffs), 1)), where=norms > 0
+        )
 
         # Assign photons to individual PMTs
-        pmt_hits = assign_to_pmts_per_hit(
-            np.array(info["times"]), source_dirs, PMT_DIRS, qe, rng
-        )
+        pmt_hits = assign_to_pmts_per_hit(np.array(info["times"]), source_dirs, PMT_DIRS, qe, rng)
 
         for pmt_idx, hit_times in pmt_hits.items():
             # Per-PMT FADC + ToT (qe=1 since assignment already applied QE)
             fadc_t, fadc_q, n_pe, hit_t, tot_ns = generate_fadc_response(
-                hit_times, qe=1.0, dark_rate_hz=dark_rate_hz, rng=rng,
-                tot_threshold_pe=tot_threshold_pe, tot_max_ns=tot_max_ns,
+                hit_times,
+                qe=1.0,
+                dark_rate_hz=dark_rate_hz,
+                rng=rng,
+                tot_threshold_pe=tot_threshold_pe,
+                tot_max_ns=tot_max_ns,
             )
             pmt_dir = PMT_DIRS[pmt_idx]
             out["string_id"].append(sid)

@@ -20,7 +20,7 @@ from prometheus.config_types import DOMResponseConfig
 
 _cfg = DOMResponseConfig()
 
-TTS_NS = _cfg.tts_ns              # transit-time spread sigma [ns]
+TTS_NS = _cfg.tts_ns  # transit-time spread sigma [ns]
 FADC_BIN_NS = _cfg.fadc_bin_ns
 SIM_DT_NS = _cfg.sim_dt_ns
 PULSE_WIDTH_NS = _cfg.pulse_width_ns
@@ -30,15 +30,19 @@ SPE_SIGMA = _cfg.spe_sigma
 # Front-end discriminator / ToT digitisation (real KM3NeT DOMs report only a
 # leading-edge hit time and a Time-over-Threshold duration, not a charge).
 TOT_THRESHOLD_PE = _cfg.tot_threshold_pe  # discriminator threshold, PE-equivalent amplitude
-TOT_MAX_NS = _cfg.tot_max_ns              # 8-bit TDC saturation cap
+TOT_MAX_NS = _cfg.tot_max_ns  # 8-bit TDC saturation cap
 
 PMT_DARK_RATE_HZ = _cfg.pmt_dark_rate_hz  # per-PMT rate in seawater (thermal + ⁴⁰K), [Hz]
-                                           # 18 000 Hz total / 24 PMTs
+# 18 000 Hz total / 24 PMTs
 
 
-def dark_noise(t_min: float, t_max: float, rate_hz: float,
-               correlated_frac: float = 0.2,
-               rng: np.random.Generator | None = None) -> np.ndarray:
+def dark_noise(
+    t_min: float,
+    t_max: float,
+    rate_hz: float,
+    correlated_frac: float = 0.2,
+    rng: np.random.Generator | None = None,
+) -> np.ndarray:
     """Sample dark-noise hit times in a window.
 
     Combines a uniform thermal component with correlated radioactive bursts
@@ -137,7 +141,7 @@ def _threshold_crossings(
 
 def generate_fadc_response(
     photon_times: np.ndarray,
-    qe: float = 1.0,          # QE already applied upstream when qe=1
+    qe: float = 1.0,  # QE already applied upstream when qe=1
     tts_ns: float = TTS_NS,
     dark_rate_hz: float = PMT_DARK_RATE_HZ,
     rng: np.random.Generator | None = None,
@@ -261,5 +265,4 @@ def generate_fadc_response(
     tot_ns = np.concatenate(tot_ns_parts)
     tot_order = np.argsort(hit_t)
 
-    return (fadc_t[order], fadc_q[order], n_signal_pe,
-            hit_t[tot_order], tot_ns[tot_order])
+    return (fadc_t[order], fadc_q[order], n_signal_pe, hit_t[tot_order], tot_ns[tot_order])
