@@ -26,7 +26,9 @@ logger = logging.getLogger(__name__)
 
 
 # @profile
-def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_medium, max_distance=300.0, min_distance=0.1):
+def make_generate_norm_flow_photons(
+    shape_model_path, counts_model_path, c_medium, max_distance=300.0, min_distance=0.1
+):
     shape_config, shape_params = haiku_load(shape_model_path)
     counts_config, counts_params = haiku_load(counts_model_path)
 
@@ -107,7 +109,9 @@ def make_generate_norm_flow_photons(shape_model_path, counts_model_path, c_mediu
         source_photons = np.tile(np.asarray(source_nphotons), n_mod).T.ravel()
         mod_eff_factor = np.repeat(np.asarray(module_efficiencies), n_src)
 
-        distance_mask = (inp_pars[:, 0] < np.log10(max_distance)) & (inp_pars[:, 0] >= np.log10(min_distance))
+        distance_mask = (inp_pars[:, 0] < np.log10(max_distance)) & (
+            inp_pars[:, 0] >= np.log10(min_distance)
+        )
 
         inp_params_masked = inp_pars[distance_mask]
         time_geo_masked = time_geo[distance_mask]
@@ -300,7 +304,10 @@ def make_nflow_photon_likelihood_per_module(
         t_res = time - time_geo
 
         ph_frac = jnp.minimum(
-            1.0, jnp.power(10, counts_net_apply_fn(counts_params, inp_pars)).reshape(source_pos.shape[0])
+            1.0,
+            jnp.power(10, counts_net_apply_fn(counts_params, inp_pars)).reshape(
+                source_pos.shape[0]
+            ),
         )
 
         noise_window_len = 5000

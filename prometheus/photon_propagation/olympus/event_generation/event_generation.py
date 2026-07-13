@@ -441,7 +441,9 @@ def generate_muon_energy_losses(
 
 
 # @profile
-def generate_realistic_track(det, event_data, key, pprop_func, proposal_prop, splitter=100000, max_distance=300.0):
+def generate_realistic_track(
+    det, event_data, key, pprop_func, proposal_prop, splitter=100000, max_distance=300.0
+):
     """Generate a realistic muon track using energy losses from PROPOSAL.
 
     Parameters

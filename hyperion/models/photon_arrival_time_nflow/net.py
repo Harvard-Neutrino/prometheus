@@ -929,7 +929,9 @@ def train_shape_model(config, train_loader, test_loader, seed=1337, writer=None)
         if i % 100 == 0:
             test_loss = (
                 sum(
-                    loss_fn(avg_params, jnp.concatenate(t[:2]).T, jnp.squeeze(t[2]), jnp.squeeze(t[3]))
+                    loss_fn(
+                        avg_params, jnp.concatenate(t[:2]).T, jnp.squeeze(t[2]), jnp.squeeze(t[3])
+                    )
                     for t in test_loader
                 )
                 / test_loader._n_batches

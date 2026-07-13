@@ -57,8 +57,13 @@ from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 — registers 3-D projecti
 logger = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-_DEFAULT_PULSES  = str(REPO_ROOT / "examples" / "output" / "pmts" / "signal_genie_example_layer0_r10_pulses_mdom.parquet")
-_DEFAULT_PHOTONS = str(REPO_ROOT / "examples" / "output" / "genie" / "signal_genie_example_layer0_r10.parquet")
+_DEFAULT_PULSES = str(
+    REPO_ROOT / "examples" / "output" / "pmts"
+    / "signal_genie_example_layer0_r10_pulses_mdom.parquet"
+)
+_DEFAULT_PHOTONS = str(
+    REPO_ROOT / "examples" / "output" / "genie" / "signal_genie_example_layer0_r10.parquet"
+)
 
 _N_PMTS = 24
 _BG = "#06305a"
@@ -141,7 +146,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--module", type=str, default=None, metavar="STR:DOM",
                    help="string_id:sensor_id of module to show; defaults to "
                         "module with most PE in the selected event")
-    p.add_argument("--out",  default=str(REPO_ROOT / "examples" / "output" / "pmts" / "mdom_view.png"),
+    p.add_argument("--out",
+                   default=str(REPO_ROOT / "examples" / "output" / "pmts" / "mdom_view.png"),
                    metavar="FILE", help="Output image path ('' to skip saving)")
     p.add_argument("--show", action="store_true", default=False,
                    help="Open interactive matplotlib window")

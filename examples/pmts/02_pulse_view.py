@@ -72,7 +72,8 @@ def parse_args() -> argparse.Namespace:
                    help="Path to 10_photons.parquet (sensor positions).")
     p.add_argument("--event", type=int, default=None, metavar="IDX",
                    help="0-based event index.  Defaults to brightest by signal PE.")
-    p.add_argument("--out", default=str(REPO_ROOT / "examples" / "output" / "pmts" / "pulse_view.png"),
+    p.add_argument("--out",
+                   default=str(REPO_ROOT / "examples" / "output" / "pmts" / "pulse_view.png"),
                    metavar="FILE", help="Output image.  Set to '' to skip saving.")
     p.add_argument("--show", action="store_true", default=False,
                    help="Open an interactive matplotlib window.")

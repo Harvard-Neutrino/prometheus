@@ -34,9 +34,9 @@ import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 — registers 3-D projection
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 — registers 3-D projection
 
 logger = logging.getLogger(__name__)
 
