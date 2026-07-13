@@ -1,6 +1,9 @@
+import logging
 from pathlib import Path
 
 from ..injection.interactions import INTERACTION_DICT
+
+logger = logging.getLogger(__name__)
 
 
 def _find_resources_dir() -> Path:
@@ -41,6 +44,44 @@ EARTH_MODEL_DICT = {
 }
 
 
+def _earth_model_path(earth_model_file: str) -> Path:
+    """Absolute path of an earth-model spec (bare names live in resources)."""
+    p = Path(earth_model_file)
+    return p if p.is_absolute() else RESOURCES_DIR / "earthparams" / "densities" / p
+
+
+def _resolve_earth_model(config, detector) -> str:
+    """Resolve the run's earth model to an absolute path.
+
+    Precedence: ``config.detector.earth_model`` (site key, file name, or
+    absolute path), then the geo file name, then the detector medium. The
+    medium fallback is site-agnostic (e.g. ``PREM_water.dat`` has a 2000 m
+    fresh-water sea that misplaces deeper detectors into rock), so it warns.
+    """
+    requested = getattr(config.detector, "earth_model", None)
+    if requested:
+        for name in (requested, f"PREM_{requested}.dat"):
+            path = _earth_model_path(name)
+            if path.is_file():
+                return str(path)
+        densities = RESOURCES_DIR / "earthparams" / "densities"
+        available = ", ".join(sorted(f.stem for f in densities.glob("PREM_*.dat")))
+        raise ValueError(f"detector.earth_model {requested!r} not found; available: {available}")
+
+    base_geofile = Path(str(config.detector.geo_file)).name
+    if base_geofile in EARTH_MODEL_DICT:
+        return str(_earth_model_path(EARTH_MODEL_DICT[base_geofile]))
+
+    fallback = EARTH_MODEL_DICT[detector.medium.name]
+    logger.warning(
+        "No earth model registered for %s; using the site-agnostic %s. "
+        "Set config.detector.earth_model for a real site.",
+        base_geofile,
+        fallback,
+    )
+    return str(_earth_model_path(fallback))
+
+
 def config_mims(config, detector) -> None:
     """Set parameters of config so that they are consistent.
 
@@ -65,12 +106,7 @@ def config_mims(config, detector) -> None:
     if config.run.outfile is None:
         config.run.outfile = f"{output_prefix}_photons.parquet"
 
-    # Find which earth model to use
-    base_geofile = Path(str(config.detector.geo_file)).name
-    if base_geofile in EARTH_MODEL_DICT:
-        earth_model_file = EARTH_MODEL_DICT[base_geofile]
-    else:
-        earth_model_file = EARTH_MODEL_DICT[detector.medium.name]
+    earth_model_file = _resolve_earth_model(config, detector)
 
     config.detector.offset = [detector._offset[0], detector._offset[1], detector._offset[2]]
 
@@ -158,9 +194,7 @@ def lepton_prop_config_mims(config, detector, earth_model_file: str) -> None:
             config.simulation.propagation_padding += 200
 
     if config.paths.earth_model_location is None:
-        config.paths.earth_model_location = str(
-            RESOURCES_DIR / "earthparams" / "densities" / earth_model_file
-        )
+        config.paths.earth_model_location = str(_earth_model_path(earth_model_file))
 
 
 def injection_config_mims(
@@ -201,9 +235,7 @@ def _li_injection_config_mims(
 ) -> None:
     """Fill in computed fields for the LeptonInjector config."""
     if config.paths.earth_model_location is None:
-        config.paths.earth_model_location = str(
-            RESOURCES_DIR / "earthparams" / "densities" / earth_model_file
-        )
+        config.paths.earth_model_location = str(_earth_model_path(earth_model_file))
 
     if config.simulation.is_ranged is None:
         config.simulation.is_ranged = False

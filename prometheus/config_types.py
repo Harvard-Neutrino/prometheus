@@ -210,9 +210,13 @@ class DetectorConfig(ConfigBase):
 
     geo_file: Optional[str] = None
     offset: Optional[list] = None
+    # site key ("arca"), file name, or absolute path; inferred from the geo
+    # file name when unset
+    earth_model: Optional[str] = None
 
     _KEY_MAP: ClassVar[dict[str, str]] = {
         "geo file": "geo_file",
+        "earth model": "earth_model",
     }
 
 
