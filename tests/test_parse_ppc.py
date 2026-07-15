@@ -4,7 +4,9 @@ import pytest
 
 from prometheus.photon_propagation.utils.parse_ppc import parse_ppc
 
-# Representative HIT lines
+# Representative HIT lines. Token layout after HIT: string om time wavelength
+# pth pph dth dph, where pth/pph (tokens 5,6) are the PHOTON DIRECTION -> photon_*
+# and dth/dph (tokens 7,8) are the OM-IMPACT position -> om_*.
 _LEGACY_HIT = "HIT 1 42 1234.5 400.0 1.1 2.2 0.5 1.0\n"
 _NEXTGEN_HIT_PMT1 = "HIT 1 42_1 1234.5 400.0 1.1 2.2 0.5 1.0\n"
 _NEXTGEN_HIT_PMT0 = "HIT 1 42_0 5678.9 420.0 0.9 1.8 0.3 0.7\n"
@@ -63,20 +65,22 @@ class TestLegacyFormat:
         assert hits[0].wavelength == pytest.approx(400.0)
 
     def test_parse_om_zenith(self, tmp_path):
+        # om_* = OM-impact position = tokens 7,8 = 0.5, 1.0
         hits = parse_ppc(_write(tmp_path, [_LEGACY_HIT]))
-        assert hits[0].om_zenith == pytest.approx(1.1)
+        assert hits[0].om_zenith == pytest.approx(0.5)
 
     def test_parse_om_azimuth(self, tmp_path):
         hits = parse_ppc(_write(tmp_path, [_LEGACY_HIT]))
-        assert hits[0].om_azimuth == pytest.approx(2.2)
+        assert hits[0].om_azimuth == pytest.approx(1.0)
 
     def test_parse_photon_zenith(self, tmp_path):
+        # photon_* = photon direction = tokens 5,6 = 1.1, 2.2
         hits = parse_ppc(_write(tmp_path, [_LEGACY_HIT]))
-        assert hits[0].photon_zenith == pytest.approx(0.5)
+        assert hits[0].photon_zenith == pytest.approx(1.1)
 
     def test_parse_photon_azimuth(self, tmp_path):
         hits = parse_ppc(_write(tmp_path, [_LEGACY_HIT]))
-        assert hits[0].photon_azimuth == pytest.approx(1.0)
+        assert hits[0].photon_azimuth == pytest.approx(2.2)
 
     def test_pmt_id_is_none(self, tmp_path):
         hits = parse_ppc(_write(tmp_path, [_LEGACY_HIT]))
@@ -125,10 +129,10 @@ class TestNextgenFormat:
         assert h.pmt_id == 1
         assert h.time == pytest.approx(1234.5)
         assert h.wavelength == pytest.approx(400.0)
-        assert h.om_zenith == pytest.approx(1.1)
-        assert h.om_azimuth == pytest.approx(2.2)
-        assert h.photon_zenith == pytest.approx(0.5)
-        assert h.photon_azimuth == pytest.approx(1.0)
+        assert h.om_zenith == pytest.approx(0.5)
+        assert h.om_azimuth == pytest.approx(1.0)
+        assert h.photon_zenith == pytest.approx(1.1)
+        assert h.photon_azimuth == pytest.approx(2.2)
 
 
 # ---------------------------------------------------------------------------

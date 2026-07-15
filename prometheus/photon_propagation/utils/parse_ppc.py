@@ -46,9 +46,7 @@ def parse_ppc(ppc_file: str) -> List[Hit]:
             if nextgen is None:
                 nextgen = line_is_nextgen
             elif nextgen != line_is_nextgen:
-                raise ValueError(
-                    "PPC output mixes legacy and nextgen HIT formats in the same file"
-                )
+                raise ValueError("PPC output mixes legacy and nextgen HIT formats in the same file")
 
             if nextgen:
                 dom_str, pmt_str = tokens[2].split("_", 1)
@@ -58,16 +56,22 @@ def parse_ppc(ppc_file: str) -> List[Hit]:
                 om_id = int(tokens[2])
                 pmt_id = None
 
+            # In the HIT line `... pth pph dth dph`, tokens 5,6 are the photon
+            # direction and tokens 7,8 are the impact position on the OM (in the
+            # ppc engine, pth/pph build the direction `n` passed to getPMT, and
+            # dth/dph build the position `r`). The Hit fields are named for the
+            # physical quantity, so the direction pair fills photon_* and the
+            # position pair fills om_* — not the token order.
             hits.append(
                 Hit(
                     string_id=int(tokens[1]),
                     om_id=om_id,
                     time=float(tokens[3]),
                     wavelength=float(tokens[4]),
-                    om_zenith=float(tokens[5]),
-                    om_azimuth=float(tokens[6]),
-                    photon_zenith=float(tokens[7]),
-                    photon_azimuth=float(tokens[8]),
+                    om_zenith=float(tokens[7]),
+                    om_azimuth=float(tokens[8]),
+                    photon_zenith=float(tokens[5]),
+                    photon_azimuth=float(tokens[6]),
                     pmt_id=pmt_id,
                 )
             )
