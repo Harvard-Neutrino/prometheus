@@ -86,14 +86,15 @@ ENV PYTHONPATH=/opt/LI/install/lib/python3.12/site-packages
 ENV LD_LIBRARY_PATH=/opt/LI/install/lib:/opt/conda/envs/prometheus/lib
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Stage 4: build PPC CPU binary from vendored source
+# Stage 4: build PPC CPU binary from the icecube/ppc submodule
 # ─────────────────────────────────────────────────────────────────────────────
 FROM leptoninjector AS ppc
 
-COPY resources/PPC_executables/PPC /opt/PPC
-WORKDIR /opt/PPC
+# ppc-src is the icecube/ppc submodule (init it on the host before building).
+COPY resources/PPC_executables/ppc-src /opt/ppc-src
+WORKDIR /opt/ppc-src/gpu
 RUN make cpu
-ENV PPC=/opt/PPC/ppc
+ENV PPC=/opt/ppc-src/gpu/ppc
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 5: install prometheus + fennel (both vendored)

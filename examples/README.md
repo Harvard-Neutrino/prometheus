@@ -27,11 +27,11 @@ Run this every time you open a new shell before using Prometheus.
 Cells or scripts that call the photon propagator need two environment variables pointing at the compiled PPC binary and the ice tables:
 
 ```bash
-export PPC_EXE="${PWD}/resources/PPC_executables/PPC/ppc"
+export PPC_EXE="${PWD}/resources/PPC_executables/bin/ppc_cpu"
 export PPC_TABLES_DIR=/path/to/ice/tables
 ```
 
-`PPC_EXE` is built by `install.sh --with-ppc` and lives at `resources/PPC_executables/PPC/ppc`.
+`PPC_EXE` is built by `install.sh --with-ppc` and lives at `resources/PPC_executables/bin/ppc_cpu` (CPU) or `bin/ppc_gpu` (CUDA).
 
 Ice tables are not bundled with Prometheus; download them from the [ppc website](https://user-web.icecube.wisc.edu/~dima/work/WISC/ppc/). Unpack one of the `aha`, `spx`, or `mie` subdirectories from `dat.tgz` and point `PPC_TABLES_DIR` at it. The directory must contain at minimum `cfg.txt`, `icemodel.dat`, `icemodel.par`, `wv.dat`, `as.dat`, and `rnd.txt`.
 
@@ -41,11 +41,14 @@ The multi-PMT (next-gen) mode — used by the DEgg, WOM, and mDOM-style examples
 
 **<https://github.com/icecube/ppc>**
 
-The copy bundled in `resources/PPC_executables/PPC/` is taken from that repository. If you need to update it or build manually:
+The engine is vendored as a git submodule at `resources/PPC_executables/ppc-src/`
+(pinned to a specific `icecube/ppc` commit). `install.sh --with-ppc` builds it
+into `resources/PPC_executables/bin/`. To build manually:
 
 ```bash
-cd resources/PPC_executables/PPC
-make cpu        # CPU-only build
+git submodule update --init resources/PPC_executables/ppc-src
+cd resources/PPC_executables/ppc-src/gpu
+make cpu        # CPU-only build (-> ./ppc)
 # or: make gpu  # CUDA build (requires NVIDIA toolkit)
 ```
 

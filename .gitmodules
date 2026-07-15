@@ -1,0 +1,3 @@
+[submodule "resources/PPC_executables/ppc-src"]
+	path = resources/PPC_executables/ppc-src
+	url = https://github.com/icecube/ppc.git

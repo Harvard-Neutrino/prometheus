@@ -92,21 +92,23 @@ ENV LD_LIBRARY_PATH=/opt/LI/install/lib:/opt/conda/envs/prometheus/lib
 # ─────────────────────────────────────────────────────────────────────────────
 FROM leptoninjector AS ppc
 
+# Both binaries are built from the same icecube/ppc submodule (ppc-src);
+# copied to separate dirs because each `make` target overwrites ./ppc.
 # CPU PPC (fallback / ice-mode without GPU)
-COPY resources/PPC_executables/PPC /opt/PPC_CPU
-WORKDIR /opt/PPC_CPU
+COPY resources/PPC_executables/ppc-src /opt/ppc-src-cpu
+WORKDIR /opt/ppc-src-cpu/gpu
 RUN make cpu
 
 # GPU PPC (CUDA)
 # The default SM architecture is 89 (Ada Lovelace / RTX 40xx / H100 SXM).
 # Override at build time with: --build-arg SM_ARCH=80 for A100, 75 for Turing.
 ARG SM_ARCH=89
-COPY resources/PPC_executables/PPC_CUDA /opt/PPC_CUDA
-WORKDIR /opt/PPC_CUDA
+COPY resources/PPC_executables/ppc-src /opt/ppc-src-gpu
+WORKDIR /opt/ppc-src-gpu/gpu
 RUN make gpu arch=${SM_ARCH}
 
-ENV PPC=/opt/PPC_CPU/ppc
-ENV PPC_CUDA=/opt/PPC_CUDA/ppc
+ENV PPC=/opt/ppc-src-cpu/gpu/ppc
+ENV PPC_CUDA=/opt/ppc-src-gpu/gpu/ppc
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 5: prometheus + fennel

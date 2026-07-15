@@ -544,7 +544,7 @@ class OlympusConfig(ConfigBase):
 class PPCPathsConfig(ConfigBase):
     """ppc file path configuration."""
 
-    location: str = field(default_factory=lambda: f"{RESOURCES_DIR}/PPC_executables/PPC/")
+    location: str = field(default_factory=lambda: f"{RESOURCES_DIR}/PPC_executables/bin/")
     force: bool = False
     ppc_tmpdir: str = "./.ppc_tmp"
     ppc_tmpfile: str = ".event_hits.ppc.tmp"
@@ -552,7 +552,8 @@ class PPCPathsConfig(ConfigBase):
     ppc_prefix: str = ""
     f2k_prefix: str = ""
     ppctables: str = "../resources/PPC_tables/south_pole/"
-    ppc_exe: str = "../resources/PPC_executables/PPC/ppc"
+    # Built by scripts/install_ppc.sh from the icecube/ppc submodule (make cpu).
+    ppc_exe: str = "../resources/PPC_executables/bin/ppc_cpu"
     om_dirs: str = ""  # path to om.dirs; empty = look in ppctables
 
 
@@ -567,9 +568,7 @@ class PPCSimConfig(ConfigBase):
     def __post_init__(self):
         _valid = ("minimal", "standard", "extended")
         if self.output_mode not in _valid:
-            raise ValueError(
-                f"output_mode must be one of {_valid!r}, got {self.output_mode!r}"
-            )
+            raise ValueError(f"output_mode must be one of {_valid!r}, got {self.output_mode!r}")
 
 
 @dataclass
@@ -584,7 +583,7 @@ class PPCConfig(ConfigBase):
 class PPCCudaPathsConfig(ConfigBase):
     """ppc CUDA file path configuration."""
 
-    location: str = field(default_factory=lambda: f"{RESOURCES_DIR}/PPC_executables/PPC_CUDA/")
+    location: str = field(default_factory=lambda: f"{RESOURCES_DIR}/PPC_executables/bin/")
     force: bool = False
     ppc_tmpdir: str = "./.ppc_tmp"
     ppc_tmpfile: str = ".event_hits.ppc.tmp"
@@ -592,7 +591,8 @@ class PPCCudaPathsConfig(ConfigBase):
     ppc_prefix: str = ""
     f2k_prefix: str = ""
     ppctables: str = "../resources/PPC_tables/south_pole/"
-    ppc_exe: str = "../resources/PPC_executables/PPC_CUDA/ppc"
+    # Built by scripts/install_ppc.sh from the icecube/ppc submodule (make gpu).
+    ppc_exe: str = "../resources/PPC_executables/bin/ppc_gpu"
 
 
 @dataclass
