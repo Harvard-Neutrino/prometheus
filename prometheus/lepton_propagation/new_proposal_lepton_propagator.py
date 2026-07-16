@@ -290,20 +290,18 @@ def new_proposal_losses(
     init_state = init_pp_particle(particle, coordinate_shift)
     propagation_length = np.linalg.norm(particle.position) + padding
     secondarys = prop.propagate(init_state, propagation_length * m_to_cm)
-    continuous_loss_sum = 0
     for loss in secondarys.stochastic_losses():
         loss_energy = loss.energy * MeV_to_GeV
-        if loss.type == 1000000008:
-            continuous_loss_sum += loss_energy
-        else:
-            pos = (
-                np.array([loss.position.x, loss.position.y, loss.position.z]) * cm_to_m
-                - coordinate_shift
-            )
-            # TODO more this to the serialization function. DTaSD
-            if np.linalg.norm(pos - detector_center) <= r_inice:
-                particle.losses.append(Loss(loss.type, loss_energy, pos))
-    # continuous_loss_sum = np.sum(secondarys.continuous_losses()) * MeV_to_GeV
+        pos = (
+            np.array([loss.position.x, loss.position.y, loss.position.z]) * cm_to_m
+            - coordinate_shift
+        )
+        # TODO more this to the serialization function. DTaSD
+        if np.linalg.norm(pos - detector_center) <= r_inice:
+            particle.losses.append(Loss(loss.type, loss_energy, pos))
+    # PROPOSAL reports continuous (below-cut) losses separately from
+    # stochastic_losses(); their total is smeared along the track below.
+    continuous_loss_sum = sum(loss.energy for loss in secondarys.continuous_losses()) * MeV_to_GeV
     total_dist = secondarys.track_propagated_distances()[-1] * cm_to_m
     # TODO: Add this to config
     cont_resolution = 1.0
