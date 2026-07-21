@@ -74,8 +74,9 @@ def ppc_sim(particle: Particle, det: Detector, lp: LeptonPropagator, ppc_config:
         f"{ppc_config['paths']['ppc_exe']} {ppc_config['simulation']['device']}"
         f" < {f2k_tmpfile} > {ppc_tmpfile}"
     )
-    if ppc_config["simulation"]["supress_output"]:
-        command += " 2>/dev/null"
+    # NOTE: stderr is intentionally NOT redirected to /dev/null here. It is
+    # captured in Python below so a nonzero exit (bad ppc_exe path, missing
+    # tables, etc.) is raised instead of silently looking like "no photon hits".
 
     if not should_propagate(particle):
         return
@@ -84,13 +85,21 @@ def ppc_sim(particle: Particle, det: Detector, lp: LeptonPropagator, ppc_config:
     tenv = os.environ.copy()
     tenv["PPCTABLESDIR"] = ppc_config["paths"]["ppc_tmpdir"]
 
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, env=tenv)
-    process.wait()
-    try:
-        rc = process.returncode
-        subprocess_statuses.append({"cmd": command, "returncode": rc})
-    except Exception:
-        pass
+    process = subprocess.Popen(
+        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=tenv
+    )
+    # communicate() (not wait()) so the captured stderr pipe can't deadlock.
+    _, stderr_data = process.communicate()
+    rc = process.returncode
+    subprocess_statuses.append({"cmd": command, "returncode": rc})
+    stderr_text = (stderr_data or b"").decode("utf-8", "replace")
+    if rc != 0:
+        logger.error(
+            "PPC exited with code %d for command %r\nstderr:\n%s", rc, command, stderr_text
+        )
+        raise RuntimeError(f"PPC failed with exit code {rc}; see logged stderr")
+    if stderr_text and not ppc_config["simulation"]["supress_output"]:
+        logger.info("PPC stderr:\n%s", stderr_text)
     particle.hits = parse_ppc(ppc_tmpfile)
     for f in [geo_tmpfile, f2k_tmpfile, ppc_tmpfile]:
         os.remove(f)
