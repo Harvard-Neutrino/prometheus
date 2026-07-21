@@ -244,9 +244,14 @@ def _li_injection_config_mims(
     ]
 
     if int_str in ("CC", "NC"):
-        nutype = "nubar"
+        # The cross-section spline must match the primary neutrino that
+        # LeptonInjector derives from final_state_1 (see LI deduceInitialType):
+        # a "Minus"/plain final-state lepton (MuMinus, TauMinus, NuMu, ...) comes
+        # from a matter neutrino -> "nu"; a "Plus"/"Bar" one (MuPlus, TauPlus,
+        # NuTauBar, ...) comes from an antineutrino -> "nubar".
+        nutype = "nu"
         if "Bar" in config.simulation.final_state_1 or "Plus" in config.simulation.final_state_1:
-            nutype = "nu"
+            nutype = "nubar"
         if config.paths.diff_xsec is None:
             config.paths.diff_xsec = str(
                 Path(str(config.paths.xsec_dir)) / f"dsdxdy_{nutype}_{int_str}_iso.fits"
