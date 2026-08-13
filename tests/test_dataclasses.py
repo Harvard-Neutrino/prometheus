@@ -222,7 +222,7 @@ class TestInteractions:
 # MCRecord
 # ---------------------------------------------------------------------------
 
-from olympus.event_generation.mc_record import MCRecord
+from prometheus.photon_propagation.olympus.event_generation.mc_record import MCRecord
 
 
 class TestMCRecord:
@@ -262,7 +262,10 @@ class TestMCRecord:
 # PhotonSource / PhotonSourceType
 # ---------------------------------------------------------------------------
 
-from olympus.event_generation.photon_source import PhotonSource, PhotonSourceType
+from prometheus.photon_propagation.olympus.event_generation.photon_source import (
+    PhotonSource,
+    PhotonSourceType,
+)
 
 
 class TestPhotonSource:

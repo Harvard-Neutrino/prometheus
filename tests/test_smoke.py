@@ -24,10 +24,6 @@ SUBMODULES = [
     # photon_binned_amplitude is not wired into any live code path and has no
     # shipped model weights; excluded from smoke test because it imports haiku.
     "hyperion.pmt",
-    # olympus
-    "olympus",
-    "olympus.event_generation",
-    "olympus.event_generation.photon_propagation",
 ]
 
 # Modules that are known broken due to missing optional/undeclared dependencies.
