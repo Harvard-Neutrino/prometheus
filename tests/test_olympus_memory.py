@@ -55,7 +55,7 @@ class TestSourcesToModelInputChunked:
         ],
     )
     def test_matches_whole_array(self, n_mod, n_src, chunk):
-        """Chunking the module axis must not perturb a single value."""
+        """Chunking the module axis must not change the computed values."""
         rng = np.random.default_rng(0)
         module_coords = rng.normal(0, 200, (n_mod, 3))
         source_pos, source_dir, source_time = _random_sources(rng, n_src)
@@ -66,14 +66,28 @@ class TestSourcesToModelInputChunked:
         got_inp, got_time = sources_to_model_input_chunked(
             module_coords, source_pos, source_dir, source_time, 0.2, chunk
         )
+        want_inp = np.asarray(want_inp)
+        want_time = np.asarray(want_time)
 
-        assert got_inp.shape == np.asarray(want_inp).shape
-        assert got_time.shape == np.asarray(want_time).shape
-        # Every (module, source) pair is evaluated independently of every
-        # other, so splitting the module axis is exact rather than merely
-        # close.
-        assert np.array_equal(got_inp, np.asarray(want_inp))
-        assert np.array_equal(got_time, np.asarray(want_time))
+        assert got_inp.shape == want_inp.shape
+        assert got_time.shape == want_time.shape
+
+        # Each (module, source) pair is evaluated independently of every
+        # other, so chunking that axis is exact in real arithmetic. It is not
+        # exact in floating point: XLA picks its vectorisation from the array
+        # shape, so a (n_src, 128, 3) block and a (n_src, 300, 3) one can
+        # contract differently and disagree in the last bit or two. Which way
+        # that falls depends on the CPU and the jaxlib build, so asserting
+        # bitwise equality here passes on one machine and fails on another.
+        #
+        # The tolerance is scaled off the working dtype and is still many
+        # orders of magnitude tighter than anything physically meaningful.
+        # The failures this guards against -- a scrambled module order, a
+        # dropped or duplicated chunk, a mistrimmed pad -- all move values by
+        # order unity, so they are caught regardless.
+        rtol = 1e3 * np.finfo(got_inp.dtype).eps
+        np.testing.assert_allclose(got_inp, want_inp, rtol=rtol, atol=rtol)
+        np.testing.assert_allclose(got_time, want_time, rtol=rtol, atol=rtol)
 
     def test_no_modules_returns_empty(self):
         rng = np.random.default_rng(0)
