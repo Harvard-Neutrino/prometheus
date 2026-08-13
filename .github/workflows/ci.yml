@@ -14,7 +14,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install ruff
+      # Pinned: an unpinned linter means a ruff release can turn every open PR
+      # red without a line of our code changing, which is what 0.16 did when it
+      # started formatting Markdown code blocks. Bump this deliberately.
+      - run: pip install ruff==0.16.3
       - run: ruff check .
       - run: ruff format --check .
 

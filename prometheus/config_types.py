@@ -152,6 +152,15 @@ class RunConfig(ConfigBase):
         Explicit path for JSON summary (overrides default outfile + '.summary.json').
     progress_threshold : int
         Minimum number of events required to display progress bars (tqdm).
+    jax_release_interval : int
+        Drop the JAX compiled-executable cache every this many photon
+        propagations; 0 disables the release. The cache grows to several GB
+        per process on a large detector and never shrinks on its own, so on a
+        long run it, not the event data, is what exhausts memory. Releasing
+        trades wall time for that memory, so enable it when memory is the
+        binding constraint and pair it with the persistent on-disk
+        compilation cache (``jax_compilation_cache_dir``), which turns most
+        of the re-compilation into a cache read.
 
     Notes
     -----
@@ -179,6 +188,7 @@ class RunConfig(ConfigBase):
     summary_json: bool = False
     summary_json_path: Optional[str] = None
     progress_threshold: int = 10
+    jax_release_interval: int = 0
 
     _KEY_MAP: ClassVar[dict[str, str]] = {
         "run number": "run_number",
@@ -192,6 +202,7 @@ class RunConfig(ConfigBase):
         "summary json": "summary_json",
         "summary json path": "summary_json_path",
         "progress threshold": "progress_threshold",
+        "jax release interval": "jax_release_interval",
     }
 
     def __post_init__(self):
@@ -531,13 +542,39 @@ class OlympusPathsConfig(ConfigBase):
 
 @dataclass
 class OlympusSimConfig(ConfigBase):
-    """Olympus simulation parameters configuration."""
+    """Olympus simulation parameters configuration.
+
+    Parameters
+    ----------
+    files : bool
+        Whether the run reads its injection from file.
+    wavelength : int
+        Reference wavelength in nm for the speed of light in the medium.
+    module_chunk : int
+        Number of modules evaluated per jitted model-input call. This is what
+        keeps the compiled-executable cache from growing with the module
+        count; see ``sources_to_model_input_chunked``. Results do not depend
+        on it. Larger values trade a bigger per-call temporary for fewer
+        calls.
+    max_distance : float
+        Maximum source-to-module distance in metres. Pairs beyond it cannot
+        contribute hits and are dropped before propagation. Changing it
+        changes physics, not just memory.
+    min_distance_from_dom : float
+        Minimum source-to-module distance in metres, below which the optical
+        model is not evaluated.
+    splitter : int
+        Unused. Retained so that existing configuration files continue to
+        load; the module axis is now walked in ``module_chunk``-sized pieces
+        inside the propagator instead of being split here.
+    """
 
     files: bool = True
     wavelength: int = 700
     splitter: int = 100000
     max_distance: float = 300.0
     min_distance_from_dom: float = 0.1
+    module_chunk: int = 128
 
 
 @dataclass

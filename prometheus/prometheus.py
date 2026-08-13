@@ -35,6 +35,7 @@ from .utils import (
     config_mims,
 )
 from .utils.capture import _COutputCapture
+from .utils.memory import release_propagator_memory
 from .utils.timing import time_block
 
 # Legacy alias used in this file.
@@ -419,6 +420,13 @@ class Prometheus(object):
             else:
                 iterator = enumerate(self.injection)
 
+            # Optionally drop the XLA compiled-executable cache every N
+            # propagations. It accumulates to several GB per process on a
+            # large detector and is never reclaimed otherwise, so on a long
+            # run it is what exhausts memory rather than the event data.
+            release_interval = int(getattr(config.run, "jax_release_interval", 0) or 0)
+            n_propagations = 0
+
             for idx, injection_event in iterator:
                 if idx == nevents:
                     break
@@ -440,6 +448,10 @@ class Prometheus(object):
                             "Error propagating event %s final_state=%s", idx, final_state
                         )
                         raise
+
+                    n_propagations += 1
+                    if release_interval and n_propagations % release_interval == 0:
+                        release_propagator_memory()
         finally:
             if cap is not None:
                 cap.__exit__(None, None, None)

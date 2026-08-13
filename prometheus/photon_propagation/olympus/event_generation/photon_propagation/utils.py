@@ -87,6 +87,78 @@ sources_to_model_input_per_module = vmap(
 )
 
 
+def sources_to_model_input_chunked(
+    module_coords, source_pos, source_dir, source_time, c_medium, module_chunk
+):
+    """Evaluate the model-input kernel in fixed-size module chunks.
+
+    ``sources_to_model_input`` is jitted and vmapped over both the module and
+    the source axis, so XLA compiles one executable per distinct
+    ``(n_sources, n_modules)`` shape pair. Padding both axes to power-of-two
+    buckets makes the number of cached executables the *product* of the two
+    ladders -- roughly nine module buckets times eight source buckets, so up
+    to ~70 resident variants of this one kernel. That cache is never
+    reclaimed, and it is the bulk of the several GB each process accumulates.
+
+    Holding the module axis at a fixed ``module_chunk`` and looping takes it
+    out of the cross-product, leaving only the source bucket to vary. Values
+    are unchanged: each ``(module, source)`` pair is evaluated independently
+    of every other, so splitting the module axis is exact. The fixed chunk
+    also wastes less padding than rounding a few thousand modules up to the
+    next power of two.
+
+    Parameters
+    ----------
+    module_coords : np.ndarray
+        Module coordinates, shape ``(n_modules, 3)``.
+    source_pos : np.ndarray
+        Source positions, shape ``(n_sources, 3)``.
+    source_dir : np.ndarray
+        Source direction vectors, shape ``(n_sources, 3)``.
+    source_time : np.ndarray
+        Source emission times, shape ``(n_sources, 1)``.
+    c_medium : float
+        Speed of light in the medium.
+    module_chunk : int
+        Number of modules per jitted call.
+
+    Returns
+    -------
+    inp_pars : np.ndarray
+        ``[log10(distance), viewing_angle]`` per pair, shape
+        ``(n_sources, n_modules, 2)``.
+    time_geo : np.ndarray
+        Geometric arrival time per pair, shape ``(n_sources, n_modules, 1)``.
+    """
+    module_coords = np.asarray(module_coords)
+    n_mod = module_coords.shape[0]
+    n_src = np.shape(source_pos)[0]
+    chunk = max(1, int(module_chunk))
+
+    if n_mod == 0:
+        return np.empty((n_src, 0, 2)), np.empty((n_src, 0, 1))
+
+    inp_chunks = []
+    time_chunks = []
+    for start in range(0, n_mod, chunk):
+        block = module_coords[start : start + chunk]
+        pad = chunk - block.shape[0]
+        if pad:
+            # Only the final chunk is ever padded, and its extra columns are
+            # trimmed below. 1e6 merely keeps the distance finite and nonzero
+            # so that log10 and arccos stay well defined.
+            block = np.pad(block, ((0, pad), (0, 0)), constant_values=1e6)
+        inp_pars, time_geo = sources_to_model_input(
+            block, source_pos, source_dir, source_time, c_medium
+        )
+        inp_chunks.append(np.asarray(inp_pars))
+        time_chunks.append(np.asarray(time_geo))
+
+    inp_pars = np.concatenate(inp_chunks, axis=1)[:, :n_mod]
+    time_geo = np.concatenate(time_chunks, axis=1)[:, :n_mod]
+    return inp_pars, time_geo
+
+
 def sources_to_array(sources):
     source_pos = np.empty((len(sources), 3))
     source_dir = np.empty((len(sources), 3))

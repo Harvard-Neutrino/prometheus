@@ -23,8 +23,16 @@ import pytest
 
 # ---------------------------------------------------------------------------
 # Reference values (captured with seed=42, 100 events, baseline commit)
+#
+# Regenerated after "Fix LeptonInjector nu/nubar cross-section spline
+# selection" (#112). That fix changed which interactions are drawn, so it
+# changed the injected sample and with it the hit count -- 25193 before, 34355
+# after, measured on the commit either side. The reference was not refreshed at
+# the time because this test only runs under --run-slow, which CI skips, so the
+# failure went unseen. Any change that moves this number is either a physics
+# change or a bug; recapture it deliberately, never to make the test pass.
 # ---------------------------------------------------------------------------
-WATER_REF_HITS = 25193  # total photon arrivals across 100 events
+WATER_REF_HITS = 34355  # total photon arrivals across 100 events
 WATER_TOL = 0.01  # allow ±1 % for platform floating-point differences
 
 

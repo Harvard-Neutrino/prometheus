@@ -19,6 +19,7 @@ from prometheus.compat.haiku_unpickler import load as haiku_load
 from .utils import (
     next_bucket,
     sources_to_model_input,
+    sources_to_model_input_chunked,
     sources_to_model_input_per_module,
 )
 
@@ -27,7 +28,12 @@ logger = logging.getLogger(__name__)
 
 # @profile
 def make_generate_norm_flow_photons(
-    shape_model_path, counts_model_path, c_medium, max_distance=300.0, min_distance=0.1
+    shape_model_path,
+    counts_model_path,
+    c_medium,
+    max_distance=300.0,
+    min_distance=0.1,
+    module_chunk=128,
 ):
     shape_config, shape_params = haiku_load(shape_model_path)
     counts_config, counts_params = haiku_load(counts_model_path)
@@ -82,12 +88,13 @@ def make_generate_norm_flow_photons(
         else:
             key = seed
 
-        inp_pars, time_geo = sources_to_model_input(
+        inp_pars, time_geo = sources_to_model_input_chunked(
             module_coords,
             source_pos,
             source_dir,
             source_time,
             c_medium,
+            module_chunk,
         )
 
         # All shape bookkeeping (masking, gathers, repeats) happens in numpy on
