@@ -15,6 +15,12 @@
 #   - PPC is compiled with `make gpu` (nvcc) instead of `make cpu` (g++)
 #   - The GPU PPC_CUDA variant is also compiled
 #   - PPC_CUDA env var points at the CUDA binary
+#   - jax is installed with the cuda12 extra, so the olympus propagator runs
+#     on the GPU rather than falling back to the CPU
+#
+# Note that the two GPU paths are independent. PPC_CUDA covers ice, and is
+# what SM_ARCH below applies to. Water goes through olympus, which is JAX, and
+# is unaffected by SM_ARCH because the CUDA kernels are compiled at runtime.
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 1: system packages + micromamba environment
@@ -61,6 +67,18 @@ FROM base AS proposal
 
 COPY requirements.txt /tmp/requirements.txt
 RUN /opt/conda/envs/prometheus/bin/pip install --no-cache-dir -r /tmp/requirements.txt
+
+# requirements.txt is shared with the CPU image, so the jax it pins is the
+# CPU-only wheel. Without this step JAX silently falls back to the CPU inside
+# the GPU image ("a CUDA-enabled jaxlib is not installed"), which means the
+# olympus photon propagator, and therefore every water simulation, runs on the
+# CPU on a machine that was asked for a GPU.
+#
+# The cuda12 extra is the one that ships its own CUDA libraries as pip wheels.
+# cuda12-local, which links against the system toolkit, is not usable here:
+# the nvidia/cuda:12.3.2-devel base provides nvcc but no cuDNN, which JAX
+# needs. Only the host driver has to be new enough for CUDA 12.
+RUN /opt/conda/envs/prometheus/bin/pip install --no-cache-dir "jax[cuda12]"
 
 COPY container/build_proposal_tables.py /tmp/build_proposal_tables.py
 RUN LD_LIBRARY_PATH=/opt/conda/envs/prometheus/lib \
