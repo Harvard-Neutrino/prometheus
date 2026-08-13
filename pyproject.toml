@@ -54,6 +54,12 @@ exclude = [
     "site/",
     "olympus/",
     "examples/legacy/",
+    # Ruff 0.16 began formatting Python inside Markdown code blocks. The
+    # snippets in our docs are illustrations, not source: some are deliberately
+    # badly formatted so the surrounding text can point at what is wrong, and
+    # others are aligned by hand for readability. Formatting them destroys the
+    # thing they are there to show.
+    "*.md",
 ]
 
 [tool.ruff.lint]
