@@ -1,4 +1,4 @@
-from .detector import Detector
+from .detector import Detector, GeometryError
 from .detector_factory import (
     detector_from_geo,
     make_grid,

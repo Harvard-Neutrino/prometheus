@@ -5,7 +5,7 @@ import numpy as np
 import scipy
 
 from ..utils import iter_or_rep
-from .detector import Detector
+from .detector import Detector, GeometryError
 from .medium import Medium
 from .module import Module
 from .utils import random_serial
@@ -70,6 +70,72 @@ def read_medium(geofile) -> Union[Medium, None]:
     return getattr(Medium, medium_string)
 
 
+def read_geo_modules(geofile: str):
+    """Read the module block of a geofile, reporting every malformed line.
+
+    A module line is ``x y z string_id om_id`` separated by tabs. The first
+    three fields must be finite floats and the last two integers.
+
+    Parameters
+    ----------
+    geofile : str
+        Path to the geofile to read from.
+
+    Returns
+    -------
+    pos : list of np.ndarray
+        Module positions in m.
+    keys : list of tuple of int
+        ``(string_id, om_id)`` for each module.
+
+    Raises
+    ------
+    GeometryError
+        If the module header is missing, no modules are listed, or any line
+        cannot be parsed.
+    """
+    with open(geofile) as geo_in:
+        read_lines = geo_in.readlines()
+    header = [i for i, line in enumerate(read_lines) if line.strip() == "### Modules ###"]
+    if not header:
+        raise GeometryError(["missing '### Modules ###' header"], source=f"geo file {geofile}")
+
+    pos = []
+    keys = []
+    problems = []
+    for lineno, line in enumerate(read_lines[header[0] + 1 :], start=header[0] + 2):
+        if not line.strip():
+            continue
+        fields = line.strip("\n").split("\t")
+        if len(fields) != 5:
+            problems.append(
+                f"line {lineno}: expected 5 tab-separated fields "
+                f"(x y z string_id om_id), got {len(fields)}: {line.strip()!r}"
+            )
+            continue
+        try:
+            xyz = np.array([float(f) for f in fields[:3]])
+        except ValueError:
+            problems.append(f"line {lineno}: position is not numeric: {line.strip()!r}")
+            continue
+        if not np.isfinite(xyz).all():
+            problems.append(f"line {lineno}: position is not finite: {line.strip()!r}")
+            continue
+        try:
+            key = (int(fields[3]), int(fields[4]))
+        except ValueError:
+            problems.append(f"line {lineno}: string_id/om_id are not integers: {line.strip()!r}")
+            continue
+        pos.append(xyz)
+        keys.append(key)
+
+    if not problems and not pos:
+        problems.append("no modules listed after '### Modules ###'")
+    if problems:
+        raise GeometryError(problems, source=f"geo file {geofile}")
+    return pos, keys
+
+
 def detector_from_geo(geofile: str, efficiency: float = 0.2, noise_rate: float = 1) -> Detector:
     """Build a detector from a Prometheus geofile.
 
@@ -87,17 +153,8 @@ def detector_from_geo(geofile: str, efficiency: float = 0.2, noise_rate: float =
     detector : Detector
         Prometheus detector object.
     """
-    pos = []
-    keys = []
+    pos, keys = read_geo_modules(geofile)
     medium = read_medium(geofile)
-    with open(geofile) as geo_in:
-        read_lines = geo_in.readlines()
-        modules_i = read_lines.index("### Modules ###\n")
-
-        for line in read_lines[modules_i + 1 :]:
-            line = line.strip("\n").split("\t")
-            pos.append(np.array([float(line[0]), float(line[1]), float(line[2])]))
-            keys.append((int(line[3]), int(line[4])))
 
     sers = [random_serial() for _ in range(len(pos))]
 
@@ -108,7 +165,10 @@ def detector_from_geo(geofile: str, efficiency: float = 0.2, noise_rate: float =
         Module(p, k, efficiency=e, noise_rate=nr, serial_no=ser)
         for p, k, e, nr, ser in zip(pos, keys, efficiency, noise_rate, sers)
     ]
-    det = Detector(modules, medium)
+    try:
+        det = Detector(modules, medium)
+    except GeometryError as err:
+        raise GeometryError(err.problems, source=f"geo file {geofile}") from None
     return det
 
 

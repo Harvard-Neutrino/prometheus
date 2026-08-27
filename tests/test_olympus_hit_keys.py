@@ -16,8 +16,8 @@ from prometheus.photon_propagation.olympus_photon_propagator import hits_from_ol
 
 
 def _detector(keys):
-    rng = np.random.default_rng(0)
-    modules = [Module(rng.normal(0, 100, 3), key) for key in keys]
+    # Place each string on its own vertical line so the geometry is valid.
+    modules = [Module(np.array([100.0 * s, 0.0, 10.0 * o]), (s, o)) for s, o in keys]
     return Detector(modules, Medium.WATER)
 
 

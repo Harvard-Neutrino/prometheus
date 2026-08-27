@@ -4,6 +4,7 @@
 # Deals with detector stuff
 from __future__ import annotations
 
+import warnings
 from typing import List, Tuple, Union
 
 import awkward as ak
@@ -29,6 +30,119 @@ class IncompatibleMACIDsError(Exception):
         super().__init__(self.message)
 
 
+class GeometryError(ValueError):
+    """Raised when a detector geometry is not usable.
+
+    The message lists every problem found so a geo file can be fixed in one
+    pass rather than one error at a time.
+    """
+
+    def __init__(self, problems: List[str], source: str = "detector geometry"):
+        self.problems = list(problems)
+        lines = "\n".join(f"  - {p}" for p in self.problems)
+        super().__init__(f"Invalid {source}:\n{lines}")
+
+
+# Modules on one string may drift in (x, y) by well under a metre in surveyed
+# geometries (IceCube: 0.6 m). Anything past this is a different string.
+STRING_XY_TOLERANCE_M = 5.0
+
+
+def _format_examples(items: List[str], limit: int = 5) -> str:
+    """Join up to ``limit`` example strings, noting how many were left out."""
+    shown = ", ".join(items[:limit])
+    if len(items) > limit:
+        shown += f", ... ({len(items) - limit} more)"
+    return shown
+
+
+def validate_modules(modules: List[Module]) -> None:
+    """Check that a list of modules describes a usable detector.
+
+    Errors are collected and raised together. Every ``(string_id, om_id)`` key
+    must be unique because hits are matched back to modules by key, and every
+    position must be finite. Negative IDs and strings whose modules spread
+    more than ``STRING_XY_TOLERANCE_M`` in (x, y) are legal but unusual, so they only warn.
+
+    Parameters
+    ----------
+    modules : list of Module
+        Modules to check.
+
+    Raises
+    ------
+    GeometryError
+        If the modules cannot form a valid detector.
+    """
+    problems = []
+    if len(modules) == 0:
+        raise GeometryError(["no modules"])
+
+    pos = np.array([m.pos for m in modules], dtype=float)
+    if pos.ndim != 2 or pos.shape[1] != 3:
+        problems.append(f"module positions must be (x, y, z); got shape {pos.shape}")
+    else:
+        bad = np.where(~np.isfinite(pos).all(axis=1))[0]
+        if len(bad):
+            problems.append(
+                f"{len(bad)} module(s) with non-finite position, e.g. module index "
+                f"{_format_examples([str(i) for i in bad])}"
+            )
+
+    # Duplicate keys. Explain them by the physical string they came from: the
+    # usual cause is one string ID reused for two strings at different (x, y).
+    seen = {}
+    dup_keys = []
+    for m in modules:
+        if m.key in seen:
+            dup_keys.append(m.key)
+        else:
+            seen[m.key] = m
+    if dup_keys:
+        problems.append(
+            f"{len(dup_keys)} duplicate (string_id, om_id) key(s), e.g. "
+            f"{_format_examples([str(k) for k in dup_keys])}"
+        )
+    strings = {}
+    for m in modules:
+        strings.setdefault(m.key[0], []).append(m)
+    reused = []
+    unaligned = []
+    for sid, mods in strings.items():
+        xy_all = np.array([m.pos[:2] for m in mods], dtype=float)
+        if np.ptp(xy_all, axis=0).max() > STRING_XY_TOLERANCE_M:
+            xy = np.unique(np.round(xy_all / STRING_XY_TOLERANCE_M) * STRING_XY_TOLERANCE_M, axis=0)
+            where = "; ".join(f"({x:g}, {y:g})" for x, y in xy[:3])
+            keys = {m.key for m in mods}
+            if len(keys) < len(mods):
+                reused.append(f"string {sid} at {where}")
+            else:
+                unaligned.append(f"string {sid} at {where}")
+    if reused:
+        problems.append(
+            f"{len(reused)} string ID(s) shared by modules at different (x, y), so two "
+            f"physical strings carry the same ID: {_format_examples(reused, 3)}"
+        )
+
+    if problems:
+        raise GeometryError(problems)
+
+    negative = sorted({m.key for m in modules if m.key[0] < 0 or m.key[1] < 0})
+    if negative:
+        warnings.warn(
+            f"{len(negative)} module(s) with a negative string or OM ID, e.g. "
+            f"{_format_examples([str(k) for k in negative])}. Prometheus accepts these "
+            "but downstream tools may not.",
+            stacklevel=3,
+        )
+    if unaligned:
+        warnings.warn(
+            f"{len(unaligned)} string ID(s) whose modules are not on one vertical line: "
+            f"{_format_examples(unaligned, 3)}",
+            stacklevel=3,
+        )
+
+
 class Detector(object):
     """Prometheus detector object."""
 
@@ -42,6 +156,7 @@ class Detector(object):
         medium : Medium or None
             Medium in which the detector is embedded.
         """
+        validate_modules(modules)
         self._modules = modules
         self._medium = medium
         self._offset = np.mean(np.array([m.pos for m in modules]), axis=0)
