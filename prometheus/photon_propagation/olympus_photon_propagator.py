@@ -50,6 +50,44 @@ _DEFAULT_FLOW_FILE = "photon_arrival_time_nflow_params.pickle"
 _DEFAULT_COUNTS_FILE = "photon_arrival_time_counts_params.pickle"
 
 
+def hits_from_olympus_result(detector: Detector, res_event) -> list:
+    """Convert per-module olympus photon times into Prometheus ``Hit`` objects.
+
+    Parameters
+    ----------
+    detector : Detector
+        Prometheus detector the photons were propagated through. Olympus
+        returns one entry per module, in ``detector.modules`` order.
+    res_event : sequence or None
+        Per-module sequences of photon arrival times in ns, or ``None`` when
+        the propagation produced no light at all.
+
+    Returns
+    -------
+    hits : list of Hit
+        Hits keyed by each module's real ``(string_id, om_id)`` so they can be
+        looked up on the detector during serialization.
+
+    Raises
+    ------
+    ValueError
+        If ``res_event`` does not hold exactly one entry per detector module.
+    """
+    if res_event is None:
+        return []
+    if len(res_event) != len(detector.modules):
+        raise ValueError(
+            f"Olympus returned {len(res_event)} module entries for a detector "
+            f"with {len(detector.modules)} modules"
+        )
+    hits = []
+    for mod, dom_hits in zip(detector.modules, res_event):
+        string_id, om_id = mod.key
+        for hit in dom_hits:
+            hits.append(Hit(string_id, om_id, float(hit), None, None, None, None, None))
+    return hits
+
+
 @register_propagator("olympus")
 class OlympusPhotonPropagator(PhotonPropagator):
     """Photon propagator that uses Olympus to propagate photons."""
@@ -179,22 +217,9 @@ class OlympusPhotonPropagator(PhotonPropagator):
                 max_distance=self.config["simulation"]["max_distance"],
             )
 
-        hits = []
         # generate_realistic_track returns (None, None) when PROPOSAL yields no
         # energy losses at all; treat that as an event with no hits.
-        if res_event is not None:
-            nstrings = len(set([mod.key[0] for mod in self.detector.modules]))
-            string_idx = 0
-            om_idx = 0
-            oms_per_string = len(self.detector.modules) / nstrings
-            for dom_hits in res_event:
-                if om_idx == oms_per_string:
-                    om_idx = 0
-                    string_idx += 1
-                for hit in dom_hits:
-                    hits.append(Hit(string_idx, om_idx, float(hit), None, None, None, None, None))
-                om_idx += 1
-        particle.hits = hits
+        particle.hits = hits_from_olympus_result(self.detector, res_event)
         for child in particle.children:
             if child.e < 1:
                 continue
