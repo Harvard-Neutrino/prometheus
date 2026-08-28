@@ -16,6 +16,7 @@ from .olympus.event_generation.event_generation import (
 )
 from .olympus.event_generation.lightyield import make_realistic_cascade_source
 from .olympus.event_generation.photon_propagation.norm_flow_photons import (
+    DEFAULT_PHOTON_CHUNK,
     make_generate_norm_flow_photons,
 )
 from .olympus.event_generation.utils import sph_to_cart_jnp
@@ -154,6 +155,7 @@ class OlympusPhotonPropagator(PhotonPropagator):
             max_distance=self.config["simulation"]["max_distance"],
             min_distance=self.config["simulation"]["min_distance_from_dom"],
             module_chunk=self.config["simulation"].get("module_chunk", 128),
+            photon_chunk=self.config["simulation"].get("photon_chunk", DEFAULT_PHOTON_CHUNK),
         )
 
     def propagate(self, particle: Particle, rng_key):

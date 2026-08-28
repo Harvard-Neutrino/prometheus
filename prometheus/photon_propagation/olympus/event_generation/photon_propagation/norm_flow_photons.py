@@ -26,6 +26,69 @@ from .utils import (
 logger = logging.getLogger(__name__)
 
 
+# Photons per jitted flow-sampler call. The sampler's working set scales with
+# the number of photons it is handed, so this is what bounds device memory
+# for a bright particle. 2**18 photons is ~130 MB of float64 conditioner
+# input plus a few multiples of that in spline temporaries.
+DEFAULT_PHOTON_CHUNK = 2**18
+
+
+def sample_photon_times(sample_fn, traf_params, pair_index, key, photon_chunk=DEFAULT_PHOTON_CHUNK):
+    """Sample one arrival time per photon in fixed-size blocks.
+
+    Parameters
+    ----------
+    sample_fn : callable
+        ``sample_fn(traf_params, key)`` returning one sample per row. Rows
+        are independent, so splitting the photon axis is exact.
+    traf_params : np.ndarray
+        Flow parameters per source-module pair, shape (n_pairs, n_params).
+    pair_index : np.ndarray
+        Pair index of each photon, shape (n_photons,). Gathering per block
+        replaces a host-side ``np.repeat`` of every row's parameters, which
+        for a bright particle is tens of bytes per photon times millions of
+        photons.
+    key : jax.random.PRNGKey
+        Key for the draws.
+    photon_chunk : int
+        Most photons handed to ``sample_fn`` at once.
+
+    Returns
+    -------
+    np.ndarray
+        Samples in photon order, shape (n_photons,).
+
+    Notes
+    -----
+    Every block is padded to a power-of-four bucket capped at
+    ``photon_chunk``, so the compiled-executable cache holds at most one
+    executable per bucket up to the cap however bright the particle. A
+    particle that fits in one block is padded exactly as before and uses
+    ``key`` directly, so results for those are unchanged; larger ones draw
+    one subkey per block.
+    """
+    n_photons = int(pair_index.shape[0])
+    if n_photons == 0:
+        return np.empty(0, dtype=np.asarray(traf_params).dtype)
+    chunk = max(1, int(photon_chunk))
+    if n_photons <= chunk:
+        blocks = [(0, n_photons, key)]
+    else:
+        starts = range(0, n_photons, chunk)
+        keys = random.split(key, len(starts))
+        blocks = [(start, min(start + chunk, n_photons), k) for start, k in zip(starts, keys)]
+
+    out = []
+    for start, stop, block_key in blocks:
+        block = np.asarray(traf_params)[pair_index[start:stop]]
+        n = block.shape[0]
+        pad_len = min(next_bucket(n, base=4), chunk) if n < chunk else chunk
+        pad_len = max(pad_len, n)
+        padded = np.pad(block, ((0, pad_len - n), (0, 0)))
+        out.append(np.asarray(sample_fn(padded, block_key))[:n])
+    return np.concatenate(out)
+
+
 # @profile
 def make_generate_norm_flow_photons(
     shape_model_path,
@@ -34,6 +97,7 @@ def make_generate_norm_flow_photons(
     max_distance=300.0,
     min_distance=0.1,
     module_chunk=128,
+    photon_chunk=DEFAULT_PHOTON_CHUNK,
 ):
     shape_config, shape_params = haiku_load(shape_model_path)
     counts_config, counts_params = haiku_load(counts_model_path)
@@ -64,14 +128,6 @@ def make_generate_norm_flow_photons(
     @jax.jit
     def sample_model_inner(traf_params, key):
         return sample_shape_model(dist_builder, traf_params, traf_params.shape[0], key)
-
-    def sample_model(traf_params, key):
-        pad_len = next_bucket(traf_params.shape[0], base=4)
-        padded = jnp.pad(traf_params, ((0, pad_len - traf_params.shape[0]), (0, 0)))
-
-        result = sample_model_inner(padded, key)
-
-        return result[: traf_params.shape[0]]
 
     def generate_norm_flow_photons(
         module_coords,
@@ -185,17 +241,17 @@ def make_generate_norm_flow_photons(
                         f"{_nph[_i]:,}",
                     )
 
-        # Obtain flow parameters and repeat them for each detected photon.
-        # Pad to the next power-of-4 bucket so apply_fn is JIT-compiled once
-        # per bucket size rather than once per unique n_nonzero (same strategy
-        # already used by sample_model for sample_model_inner).
+        # Obtain flow parameters per pair. Pad to the next power-of-4 bucket
+        # so apply_fn is JIT-compiled once per bucket size rather than once
+        # per unique n_nonzero. Photons refer back to their pair by index;
+        # the per-photon parameters are only materialised one block at a
+        # time inside sample_photon_times.
         _n = inp_params_nonzero.shape[0]
         _pad_len = next_bucket(_n, base=4)
         _padded = np.pad(inp_params_nonzero, ((0, _pad_len - _n), (0, 0)))
         traf_params = np.asarray(apply_fn(shape_params, _padded))[:_n]
-        traf_params_rep = np.repeat(traf_params, n_photons_nonzero, axis=0)
-        # Also repeat the geometric time for each detected photon
-        time_geo_rep = np.repeat(time_geo_nonzero, n_photons_nonzero, axis=0).squeeze()
+        pair_index = np.repeat(np.arange(_n), n_photons_nonzero)
+        time_geo_rep = np.asarray(time_geo_nonzero)[pair_index].squeeze()
 
         # Calculate number of photons per module
         # Start with zero array and fill in the poisson samples using distance mask
@@ -206,7 +262,9 @@ def make_generate_norm_flow_photons(
 
         # Sample times from flow
         key, subkey = random.split(key)
-        samples = sample_model(traf_params_rep, subkey)
+        samples = sample_photon_times(
+            sample_model_inner, traf_params, pair_index, subkey, photon_chunk
+        )
 
         times = np.atleast_1d(np.asarray(samples).squeeze() + time_geo_rep)
 

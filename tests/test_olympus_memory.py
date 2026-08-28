@@ -8,6 +8,7 @@ that matter most assert that they are numerically indistinguishable from the
 whole-array computations they replaced.
 """
 
+import jax
 import numpy as np
 import pytest
 
@@ -16,6 +17,9 @@ from prometheus.config_types import OlympusSimConfig, RunConfig
 from prometheus.photon_propagation.hit import Hit
 from prometheus.photon_propagation.olympus.event_generation.event_generation import (
     _in_range_masks,
+)
+from prometheus.photon_propagation.olympus.event_generation.photon_propagation import (
+    norm_flow_photons,
 )
 from prometheus.photon_propagation.olympus.event_generation.photon_propagation.utils import (
     next_bucket,
@@ -206,6 +210,102 @@ class TestInRangeMasks:
 # ---------------------------------------------------------------------------
 # Retained hit size and cache release
 # ---------------------------------------------------------------------------
+# sample_photon_times
+# ---------------------------------------------------------------------------
+
+
+class _RecordingSampler:
+    """Stand-in for the jitted flow sampler.
+
+    Returns each row's first parameter so that the gather and ordering can be
+    checked exactly, and records the padded shape of every call so the
+    bucket ladder can be checked.
+    """
+
+    def __init__(self):
+        self.shapes = []
+
+    def __call__(self, traf_params, key):
+        self.shapes.append(traf_params.shape)
+        return traf_params[:, 0]
+
+
+def _pairs_and_photons(rng, n_pairs, n_photons):
+    traf_params = rng.normal(0, 1, (n_pairs, 5))
+    pair_index = np.sort(rng.integers(0, n_pairs, n_photons))
+    return traf_params, pair_index
+
+
+class TestSamplePhotonTimes:
+    @pytest.mark.parametrize(
+        "n_photons, chunk",
+        [
+            (1, 64),  # single photon
+            (50, 64),  # fits in one block
+            (64, 64),  # exactly one block
+            (65, 64),  # one block and a single-photon tail
+            (1000, 64),  # many blocks, ragged tail
+            (1000, 1),  # degenerate chunk size
+        ],
+    )
+    def test_gather_and_order_are_exact(self, n_photons, chunk):
+        rng = np.random.default_rng(0)
+        traf_params, pair_index = _pairs_and_photons(rng, 7, n_photons)
+        key = jax.random.PRNGKey(0)
+        out = norm_flow_photons.sample_photon_times(
+            _RecordingSampler(), traf_params, pair_index, key, chunk
+        )
+        np.testing.assert_array_equal(out, traf_params[pair_index, 0])
+
+    def test_single_block_matches_previous_padding(self):
+        """A particle that fits in one block is padded exactly as before."""
+        rng = np.random.default_rng(1)
+        traf_params, pair_index = _pairs_and_photons(rng, 3, 37)
+        sampler = _RecordingSampler()
+        norm_flow_photons.sample_photon_times(
+            sampler, traf_params, pair_index, jax.random.PRNGKey(0), 2**18
+        )
+        assert sampler.shapes == [(next_bucket(37, base=4), 5)]
+
+    def test_blocks_never_exceed_chunk_and_ladder_is_bounded(self):
+        """The point of the rewrite: device memory bounded however bright."""
+        rng = np.random.default_rng(2)
+        chunk = 256
+        for n_photons in (300, 4_000, 40_000):
+            traf_params, pair_index = _pairs_and_photons(rng, 11, n_photons)
+            sampler = _RecordingSampler()
+            norm_flow_photons.sample_photon_times(
+                sampler, traf_params, pair_index, jax.random.PRNGKey(3), chunk
+            )
+            assert max(n for n, _ in sampler.shapes) <= chunk
+            # Only power-of-four buckets up to the cap can ever be compiled.
+            allowed = {min(4**k, chunk) for k in range(20)}
+            assert {n for n, _ in sampler.shapes} <= allowed
+
+    def test_blocks_draw_distinct_keys(self):
+        """Blocks must not reuse one key, or their samples would repeat."""
+        seen = []
+
+        def sampler(traf_params, key):
+            seen.append(np.asarray(key).tobytes())
+            return np.zeros(traf_params.shape[0])
+
+        rng = np.random.default_rng(4)
+        traf_params, pair_index = _pairs_and_photons(rng, 2, 10)
+        norm_flow_photons.sample_photon_times(
+            sampler, traf_params, pair_index, jax.random.PRNGKey(5), 3
+        )
+        assert len(seen) == 4
+        assert len(set(seen)) == 4
+
+    def test_no_photons(self):
+        out = norm_flow_photons.sample_photon_times(
+            _RecordingSampler(), np.zeros((2, 5)), np.zeros(0, dtype=int), jax.random.PRNGKey(0)
+        )
+        assert out.shape == (0,)
+
+
+# ---------------------------------------------------------------------------
 
 
 class TestHitLayout:
@@ -263,6 +363,12 @@ class TestConfigKnobs:
         assert sim.module_chunk == 128
         sim["module chunk"] = 256
         assert sim.module_chunk == 256
+
+    def test_photon_chunk_default_and_spaced_key(self):
+        sim = OlympusSimConfig()
+        assert sim.photon_chunk == 2**18
+        sim["photon chunk"] = 4096
+        assert sim.photon_chunk == 4096
 
     def test_splitter_still_loads(self):
         """Retained purely so existing configuration files keep working."""
