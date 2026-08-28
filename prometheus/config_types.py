@@ -563,6 +563,16 @@ class OlympusSimConfig(ConfigBase):
         this bounds the sampler's working set at a fixed size however bright
         it is. Lower it on a small GPU. Results for particles that fit in
         one chunk do not depend on it. See ``sample_photon_times``.
+    warm_up : bool
+        Experimental, off by default. Compile every kernel bucket at start-up
+        instead of when the first particle needing it arrives. Makes the
+        per-event time flat from the first event and fails fast on a device
+        that cannot hold the largest kernel. Does not change results. Needs
+        more testing before it becomes the standard.
+    warm_up_sources : int
+        Top of the source bucket ladder compiled by ``warm_up``.
+    warm_up_pairs : int
+        Top of the source-module pair bucket ladders compiled by ``warm_up``.
     max_distance : float
         Maximum source-to-module distance in metres. Pairs beyond it cannot
         contribute hits and are dropped before propagation. Changing it
@@ -583,6 +593,9 @@ class OlympusSimConfig(ConfigBase):
     min_distance_from_dom: float = 0.1
     module_chunk: int = 128
     photon_chunk: int = 2**18
+    warm_up: bool = False
+    warm_up_sources: int = 2**12
+    warm_up_pairs: int = 2**18
 
 
 @dataclass

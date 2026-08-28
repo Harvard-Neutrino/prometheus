@@ -8,7 +8,10 @@ that matter most assert that they are numerically indistinguishable from the
 whole-array computations they replaced.
 """
 
+import pathlib
+
 import jax
+import jax.numpy as jnp
 import numpy as np
 import pytest
 
@@ -209,6 +212,63 @@ class TestInRangeMasks:
 
 # ---------------------------------------------------------------------------
 # Retained hit size and cache release
+# ---------------------------------------------------------------------------
+# warm_up
+# ---------------------------------------------------------------------------
+
+RESOURCES = pathlib.Path(__file__).parent.parent / "resources" / "olympus_resources"
+
+
+class TestWarmUp:
+    def test_event_after_warm_up_compiles_nothing(self):
+        """Every kernel bucket a run can reach is compiled by the warm-up."""
+        chunk = 256
+        gen = norm_flow_photons.make_generate_norm_flow_photons(
+            str(RESOURCES / "photon_arrival_time_nflow_params.pickle"),
+            str(RESOURCES / "photon_arrival_time_counts_params.pickle"),
+            c_medium=0.2,
+            module_chunk=32,
+            photon_chunk=chunk,
+        )
+        sources_to_model_input._clear_cache()
+        try:
+            gen.warm_up(max_sources=64, max_pairs=64 * 32)
+            sizes = [k._cache_size() for k in gen.kernels] + [sources_to_model_input._cache_size()]
+            assert all(n > 0 for n in sizes)
+
+            # An event shaped and typed the way _propagate_in_range_modules
+            # hands one over: float64 detector arrays, JAX-default-float
+            # sources, times and photon counts as (n, 1) columns, and the
+            # source axis padded to its bucket.
+            fdt = jnp.zeros(1).dtype
+            rng = np.random.default_rng(0)
+            coords = rng.normal(0, 30, (32, 3))
+            source_pos, source_dir, source_time = _random_sources(rng, 64)
+            # Bright enough that the photon count exceeds the chunk, so the
+            # chunk-size sampler kernel is exercised as well as the ladder.
+            gen(
+                coords,
+                np.ones(32),
+                source_pos.astype(fdt),
+                source_dir.astype(fdt),
+                source_time.astype(fdt),
+                np.full((64, 1), 1e6, dtype=fdt),
+                seed=jax.random.PRNGKey(1),
+            )
+            after = [k._cache_size() for k in gen.kernels] + [sources_to_model_input._cache_size()]
+            assert after == sizes
+        finally:
+            sources_to_model_input._clear_cache()
+
+    def test_default_off_and_knobs_load(self):
+        sim = OlympusSimConfig()
+        assert sim.warm_up is False
+        sim["warm up"] = True
+        sim["warm up sources"] = 128
+        sim["warm up pairs"] = 4096
+        assert (sim.warm_up, sim.warm_up_sources, sim.warm_up_pairs) == (True, 128, 4096)
+
+
 # ---------------------------------------------------------------------------
 # sample_photon_times
 # ---------------------------------------------------------------------------

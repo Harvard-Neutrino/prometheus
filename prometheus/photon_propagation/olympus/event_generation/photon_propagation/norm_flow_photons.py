@@ -277,6 +277,86 @@ def make_generate_norm_flow_photons(
 
         return ak.Array(times)
 
+    def warm_up(max_sources, max_pairs):
+        """Compile every kernel bucket up front instead of on first use.
+
+        Experimental and off by default. Drives the generator itself with
+        synthetic inputs built the way ``_propagate_in_range_modules``
+        builds them (same dtypes, same padding rows), sized so that every
+        bucket of the source, pair and photon ladders up to the caps is
+        compiled here rather than when the first particle needing it
+        arrives. A device that cannot hold the largest kernel fails here
+        rather than part way through a run. Physics and random draws are
+        untouched: the event loop's keys are not consumed.
+
+        Parameters
+        ----------
+        max_sources : int
+            Most photon sources one particle is expected to produce. Sets
+            the top of the source bucket ladder.
+        max_pairs : int
+            Most in-range source-module pairs one particle is expected to
+            produce. Sets the top of the pair bucket ladders.
+        """
+        fdt = jnp.zeros(1).dtype
+        key = random.PRNGKey(0)
+
+        # Photon ladder: every power-of-four bucket up to the chunk, then
+        # the chunk itself, with the dtype the conditioner really emits.
+        probe = np.asarray(apply_fn(shape_params, np.zeros((1, 2), dtype=fdt)))
+        n = 1
+        while n < photon_chunk:
+            sample_model_inner(np.zeros((n, probe.shape[1]), dtype=probe.dtype), key)
+            n *= 4
+        sample_model_inner(np.zeros((photon_chunk, probe.shape[1]), dtype=probe.dtype), key)
+
+        # One module chunk packed at the origin, with in-range sources on a
+        # ring around it facing inwards. Every source-module pair then has
+        # the same distance and viewing angle, so one counts-net evaluation
+        # gives the photon budget that lands the same number of detected
+        # photons on every pair, and the nonzero-pair ladder is walked
+        # exactly. Padding rows sit at -1e6 with no photons, as in
+        # _propagate_in_range_modules.
+        n_mod = max(1, int(module_chunk))
+        coords = np.zeros((n_mod, 3))
+        coords[:, 2] = np.linspace(0.0, 0.01, n_mod)
+        eff = np.ones(n_mod)
+        radius = min(5.0, 0.5 * max_distance)
+        radius = max(radius, 2.0 * min_distance)
+        target_photons = 8.0  # detected photons per pair; keeps every pair nonzero
+
+        def run(n_in_range, n_src, n_mod_used):
+            angles = np.linspace(0.0, 2.0 * np.pi, n_in_range, endpoint=False)
+            pos = np.full((n_src, 3), -1e6, dtype=fdt)
+            pos[:n_in_range, 0] = radius * np.cos(angles)
+            pos[:n_in_range, 1] = radius * np.sin(angles)
+            pos[:n_in_range, 2] = 0.0
+            direction = np.zeros((n_src, 3), dtype=fdt)
+            direction[:n_in_range, 0] = -np.cos(angles)
+            direction[:n_in_range, 1] = -np.sin(angles)
+            time = np.zeros((n_src, 1), dtype=fdt)
+            inp = sources_to_model_input(coords[:1], pos[:1], direction[:1], time[:1], c_medium)[0]
+            inp = np.asarray(inp).reshape(1, -1)
+            frac = 10.0 ** float(np.asarray(counts_apply_fn(counts_params, inp)).reshape(-1)[0])
+            nphotons = np.zeros((n_src, 1), dtype=fdt)
+            nphotons[:n_in_range] = target_photons / max(min(frac, 1.0), 1e-12)
+            generate_norm_flow_photons(
+                coords[:n_mod_used], eff[:n_mod_used], pos, direction, time, nphotons, seed=key
+            )
+
+        n = 16
+        while n <= max(16, max_sources):
+            run(n, n, n_mod)
+            n *= 2
+        n = 16
+        while n <= max(16, max_pairs):
+            n_mod_used = min(n_mod, n)
+            n_in = -(-n // n_mod_used)
+            run(n_in, next_bucket(n_in, minimum=16), n_mod_used)
+            n *= 2
+
+    generate_norm_flow_photons.warm_up = warm_up
+    generate_norm_flow_photons.kernels = (apply_fn, counts_apply_fn, sample_model_inner)
     return generate_norm_flow_photons
 
 

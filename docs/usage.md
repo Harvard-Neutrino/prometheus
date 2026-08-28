@@ -39,6 +39,7 @@ The relevant settings live under `config.photon_propagator.olympus.simulation`:
 | --- | --- | --- |
 | `photon_chunk` | `262144` | Most photons handed to the arrival-time sampler per call. This bounds the sampler's working set to a fixed size however bright the particle. Lower it on a small GPU. |
 | `module_chunk` | `128` | Modules evaluated per model-input call. Keeps that temporary, and the number of compiled kernels, independent of detector size. |
+| `warm_up` | `False` | Experimental. Compile every kernel bucket at start-up so the event loop never pauses to compile and a card that is too small fails immediately. `warm_up_sources` (`4096`) and `warm_up_pairs` (`262144`) set the top of the ladders. Costs about a minute per process on a CPU with the defaults, less with `jax_compilation_cache_dir`. Off until it has had more testing. |
 | `max_distance` | `300.0` | Drops source-module pairs further apart than this before propagation. Changing it changes physics, not just memory. |
 
 Under `config.run`:

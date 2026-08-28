@@ -157,6 +157,11 @@ class OlympusPhotonPropagator(PhotonPropagator):
             module_chunk=self.config["simulation"].get("module_chunk", 128),
             photon_chunk=self.config["simulation"].get("photon_chunk", DEFAULT_PHOTON_CHUNK),
         )
+        if self.config["simulation"].get("warm_up", False):
+            self._gen_ph.warm_up(
+                self.config["simulation"].get("warm_up_sources", 2**12),
+                self.config["simulation"].get("warm_up_pairs", 2**18),
+            )
 
     def propagate(self, particle: Particle, rng_key):
         """Simulate losses and propagate resulting photons for an input particle.
