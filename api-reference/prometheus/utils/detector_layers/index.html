@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../../../img/favicon.ico" />
+    <title>detector_layers - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "detector_layers";
+        var mkdocs_page_input_path = "api-reference/prometheus/utils/detector_layers.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Installation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../installation/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../installation/built-in-installer/">Built-in installer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../installation/containers/">Containers</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../citation/">Citation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../papers/">Papers Using Prometheus</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="../../">prometheus</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../../compat/">compat</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../compat/haiku_unpickler/">haiku_unpickler</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../config/">config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../config_types/">config_types</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../detector/">detector</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/detector_factory/">detector_factory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../injection/">injection</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/genie_injector/">genie_injector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/genie_parser/">genie_parser</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/genie_injection/">genie_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/registered_injectors/">registered_injectors</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../logging/">logging</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../logging/handlers/">handlers</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../logging_config/">logging_config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/hit/">hit</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/olympus/">olympus</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/event_generation/">event_generation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/optimization/">optimization</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/plotting/">plotting</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/ppc_photon_propagator/">ppc_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/registry/">registry</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../summary/">summary</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="../">utils</a>
+    <ul class="current">
+                <li class="toctree-l3"><a class="reference internal" href="../capture/">capture</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">detector_layers</a>
+    <ul class="current">
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.utils.detector_layers.CellGeometry">CellGeometry</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.utils.detector_layers.build_layers">build_layers</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.utils.detector_layers.cell_geometry">cell_geometry</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.utils.detector_layers.cell_manifest_dict">cell_manifest_dict</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.utils.detector_layers.extract_strings">extract_strings</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.utils.detector_layers.partition_layers">partition_layers</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.utils.detector_layers.representative_string">representative_string</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../dom_response/">dom_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../f2k_utils/">f2k_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../fadc_digitization/">fadc_digitization</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../formatting/">formatting</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../layered_sim/">layered_sim</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../memory/">memory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../pmt_response/">pmt_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timing/">timing</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../hyperion/">hyperion</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/medium/">medium</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/models/">models</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/">photon_arrival_time_nflow</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/net/">net</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/training_data/">training_data</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/validation/">validation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/">photon_binned_amplitude</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/net/">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/propagate/">propagate</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item"><a href="../../">prometheus</a></li>
+          <li class="breadcrumb-item"><a href="../">utils</a></li>
+      <li class="breadcrumb-item active">detector_layers</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="prometheus.utils.detector_layers" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">prometheus.utils.detector_layers</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+        <p>Detector geometry for the radial-layering approximation.</p>
+<p>String-based detectors are approximately translation symmetric: strings at
+similar radii see similar photon yields.  These helpers partition the strings
+into radial layers and pick one representative string per layer, together
+with the Voronoi cell geometry used to sample event vertices around it (see
+:mod:<code>prometheus.utils.layered_sim</code> for the vertex sampling and simulation
+execution built on top of this geometry).</p>
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="CellGeometry
+
+
+  
+      dataclass
+   (prometheus.utils.detector_layers.CellGeometry)" href="#prometheus.utils.detector_layers.CellGeometry">CellGeometry</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Voronoi cell geometry derived from a detector's string layout.</p>
+          </div>
+        </li>
+    </ul>
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="build_layers (prometheus.utils.detector_layers.build_layers)" href="#prometheus.utils.detector_layers.build_layers">build_layers</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Build the radial layer description for a detector.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="cell_geometry (prometheus.utils.detector_layers.cell_geometry)" href="#prometheus.utils.detector_layers.cell_geometry">cell_geometry</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Build the Voronoi cell geometry for a detector's string layout.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="cell_manifest_dict (prometheus.utils.detector_layers.cell_manifest_dict)" href="#prometheus.utils.detector_layers.cell_manifest_dict">cell_manifest_dict</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Return the cell geometry as a dict with unit-suffixed manifest keys.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="extract_strings (prometheus.utils.detector_layers.extract_strings)" href="#prometheus.utils.detector_layers.extract_strings">extract_strings</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Return string (x, y) positions from the detector module keys.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="partition_layers (prometheus.utils.detector_layers.partition_layers)" href="#prometheus.utils.detector_layers.partition_layers">partition_layers</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Partition string indices into radial layers with equal string counts.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="representative_string (prometheus.utils.detector_layers.representative_string)" href="#prometheus.utils.detector_layers.representative_string">representative_string</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Return the string position closest to the median radius in this layer.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.utils.detector_layers.CellGeometry" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">CellGeometry</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">CellGeometry(n_strings: int, R_outer: float, d_nn: float, R_det: float, V_cell: float, r_cell: float, z_min: float, z_max: float, H: float)</code></pre>
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Voronoi cell geometry derived from a detector's string layout.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Attributes:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>n_strings</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of strings in the detector.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>R_outer</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Radius of the outermost string [m].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>d_nn</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Mean nearest-neighbour string spacing [m].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>R_det</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Effective detector footprint radius, <code>R_outer + d_nn / 2</code> [m].
+The half-spacing skirt accounts for the detector volume beyond the
+outermost string ring.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>V_cell</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Mean Voronoi cell volume, <code>pi R_det^2 H / n_strings</code> [m^3].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>r_cell</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Effective cell radius, <code>sqrt(R_det^2 / n_strings)</code> [m].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>z_min, z_max</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Vertical extent of the instrumented volume [m].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>H</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Detector height, <code>z_max - z_min</code> [m].</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.utils.detector_layers.build_layers" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">build_layers</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">build_layers(detector, n_layers: int)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Build the radial layer description for a detector.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>detector</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Detector (prometheus.detector.Detector)" href="../../#prometheus.Detector">Detector</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Prometheus detector object.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>n_layers</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of radial layers to partition strings into.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>layers</code></b>(                  <code>list of dict</code>
+)              –
+              <div class="doc-md-description">
+                <p>One entry per layer with keys <code>n_strings</code>, <code>r_range</code> (min/max
+string radius) and <code>rep_xy</code> (representative string position).</p>
+              </div>
+            </li>
+            <li>
+<b><code>cell</code></b>(                  <code><a class="autorefs autorefs-internal" title="CellGeometry
+
+
+  
+      dataclass
+   (prometheus.utils.detector_layers.CellGeometry)" href="#prometheus.utils.detector_layers.CellGeometry">CellGeometry</a></code>
+)              –
+              <div class="doc-md-description">
+                <p>Cell geometry shared by all layers.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/utils/detector_layers.py</code></summary>
+              <pre class="highlight"><code class="language-python">def build_layers(detector, n_layers: int):
+    """Build the radial layer description for a detector.
+
+    Parameters
+    ----------
+    detector : Detector
+        Prometheus detector object.
+    n_layers : int
+        Number of radial layers to partition strings into.
+
+    Returns
+    -------
+    layers : list of dict
+        One entry per layer with keys ``n_strings``, ``r_range`` (min/max
+        string radius) and ``rep_xy`` (representative string position).
+    cell : CellGeometry
+        Cell geometry shared by all layers.
+    """
+    strings = extract_strings(detector)
+    cell = cell_geometry(detector, strings)
+    radii = np.linalg.norm(strings - detector.offset[:2], axis=1)
+
+    layers = []
+    for indices in partition_layers(radii, n_layers):
+        layers.append(
+            {
+                "n_strings": len(indices),
+                "r_range": (float(radii[indices].min()), float(radii[indices].max())),
+                "rep_xy": representative_string(strings, radii, indices),
+            }
+        )
+    return layers, cell</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.utils.detector_layers.cell_geometry" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">cell_geometry</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">cell_geometry(detector, strings: ndarray) -&gt; CellGeometry</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Build the Voronoi cell geometry for a detector's string layout.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>detector</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Detector (prometheus.detector.Detector)" href="../../#prometheus.Detector">Detector</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Prometheus detector object.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>strings</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>(N_strings, 2) string xy positions, e.g. from :func:<code>extract_strings</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><a class="autorefs autorefs-internal" title="CellGeometry
+
+
+  
+      dataclass
+   (prometheus.utils.detector_layers.CellGeometry)" href="#prometheus.utils.detector_layers.CellGeometry">CellGeometry</a></code>
+              –
+              <div class="doc-md-description">
+                <p>Cell geometry summary used for vertex sampling and volume weighting.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/utils/detector_layers.py</code></summary>
+              <pre class="highlight"><code class="language-python">def cell_geometry(detector, strings: np.ndarray) -&gt; CellGeometry:
+    """Build the Voronoi cell geometry for a detector's string layout.
+
+    Parameters
+    ----------
+    detector : Detector
+        Prometheus detector object.
+    strings : np.ndarray
+        (N_strings, 2) string xy positions, e.g. from :func:`extract_strings`.
+
+    Returns
+    -------
+    CellGeometry
+        Cell geometry summary used for vertex sampling and volume weighting.
+    """
+    n_strings = len(strings)
+    coords = detector.module_coords
+
+    z_min = coords[:, 2].min()
+    z_max = coords[:, 2].max()
+    H = z_max - z_min
+
+    radii = np.linalg.norm(strings - detector.offset[:2], axis=1)
+    R_outer = radii.max()
+
+    # The detector footprint extends about half a string spacing beyond the
+    # outermost string ring; extend R_outer by half the mean nearest-neighbour
+    # string distance so the total cell volume covers that skirt.
+    pair_dists = np.linalg.norm(strings[:, np.newaxis] - strings[np.newaxis, :], axis=-1)
+    np.fill_diagonal(pair_dists, np.inf)
+    d_nn = pair_dists.min(axis=1).mean()
+    R_det = R_outer + 0.5 * d_nn
+
+    return CellGeometry(
+        n_strings=n_strings,
+        R_outer=float(R_outer),
+        d_nn=float(d_nn),
+        R_det=float(R_det),
+        V_cell=float(np.pi * R_det**2 * H / n_strings),
+        r_cell=float(np.sqrt(R_det**2 / n_strings)),
+        z_min=float(z_min),
+        z_max=float(z_max),
+        H=float(H),
+    )</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.utils.detector_layers.cell_manifest_dict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">cell_manifest_dict</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">cell_manifest_dict(cell: CellGeometry) -&gt; dict</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Return the cell geometry as a dict with unit-suffixed manifest keys.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>cell</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="CellGeometry
+
+
+  
+      dataclass
+   (prometheus.utils.detector_layers.CellGeometry)" href="#prometheus.utils.detector_layers.CellGeometry">CellGeometry</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cell geometry to serialise.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="dict">dict</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Keys as written to the run manifests of the signal and background
+example scripts (e.g. <code>V_cell_m3</code>, <code>r_cell_m</code>).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/utils/detector_layers.py</code></summary>
+              <pre class="highlight"><code class="language-python">def cell_manifest_dict(cell: CellGeometry) -&gt; dict:
+    """Return the cell geometry as a dict with unit-suffixed manifest keys.
+
+    Parameters
+    ----------
+    cell : CellGeometry
+        Cell geometry to serialise.
+
+    Returns
+    -------
+    dict
+        Keys as written to the run manifests of the signal and background
+        example scripts (e.g. ``V_cell_m3``, ``r_cell_m``).
+    """
+    return {
+        "n_strings": cell.n_strings,
+        "R_outer_m": cell.R_outer,
+        "R_det_m": cell.R_det,
+        "d_nn_m": cell.d_nn,
+        "V_cell_m3": cell.V_cell,
+        "r_cell_m": cell.r_cell,
+        "z_min_m": cell.z_min,
+        "z_max_m": cell.z_max,
+        "H_m": cell.H,
+    }</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.utils.detector_layers.extract_strings" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">extract_strings</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">extract_strings(detector) -&gt; np.ndarray</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Return string (x, y) positions from the detector module keys.</p>
+<p>Grouping by string id (rather than de-duplicating rounded xy positions)
+stays correct for tilted strings or per-module position scatter.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>detector</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Detector (prometheus.detector.Detector)" href="../../#prometheus.Detector">Detector</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Prometheus detector object.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="numpy.ndarray">ndarray</span></code>
+              –
+              <div class="doc-md-description">
+                <p>(N_strings, 2) array of string xy positions (mean over each string's
+modules).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/utils/detector_layers.py</code></summary>
+              <pre class="highlight"><code class="language-python">def extract_strings(detector) -&gt; np.ndarray:
+    """Return string (x, y) positions from the detector module keys.
+
+    Grouping by string id (rather than de-duplicating rounded xy positions)
+    stays correct for tilted strings or per-module position scatter.
+
+    Parameters
+    ----------
+    detector : Detector
+        Prometheus detector object.
+
+    Returns
+    -------
+    np.ndarray
+        (N_strings, 2) array of string xy positions (mean over each string's
+        modules).
+    """
+    string_ids = np.asarray([m.key[0] for m in detector.modules])
+    xy = detector.module_coords[:, :2]
+    return np.array([xy[string_ids == sid].mean(axis=0) for sid in np.unique(string_ids)])</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.utils.detector_layers.partition_layers" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">partition_layers</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">partition_layers(radii: ndarray, n_layers: int) -&gt; list</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Partition string indices into radial layers with equal string counts.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>radii</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Radial distance of each string from the detector centre.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>n_layers</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of layers to create.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>list of np.ndarray</code>
+              –
+              <div class="doc-md-description">
+                <p>Each element is an index array of strings belonging to that layer.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/utils/detector_layers.py</code></summary>
+              <pre class="highlight"><code class="language-python">def partition_layers(radii: np.ndarray, n_layers: int) -&gt; list:
+    """Partition string indices into radial layers with equal string counts.
+
+    Parameters
+    ----------
+    radii : np.ndarray
+        Radial distance of each string from the detector centre.
+    n_layers : int
+        Number of layers to create.
+
+    Returns
+    -------
+    list of np.ndarray
+        Each element is an index array of strings belonging to that layer.
+    """
+    order = np.argsort(radii)
+    return np.array_split(order, n_layers)</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.utils.detector_layers.representative_string" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">representative_string</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">representative_string(strings: ndarray, radii: ndarray, indices: ndarray) -&gt; np.ndarray</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Return the string position closest to the median radius in this layer.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>strings</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>(N_strings, 2) array of all string xy positions.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>radii</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Radial distances corresponding to <code>strings</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>indices</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Indices of strings that belong to this layer.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="numpy.ndarray">ndarray</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Shape (2,) xy position of the representative string.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/utils/detector_layers.py</code></summary>
+              <pre class="highlight"><code class="language-python">def representative_string(
+    strings: np.ndarray, radii: np.ndarray, indices: np.ndarray
+) -&gt; np.ndarray:
+    """Return the string position closest to the median radius in this layer.
+
+    Parameters
+    ----------
+    strings : np.ndarray
+        (N_strings, 2) array of all string xy positions.
+    radii : np.ndarray
+        Radial distances corresponding to ``strings``.
+    indices : np.ndarray
+        Indices of strings that belong to this layer.
+
+    Returns
+    -------
+    np.ndarray
+        Shape (2,) xy position of the representative string.
+    """
+    layer_radii = radii[indices]
+    best = indices[np.argmin(np.abs(layer_radii - np.median(layer_radii)))]
+    return strings[best]</code></pre>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../detector_dictionaries/" class="btn btn-neutral float-left" title="detector_dictionaries"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../dom_response/" class="btn btn-neutral float-right" title="dom_response">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../detector_dictionaries/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../dom_response/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../../..";</script>
+    <script src="../../../../js/theme_extra.js"></script>
+    <script src="../../../../js/theme.js"></script>
+      <script src="../../../../js/popper.min.js"></script>
+      <script src="../../../../js/tippy-bundle.umd.js"></script>
+      <script src="../../../../js/clipboard.js"></script>
+      <script src="../../../../js/extra.js"></script>
+      <script src="../../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

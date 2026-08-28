@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../../../../img/favicon.ico" />
+    <title>net - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "net";
+        var mkdocs_page_input_path = "api-reference/hyperion/models/photon_binned_amplitude/net.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../../../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Installation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../installation/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../installation/built-in-installer/">Built-in installer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../installation/containers/">Containers</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../citation/">Citation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../papers/">Papers Using Prometheus</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../prometheus/">prometheus</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/compat/">compat</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/compat/haiku_unpickler/">haiku_unpickler</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/config/">config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/config_types/">config_types</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/detector/">detector</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/detector/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/detector/detector_factory/">detector_factory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/detector/medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/detector/module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/detector/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/injection/">injection</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/injection/genie_injector/">genie_injector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/injection/genie_parser/">genie_parser</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/injection/injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/injection/injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/injection/injection/genie_injection/">genie_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/injection/injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/injection/injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/injection/injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/injection/injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/injection/injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/injection/interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/injection/lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/injection/registered_injectors/">registered_injectors</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/injection/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/lepton_propagation/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/logging/">logging</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/logging/handlers/">handlers</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/logging_config/">logging_config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/photon_propagation/hit/">hit</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/photon_propagation/olympus/">olympus</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/photon_propagation/olympus/event_generation/">event_generation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/photon_propagation/olympus/optimization/">optimization</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/photon_propagation/olympus/plotting/">plotting</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/photon_propagation/olympus/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/photon_propagation/olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/photon_propagation/photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/photon_propagation/ppc_photon_propagator/">ppc_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/photon_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/photon_propagation/registry/">registry</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/photon_propagation/utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/photon_propagation/utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/photon_propagation/utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/summary/">summary</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/utils/">utils</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/capture/">capture</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/detector_layers/">detector_layers</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/dom_response/">dom_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/f2k_utils/">f2k_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/fadc_digitization/">fadc_digitization</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/formatting/">formatting</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/layered_sim/">layered_sim</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/memory/">memory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/pmt_response/">pmt_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/utils/serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/utils/serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/utils/serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/utils/serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/utils/serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/utils/serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/timing/">timing</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="../../../">hyperion</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../../../constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../medium/">medium</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="../../">models</a>
+    <ul class="current">
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_arrival_time_nflow/">photon_arrival_time_nflow</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_arrival_time_nflow/net/">net</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_arrival_time_nflow/training_data/">training_data</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_arrival_time_nflow/validation/">validation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3 current"><a class="reference internal current" href="../">photon_binned_amplitude</a>
+    <ul class="current">
+                <li class="toctree-l4 current"><a class="reference internal current" href="#">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../propagate/">propagate</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item"><a href="../../../">hyperion</a></li>
+          <li class="breadcrumb-item"><a href="../../">models</a></li>
+          <li class="breadcrumb-item"><a href="../">photon_binned_amplitude</a></li>
+      <li class="breadcrumb-item active">net</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="hyperion.models.photon_binned_amplitude.net" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">hyperion.models.photon_binned_amplitude.net</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+        <p>This module is not used by any live code path in Prometheus/Olympus and
+has no shipped model weights in <code>resources/</code>.</p>
+<p>It is kept here as a reference implementation of the binned-amplitude photon-yield approach (an earlier alternative to the normalizing-flow model in photon_arrival_time_nflow/).</p>
+<p>It still depends on dm-haiku and has not been migrated to pure JAX.</p>
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="HistMLP (hyperion.models.photon_binned_amplitude.net.HistMLP)" href="#hyperion.models.photon_binned_amplitude.net.HistMLP">HistMLP</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Histogram MLP module used as a small haiku model.</p>
+          </div>
+        </li>
+    </ul>
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_eval_forward_fn (hyperion.models.photon_binned_amplitude.net.make_eval_forward_fn)" href="#hyperion.models.photon_binned_amplitude.net.make_eval_forward_fn">make_eval_forward_fn</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create an evaluation forward function (non-training) for the MLP.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_forward_fn (hyperion.models.photon_binned_amplitude.net.make_forward_fn)" href="#hyperion.models.photon_binned_amplitude.net.make_forward_fn">make_forward_fn</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create a Haiku forward function for the histogram MLP.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_logp1_trafo (hyperion.models.photon_binned_amplitude.net.make_logp1_trafo)" href="#hyperion.models.photon_binned_amplitude.net.make_logp1_trafo">make_logp1_trafo</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create log(1 + x*scale) forward and inverse transformers.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_net_eval_from_pickle (hyperion.models.photon_binned_amplitude.net.make_net_eval_from_pickle)" href="#hyperion.models.photon_binned_amplitude.net.make_net_eval_from_pickle">make_net_eval_from_pickle</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Load network parameters from a pickle and build an evaluation function.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="train_net (hyperion.models.photon_binned_amplitude.net.train_net)" href="#hyperion.models.photon_binned_amplitude.net.train_net">train_net</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Train the histogram MLP network.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="hyperion.models.photon_binned_amplitude.net.HistMLP" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">HistMLP</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">HistMLP(output_size, layers, dropout, final_activations, name=None)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="haiku.Module">Module</span></code></p>
+
+
+
+        <p>Histogram MLP module used as a small haiku model.</p>
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>output_size</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of output units (histogram bins or channels).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>layers</code></b>
+                  (<code>sequence of int</code>)
+              –
+              <div class="doc-md-description">
+                <p>Hidden layer sizes.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dropout</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Dropout rate applied during training.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>final_activations</code></b>
+                  (<code><span title="callable">callable</span> or None</code>)
+              –
+              <div class="doc-md-description">
+                <p>Optional activation applied to final layer outputs.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>name</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Module name passed to haiku.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+                  <details class="quote">
+                    <summary>Source code in <code>hyperion/models/photon_binned_amplitude/net.py</code></summary>
+                    <pre class="highlight"><code class="language-python">def __init__(self, output_size, layers, dropout, final_activations, name=None):
+    """Initialise the Histogram MLP.
+
+    Parameters
+    ----------
+    output_size : int
+        Number of output units (histogram bins or channels).
+    layers : sequence of int
+        Hidden layer sizes.
+    dropout : float
+        Dropout rate applied during training.
+    final_activations : callable or None
+        Optional activation applied to final layer outputs.
+    name : str, optional
+        Module name passed to haiku.
+    """
+    super().__init__(name=name)
+    self.output_size = output_size
+    self.layers = layers
+    self.dropout = dropout
+    self.final_activations = final_activations</code></pre>
+                  </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.models.photon_binned_amplitude.net.make_eval_forward_fn" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_eval_forward_fn</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_eval_forward_fn(conf)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create an evaluation forward function (non-training) for the MLP.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>conf</code></b>
+                  (<code><span title="dict">dict</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Configuration dictionary containing model parameters.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="callable">callable</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Forward function with signature <code>(inp)</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/models/photon_binned_amplitude/net.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_eval_forward_fn(conf):
+    """Create an evaluation forward function (non-training) for the MLP.
+
+    Parameters
+    ----------
+    conf : dict
+        Configuration dictionary containing model parameters.
+
+    Returns
+    -------
+    callable
+        Forward function with signature ``(inp)``.
+    """
+
+    layers = [conf["n_neurons"], conf["n_neurons"], conf["n_neurons"]]
+
+    def forward_fn(inp):
+        """Evaluation forward function (no dropout).
+
+        Parameters
+        ----------
+        inp : array-like
+            Input array for evaluation.
+
+        Returns
+        -------
+        jnp.ndarray
+            Model outputs.
+        """
+        return HistMLP(conf["n_out"], layers, conf["dropout"], None)(inp, False)
+
+    return forward_fn</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.models.photon_binned_amplitude.net.make_forward_fn" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_forward_fn</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_forward_fn(conf)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create a Haiku forward function for the histogram MLP.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>conf</code></b>
+                  (<code><span title="dict">dict</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Configuration dictionary containing model parameters such as
+<code>n_neurons</code> and <code>n_out</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="callable">callable</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Forward function with signature <code>(batch, is_training)</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/models/photon_binned_amplitude/net.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_forward_fn(conf):
+    """Create a Haiku forward function for the histogram MLP.
+
+    Parameters
+    ----------
+    conf : dict
+        Configuration dictionary containing model parameters such as
+        ``n_neurons`` and ``n_out``.
+
+    Returns
+    -------
+    callable
+        Forward function with signature ``(batch, is_training)``.
+    """
+
+    layers = [conf["n_neurons"], conf["n_neurons"], conf["n_neurons"]]
+
+    def forward_fn(batch, is_training):
+        """Forward function used during training.
+
+        Parameters
+        ----------
+        batch : sequence
+            Training batch where ``batch[0]`` contains inputs.
+        is_training : bool
+            Whether to run in training mode (enables dropout).
+
+        Returns
+        -------
+        jnp.ndarray
+            Model outputs for the batch.
+        """
+        inp = jnp.asarray(batch[0], dtype=jnp.float32)
+        return HistMLP(conf["n_out"], layers, conf["dropout"], None)(inp, is_training)
+
+    return forward_fn</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.models.photon_binned_amplitude.net.make_logp1_trafo" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_logp1_trafo</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_logp1_trafo(scale)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create log(1 + x*scale) forward and inverse transformers.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>scale</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Scaling applied before the log transform.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="tuple">tuple</span></code>
+              –
+              <div class="doc-md-description">
+                <p><code>(trafo, rev_trafo)</code> functions for forward and reverse transforms.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/models/photon_binned_amplitude/net.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_logp1_trafo(scale):
+    """Create log(1 + x*scale) forward and inverse transformers.
+
+    Parameters
+    ----------
+    scale : float
+        Scaling applied before the log transform.
+
+    Returns
+    -------
+    tuple
+        ``(trafo, rev_trafo)`` functions for forward and reverse transforms.
+    """
+
+    def trafo(data):
+        """Forward transform: log(1 + x*scale)."""
+        return np.log(data * scale + 1)
+
+    def rev_trafo(data):
+        """Inverse of the forward transform."""
+        return jnp.exp(data - 1) / scale
+
+    return trafo, rev_trafo</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.models.photon_binned_amplitude.net.make_net_eval_from_pickle" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_net_eval_from_pickle</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_net_eval_from_pickle(path)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Load network parameters from a pickle and build an evaluation function.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>path</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Path to the pickle file containing <code>(params, state, conf, binning, trafo_scale)</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="tuple">tuple</span></code>
+              –
+              <div class="doc-md-description">
+                <p><code>(net_eval_fn, binning)</code> where <code>net_eval_fn</code> is a JIT-compiled callable
+that maps inputs to model outputs and <code>binning</code> is the histogram binning.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/models/photon_binned_amplitude/net.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_net_eval_from_pickle(path):
+    """Load network parameters from a pickle and build an evaluation function.
+
+    Parameters
+    ----------
+    path : str
+        Path to the pickle file containing ``(params, state, conf, binning, trafo_scale)``.
+
+    Returns
+    -------
+    tuple
+        ``(net_eval_fn, binning)`` where ``net_eval_fn`` is a JIT-compiled callable
+        that maps inputs to model outputs and ``binning`` is the histogram binning.
+    """
+
+    (params, state, conf, binning, trafo_scale) = pickle.load(open(path, "rb"))
+    forward_fn = make_eval_forward_fn(conf)
+    net = hk.transform_with_state(forward_fn)
+
+    _, rev_trafo = make_logp1_trafo(trafo_scale)
+
+    @jax.jit
+    def net_eval_fn(x):
+        """JIT-compiled evaluation function loading parameters from pickle.
+
+        Parameters
+        ----------
+        x : array-like
+            Model input.
+
+        Returns
+        -------
+        array-like
+            Model output after reverse transform.
+        """
+        return rev_trafo(net.apply(params, state, None, x)[0])
+
+    return net_eval_fn, binning</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.models.photon_binned_amplitude.net.train_net" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">train_net</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">train_net(conf, train_data, test_data, writer, rng)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Train the histogram MLP network.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>conf</code></b>
+                  (<code><span title="dict">dict</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Model and training configuration.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>train_data</code></b>
+                  (<code><span title="dataset">dataset</span> - <span title="like">like</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Training dataset.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>test_data</code></b>
+                  (<code><span title="dataset">dataset</span> - <span title="like">like</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Test dataset.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>writer</code></b>
+                  (<code><span title="SummaryWriter">SummaryWriter</span> or None</code>)
+              –
+              <div class="doc-md-description">
+                <p>Optional writer for logging metrics.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>rng</code></b>
+                  (<code><span title="numpy.random.Generator">Generator</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Random number generator.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="tuple">tuple</span></code>
+              –
+              <div class="doc-md-description">
+                <p><code>(net_eval_fn, avg_params, state)</code> where <code>net_eval_fn</code> is a callable
+for model evaluation and <code>avg_params</code>/<code>state</code> are the trained params.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/models/photon_binned_amplitude/net.py</code></summary>
+              <pre class="highlight"><code class="language-python">def train_net(conf, train_data, test_data, writer, rng):
+    """Train the histogram MLP network.
+
+    Parameters
+    ----------
+    conf : dict
+        Model and training configuration.
+    train_data : dataset-like
+        Training dataset.
+    test_data : dataset-like
+        Test dataset.
+    writer : SummaryWriter or None
+        Optional writer for logging metrics.
+    rng : np.random.Generator
+        Random number generator.
+
+    Returns
+    -------
+    tuple
+        ``(net_eval_fn, avg_params, state)`` where ``net_eval_fn`` is a callable
+        for model evaluation and ``avg_params``/``state`` are the trained params.
+    """
+
+    train_loader = DataLoader(
+        train_data,
+        batch_size=conf["batch_size"],
+        shuffle=True,
+        # worker_init_fn=seed_worker,
+        rng=rng,
+    )
+    test_loader = DataLoader(
+        test_data,
+        batch_size=conf["batch_size"],
+        shuffle=False,
+        # worker_init_fn=seed_worker,
+        rng=rng,
+    )
+
+    forward_fn = make_forward_fn(conf)
+
+    net = hk.transform_with_state(forward_fn)
+    key = hk.PRNGSequence(42)
+
+    params, state = net.init(next(key), next(iter(train_loader)), is_training=True)
+    avg_params = params
+
+    schedule = optax.cosine_decay_schedule(
+        conf["lr"], conf["epochs"] * train_loader.n_batches, alpha=0.0
+    )
+
+    opt = optax.adam(learning_rate=schedule)
+    opt_state = opt.init(params)
+
+    def loss(params, state, rng_key, batch, is_training):
+        """Compute loss for a batch during training.
+
+        Parameters
+        ----------
+        params : dict
+            Model parameters.
+        state : dict
+            Haiku state.
+        rng_key : jax.random.PRNGKey
+            PRNG key for stochastic layers.
+        batch : tuple
+            Training batch containing inputs and targets.
+        is_training : bool
+            Whether to run in training mode.
+
+        Returns
+        -------
+        jnp.ndarray
+            Scalar loss value.
+        """
+        pred, _ = net.apply(params, state, rng_key, batch, is_training)
+        target = batch[1]
+        # mask = batch[2]
+        se = 0.5 * (pred - target) ** 2
+
+        # nonzero = jnp.sum(mask, axis=0)
+        # mse = (jnp.sum(jnp.where(mask, se, jnp.zeros_like(se)), axis=0) / nonzero).sum()
+        mse = jnp.average(se)
+
+        # Regularization (smoothness)
+        first_diff = jnp.diff(pred, axis=1)
+        first_diff_n = (first_diff - jnp.mean(first_diff, axis=1)[:, np.newaxis]) / jnp.std(
+            first_diff, axis=1
+        )[:, np.newaxis]
+
+        first_diff_n = jnp.where(
+            jnp.isfinite(first_diff_n), first_diff_n, jnp.zeros_like(first_diff_n)
+        )
+        roughness = ((jnp.diff(first_diff_n, axis=1) ** 2) / 4).sum()
+
+        roughness_weight = 0
+
+        return 1 / (roughness_weight + 1) * (mse + roughness_weight * roughness)
+
+    @functools.partial(jax.jit, static_argnums=[5])
+    def get_updates(params, state, rng_key, opt_state, batch, is_training):
+        """Learning rule (stochastic gradient descent).
+
+        Parameters
+        ----------
+        params : dict
+            Model parameters.
+        state : dict
+            Haiku state.
+        rng_key : jax.random.PRNGKey
+            PRNG key.
+        opt_state : optax.OptState
+            Optimizer state.
+        batch : tuple
+            Training batch.
+        is_training : bool
+            Whether the update is for training.
+
+        Returns
+        -------
+        tuple
+            ``(loss, new_params, new_opt_state)``.
+        """
+        loss_val, grads = jax.value_and_grad(loss)(
+            params, state, rng_key, batch, is_training=is_training
+        )
+        updates, opt_state = opt.update(grads, opt_state)
+        new_params = optax.apply_updates(params, updates)
+        return loss_val, new_params, opt_state
+
+    @jax.jit
+    def ema_update(params, avg_params):
+        """Update EMA parameters from current parameters."""
+        return optax.incremental_update(params, avg_params, step_size=0.001)
+
+    for epoch in range(conf["epochs"]):
+        # Train/eval loop.
+        train_loss = 0
+        for train in train_loader:
+            rng_key = next(key)
+            loss_val, params, opt_state = get_updates(
+                params, state, rng_key, opt_state, train, is_training=True
+            )
+            avg_params = ema_update(params, avg_params)
+
+            train_loss += loss_val * len(train[0])
+        train_loss /= len(train_data)
+
+        test_loss = 0
+        for test in test_loader:
+            test_loss += loss(avg_params, state, None, test, is_training=False) * len(test[0])
+        test_loss /= len(test_data)
+
+        if writer is not None:
+            train_loss, test_loss, lr = jax.device_get(
+                (train_loss, test_loss, schedule(opt_state[1].count))
+            )
+            writer.add_scalar("Loss/train", train_loss, epoch)
+            writer.add_scalar("Loss/test", test_loss, epoch)
+            writer.add_scalar("LR", lr, epoch)
+
+    @jax.jit
+    def net_eval_fn(x):
+        """JIT-compiled evaluation using averaged parameters.
+
+        Parameters
+        ----------
+        x : array-like
+            Input array for evaluation.
+
+        Returns
+        -------
+        array-like
+            Model outputs.
+        """
+        return net.apply(avg_params, state, None, x, is_training=False)[0]
+
+    if writer is not None:
+        test_loss = 0
+        for test in test_loader:
+            test_loss += loss(avg_params, state, None, test, is_training=False) * len(test[0])
+        test_loss /= len(test_data)
+
+        hparam_dict = dict(conf)
+        if "final_activations" in hparam_dict:
+            del hparam_dict["final_activations"]
+        writer.add_hparams(hparam_dict, {"hparam/test_loss": np.asarray(test_loss)})
+        writer.flush()
+        writer.close()
+
+    return net_eval_fn, avg_params, state</code></pre>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../" class="btn btn-neutral float-left" title="photon_binned_amplitude"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../../pmt/" class="btn btn-neutral float-right" title="pmt">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../../pmt/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../../../..";</script>
+    <script src="../../../../../js/theme_extra.js"></script>
+    <script src="../../../../../js/theme.js"></script>
+      <script src="../../../../../js/popper.min.js"></script>
+      <script src="../../../../../js/tippy-bundle.umd.js"></script>
+      <script src="../../../../../js/clipboard.js"></script>
+      <script src="../../../../../js/extra.js"></script>
+      <script src="../../../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
