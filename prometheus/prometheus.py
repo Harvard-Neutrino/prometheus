@@ -41,7 +41,10 @@ from .utils.timing import time_block
 # Legacy alias used in this file.
 get_photon_propagator = get_propagator
 
-os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"] = "0.5"
+# Let JAX reserve half the GPU by default. A value already in the environment
+# wins, so a user on a shared or small GPU can lower it (or set
+# XLA_PYTHON_CLIENT_PREALLOCATE=false) without editing this file.
+os.environ.setdefault("XLA_PYTHON_CLIENT_MEM_FRACTION", "0.5")
 
 logger = logging.getLogger(__name__)
 
