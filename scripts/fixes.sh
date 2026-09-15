@@ -17,8 +17,8 @@ fi
 echo "- Installing prometheus (editable) into environment..."
 "$PY" -m pip install -e "$REPO_ROOT"
 
-echo "- Installing fennel from vendored source (MeighenBergerS/fennel@988bf2f)..."
-"$PY" -m pip install "$REPO_ROOT/resources/fennel"
+echo "- Installing fennel-seed v2.1.0 from GitHub..."
+"$PY" -m pip install "fennel_seed @ https://github.com/MeighenBergerS/fennel/archive/refs/tags/v2.1.0.tar.gz"
 
 echo "- Installing dev tools (pytest, ruff)..."
 "$PY" -m pip install pytest ruff
