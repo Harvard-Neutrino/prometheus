@@ -18,7 +18,7 @@ proposal = ">=7.6.2,<8"
 jaxlib = ">=0.4.35"
 jax = ">=0.4.35"
 optax = "^0.2.5"
-fennel_seed = { version = "*", source = "fennel-github", extras = ["jax"] }
+fennel_seed = { git = "https://github.com/MeighenBergerS/fennel.git", tag = "v2.1.0", extras = ["jax"] }
 h5py = "^3.10.0"
 matplotlib = ">=3.8"
 scipy = ">=1.12"
@@ -27,12 +27,6 @@ uproot = ">=5.3"
 
 [tool.poetry.group.dev.dependencies]
 ruff = ">=0.4"
-
-[[tool.poetry.source]]
-name = "fennel-github"
-url = "https://github.com/MeighenBergerS/fennel.git"
-default = false
-secondary = true
 
 [[tool.poetry.source]]
 name = "PyPI"

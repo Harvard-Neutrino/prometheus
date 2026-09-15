@@ -22,21 +22,6 @@ re-apply any patches that are still needed, and test with
 
 ---
 
-### `fennel/`
-Vendored source of [fennel-seed](https://github.com/MeighenBergerS/fennel)
-v2.0.0 (commit `988bf2f`, MIT license).
-
-fennel-seed is not published on PyPI; this copy removes the need for a GitHub
-clone at install time.  Installed by `scripts/fixes.sh` and by the Docker image.
-
-`notebooks/` and `seed/` from the upstream repository are excluded as they are
-not needed at runtime.
-
-**To update:** copy the new release into this directory, excluding `notebooks/`
-and `seed/`, and update the version note here.
-
----
-
 ### `PPC_executables/`
 Source code of the Photon Propagation Code (PPC).
 
@@ -132,7 +117,7 @@ Pre-trained model weights for the Olympus normalizing-flow photon propagator.
 ## Vendoring policy
 
 A dependency is vendored here when:
-1. It is **not available on PyPI** (fennel-seed), or
+1. It is **not available on PyPI** and cannot be installed from a release archive, or
 2. It requires **source-level patches** that are not yet merged upstream
    (LeptonInjector GCC 13 / SuiteSparse 7.x fixes), or
 3. It must be present **without internet access** during install (both of the above).

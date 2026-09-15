@@ -8,7 +8,7 @@
 #   docker run --rm -it prometheus:cpu
 #
 # The full simulation stack is baked in:
-#   PROPOSAL, LeptonInjector (vendored), fennel (vendored),
+#   PROPOSAL, LeptonInjector (vendored), fennel (from GitHub),
 #   PPC CPU binary, and prometheus itself.
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -96,12 +96,12 @@ RUN make cpu
 ENV PPC=/opt/PPC/ppc
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Stage 5: install prometheus + fennel (both vendored)
+# Stage 5: install prometheus (vendored) + fennel (GitHub release)
 # ─────────────────────────────────────────────────────────────────────────────
 FROM ppc AS prometheus_install
 
-COPY resources/fennel /opt/fennel
-RUN /opt/conda/envs/prometheus/bin/pip install --no-cache-dir /opt/fennel
+RUN /opt/conda/envs/prometheus/bin/pip install --no-cache-dir \
+    "fennel_seed @ https://github.com/MeighenBergerS/fennel/archive/refs/tags/v2.1.0.tar.gz"
 
 # Copy full repo and install prometheus in editable mode so examples work
 COPY . /opt/prometheus

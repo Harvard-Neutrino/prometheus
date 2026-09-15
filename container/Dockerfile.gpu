@@ -131,8 +131,8 @@ ENV PPC_CUDA=/opt/PPC_CUDA/ppc
 # ─────────────────────────────────────────────────────────────────────────────
 FROM ppc AS prometheus_install
 
-COPY resources/fennel /opt/fennel
-RUN /opt/conda/envs/prometheus/bin/pip install --no-cache-dir /opt/fennel
+RUN /opt/conda/envs/prometheus/bin/pip install --no-cache-dir \
+    "fennel_seed @ https://github.com/MeighenBergerS/fennel/archive/refs/tags/v2.1.0.tar.gz"
 
 COPY . /opt/prometheus
 WORKDIR /opt/prometheus
