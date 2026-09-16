@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../../../../../img/favicon.ico" />
+    <title>lightyield - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../../../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../../../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "lightyield";
+        var mkdocs_page_input_path = "api-reference/prometheus/photon_propagation/olympus/event_generation/lightyield.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../../../../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Installation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../../installation/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../../installation/built-in-installer/">Built-in installer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../../installation/containers/">Containers</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../../citation/">Citation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../../papers/">Papers Using Prometheus</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="../../../../">prometheus</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../../../../compat/">compat</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../compat/haiku_unpickler/">haiku_unpickler</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../config/">config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../config_types/">config_types</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../detector/">detector</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../detector/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../detector/detector_factory/">detector_factory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../detector/medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../detector/module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../detector/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../injection/">injection</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../injection/genie_injector/">genie_injector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../injection/genie_parser/">genie_parser</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../injection/injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../injection/injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../injection/injection/genie_injection/">genie_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../injection/injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../injection/injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../injection/injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../injection/injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../injection/injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../injection/interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../injection/lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../injection/registered_injectors/">registered_injectors</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../injection/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../lepton_propagation/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../logging/">logging</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../logging/handlers/">handlers</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../logging_config/">logging_config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="../../../">photon_propagation</a>
+    <ul class="current">
+                <li class="toctree-l3"><a class="reference internal" href="../../../hit/">hit</a>
+                </li>
+                <li class="toctree-l3 current"><a class="reference internal current" href="../../">olympus</a>
+    <ul class="current">
+                <li class="toctree-l4 current"><a class="reference internal current" href="../">event_generation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../optimization/">optimization</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../plotting/">plotting</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../ppc_photon_propagator/">ppc_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../registry/">registry</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../summary/">summary</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../utils/">utils</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/capture/">capture</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/detector_layers/">detector_layers</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/dom_response/">dom_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/f2k_utils/">f2k_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/fadc_digitization/">fadc_digitization</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/formatting/">formatting</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/layered_sim/">layered_sim</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/memory/">memory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/pmt_response/">pmt_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../utils/serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../utils/serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../utils/serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../utils/serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../utils/serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../utils/serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/timing/">timing</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../hyperion/">hyperion</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../hyperion/constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../hyperion/data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../hyperion/medium/">medium</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../hyperion/models/">models</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../hyperion/models/photon_arrival_time_nflow/">photon_arrival_time_nflow</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../hyperion/models/photon_arrival_time_nflow/net/">net</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../hyperion/models/photon_arrival_time_nflow/training_data/">training_data</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../hyperion/models/photon_arrival_time_nflow/validation/">validation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../hyperion/models/photon_binned_amplitude/">photon_binned_amplitude</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../hyperion/models/photon_binned_amplitude/net/">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../hyperion/pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../hyperion/pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../hyperion/propagate/">propagate</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../hyperion/utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item"><a href="../../../../">prometheus</a></li>
+          <li class="breadcrumb-item"><a href="../../../">photon_propagation</a></li>
+          <li class="breadcrumb-item"><a href="../../">olympus</a></li>
+          <li class="breadcrumb-item"><a href="../">event_generation</a></li>
+      <li class="breadcrumb-item active">lightyield</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="prometheus.photon_propagation.olympus.event_generation.lightyield" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">prometheus.photon_propagation.olympus.event_generation.lightyield</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+        <p>Light-yield calculations and source factories.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="fennel_frac_long_light_yield (prometheus.photon_propagation.olympus.event_generation.lightyield.fennel_frac_long_light_yield)" href="#prometheus.photon_propagation.olympus.event_generation.lightyield.fennel_frac_long_light_yield">fennel_frac_long_light_yield</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Calculate the longitudinal light yield contribution.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="fennel_total_light_yield (prometheus.photon_propagation.olympus.event_generation.lightyield.fennel_total_light_yield)" href="#prometheus.photon_propagation.olympus.event_generation.lightyield.fennel_total_light_yield">fennel_total_light_yield</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Calculate total light yield using fennel.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_pointlike_cascade_source (prometheus.photon_propagation.olympus.event_generation.lightyield.make_pointlike_cascade_source)" href="#prometheus.photon_propagation.olympus.event_generation.lightyield.make_pointlike_cascade_source">make_pointlike_cascade_source</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create a pointlike light source.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_realistic_cascade_source (prometheus.photon_propagation.olympus.event_generation.lightyield.make_realistic_cascade_source)" href="#prometheus.photon_propagation.olympus.event_generation.lightyield.make_realistic_cascade_source">make_realistic_cascade_source</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create a realistic (elongated) particle cascade.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="simple_cascade_light_yield (prometheus.photon_propagation.olympus.event_generation.lightyield.simple_cascade_light_yield)" href="#prometheus.photon_propagation.olympus.event_generation.lightyield.simple_cascade_light_yield">simple_cascade_light_yield</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Approximation for cascade light yield.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.photon_propagation.olympus.event_generation.lightyield.fennel_frac_long_light_yield" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">fennel_frac_long_light_yield</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">fennel_frac_long_light_yield(energy, particle_id, resolution=0.2)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate the longitudinal light yield contribution.</p>
+<p>Integrate the longitudinal distribution in steps of <code>resolution</code> and
+return the relative contributions.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>energy</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Particle energy in GeV.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>particle_id</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Particle type (PDG ID).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>resolution</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.2</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Step length in m for evaluating the longitudinal distribution.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/photon_propagation/olympus/event_generation/lightyield.py</code></summary>
+              <pre class="highlight"><code class="language-python">def fennel_frac_long_light_yield(energy, particle_id, resolution=0.2):
+    """Calculate the longitudinal light yield contribution.
+
+    Integrate the longitudinal distribution in steps of ``resolution`` and
+    return the relative contributions.
+
+    Parameters
+    ----------
+    energy : float
+        Particle energy in GeV.
+    particle_id : int
+        Particle type (PDG ID).
+    resolution : float, optional
+        Step length in m for evaluating the longitudinal distribution.
+    """
+    if particle_id in _PDG_SKIP:
+        dummy_grid = jnp.arange(1e-3, 25, resolution)
+        return jnp.zeros(len(dummy_grid) - 1), dummy_grid
+    particle_id = _remap_pdg(particle_id)
+    funcs = fennel_instance.auto_yields(energy, particle_id, function=True)
+    long_func = funcs[4]
+    int_grid = jnp.arange(1e-3, 25, resolution)
+
+    def integrate(low, high, resolution=1000):
+        trapz_x_eval = jnp.linspace(low, high, resolution) * 100  # to cm
+        trapz_y_eval = long_func(energy, trapz_x_eval)
+        return jax_trapz(trapz_y_eval, trapz_x_eval)
+
+    integrate_v = jax.vmap(integrate, in_axes=[0, 0])
+
+    norm = integrate(1e-3, 100)
+    frac_yields = integrate_v(int_grid[:-1], int_grid[1:]) / norm
+
+    return frac_yields, int_grid</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.photon_propagation.olympus.event_generation.lightyield.fennel_total_light_yield" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">fennel_total_light_yield</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">fennel_total_light_yield(energy, particle_id, wavelength_range)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate total light yield using fennel.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>energy</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Particle energy in GeV.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>particle_id</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Particle type (PDG ID).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>wavelength_range</code></b>
+                  (<code><span title="tuple">tuple</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Wavelength interval (nm).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/photon_propagation/olympus/event_generation/lightyield.py</code></summary>
+              <pre class="highlight"><code class="language-python">def fennel_total_light_yield(energy, particle_id, wavelength_range):
+    """Calculate total light yield using fennel.
+
+    Parameters
+    ----------
+    energy : float
+        Particle energy in GeV.
+    particle_id : int
+        Particle type (PDG ID).
+    wavelength_range : tuple
+        Wavelength interval (nm).
+    """
+
+    if particle_id in _PDG_SKIP:
+        return 0.0
+    particle_id = _remap_pdg(particle_id)
+    funcs = fennel_instance.auto_yields(energy, particle_id, function=True)
+    counts_func = funcs[0]
+
+    wavelengths = jnp.linspace(wavelength_range[0], wavelength_range[1], 100)
+    light_yield = jax_trapz(counts_func(energy, wavelengths).ravel(), wavelengths)
+
+    return light_yield</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.photon_propagation.olympus.event_generation.lightyield.make_pointlike_cascade_source" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_pointlike_cascade_source</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_pointlike_cascade_source(pos, t0, dir, energy, particle_id, wavelength_range=[290, 700])</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create a pointlike light source.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>pos</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cascade position (shape (3,)).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>t0</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cascade time.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dir</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cascade direction (shape (3,)).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>energy</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cascade energy.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>particle_id</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Particle type (PDG ID).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>wavelength_range</code></b>
+                  (<code><span title="tuple">tuple</span></code>, default:
+                      <code>[290, 700]</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Wavelength interval (nm).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="tuple">tuple</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Tuple <code>(source_pos, source_dir, source_time, source_nphotons)</code> where
+arrays are returned in JAX-friendly form for downstream propagation.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/photon_propagation/olympus/event_generation/lightyield.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_pointlike_cascade_source(
+    pos,
+    t0,
+    dir,
+    energy,
+    particle_id,
+    wavelength_range=[290, 700],
+):
+    """Create a pointlike light source.
+
+    Parameters
+    ----------
+    pos : np.ndarray
+        Cascade position (shape (3,)).
+    t0 : float
+        Cascade time.
+    dir : np.ndarray
+        Cascade direction (shape (3,)).
+    energy : float
+        Cascade energy.
+    particle_id : int
+        Particle type (PDG ID).
+    wavelength_range : tuple, optional
+        Wavelength interval (nm).
+
+    Returns
+    -------
+    tuple
+        Tuple ``(source_pos, source_dir, source_time, source_nphotons)`` where
+        arrays are returned in JAX-friendly form for downstream propagation.
+    """
+    if particle_id in _PDG_SKIP:
+        empty = jnp.empty((0, 3))
+        return empty, empty, jnp.empty((0, 1)), jnp.empty((0, 1))
+    particle_id = _remap_pdg(particle_id)
+    source_nphotons = jnp.asarray(
+        [fennel_total_light_yield(energy, particle_id, wavelength_range)]
+    )[np.newaxis, :]
+
+    source_pos = pos[np.newaxis, :]
+    source_dir = dir[np.newaxis, :]
+    source_time = jnp.asarray([t0])[np.newaxis, :]
+    # source = PhotonSource(pos, n_photons, t0, dir)
+    return source_pos, source_dir, source_time, source_nphotons</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.photon_propagation.olympus.event_generation.lightyield.make_realistic_cascade_source" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_realistic_cascade_source</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_realistic_cascade_source(pos, t0, dir, energy, particle_id, key, resolution=0.2, moliere_rand=False, wavelength_range=[290, 700])</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create a realistic (elongated) particle cascade.</p>
+<p>The longitudinal profile is approximated by placing point-like light sources
+every <code>resolution</code> steps.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>pos</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cascade position (shape (3,)).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>t0</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cascade time.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dir</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cascade direction (shape (3,)).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>energy</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cascade energy.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>particle_id</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Particle type (PDG ID).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>key</code></b>
+                  (<code><span title="jax.random.PRNGKey">PRNGKey</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Random key for stochastic operations.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>resolution</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.2</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Step size for point-like light sources.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>moliere_rand</code></b>
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>If True, apply Molière randomization to lateral offsets.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>wavelength_range</code></b>
+                  (<code><span title="tuple">tuple</span></code>, default:
+                      <code>[290, 700]</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Wavelength interval (nm).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="tuple">tuple</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Tuple <code>(source_pos, source_dir, source_time, source_nphotons)</code> where
+arrays are returned in JAX-friendly form for downstream propagation.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/photon_propagation/olympus/event_generation/lightyield.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_realistic_cascade_source(
+    pos,
+    t0,
+    dir,
+    energy,
+    particle_id,
+    key,
+    resolution=0.2,
+    moliere_rand=False,
+    wavelength_range=[290, 700],
+):
+    """Create a realistic (elongated) particle cascade.
+
+    The longitudinal profile is approximated by placing point-like light sources
+    every ``resolution`` steps.
+
+    Parameters
+    ----------
+    pos : np.ndarray
+        Cascade position (shape (3,)).
+    t0 : float
+        Cascade time.
+    dir : np.ndarray
+        Cascade direction (shape (3,)).
+    energy : float
+        Cascade energy.
+    particle_id : int
+        Particle type (PDG ID).
+    key : jax.random.PRNGKey
+        Random key for stochastic operations.
+    resolution : float, optional
+        Step size for point-like light sources.
+    moliere_rand : bool, optional
+        If True, apply Molière randomization to lateral offsets.
+    wavelength_range : tuple, optional
+        Wavelength interval (nm).
+
+    Returns
+    -------
+    tuple
+        Tuple ``(source_pos, source_dir, source_time, source_nphotons)`` where
+        arrays are returned in JAX-friendly form for downstream propagation.
+    """
+    if particle_id in _PDG_SKIP:
+        empty = jnp.empty((0, 3))
+        return empty, empty, jnp.empty((0, 1)), jnp.empty((0, 1))
+    particle_id = _remap_pdg(particle_id)
+    n_photons_total = fennel_total_light_yield(energy, particle_id, wavelength_range)
+    frac_yields, grid = fennel_frac_long_light_yield(energy, particle_id, resolution)
+
+    dist_along = 0.5 * (grid[:-1] + grid[1:])
+
+    if moliere_rand:
+        moliere_radius = 0.21
+        key, k1, k2 = random.split(key, 3)
+        r = moliere_radius * jnp.sqrt(random.uniform(k1, shape=dist_along.shape))
+        phi = random.uniform(k2, shape=dist_along.shape, maxval=2 * np.pi)
+        x = r * jnp.cos(phi)
+        y = r * jnp.sin(phi)
+
+        dpos_vec = jnp.stack([x, y, jnp.zeros_like(x)], axis=1)
+        dpos_vec = rotate_to_new_direc_v(jnp.asarray([0, 0, 1]), dir, dpos_vec)
+        source_pos = dist_along[:, np.newaxis] * dir[np.newaxis, :] + pos[np.newaxis, :] + dpos_vec
+    else:
+        source_pos = dist_along[:, np.newaxis] * dir[np.newaxis, :] + pos[np.newaxis, :]
+
+    source_dir = jnp.tile(dir, (dist_along.shape[0], 1))
+    source_nphotons = frac_yields * n_photons_total
+    source_time = t0 + dist_along / (Constants.c_vac)
+
+    return (
+        source_pos,
+        source_dir,
+        source_time[:, np.newaxis],
+        source_nphotons[:, np.newaxis],
+    )</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.photon_propagation.olympus.event_generation.lightyield.simple_cascade_light_yield" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">simple_cascade_light_yield</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">simple_cascade_light_yield(energy, *args)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Approximation for cascade light yield.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>energy</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Particle energy in GeV.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/photon_propagation/olympus/event_generation/lightyield.py</code></summary>
+              <pre class="highlight"><code class="language-python">def simple_cascade_light_yield(energy, *args):
+    """Approximation for cascade light yield.
+
+    Parameters
+    ----------
+    energy : float
+        Particle energy in GeV.
+    """
+    photons_per_GeV = 5.3 * 250 * 1e2
+
+    return energy * photons_per_GeV</code></pre>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../event_generation/" class="btn btn-neutral float-left" title="event_generation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../mc_record/" class="btn btn-neutral float-right" title="mc_record">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../event_generation/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../mc_record/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../../../../..";</script>
+    <script src="../../../../../../js/theme_extra.js"></script>
+    <script src="../../../../../../js/theme.js"></script>
+      <script src="../../../../../../js/popper.min.js"></script>
+      <script src="../../../../../../js/tippy-bundle.umd.js"></script>
+      <script src="../../../../../../js/clipboard.js"></script>
+      <script src="../../../../../../js/extra.js"></script>
+      <script src="../../../../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,3404 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>config_types - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "config_types";
+        var mkdocs_page_input_path = "api-reference/prometheus/config_types.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Installation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../installation/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../installation/built-in-installer/">Built-in installer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../installation/containers/">Containers</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../citation/">Citation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../papers/">Papers Using Prometheus</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="../">prometheus</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../compat/">compat</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../compat/haiku_unpickler/">haiku_unpickler</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../config/">config</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">config_types</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.ConfigBase">ConfigBase</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.config_types.ConfigBase.to_dict">to_dict</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.DOMResponseConfig">DOMResponseConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.DetectorConfig">DetectorConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.GENIEInjectorConfig">GENIEInjectorConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.GENIEInjectorPathsConfig">GENIEInjectorPathsConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.GENIESimConfig">GENIESimConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.InjectionConfig">InjectionConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.LIPathsConfig">LIPathsConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.LISimulationConfig">LISimulationConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.LeptonInjectorConfig">LeptonInjectorConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.LeptonPropagatorConfig">LeptonPropagatorConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.NewProposalConfig">NewProposalConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.OldProposalConfig">OldProposalConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.OldProposalPathsConfig">OldProposalPathsConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.OldProposalSimConfig">OldProposalSimConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.OlympusConfig">OlympusConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.OlympusParticlesConfig">OlympusParticlesConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.OlympusPathsConfig">OlympusPathsConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.OlympusSimConfig">OlympusSimConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.PPCConfig">PPCConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.PPCCudaConfig">PPCCudaConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.PPCCudaPathsConfig">PPCCudaPathsConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.PPCPathsConfig">PPCPathsConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.PPCSimConfig">PPCSimConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.PhotonPropagatorConfig">PhotonPropagatorConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.PrometheusConfig">PrometheusConfig</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.config_types.PrometheusConfig.from_dict">from_dict</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.config_types.PrometheusConfig.from_toml">from_toml</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.config_types.PrometheusConfig.from_yaml">from_yaml</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.config_types.PrometheusConfig.to_dict">to_dict</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.ProposalPathsConfig">ProposalPathsConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.ProposalSimConfig">ProposalSimConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.RunConfig">RunConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.SimpleInjectorConfig">SimpleInjectorConfig</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus.config_types.SimpleInjectorPathsConfig">SimpleInjectorPathsConfig</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../detector/">detector</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../detector/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../detector/detector_factory/">detector_factory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../detector/medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../detector/module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../detector/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../injection/">injection</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../injection/genie_injector/">genie_injector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../injection/genie_parser/">genie_parser</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../injection/injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../injection/injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../injection/injection/genie_injection/">genie_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../injection/injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../injection/injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../injection/injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../injection/injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../injection/injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../injection/interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../injection/lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../injection/registered_injectors/">registered_injectors</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../injection/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../lepton_propagation/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../logging/">logging</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../logging/handlers/">handlers</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../logging_config/">logging_config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../photon_propagation/hit/">hit</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../photon_propagation/olympus/">olympus</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../photon_propagation/olympus/event_generation/">event_generation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../photon_propagation/olympus/optimization/">optimization</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../photon_propagation/olympus/plotting/">plotting</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../photon_propagation/olympus/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../photon_propagation/olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../photon_propagation/photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../photon_propagation/ppc_photon_propagator/">ppc_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../photon_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../photon_propagation/registry/">registry</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../photon_propagation/utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../photon_propagation/utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../photon_propagation/utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../summary/">summary</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../utils/">utils</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/capture/">capture</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/detector_layers/">detector_layers</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/dom_response/">dom_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/f2k_utils/">f2k_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/fadc_digitization/">fadc_digitization</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/formatting/">formatting</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/layered_sim/">layered_sim</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/memory/">memory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/pmt_response/">pmt_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../utils/serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../utils/serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../utils/serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../utils/serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../utils/serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../utils/serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/timing/">timing</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../hyperion/">hyperion</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../hyperion/constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../hyperion/data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../hyperion/medium/">medium</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../hyperion/models/">models</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../hyperion/models/photon_arrival_time_nflow/">photon_arrival_time_nflow</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../hyperion/models/photon_arrival_time_nflow/net/">net</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../hyperion/models/photon_arrival_time_nflow/training_data/">training_data</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../hyperion/models/photon_arrival_time_nflow/validation/">validation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../hyperion/models/photon_binned_amplitude/">photon_binned_amplitude</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../hyperion/models/photon_binned_amplitude/net/">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../hyperion/pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../hyperion/pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../hyperion/propagate/">propagate</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../hyperion/utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item"><a href="../">prometheus</a></li>
+      <li class="breadcrumb-item active">config_types</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="prometheus.config_types" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">prometheus.config_types</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Mixin that lets dataclass instances be accessed like dicts.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="DOMResponseConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.DOMResponseConfig)" href="#prometheus.config_types.DOMResponseConfig">DOMResponseConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Optical-module response model configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="DetectorConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.DetectorConfig)" href="#prometheus.config_types.DetectorConfig">DetectorConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Detector configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="GENIEInjectorConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.GENIEInjectorConfig)" href="#prometheus.config_types.GENIEInjectorConfig">GENIEInjectorConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Top-level GENIE injector configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="GENIEInjectorPathsConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.GENIEInjectorPathsConfig)" href="#prometheus.config_types.GENIEInjectorPathsConfig">GENIEInjectorPathsConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>GENIE injector file path configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="GENIESimConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.GENIESimConfig)" href="#prometheus.config_types.GENIESimConfig">GENIESimConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>GENIE simulation parameters configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="InjectionConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.InjectionConfig)" href="#prometheus.config_types.InjectionConfig">InjectionConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Injection configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="LIPathsConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.LIPathsConfig)" href="#prometheus.config_types.LIPathsConfig">LIPathsConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>LeptonInjector file path configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="LISimulationConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.LISimulationConfig)" href="#prometheus.config_types.LISimulationConfig">LISimulationConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>LeptonInjector simulation parameters configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="LeptonInjectorConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.LeptonInjectorConfig)" href="#prometheus.config_types.LeptonInjectorConfig">LeptonInjectorConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Top-level LeptonInjector configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="LeptonPropagatorConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.LeptonPropagatorConfig)" href="#prometheus.config_types.LeptonPropagatorConfig">LeptonPropagatorConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Top-level lepton propagator configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="NewProposalConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.NewProposalConfig)" href="#prometheus.config_types.NewProposalConfig">NewProposalConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Configuration for the new PROPOSAL lepton propagator.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="OldProposalConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.OldProposalConfig)" href="#prometheus.config_types.OldProposalConfig">OldProposalConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Configuration for the old PROPOSAL lepton propagator.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="OldProposalPathsConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.OldProposalPathsConfig)" href="#prometheus.config_types.OldProposalPathsConfig">OldProposalPathsConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Old PROPOSAL file path configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="OldProposalSimConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.OldProposalSimConfig)" href="#prometheus.config_types.OldProposalSimConfig">OldProposalSimConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Old PROPOSAL simulation parameters configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="OlympusConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.OlympusConfig)" href="#prometheus.config_types.OlympusConfig">OlympusConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Top-level Olympus photon propagator configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="OlympusParticlesConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.OlympusParticlesConfig)" href="#prometheus.config_types.OlympusParticlesConfig">OlympusParticlesConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Olympus particle type configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="OlympusPathsConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.OlympusPathsConfig)" href="#prometheus.config_types.OlympusPathsConfig">OlympusPathsConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Olympus file path configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="OlympusSimConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.OlympusSimConfig)" href="#prometheus.config_types.OlympusSimConfig">OlympusSimConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Olympus simulation parameters configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="PPCConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.PPCConfig)" href="#prometheus.config_types.PPCConfig">PPCConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Top-level ppc photon propagator configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="PPCCudaConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.PPCCudaConfig)" href="#prometheus.config_types.PPCCudaConfig">PPCCudaConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Top-level ppc CUDA photon propagator configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="PPCCudaPathsConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.PPCCudaPathsConfig)" href="#prometheus.config_types.PPCCudaPathsConfig">PPCCudaPathsConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>ppc CUDA file path configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="PPCPathsConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.PPCPathsConfig)" href="#prometheus.config_types.PPCPathsConfig">PPCPathsConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>ppc file path configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="PPCSimConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.PPCSimConfig)" href="#prometheus.config_types.PPCSimConfig">PPCSimConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>ppc simulation parameters configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="PhotonPropagatorConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.PhotonPropagatorConfig)" href="#prometheus.config_types.PhotonPropagatorConfig">PhotonPropagatorConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Top-level photon propagator configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="PrometheusConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.PrometheusConfig)" href="#prometheus.config_types.PrometheusConfig">PrometheusConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Top-level Prometheus simulation configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="ProposalPathsConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.ProposalPathsConfig)" href="#prometheus.config_types.ProposalPathsConfig">ProposalPathsConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>PROPOSAL file path configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="ProposalSimConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.ProposalSimConfig)" href="#prometheus.config_types.ProposalSimConfig">ProposalSimConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>PROPOSAL simulation parameters configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="RunConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.RunConfig)" href="#prometheus.config_types.RunConfig">RunConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Run-related configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="SimpleInjectorConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.SimpleInjectorConfig)" href="#prometheus.config_types.SimpleInjectorConfig">SimpleInjectorConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Top-level simple injector configuration.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="SimpleInjectorPathsConfig
+
+
+  
+      dataclass
+   (prometheus.config_types.SimpleInjectorPathsConfig)" href="#prometheus.config_types.SimpleInjectorPathsConfig">SimpleInjectorPathsConfig</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Simple injector file path configuration.</p>
+          </div>
+        </li>
+    </ul>
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.ConfigBase" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">ConfigBase</span>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Mixin that lets dataclass instances be accessed like dicts.</p>
+<p><code>obj["key"]</code> normalises <code>key</code> to a Python identifier via
+<code>key.lower().replace(" ", "_").replace("-", "_")</code> and then falls back to
+the optional <code>_KEY_MAP</code> class variable for any remaining exceptions.</p>
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="to_dict (prometheus.config_types.ConfigBase.to_dict)" href="#prometheus.config_types.ConfigBase.to_dict">to_dict</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Return a plain nested dict (suitable for <code>json.dumps</code>).</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="prometheus.config_types.ConfigBase.to_dict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">to_dict</span>
+
+
+</h3>
+<pre class="highlight"><code class="language-python doc-signature">to_dict() -&gt; dict</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Return a plain nested dict (suitable for <code>json.dumps</code>).</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="dict">dict</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Nested dictionary representation of the config.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/config_types.py</code></summary>
+              <pre class="highlight"><code class="language-python">def to_dict(self) -&gt; dict:
+    """Return a plain nested dict (suitable for ``json.dumps``).
+
+    Returns
+    -------
+    dict
+        Nested dictionary representation of the config.
+    """
+    return asdict(self)</code></pre>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.DOMResponseConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">DOMResponseConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">DOMResponseConfig(qe: float = 0.25, tts_ns: float = 2.0, fadc_bin_ns: float = 3.3, sim_dt_ns: float = 0.1, pulse_width_ns: float = 2.5, spe_mean: float = 1.0, spe_sigma: float = 0.3, tot_threshold_pe: float = 0.3, tot_max_ns: float = 255.0, n_pmts: int = 24, pmt_dark_rate_hz: float = 750.0, x0_water_m: float = 0.361, ec_water_gev: float = 0.0787, lambda_i_water_m: float = 0.83, muon_dedx_gev_per_m: float = 0.2, muon_mass_gev: float = 0.10566)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Optical-module response model configuration.</p>
+<p>Parameters shared by the mDOM response pipeline (QE filtering, per-PMT
+assignment, TTS smearing, dark noise, FADC digitisation, and ToT hit
+extraction) in <code>prometheus.utils.dom_response</code> and its
+<code>pmt_response</code>/<code>fadc_digitization</code> siblings. Defaults match a
+KM3NeT-style mDOM.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.DetectorConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">DetectorConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">DetectorConfig(geo_file: Optional[str] = None, offset: Optional[list] = None)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Detector configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.GENIEInjectorConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">GENIEInjectorConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">GENIEInjectorConfig(inject: bool = False, paths: GENIEInjectorPathsConfig = GENIEInjectorPathsConfig(), simulation: GENIESimConfig = GENIESimConfig())</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Top-level GENIE injector configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.GENIEInjectorPathsConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">GENIEInjectorPathsConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">GENIEInjectorPathsConfig(injection_file: Optional[str] = None)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>GENIE injector file path configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.GENIESimConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">GENIESimConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">GENIESimConfig(placement: str = 'fixed', positions: Optional[list] = None, n_events: Optional[int] = None, random_state_seed: Optional[int] = None, interaction_filter: Optional[str] = None, direction_mode: str = 'as-is')</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>GENIE simulation parameters configuration.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>placement</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;fixed&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>How to place event vertices. <code>'random'</code> samples uniformly inside
+the detector bounding cylinder; <code>'fixed'</code> uses <code>positions</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>positions</code></b>
+                  (<code><span title="list">list</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>For <code>placement='fixed'</code>: a single <code>[x, y, z]</code> applied to all
+events, or a list of <code>[x, y, z]</code> with one entry per event.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>n_events</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Number of events to simulate. When larger than the number of events
+in the ROOT file, events are resampled with replacement. When
+<code>None</code>, all events in the file are used exactly once.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>random_state_seed</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Seed for the NumPy RNG used when <code>placement='random'</code> or when
+resampling is active.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>interaction_filter</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>If set, only GENIE events whose <code>EvtCode</code> description contains this
+substring are kept before resampling. Typical values: <code>'CC'</code>,
+<code>'NC'</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>direction_mode</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;as-is&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>How to orient events. <code>'as-is'</code> keeps the momenta from the ROOT
+file; <code>'isotropic'</code> applies a uniform random rotation per event to
+the initial state and all final states. Use <code>'isotropic'</code> for
+atmospheric-neutrino files generated with a fixed gevgen beam
+direction; the rotation is exact for events on an unpolarized target.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.InjectionConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">InjectionConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">InjectionConfig(name: str = 'LeptonInjector', lepton_injector: LeptonInjectorConfig = LeptonInjectorConfig(), prometheus_injector: SimpleInjectorConfig = SimpleInjectorConfig(), genie: GENIEInjectorConfig = GENIEInjectorConfig())</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Injection configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.LIPathsConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">LIPathsConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">LIPathsConfig(install_location: str = (lambda: f'{sys.prefix}/lib/python{sys.version_info.major}.{sys.version_info.minor}/site-packages')(), xsec_dir: str = (lambda: str(RESOURCES_DIR / 'cross_section_splines'))(), earth_model_location: Optional[str] = None, injection_file: Optional[str] = None, lic_file: Optional[str] = None, diff_xsec: Optional[str] = None, total_xsec: Optional[str] = None)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>LeptonInjector file path configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.LISimulationConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">LISimulationConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">LISimulationConfig(final_state_1: str = 'MuMinus', final_state_2: str = 'Hadrons', minimal_energy: float = 100.0, maximal_energy: float = 1000000.0, power_law: float = 1.0, min_zenith: float = 0.0, max_zenith: float = 180.0, min_azimuth: float = 0.0, max_azimuth: float = 360.0, is_ranged: Optional[bool] = None, injection_radius: Optional[float] = None, endcap_length: Optional[float] = None, cylinder_radius: Optional[float] = None, cylinder_height: Optional[float] = None, nevents: Optional[int] = None, random_state_seed: Optional[int] = None)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>LeptonInjector simulation parameters configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.LeptonInjectorConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">LeptonInjectorConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">LeptonInjectorConfig(inject: bool = True, paths: LIPathsConfig = LIPathsConfig(), simulation: LISimulationConfig = LISimulationConfig())</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Top-level LeptonInjector configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.LeptonPropagatorConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">LeptonPropagatorConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">LeptonPropagatorConfig(name: str = 'new proposal', version: Optional[str] = None, new_proposal: NewProposalConfig = NewProposalConfig(), old_proposal: OldProposalConfig = OldProposalConfig())</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Top-level lepton propagator configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.NewProposalConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">NewProposalConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">NewProposalConfig(paths: ProposalPathsConfig = ProposalPathsConfig(), simulation: ProposalSimConfig = ProposalSimConfig())</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Configuration for the new PROPOSAL lepton propagator.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.OldProposalConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">OldProposalConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">OldProposalConfig(paths: OldProposalPathsConfig = OldProposalPathsConfig(), simulation: OldProposalSimConfig = OldProposalSimConfig())</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Configuration for the old PROPOSAL lepton propagator.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.OldProposalPathsConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">OldProposalPathsConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">OldProposalPathsConfig(tables_path: str = '~/.local/share/PROPOSAL/tables', earth_model_location: Optional[str] = None)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Old PROPOSAL file path configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.OldProposalSimConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">OldProposalSimConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">OldProposalSimConfig(vcut: float = 1.0, ecut: float = 0.1, interpolation: bool = True, lpm_effect: bool = True, continuous_randomization: bool = True, soft_losses: bool = True, scattering_model: str = 'Moliere', propagation_padding: Optional[float] = None, medium: Optional[str] = None)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Old PROPOSAL simulation parameters configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.OlympusConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">OlympusConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">OlympusConfig(paths: OlympusPathsConfig = OlympusPathsConfig(), simulation: OlympusSimConfig = OlympusSimConfig(), particles: OlympusParticlesConfig = OlympusParticlesConfig())</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Top-level Olympus photon propagator configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.OlympusParticlesConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">OlympusParticlesConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">OlympusParticlesConfig(track_particles: list = (lambda: [13, -13])(), explicit: list = (lambda: [11, -11, 111, 211, 13, -13, 15, -15])(), replacement: int = 2212)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Olympus particle type configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.OlympusPathsConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">OlympusPathsConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">OlympusPathsConfig(location: str = (lambda: str(RESOURCES_DIR / 'olympus_resources'))(), photon_model: str = 'pone_config.json', flow: str = 'photon_arrival_time_nflow_params.pickle', counts: str = 'photon_arrival_time_counts_params.pickle')</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Olympus file path configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.OlympusSimConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">OlympusSimConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">OlympusSimConfig(files: bool = True, wavelength: int = 700, splitter: int = 100000, max_distance: float = 300.0, min_distance_from_dom: float = 0.1, module_chunk: int = 128, photon_chunk: int = 2 ** 18, warm_up: bool = False, warm_up_sources: int = 2 ** 12, warm_up_pairs: int = 2 ** 18)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Olympus simulation parameters configuration.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>files</code></b>
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether the run reads its injection from file.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>wavelength</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>700</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Reference wavelength in nm for the speed of light in the medium.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>module_chunk</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>128</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Number of modules evaluated per jitted model-input call. This is what
+keeps the compiled-executable cache from growing with the module
+count; see <code>sources_to_model_input_chunked</code>. Results do not depend
+on it. Larger values trade a bigger per-call temporary for fewer
+calls.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>photon_chunk</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>2 ** 18</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Most photons handed to the arrival-time flow sampler in one call.
+Events are never batched together; what sets device memory is the
+number of detected photons of the single brightest particle, and
+this bounds the sampler's working set at a fixed size however bright
+it is. Lower it on a small GPU. Results for particles that fit in
+one chunk do not depend on it. See <code>sample_photon_times</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>warm_up</code></b>
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Experimental, off by default. Compile every kernel bucket at start-up
+instead of when the first particle needing it arrives. Makes the
+per-event time flat from the first event and fails fast on a device
+that cannot hold the largest kernel. Does not change results. Needs
+more testing before it becomes the standard.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>warm_up_sources</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>2 ** 12</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Top of the source bucket ladder compiled by <code>warm_up</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>warm_up_pairs</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>2 ** 18</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Top of the source-module pair bucket ladders compiled by <code>warm_up</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>max_distance</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>300.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Maximum source-to-module distance in metres. Pairs beyond it cannot
+contribute hits and are dropped before propagation. Changing it
+changes physics, not just memory.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>min_distance_from_dom</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.1</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Minimum source-to-module distance in metres, below which the optical
+model is not evaluated.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>splitter</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>100000</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Unused. Retained so that existing configuration files continue to
+load; the module axis is now walked in <code>module_chunk</code>-sized pieces
+inside the propagator instead of being split here.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.PPCConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">PPCConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">PPCConfig(paths: PPCPathsConfig = PPCPathsConfig(), simulation: PPCSimConfig = PPCSimConfig())</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Top-level ppc photon propagator configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.PPCCudaConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">PPCCudaConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">PPCCudaConfig(paths: PPCCudaPathsConfig = PPCCudaPathsConfig(), simulation: PPCSimConfig = PPCSimConfig())</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Top-level ppc CUDA photon propagator configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.PPCCudaPathsConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">PPCCudaPathsConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">PPCCudaPathsConfig(location: str = (lambda: f'{RESOURCES_DIR}/PPC_executables/PPC_CUDA/')(), force: bool = False, ppc_tmpdir: str = './.ppc_tmp', ppc_tmpfile: str = '.event_hits.ppc.tmp', f2k_tmpfile: str = '.event_losses.f2k.tmp', ppc_prefix: str = '', f2k_prefix: str = '', ppctables: str = '../resources/PPC_tables/south_pole/', ppc_exe: str = '../resources/PPC_executables/PPC_CUDA/ppc')</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>ppc CUDA file path configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.PPCPathsConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">PPCPathsConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">PPCPathsConfig(location: str = (lambda: f'{RESOURCES_DIR}/PPC_executables/PPC/')(), force: bool = False, ppc_tmpdir: str = './.ppc_tmp', ppc_tmpfile: str = '.event_hits.ppc.tmp', f2k_tmpfile: str = '.event_losses.f2k.tmp', ppc_prefix: str = '', f2k_prefix: str = '', ppctables: str = '../resources/PPC_tables/south_pole/', ppc_exe: str = '../resources/PPC_executables/PPC/ppc')</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>ppc file path configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.PPCSimConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">PPCSimConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">PPCSimConfig(device: int = 0, supress_output: bool = True)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>ppc simulation parameters configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.PhotonPropagatorConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">PhotonPropagatorConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">PhotonPropagatorConfig(name: Optional[str] = None, photon_field_name: str = 'photons', olympus: OlympusConfig = OlympusConfig(), ppc: PPCConfig = PPCConfig(), ppc_cuda: PPCCudaConfig = PPCCudaConfig())</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Top-level photon propagator configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.PrometheusConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">PrometheusConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">PrometheusConfig(run: RunConfig = RunConfig(), detector: DetectorConfig = DetectorConfig(), injection: InjectionConfig = InjectionConfig(), lepton_propagator: LeptonPropagatorConfig = LeptonPropagatorConfig(), photon_propagator: PhotonPropagatorConfig = PhotonPropagatorConfig())</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Top-level Prometheus simulation configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="from_dict (prometheus.config_types.PrometheusConfig.from_dict)" href="#prometheus.config_types.PrometheusConfig.from_dict">from_dict</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Apply <em>user_dict</em> over the current defaults in-place.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="from_toml (prometheus.config_types.PrometheusConfig.from_toml)" href="#prometheus.config_types.PrometheusConfig.from_toml">from_toml</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Load a TOML file and apply it over the current defaults in-place.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="from_yaml (prometheus.config_types.PrometheusConfig.from_yaml)" href="#prometheus.config_types.PrometheusConfig.from_yaml">from_yaml</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Load a YAML file and apply it over the current defaults in-place.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="to_dict (prometheus.config_types.PrometheusConfig.to_dict)" href="#prometheus.config_types.PrometheusConfig.to_dict">to_dict</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Return a plain nested dict (suitable for <code>json.dumps</code>).</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="prometheus.config_types.PrometheusConfig.from_dict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">from_dict</span>
+
+
+</h3>
+<pre class="highlight"><code class="language-python doc-signature">from_dict(user_dict: dict) -&gt; None</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Apply <em>user_dict</em> over the current defaults in-place.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>user_dict</code></b>
+                  (<code><span title="dict">dict</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Mapping to apply onto the current defaults.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/config_types.py</code></summary>
+              <pre class="highlight"><code class="language-python">def from_dict(self, user_dict: dict) -&gt; None:
+    """Apply *user_dict* over the current defaults in-place.
+
+    Parameters
+    ----------
+    user_dict : dict
+        Mapping to apply onto the current defaults.
+    """
+    _deep_apply(self, user_dict)</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="prometheus.config_types.PrometheusConfig.from_toml" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">from_toml</span>
+
+
+</h3>
+<pre class="highlight"><code class="language-python doc-signature">from_toml(toml_file: str) -&gt; None</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Load a TOML file and apply it over the current defaults in-place.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>toml_file</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Path to a TOML file to load.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/config_types.py</code></summary>
+              <pre class="highlight"><code class="language-python">def from_toml(self, toml_file: str) -&gt; None:
+    """Load a TOML file and apply it over the current defaults in-place.
+
+    Parameters
+    ----------
+    toml_file : str
+        Path to a TOML file to load.
+    """
+    import tomllib
+
+    with open(toml_file, "rb") as fh:
+        data = tomllib.load(fh)
+    if data:
+        _deep_apply(self, data)</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="prometheus.config_types.PrometheusConfig.from_yaml" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">from_yaml</span>
+
+
+</h3>
+<pre class="highlight"><code class="language-python doc-signature">from_yaml(yaml_file: str) -&gt; None</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Load a YAML file and apply it over the current defaults in-place.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>yaml_file</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Path to a YAML file to load.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/config_types.py</code></summary>
+              <pre class="highlight"><code class="language-python">def from_yaml(self, yaml_file: str) -&gt; None:
+    """Load a YAML file and apply it over the current defaults in-place.
+
+    Parameters
+    ----------
+    yaml_file : str
+        Path to a YAML file to load.
+    """
+    import yaml
+
+    with open(yaml_file) as fh:
+        data = yaml.load(fh, Loader=yaml.SafeLoader)
+    if data:
+        _deep_apply(self, data)</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="prometheus.config_types.PrometheusConfig.to_dict" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">to_dict</span>
+
+
+</h3>
+<pre class="highlight"><code class="language-python doc-signature">to_dict() -&gt; dict</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Return a plain nested dict (suitable for <code>json.dumps</code>).</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="dict">dict</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Nested dictionary representation of the config.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/config_types.py</code></summary>
+              <pre class="highlight"><code class="language-python">def to_dict(self) -&gt; dict:
+    """Return a plain nested dict (suitable for ``json.dumps``).
+
+    Returns
+    -------
+    dict
+        Nested dictionary representation of the config.
+    """
+    return asdict(self)</code></pre>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.ProposalPathsConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">ProposalPathsConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">ProposalPathsConfig(tables_path: str = (lambda: str(RESOURCES_DIR / 'PROPOSAL_tables'))(), earth_model_location: Optional[str] = None)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>PROPOSAL file path configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.ProposalSimConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">ProposalSimConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">ProposalSimConfig(vcut: float = 0.1, ecut: float = 0.5, interpolation: bool = True, lpm_effect: bool = True, continuous_randomization: bool = True, soft_losses: bool = True, interpolate: bool = True, decay: bool = True, scattering_model: str = 'Moliere', propagation_padding: Optional[float] = None, medium: Optional[str] = None)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>PROPOSAL simulation parameters configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.RunConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">RunConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">RunConfig(run_number: int = 1337, nevents: int = 10, verbosity: str = 'WARNING', logfile: Optional[str] = None, log_format: Optional[str] = None, storage_prefix: str = './output/', outfile: Optional[str] = None, random_state_seed: Optional[int] = None, summary_mode: str = 'user', banner: bool = False, compact: bool = False, summary_json: bool = False, summary_json_path: Optional[str] = None, progress_threshold: int = 10, jax_release_interval: int = 0)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Run-related configuration.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>run_number</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>1337</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Unique run identifier.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>nevents</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>10</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Number of events to simulate (must be &gt; 0).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>verbosity</code></b>
+                  (<code><span title="str">str</span> or <span title="int">int</span></code>, default:
+                      <code>&#39;WARNING&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Logging verbosity. Allowed string values: 'DEBUG', 'INFO', 'WARNING', 'ERROR',
+'CRITICAL' (case-insensitive) or a numeric logging level.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>logfile</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Path to a file to write logs. If None, logs go to console.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>log_format</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Logging format string for handlers.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>storage_prefix</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;./output/&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Base directory for output files.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>outfile</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Explicit output file path (parquet). If None, a path under storage_prefix will be used.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>random_state_seed</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Seed for RNGs used in injection/propagation.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>summary_mode</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;user&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Reporting mode. Allowed values: 'user' (default) and 'debug'.
+'user' prints a user-friendly, compact summary to the console and collapses
+noisy third-party output.
+'debug' prints a developer-oriented summary at DEBUG level with verbose logging
+of captured warnings and native prints.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>banner</code></b>
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Show ASCII banner from assets when True.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>compact</code></b>
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Emit a compact single-line summary for batch runs when True.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>summary_json</code></b>
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>If True, write a machine-readable JSON summary alongside the output file.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>summary_json_path</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Explicit path for JSON summary (overrides default outfile + '.summary.json').</p>
+              </div>
+            </li>
+            <li>
+              <b><code>progress_threshold</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>10</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Minimum number of events required to display progress bars (tqdm).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>jax_release_interval</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Drop the JAX compiled-executable cache every this many photon
+propagations; 0 disables the release. The cache grows to several GB
+per process on a large detector and never shrinks on its own, so on a
+long run it, not the event data, is what exhausts memory. Releasing
+trades wall time for that memory, so enable it when memory is the
+binding constraint and pair it with the persistent on-disk
+compilation cache (<code>jax_compilation_cache_dir</code>), which turns most
+of the re-compilation into a cache read.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>To enable the debug summary when running examples that do not expose CLI flags, set::</p>
+<pre><code>from prometheus import config
+config.run.summary_mode = 'debug'
+config.run.verbosity = 'DEBUG'  # optional: enable logger DEBUG-level output
+</code></pre>
+<p>The <code>verbosity</code> parameter accepts either standard logging level names or integers
+(see Python's <code>logging</code> module).</p>
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.SimpleInjectorConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">SimpleInjectorConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">SimpleInjectorConfig(inject: bool = False, paths: SimpleInjectorPathsConfig = SimpleInjectorPathsConfig(), simulation: dict = dict())</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Top-level simple injector configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.config_types.SimpleInjectorPathsConfig" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">SimpleInjectorPathsConfig</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">SimpleInjectorPathsConfig(injection_file: Optional[str] = None)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ConfigBase (prometheus.config_types.ConfigBase)" href="#prometheus.config_types.ConfigBase">ConfigBase</a></code></p>
+
+
+
+        <p>Simple injector file path configuration.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../config/" class="btn btn-neutral float-left" title="config"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../detector/" class="btn btn-neutral float-right" title="detector">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../config/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../detector/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="../../../js/popper.min.js"></script>
+      <script src="../../../js/tippy-bundle.umd.js"></script>
+      <script src="../../../js/clipboard.js"></script>
+      <script src="../../../js/extra.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

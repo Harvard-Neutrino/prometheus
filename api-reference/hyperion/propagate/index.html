@@ -1,0 +1,3343 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>propagate - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "propagate";
+        var mkdocs_page_input_path = "api-reference/hyperion/propagate.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Installation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../installation/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../installation/built-in-installer/">Built-in installer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../installation/containers/">Containers</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../citation/">Citation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../papers/">Papers Using Prometheus</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../../prometheus/">prometheus</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/compat/">compat</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/compat/haiku_unpickler/">haiku_unpickler</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/config/">config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/config_types/">config_types</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/detector/">detector</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/detector/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/detector/detector_factory/">detector_factory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/detector/medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/detector/module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/detector/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/injection/">injection</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/injection/genie_injector/">genie_injector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/injection/genie_parser/">genie_parser</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/injection/injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/injection/injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/injection/injection/genie_injection/">genie_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/injection/injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/injection/injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/injection/injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/injection/injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/injection/injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/injection/interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/injection/lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/injection/registered_injectors/">registered_injectors</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/injection/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/lepton_propagation/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/logging/">logging</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/logging/handlers/">handlers</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/logging_config/">logging_config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/photon_propagation/hit/">hit</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/photon_propagation/olympus/">olympus</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/photon_propagation/olympus/event_generation/">event_generation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/photon_propagation/olympus/optimization/">optimization</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/photon_propagation/olympus/plotting/">plotting</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/photon_propagation/olympus/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/photon_propagation/olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/photon_propagation/photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/photon_propagation/ppc_photon_propagator/">ppc_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/photon_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/photon_propagation/registry/">registry</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/photon_propagation/utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/photon_propagation/utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/photon_propagation/utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/summary/">summary</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/utils/">utils</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/capture/">capture</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/detector_layers/">detector_layers</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/dom_response/">dom_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/f2k_utils/">f2k_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/fadc_digitization/">fadc_digitization</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/formatting/">formatting</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/layered_sim/">layered_sim</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/memory/">memory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/pmt_response/">pmt_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/utils/serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/utils/serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/utils/serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/utils/serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/utils/serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../prometheus/utils/serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/timing/">timing</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/utils/write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../prometheus/weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="../">hyperion</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../medium/">medium</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../models/">models</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../models/photon_arrival_time_nflow/">photon_arrival_time_nflow</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../models/photon_arrival_time_nflow/net/">net</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../models/photon_arrival_time_nflow/training_data/">training_data</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../models/photon_arrival_time_nflow/validation/">validation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../models/photon_binned_amplitude/">photon_binned_amplitude</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../models/photon_binned_amplitude/net/">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">propagate</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.calc_new_direction">calc_new_direction</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.collect_hits">collect_hits</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.frank_tamm">frank_tamm</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.initialize_direction_isotropic">initialize_direction_isotropic</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.initialize_direction_led">initialize_direction_led</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.make_cherenkov_spectral_sampling_func">make_cherenkov_spectral_sampling_func</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.make_fixed_pos_time_initializer">make_fixed_pos_time_initializer</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.make_fixed_time_initializer">make_fixed_time_initializer</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.make_initialize_direction_laser">make_initialize_direction_laser</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.make_initialize_position_sphere">make_initialize_position_sphere</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.make_loop_for_n_steps">make_loop_for_n_steps</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.make_loop_until_isec_or_maxtime">make_loop_until_isec_or_maxtime</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.make_monochromatic_initializer">make_monochromatic_initializer</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.make_multi_photon_sphere_intersection_func">make_multi_photon_sphere_intersection_func</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.make_photon_circle_intersection">make_photon_circle_intersection</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.make_photon_sphere_intersection_func">make_photon_sphere_intersection_func</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.make_photon_spherical_shell_intersection">make_photon_spherical_shell_intersection</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.make_photon_trajectory_fun">make_photon_trajectory_fun</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.make_step_function">make_step_function</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.make_track_segment_fixed_time_pos_dir_initializer">make_track_segment_fixed_time_pos_dir_initializer</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.photon_sphere_intersection">photon_sphere_intersection</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.sph_to_cart">sph_to_cart</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hyperion.propagate.unpack_args">unpack_args</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item"><a href="../">hyperion</a></li>
+      <li class="breadcrumb-item active">propagate</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="hyperion.propagate" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">hyperion.propagate</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+        <p>Photon propagation utilities.</p>
+<p>Provides geometric intersection helpers and Cherenkov spectral sampling.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="calc_new_direction (hyperion.propagate.calc_new_direction)" href="#hyperion.propagate.calc_new_direction">calc_new_direction</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Calculate new direction after sampling a scattering angle.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="collect_hits (hyperion.propagate.collect_hits)" href="#hyperion.propagate.collect_hits">collect_hits</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Run photon prop multiple times and collect hits.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="frank_tamm (hyperion.propagate.frank_tamm)" href="#hyperion.propagate.frank_tamm">frank_tamm</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Frank-Tamm formula for Cherenkov emission.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="initialize_direction_isotropic (hyperion.propagate.initialize_direction_isotropic)" href="#hyperion.propagate.initialize_direction_isotropic">initialize_direction_isotropic</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Draw direction uniformly on a sphere.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="initialize_direction_led (hyperion.propagate.initialize_direction_led)" href="#hyperion.propagate.initialize_direction_led">initialize_direction_led</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Draw an LED-like emission direction.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_cherenkov_spectral_sampling_func (hyperion.propagate.make_cherenkov_spectral_sampling_func)" href="#hyperion.propagate.make_cherenkov_spectral_sampling_func">make_cherenkov_spectral_sampling_func</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create a sampling function that samples from the Frank–Tamm formula over a wavelength range.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_fixed_pos_time_initializer (hyperion.propagate.make_fixed_pos_time_initializer)" href="#hyperion.propagate.make_fixed_pos_time_initializer">make_fixed_pos_time_initializer</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Initialize with fixed position and time and sample for direction and wavelength.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_fixed_time_initializer (hyperion.propagate.make_fixed_time_initializer)" href="#hyperion.propagate.make_fixed_time_initializer">make_fixed_time_initializer</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Initialize with a fixed time, sample for position, direction and wavelength.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_initialize_direction_laser (hyperion.propagate.make_initialize_direction_laser)" href="#hyperion.propagate.make_initialize_direction_laser">make_initialize_direction_laser</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create an initializer that always returns the configured laser direction.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_initialize_position_sphere (hyperion.propagate.make_initialize_position_sphere)" href="#hyperion.propagate.make_initialize_position_sphere">make_initialize_position_sphere</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create an initializer that samples positions on a sphere surface.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_loop_for_n_steps (hyperion.propagate.make_loop_for_n_steps)" href="#hyperion.propagate.make_loop_for_n_steps">make_loop_for_n_steps</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create a function that calls step function <code>n_steps</code> times.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_loop_until_isec_or_maxtime (hyperion.propagate.make_loop_until_isec_or_maxtime)" href="#hyperion.propagate.make_loop_until_isec_or_maxtime">make_loop_until_isec_or_maxtime</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create a function that calls the step function until either the photon intersects</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_monochromatic_initializer (hyperion.propagate.make_monochromatic_initializer)" href="#hyperion.propagate.make_monochromatic_initializer">make_monochromatic_initializer</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create a monochromatic initializer function.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_multi_photon_sphere_intersection_func (hyperion.propagate.make_multi_photon_sphere_intersection_func)" href="#hyperion.propagate.make_multi_photon_sphere_intersection_func">make_multi_photon_sphere_intersection_func</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create a function that calculates the intersection of a photon path with multiple spheres.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_photon_circle_intersection (hyperion.propagate.make_photon_circle_intersection)" href="#hyperion.propagate.make_photon_circle_intersection">make_photon_circle_intersection</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create an intersection function for a circle (plane + radius).</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_photon_sphere_intersection_func (hyperion.propagate.make_photon_sphere_intersection_func)" href="#hyperion.propagate.make_photon_sphere_intersection_func">make_photon_sphere_intersection_func</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create a function that calculates the intersection of a photon path with a sphere.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_photon_spherical_shell_intersection (hyperion.propagate.make_photon_spherical_shell_intersection)" href="#hyperion.propagate.make_photon_spherical_shell_intersection">make_photon_spherical_shell_intersection</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create intersection function for a spherical shell.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_photon_trajectory_fun (hyperion.propagate.make_photon_trajectory_fun)" href="#hyperion.propagate.make_photon_trajectory_fun">make_photon_trajectory_fun</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create a photon trajectory function.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_step_function (hyperion.propagate.make_step_function)" href="#hyperion.propagate.make_step_function">make_step_function</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Create a photon step function object.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_track_segment_fixed_time_pos_dir_initializer (hyperion.propagate.make_track_segment_fixed_time_pos_dir_initializer)" href="#hyperion.propagate.make_track_segment_fixed_time_pos_dir_initializer">make_track_segment_fixed_time_pos_dir_initializer</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Initialize a track segment with fixed time, position and direction.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="photon_sphere_intersection (hyperion.propagate.photon_sphere_intersection)" href="#hyperion.propagate.photon_sphere_intersection">photon_sphere_intersection</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Calculate photon-sphere intersection.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="sph_to_cart (hyperion.propagate.sph_to_cart)" href="#hyperion.propagate.sph_to_cart">sph_to_cart</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Transform spherical to cartesian coordinates.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="unpack_args (hyperion.propagate.unpack_args)" href="#hyperion.propagate.unpack_args">unpack_args</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Wrap a function by unpacking a single argument tuple.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.calc_new_direction" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">calc_new_direction</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">calc_new_direction(keys, old_dir, scattering_function)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate new direction after sampling a scattering angle.</p>
+<p>Scattering is calculated in a reference frame local to the photon (e_z)
+and then rotated back to the global coordinate system.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>keys</code></b>
+                  (<code><span title="sequence">sequence</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Sequence of PRNG keys used for sampling.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>old_dir</code></b>
+                  (<code><span title="jax.numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Incoming direction vector (shape (3,)).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>scattering_function</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Function that returns a scattering angle when given a PRNG key.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="jax.numpy.ndarray">ndarray</span></code>
+              –
+              <div class="doc-md-description">
+                <p>New direction vector (shape (3,)).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def calc_new_direction(keys, old_dir, scattering_function):
+    """Calculate new direction after sampling a scattering angle.
+
+    Scattering is calculated in a reference frame local to the photon (e_z)
+    and then rotated back to the global coordinate system.
+
+    Parameters
+    ----------
+    keys : sequence
+        Sequence of PRNG keys used for sampling.
+    old_dir : jnp.ndarray
+        Incoming direction vector (shape (3,)).
+    scattering_function : callable
+        Function that returns a scattering angle when given a PRNG key.
+
+    Returns
+    -------
+    jnp.ndarray
+        New direction vector (shape (3,)).
+    """
+
+    theta = scattering_function(keys[0])
+    cos_theta = jnp.cos(theta)
+    sin_theta = jnp.sin(theta)
+
+    phi = random.uniform(keys[1], minval=0, maxval=2 * np.pi)
+    cos_phi = jnp.cos(phi)
+    sin_phi = jnp.sin(phi)
+
+    px, py, pz = old_dir
+
+    is_para_z = jnp.abs(pz) == 1
+
+    new_dir = cond(
+        is_para_z,
+        lambda _: jnp.array(
+            [
+                sin_theta * cos_phi,
+                jnp.sign(pz) * sin_theta * sin_phi,
+                jnp.sign(pz) * cos_theta,
+            ]
+        ),
+        lambda _: jnp.array(
+            [
+                (px * cos_theta)
+                + ((sin_theta * (px * pz * cos_phi - py * sin_phi)) / (jnp.sqrt(1.0 - pz**2))),
+                (py * cos_theta)
+                + ((sin_theta * (py * pz * cos_phi + px * sin_phi)) / (jnp.sqrt(1.0 - pz**2))),
+                (pz * cos_theta) - (sin_theta * cos_phi * jnp.sqrt(1.0 - pz**2)),
+            ]
+        ),
+        None,
+    )
+
+    # Need this for numerical stability?
+    new_dir = new_dir / jnp.linalg.norm(new_dir)
+
+    return new_dir</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.collect_hits" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">collect_hits</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">collect_hits(traj_func, nphotons, nsims, seed=0, sim_limit=10000000.0)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Run photon prop multiple times and collect hits.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def collect_hits(traj_func, nphotons, nsims, seed=0, sim_limit=1e7):
+    """Run photon prop multiple times and collect hits."""
+    key = random.PRNGKey(seed)
+    isec_times = []
+    em_thetas = []
+    ar_thetas = []
+    stepss = []
+    nphotons = int(nphotons)
+    isec_poss = []
+    wavelengths = []
+
+    total_detected_photons = 0
+    sims_cnt = 0
+
+    for i in range(nsims):
+        key, subkey = random.split(key)
+        initial_state, final_state = traj_func(random.split(key, num=nphotons))
+
+        isecs = final_state["isec"]
+
+        isec_times.append(np.asarray(final_state["time"][isecs]))
+        stepss.append(np.asarray(final_state["stepcnt"][isecs]))
+        ar_thetas.append(np.asarray(jnp.arccos(final_state["dir"][isecs, 2])))
+        em_thetas.append(np.asarray(jnp.arccos(initial_state["dir"][isecs, 2])))
+        isec_poss.append(np.asarray(final_state["pos"][isecs]))
+        wavelengths.append(np.asarray(final_state["wavelength"][isecs]))
+
+        sims_cnt = i
+        total_detected_photons += jnp.sum(isecs)
+        if sim_limit is not None and total_detected_photons &gt; sim_limit:
+            break
+
+    isec_times = np.concatenate(isec_times)
+    ar_thetas = np.concatenate(ar_thetas)
+    em_thetas = np.concatenate(em_thetas)
+    stepss = np.concatenate(stepss)
+    isec_poss = np.vstack(isec_poss)
+    wavelengths = np.concatenate(wavelengths)
+
+    return isec_times, ar_thetas, em_thetas, stepss, isec_poss, sims_cnt, wavelengths</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.frank_tamm" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">frank_tamm</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">frank_tamm(wavelength, ref_index_func)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Frank-Tamm formula for Cherenkov emission.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>wavelength</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Wavelength in nanometres.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>ref_index_func</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Function returning the refractive index for a given wavelength.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="float">float</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Spectral emission factor proportional to photon yield.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def frank_tamm(wavelength, ref_index_func):
+    """Frank-Tamm formula for Cherenkov emission.
+
+    Parameters
+    ----------
+    wavelength : float
+        Wavelength in nanometres.
+    ref_index_func : callable
+        Function returning the refractive index for a given wavelength.
+
+    Returns
+    -------
+    float
+        Spectral emission factor proportional to photon yield.
+    """
+    return (
+        4
+        * np.pi**2
+        * Constants.BaseConstants.e**2
+        / (Constants.BaseConstants.h * Constants.BaseConstants.c_vac * (wavelength / 1e9) ** 2)
+        * (1 - 1 / ref_index_func(wavelength) ** 2)
+    )</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.initialize_direction_isotropic" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">initialize_direction_isotropic</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">initialize_direction_isotropic(rng_key)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Draw direction uniformly on a sphere.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>rng_key</code></b>
+                  (<code><span title="jax.random.PRNGKey">PRNGKey</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>PRNG key for sampling.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="jax.numpy.ndarray">ndarray</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Unit direction vector sampled uniformly on the sphere (shape (3,)).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">@functools.partial(jax.profiler.annotate_function, name="initialize_direction_isotropic")
+def initialize_direction_isotropic(rng_key):
+    """Draw direction uniformly on a sphere.
+
+    Parameters
+    ----------
+    rng_key : jax.random.PRNGKey
+        PRNG key for sampling.
+
+    Returns
+    -------
+    jnp.ndarray
+        Unit direction vector sampled uniformly on the sphere (shape (3,)).
+    """
+    k1, k2 = random.split(rng_key, 2)
+    theta = jnp.arccos(random.uniform(k1, minval=-1, maxval=1))
+    phi = random.uniform(k2, minval=0, maxval=2 * np.pi)
+    direction = sph_to_cart(theta, phi, r=1)
+
+    return direction</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.initialize_direction_led" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">initialize_direction_led</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">initialize_direction_led(rng_key)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Draw an LED-like emission direction.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>rng_key</code></b>
+                  (<code><span title="jax.random.PRNGKey">PRNGKey</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>PRNG key for sampling.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="jax.numpy.ndarray">ndarray</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Unit direction vector sampled according to the LED sampling routine.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def initialize_direction_led(rng_key):
+    """Draw an LED-like emission direction.
+
+    Parameters
+    ----------
+    rng_key : jax.random.PRNGKey
+        PRNG key for sampling.
+
+    Returns
+    -------
+    jnp.ndarray
+        Unit direction vector sampled according to the LED sampling routine.
+    """
+    k1, k2 = random.split(rng_key, 2)
+    theta = jnp.arcsin(random.uniform(k1))
+    phi = random.uniform(k2, minval=0, maxval=2 * np.pi)
+
+    direction = sph_to_cart(theta, phi, r=1)
+
+    return direction</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.make_cherenkov_spectral_sampling_func" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_cherenkov_spectral_sampling_func</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_cherenkov_spectral_sampling_func(wl_range, ref_index_func, dtype=jnp.float64)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create a sampling function that samples from the Frank–Tamm formula over a wavelength range.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>wl_range</code></b>
+                  (<code>tuple of float</code>)
+              –
+              <div class="doc-md-description">
+                <p>Lower and upper wavelength range (in nanometres).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>ref_index_func</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Function returning wavelength-dependent refractive index.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dtype</code></b>
+                  (<code><span title="jax.numpy.dtype">dtype</span></code>, default:
+                      <code><span title="jax.numpy.float64">float64</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Data type for computations (default is <code>jax.numpy.float64</code>).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="callable">callable</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Sampling function returning wavelengths sampled according to the Frank-Tamm distribution.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_cherenkov_spectral_sampling_func(wl_range, ref_index_func, dtype=jnp.float64):
+    """Create a sampling function that samples from the Frank–Tamm formula over a wavelength range.
+
+    Parameters
+    ----------
+    wl_range : tuple of float
+        Lower and upper wavelength range (in nanometres).
+    ref_index_func : callable
+        Function returning wavelength-dependent refractive index.
+    dtype : jnp.dtype, optional
+        Data type for computations (default is ``jax.numpy.float64``).
+
+    Returns
+    -------
+    callable
+        Sampling function returning wavelengths sampled according to the Frank-Tamm distribution.
+    """
+    wls = np.linspace(wl_range[0], wl_range[1], 1000)
+
+    integral = lambda upper: quad(  # noqa E731
+        functools.partial(frank_tamm, ref_index_func=ref_index_func), wl_range[0], upper
+    )[0]
+    norm = integral(wl_range[-1])
+    poly_pars = jnp.asarray(np.polyfit(np.vectorize(integral)(wls) / norm, wls, 10), dtype=dtype)
+
+    def sampling_func(rng_key):
+        """Sample a wavelength according to the Frank–Tamm distribution.
+
+        Parameters
+        ----------
+        rng_key : jax.random.PRNGKey
+            PRNG key for sampling.
+
+        Returns
+        -------
+        float
+            Sampled wavelength in nanometres.
+        """
+        uni = random.uniform(rng_key, dtype=dtype)
+        return jnp.polyval(poly_pars, uni)
+
+    return sampling_func</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.make_fixed_pos_time_initializer" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_fixed_pos_time_initializer</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_fixed_pos_time_initializer(initial_pos, initial_time, dir_init, wavelength_init, dtype=jnp.float64)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Initialize with fixed position and time and sample for direction and wavelength.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>initial_pos</code></b>
+                  (<code><span title="float">float</span>[3]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Position vector of the emitter.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>initial_time</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Emitter time.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dir_init</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Emission direction initializer.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>wavelength_init</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Wavelength initializer.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dtype</code></b>
+                  (<code><span title="jax.numpy.float64">float64</span> or <span title="jax.numpy.float32">float32</span></code>, default:
+                      <code><span title="jax.numpy.float64">float64</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Data type: how many digits to store.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_fixed_pos_time_initializer(
+    initial_pos, initial_time, dir_init, wavelength_init, dtype=jnp.float64
+):
+    """Initialize with fixed position and time and sample for direction and wavelength.
+
+    Parameters
+    ----------
+    initial_pos : float[3]
+        Position vector of the emitter.
+    initial_time : float
+        Emitter time.
+    dir_init : callable
+        Emission direction initializer.
+    wavelength_init : callable
+        Wavelength initializer.
+    dtype : jnp.float64 or jnp.float32, optional
+        Data type: how many digits to store.
+    """
+
+    def init(rng_key):
+        """Initializer returning a fixed position/time and sampled direction/wavelength.
+
+        Parameters
+        ----------
+        rng_key : jax.random.PRNGKey
+            PRNG key for sampling.
+
+        Returns
+        -------
+        dict
+            Initial photon state dictionary.
+        """
+        k1, k2 = random.split(rng_key, 2)
+
+        # Set initial photon state
+        initial_photon_state = {
+            "pos": jnp.asarray(initial_pos, dtype=dtype),
+            "dir": dir_init(k1),
+            "time": dtype(initial_time),
+            "isec": False,
+            "stepcnt": jnp.int32(0),
+            "wavelength": wavelength_init(k2),
+        }
+        return initial_photon_state
+
+    return init</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.make_fixed_time_initializer" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_fixed_time_initializer</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_fixed_time_initializer(initial_time, pos_init, dir_init, wavelength_init, dtype=jnp.float64)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Initialize with a fixed time, sample for position, direction and wavelength.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>initial_time</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Emitter time.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>pos_init</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Position initializer.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dir_init</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Emission direction initializer.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>wavelength_init</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Wavelength initializer.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dtype</code></b>
+                  (<code><span title="jax.numpy.float64">float64</span> or <span title="jax.numpy.float32">float32</span></code>, default:
+                      <code><span title="jax.numpy.float64">float64</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Data type: how many digits to store.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_fixed_time_initializer(
+    initial_time, pos_init, dir_init, wavelength_init, dtype=jnp.float64
+):
+    """Initialize with a fixed time, sample for position, direction and wavelength.
+
+    Parameters
+    ----------
+    initial_time : float
+        Emitter time.
+    pos_init : callable
+        Position initializer.
+    dir_init : callable
+        Emission direction initializer.
+    wavelength_init : callable
+        Wavelength initializer.
+    dtype : jnp.float64 or jnp.float32, optional
+        Data type: how many digits to store.
+    """
+
+    def init(rng_key):
+        """Initializer returning a fixed time and sampled position, direction and wavelength.
+
+        Parameters
+        ----------
+        rng_key : jax.random.PRNGKey
+            PRNG key for sampling.
+
+        Returns
+        -------
+        dict
+            Initial photon state dictionary.
+        """
+        k1, k2, k3 = random.split(rng_key, 3)
+
+        # Set initial photon state
+        initial_photon_state = {
+            "pos": jnp.asarray(pos_init(k1), dtype=dtype),
+            "dir": dir_init(k2),
+            "time": dtype(initial_time),
+            "isec": False,
+            "stepcnt": jnp.int32(0),
+            "wavelength": wavelength_init(k3),
+        }
+        return initial_photon_state
+
+    return init</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.make_initialize_direction_laser" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_initialize_direction_laser</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_initialize_direction_laser(direction)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create an initializer that always returns the configured laser direction.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>direction</code></b>
+                  (<code><span title="array">array</span> - <span title="like">like</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Direction vector to return from the initializer.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="callable">callable</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Function with signature <code>(rng_key)</code> returning <code>direction</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_initialize_direction_laser(direction):
+    """Create an initializer that always returns the configured laser direction.
+
+    Parameters
+    ----------
+    direction : array-like
+        Direction vector to return from the initializer.
+
+    Returns
+    -------
+    callable
+        Function with signature ``(rng_key)`` returning ``direction``.
+    """
+
+    def initialize_direction_laser(rng_key):
+        """Return the fixed laser direction.
+
+        Parameters
+        ----------
+        rng_key : jax.random.PRNGKey
+            PRNG key (unused).
+
+        Returns
+        -------
+        jnp.ndarray
+            The configured direction vector.
+        """
+        return direction
+
+    return initialize_direction_laser</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.make_initialize_position_sphere" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_initialize_position_sphere</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_initialize_position_sphere(sphere_pos, sphere_radius)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create an initializer that samples positions on a sphere surface.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>sphere_pos</code></b>
+                  (<code><span title="array">array</span> - <span title="like">like</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Center position of the sphere.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>sphere_radius</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Radius of the sphere.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="callable">callable</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Initializer function with signature <code>(rng_key)</code> returning a position vector.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_initialize_position_sphere(sphere_pos, sphere_radius):
+    """Create an initializer that samples positions on a sphere surface.
+
+    Parameters
+    ----------
+    sphere_pos : array-like
+        Center position of the sphere.
+    sphere_radius : float
+        Radius of the sphere.
+
+    Returns
+    -------
+    callable
+        Initializer function with signature ``(rng_key)`` returning a position vector.
+    """
+
+    def initialize_position_sphere(rng_key):
+        """Sample a position on the sphere surface using an isotropic direction.
+
+        Parameters
+        ----------
+        rng_key : jax.random.PRNGKey
+            PRNG key for sampling.
+
+        Returns
+        -------
+        jnp.ndarray
+            Position vector on the sphere surface.
+        """
+        direc_vec = initialize_direction_isotropic(rng_key)
+
+        pos = sphere_pos + direc_vec * sphere_radius
+
+        return pos
+
+    return initialize_position_sphere</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.make_loop_for_n_steps" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_loop_for_n_steps</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_loop_for_n_steps(n_steps)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create a function that calls step function <code>n_steps</code> times.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_loop_for_n_steps(n_steps):
+    """Create a function that calls step function ``n_steps`` times."""
+
+    def loop_for_nsteps(step_function, initial_photon_state, rng_key):
+        """Loop the step function for a fixed number of iterations.
+
+        Parameters
+        ----------
+        step_function : callable
+            Photon step function to be repeatedly applied.
+        initial_photon_state : dict
+            Initial photon state.
+        rng_key : jax.random.PRNGKey
+            PRNG key for stepping.
+
+        Returns
+        -------
+        dict
+            Final photon state after ``n_steps`` iterations.
+        """
+
+        def noop_if_not_alive(state, rng_key):
+            """Call step function only if photon is still alive (not intersected).
+
+            Parameters
+            ----------
+            state : dict
+                Current photon state.
+            rng_key : jax.random.PRNGKey
+                PRNG key for stepping.
+
+            Returns
+            -------
+            tuple
+                New state and rng_key.
+            """
+            out = cond(
+                state["isec"],
+                lambda args: args,
+                unpack_args(step_function),
+                (state, rng_key),
+            )
+            return out
+
+        final_photon_state, _ = fori_loop(
+            0,
+            n_steps,
+            lambda i, args: unpack_args(noop_if_not_alive)(args),
+            (initial_photon_state, rng_key),
+        )
+        return final_photon_state
+
+    return loop_for_nsteps</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.make_loop_until_isec_or_maxtime" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_loop_until_isec_or_maxtime</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_loop_until_isec_or_maxtime(max_time)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create a function that calls the step function until either the photon intersects
+or <code>max_time</code> is reached.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_loop_until_isec_or_maxtime(max_time):
+    """Create a function that calls the step function until either the photon intersects
+    or ``max_time`` is reached.
+    """
+
+    def loop_until_isec_or_maxtime(step_function, initial_photon_state, rng_key):
+        """Run the step function until intersection or maximum time is exceeded.
+
+        Parameters
+        ----------
+        step_function : callable
+            Photon step function.
+        initial_photon_state : dict
+            Initial photon state.
+        rng_key : jax.random.PRNGKey
+            PRNG key for stepping.
+
+        Returns
+        -------
+        dict
+            Final photon state.
+        """
+        final_photon_state, _ = while_loop(
+            lambda args: (
+                (args[0]["isec"] == False)  # noqa: E712
+                &amp; (args[0]["time"] &lt; max_time)
+            ),
+            unpack_args(step_function),
+            (initial_photon_state, rng_key),
+        )
+        return final_photon_state
+
+    return loop_until_isec_or_maxtime</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.make_monochromatic_initializer" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_monochromatic_initializer</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_monochromatic_initializer(wavelength)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create a monochromatic initializer function.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_monochromatic_initializer(wavelength):
+    """Create a monochromatic initializer function."""
+
+    def initialize_monochromatic(rng_key):
+        """Return the fixed wavelength value.
+
+        Parameters
+        ----------
+        rng_key : jax.random.PRNGKey
+            PRNG key (unused for monochromatic initialiser).
+
+        Returns
+        -------
+        float
+            The fixed wavelength (in nm) provided to the initializer factory.
+        """
+
+        return wavelength
+
+    return initialize_monochromatic</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.make_multi_photon_sphere_intersection_func" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_multi_photon_sphere_intersection_func</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_multi_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.float64)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create a function that calculates the intersection of a photon path with multiple spheres.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>target_x</code></b>
+                  (<code><span title="jax.numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Target sphere center positions, shape (N, 3).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>target_r</code></b>
+                  (<code><span title="jax.numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Target sphere radii, shape (N,).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dtype</code></b>
+                  (<code><span title="jax.numpy.dtype">dtype</span></code>, default:
+                      <code><span title="jax.numpy.float64">float64</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Data type for computations (default is <code>jax.numpy.float64</code>).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="callable">callable</span></code>
+              –
+              <div class="doc-md-description">
+                <p>A function with signature <code>(photon_x, photon_p, step_size)</code> returning
+<code>(is_intersected, position)</code> for the nearest intersection.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_multi_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.float64):
+    """Create a function that calculates the intersection of a photon path with multiple spheres.
+
+    Parameters
+    ----------
+    target_x : jnp.ndarray
+        Target sphere center positions, shape (N, 3).
+    target_r : jnp.ndarray
+        Target sphere radii, shape (N,).
+    dtype : jnp.dtype, optional
+        Data type for computations (default is ``jax.numpy.float64``).
+
+    Returns
+    -------
+    callable
+        A function with signature ``(photon_x, photon_p, step_size)`` returning
+        ``(is_intersected, position)`` for the nearest intersection.
+    """
+    target_x = jnp.asarray(target_x, dtype=dtype)
+    target_r = jnp.asarray(target_r, dtype=dtype)
+
+    isec_func_v = jax.vmap(photon_sphere_intersection, in_axes=[None, None, 0, 0, None])
+
+    def f(photon_x, photon_p, step_size):
+        """Vectorised intersection for multiple target spheres.
+
+        Parameters
+        ----------
+        photon_x : jnp.ndarray
+            Photon origin position.
+        photon_p : jnp.ndarray
+            Photon direction vector.
+        step_size : float
+            Maximum step size to consider.
+
+        Returns
+        -------
+        tuple
+            ``(is_intersected, position)`` for the nearest intersection.
+        """
+        isecs = isec_func_v(photon_x, photon_p, target_x, target_r, step_size)
+        any_isec = jnp.any(isecs[0])
+
+        return cond(
+            any_isec,
+            lambda _: (True, isecs[1].at[jnp.argsort(isecs[0])[-1]].get()),
+            lambda _: (False, jnp.ones(3, dtype=dtype) * 1e8),
+            0,
+        )
+
+    return f</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.make_photon_circle_intersection" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_photon_circle_intersection</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_photon_circle_intersection(circle_center, circle_normal, circle_r, dtype=jnp.float64)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create an intersection function for a circle (plane + radius).</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>circle_center</code></b>
+                  (<code><span title="array">array</span> - <span title="like">like</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Center of the circle in 3D space.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>circle_normal</code></b>
+                  (<code><span title="array">array</span> - <span title="like">like</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Normal vector of the plane containing the circle.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>circle_r</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Radius of the circle.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dtype</code></b>
+                  (<code><span title="jax.numpy.dtype">dtype</span></code>, default:
+                      <code><span title="jax.numpy.float64">float64</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Data type for computations.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="callable">callable</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Function with signature <code>(photon_x, photon_p, step_size)</code> returning
+<code>(is_intersected, position)</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_photon_circle_intersection(circle_center, circle_normal, circle_r, dtype=jnp.float64):
+    """Create an intersection function for a circle (plane + radius).
+
+    Parameters
+    ----------
+    circle_center : array-like
+        Center of the circle in 3D space.
+    circle_normal : array-like
+        Normal vector of the plane containing the circle.
+    circle_r : float
+        Radius of the circle.
+    dtype : jnp.dtype, optional
+        Data type for computations.
+
+    Returns
+    -------
+    callable
+        Function with signature ``(photon_x, photon_p, step_size)`` returning
+        ``(is_intersected, position)``.
+    """
+
+    circle_center = jnp.asarray(circle_center, dtype=dtype)
+    circle_normal = jnp.asarray(circle_normal, dtype=dtype)
+    circle_r = dtype(circle_r)
+
+    def photon_circle_intersection(photon_x, photon_p, step_size):
+        """Intersection of line and plane.
+
+        Given a photon origin, a photon direction, a step size, a target location and a
+        target radius, calculate whether the photon intersects the target and the
+        intersection point.
+
+        Parameters
+        ----------
+        photon_x : jnp.ndarray
+            Photon origin position (shape (3,)).
+        photon_p : jnp.ndarray
+            Photon direction vector (shape (3,)).
+        step_size : float
+            Step size.
+
+        Returns
+        -------
+        tuple
+            Tuple ``(is_intersected, position)`` where ``is_intersected`` is a boolean
+            and ``position`` is the intersection point when intersected.
+
+        Notes
+        -----
+        Assume plane normal vector is e_z.
+        """
+
+        photon_p = jnp.asarray(photon_p, dtype=dtype)
+        p_n = jnp.dot(photon_p, circle_normal)
+        d = jnp.where(
+            p_n == 0,
+            jnp.dot((circle_center - photon_x), circle_normal),
+            jnp.dot((circle_center - photon_x), circle_normal) / p_n,
+        )
+
+        isec_p = photon_x + d * photon_p
+
+        dist_in_plane = jnp.linalg.norm(circle_center - isec_p)
+
+        result = jax.lax.cond(
+            (d &gt; 0) &amp; (d &lt;= step_size) &amp; (dist_in_plane &lt; circle_r),
+            lambda _: (True, isec_p),
+            lambda _: (False, jnp.ones(3, dtype=dtype) * 1e8),
+            None,
+        )
+        return result
+
+    return photon_circle_intersection</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.make_photon_sphere_intersection_func" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_photon_sphere_intersection_func</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.float64)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create a function that calculates the intersection of a photon path with a sphere.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>target_x</code></b>
+                  (<code><span title="jax.numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Target sphere center position (shape (3,)).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>target_r</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Target sphere radius.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dtype</code></b>
+                  (<code><span title="jax.numpy.dtype">dtype</span></code>, default:
+                      <code><span title="jax.numpy.float64">float64</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Data type for computations (default is <code>jax.numpy.float64</code>).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="callable">callable</span></code>
+              –
+              <div class="doc-md-description">
+                <p>A function with signature <code>(photon_x, photon_p, step_size)</code> returning
+<code>(is_intersected, position)</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_photon_sphere_intersection_func(target_x, target_r, dtype=jnp.float64):
+    """Create a function that calculates the intersection of a photon path with a sphere.
+
+    Parameters
+    ----------
+    target_x : jnp.ndarray
+        Target sphere center position (shape (3,)).
+    target_r : float
+        Target sphere radius.
+    dtype : jnp.dtype, optional
+        Data type for computations (default is ``jax.numpy.float64``).
+
+    Returns
+    -------
+    callable
+        A function with signature ``(photon_x, photon_p, step_size)`` returning
+        ``(is_intersected, position)``.
+    """
+    target_x = jnp.asarray(target_x, dtype=dtype)
+    target_r = dtype(target_r)
+
+    return functools.partial(
+        photon_sphere_intersection, target_x=target_x, target_r=target_r, dtype=dtype
+    )</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.make_photon_spherical_shell_intersection" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_photon_spherical_shell_intersection</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_photon_spherical_shell_intersection(shell_center, shell_radius, dtype=jnp.float64)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create intersection function for a spherical shell.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>shell_center</code></b>
+                  (<code><span title="array">array</span> - <span title="like">like</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Center of the spherical shell (shape (3,)).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>shell_radius</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Radius of the spherical shell.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dtype</code></b>
+                  (<code><span title="jax.numpy.dtype">dtype</span></code>, default:
+                      <code><span title="jax.numpy.float64">float64</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Data type for computations (default is <code>jax.numpy.float64</code>).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="callable">callable</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Function with signature <code>(photon_x, photon_p, step_size)</code> returning
+<code>(is_intersected, position)</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_photon_spherical_shell_intersection(shell_center, shell_radius, dtype=jnp.float64):
+    """Create intersection function for a spherical shell.
+
+    Parameters
+    ----------
+    shell_center : array-like
+        Center of the spherical shell (shape (3,)).
+    shell_radius : float
+        Radius of the spherical shell.
+    dtype : jnp.dtype, optional
+        Data type for computations (default is ``jax.numpy.float64``).
+
+    Returns
+    -------
+    callable
+        Function with signature ``(photon_x, photon_p, step_size)`` returning
+        ``(is_intersected, position)``.
+    """
+    shell_center = jnp.asarray(shell_center, dtype=dtype)
+    shell_radius = dtype(shell_radius)
+
+    def photon_spherical_shell_intersection(photon_x, photon_p, step_size):
+        """Check intersection between a photon ray and the spherical shell.
+
+        Parameters
+        ----------
+        photon_x : jnp.ndarray
+            Photon origin position.
+        photon_p : jnp.ndarray
+            Photon direction vector.
+        step_size : float
+            Maximum step size to consider.
+
+        Returns
+        -------
+        tuple
+            ``(is_intersected, position)``.
+        """
+        p_normed = jnp.asarray(photon_p, dtype=dtype)  # assume normed
+
+        a = jnp.dot(p_normed, (photon_x - shell_center))
+        b = a**2 - (jnp.linalg.norm(photon_x - shell_center) ** 2 - shell_radius**2)
+
+        # Distance of of the intersection point along the line
+        d = -a + jnp.sqrt(b)
+
+        isected = (b &gt;= 0) &amp; (d &gt; 0) &amp; (d &lt; step_size)
+
+        # need to check intersection here, otherwise nan-gradients (sqrt(b) if b &lt; 0)
+        result = cond(
+            isected,
+            lambda _: (True, photon_x + d * p_normed),
+            lambda _: (False, jnp.ones(3, dtype=dtype) * 1e8),
+            0,
+        )
+
+        return result
+
+    return photon_spherical_shell_intersection</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.make_photon_trajectory_fun" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_photon_trajectory_fun</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_photon_trajectory_fun(step_function, photon_init_function, loop_func)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create a photon trajectory function.</p>
+<p>This function calls the photon step function multiple times until
+some termination condition is reached (defined by <code>stepping_mode</code>).</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>step_function</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Function that updates the photon state.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>photon_init_function</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Function that returns the initial photon state.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>loop_func</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Looping function that calls the photon step function.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_photon_trajectory_fun(
+    step_function,
+    photon_init_function,
+    loop_func,
+):
+    """Create a photon trajectory function.
+
+    This function calls the photon step function multiple times until
+    some termination condition is reached (defined by ``stepping_mode``).
+
+    Parameters
+    ----------
+    step_function : callable
+        Function that updates the photon state.
+    photon_init_function : callable
+        Function that returns the initial photon state.
+    loop_func : callable
+        Looping function that calls the photon step function.
+    """
+
+    def make_steps(key):
+        """Create a function that steps a photon until it either intersects or max length is reached.
+
+        Parameters
+        ----------
+        key : jax.random.PRNGKey
+            Random key.
+
+        Returns
+        -------
+        tuple
+            Tuple ``(initial_photon_state, final_photon_state)`` with photon state dicts.
+        """  # noqa: E501
+        k1, k2 = random.split(key, 2)
+
+        # Set initial photon state
+        initial_photon_state = photon_init_function(k1)
+
+        final_photon_state = loop_func(step_function, initial_photon_state, k2)
+
+        return initial_photon_state, final_photon_state
+
+    return make_steps</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.make_step_function" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_step_function</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_step_function(intersection_f, scattering_function, scattering_length_function, ref_index_func, dtype=jnp.float64)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Create a photon step function object.</p>
+<p>Returns a function <code>f(photon_state, key)</code> that performs a photon step
+and returns the new photon state.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>intersection_f</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Function used to calculate the intersection.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>scattering_function</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>RNG function drawing angles from scattering function.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>scattering_length_function</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Function that returns scattering length as a function of wavelength.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>ref_index_func</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Function that returns the refractive index as a function of wavelength.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="callable">callable</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Function with signature <code>(photon_state, rng_key)</code> returning
+<code>(new_photon_state, next_key)</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_step_function(
+    intersection_f,
+    scattering_function,
+    scattering_length_function,
+    ref_index_func,
+    dtype=jnp.float64,
+):
+    """Create a photon step function object.
+
+    Returns a function ``f(photon_state, key)`` that performs a photon step
+    and returns the new photon state.
+
+    Parameters
+    ----------
+    intersection_f : callable
+        Function used to calculate the intersection.
+    scattering_function : callable
+        RNG function drawing angles from scattering function.
+    scattering_length_function : callable
+        Function that returns scattering length as a function of wavelength.
+    ref_index_func : callable
+        Function that returns the refractive index as a function of wavelength.
+
+    Returns
+    -------
+    callable
+        Function with signature ``(photon_state, rng_key)`` returning
+        ``(new_photon_state, next_key)``.
+    """
+
+    def step(photon_state, rng_key):
+        """Single photon step.
+
+        Parameters
+        ----------
+        photon_state : dict
+            Photon state mapping containing keys ``pos``, ``dir``, ``time``,
+            ``isec``, ``stepcnt``, and ``wavelength``.
+        rng_key : jax.random.PRNGKey
+            PRNG key used for sampling during the step.
+
+        Returns
+        -------
+        tuple
+            Tuple ``(new_photon_state, next_key)`` where ``new_photon_state`` is
+            a dict with the same keys as the input state and ``next_key`` is a
+            PRNG subkey.
+        """
+        pos = photon_state["pos"]
+        dir = photon_state["dir"]
+        time = photon_state["time"]
+        isec = photon_state["isec"]
+        stepcnt = photon_state["stepcnt"]
+        wavelength = photon_state["wavelength"]
+
+        k1, k2, k3, k4 = random.split(rng_key, 4)
+
+        sca_coeff = 1 / scattering_length_function(wavelength)
+        c_medium = Constants.BaseConstants.c_vac * 1e-9 / ref_index_func(wavelength)  # m/ns
+
+        eta = random.uniform(k1)
+        step_size = -jnp.log(eta) / sca_coeff
+
+        dstep = step_size * dir
+        new_pos = jnp.asarray(pos + dstep, dtype=dtype)
+        new_time = dtype(time + step_size / c_medium)
+
+        # Calculate intersection
+        isec, isec_pos = intersection_f(
+            photon_x=pos,
+            photon_p=dir,
+            step_size=step_size,
+        )
+
+        isec_time = dtype(time + jnp.linalg.norm(pos - isec_pos) / c_medium)
+
+        # If intersected, set position to intersection position
+        new_pos = cond(isec, lambda args: args[0], lambda args: args[1], (isec_pos, new_pos))
+
+        # If intersected set time to intersection time
+        new_time = cond(
+            isec,
+            lambda args: args[0],
+            lambda args: args[1],
+            (isec_time, new_time),
+        )
+
+        # If intersected, keep previous direction
+        new_dir = cond(
+            isec,
+            lambda args: args[1],
+            lambda args: calc_new_direction(args[0], args[1], scattering_function),
+            ([k2, k3], dir),
+        )
+
+        stepcnt = cond(isec, lambda s: s, lambda s: s + 1, stepcnt)
+
+        new_photon_state = {
+            "pos": new_pos,
+            "dir": new_dir,
+            "time": new_time,
+            "isec": isec,
+            "stepcnt": stepcnt,
+            "wavelength": wavelength,
+        }
+
+        return new_photon_state, k4
+
+    return step</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.make_track_segment_fixed_time_pos_dir_initializer" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_track_segment_fixed_time_pos_dir_initializer</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_track_segment_fixed_time_pos_dir_initializer(initial_time, track_pos, track_dir, wavelength_init, phase_velo_func, segment_length, dtype=jnp.float64)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Initialize a track segment with fixed time, position and direction.</p>
+<p>The photon emission position is sampled uniformly along the track (while adjusting the time).
+Emission angle is calculated from the wavelength.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>initial_time</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Track starting time.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>track_pos</code></b>
+                  (<code><span title="float">float</span>[3]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Track starting position.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>track_dir</code></b>
+                  (<code><span title="float">float</span>[3]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Track direction.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>wavelength_init</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Wavelength initializer.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>phase_velo_func</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Function that returns the phase velocity as a function of wavelength.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>segment_length</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Length of the segment.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dtype</code></b>
+                  (<code><span title="jax.numpy.float64">float64</span> or <span title="jax.numpy.float32">float32</span></code>, default:
+                      <code><span title="jax.numpy.float64">float64</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Data type: how many digits to store.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_track_segment_fixed_time_pos_dir_initializer(
+    initial_time,
+    track_pos,
+    track_dir,
+    wavelength_init,
+    phase_velo_func,
+    segment_length,
+    dtype=jnp.float64,
+):
+    """Initialize a track segment with fixed time, position and direction.
+
+    The photon emission position is sampled uniformly along the track (while adjusting the time).
+    Emission angle is calculated from the wavelength.
+
+    Parameters
+    ----------
+    initial_time : float
+        Track starting time.
+    track_pos : float[3]
+        Track starting position.
+    track_dir : float[3]
+        Track direction.
+    wavelength_init : callable
+        Wavelength initializer.
+    phase_velo_func : callable
+        Function that returns the phase velocity as a function of wavelength.
+    segment_length : float
+        Length of the segment.
+    dtype : jnp.float64 or jnp.float32, optional
+        Data type: how many digits to store.
+    """
+
+    initial_time = dtype(initial_time)
+    track_pos = jnp.asarray(track_pos, dtype=dtype)
+    track_dir = jnp.asarray(track_dir, dtype=dtype)
+
+    def init(rng_key):
+        """Initializer for a photon emitted along a track segment.
+
+        Samples an emission point along the track and computes Cherenkov direction.
+
+        Parameters
+        ----------
+        rng_key : jax.random.PRNGKey
+            PRNG key for sampling.
+
+        Returns
+        -------
+        dict
+            Initial photon state dictionary.
+        """
+        k1, k2, k3 = random.split(rng_key, 3)
+
+        # sample position along track
+        dist_along = random.uniform(k1, minval=0, maxval=segment_length)
+        time_along = initial_time + dist_along / Constants.BaseConstants.c_vac
+        position = track_pos + dist_along * track_dir
+
+        # sample wavelength
+        wl = wavelength_init(k2)
+
+        cherenkov_angle_theta = jnp.arccos(1 / phase_velo_func(wl))
+        phi_angle = random.uniform(k3, minval=0, maxval=2 * np.pi)
+
+        photon_rel_dir = sph_to_cart(cherenkov_angle_theta, phi_angle)
+
+        photon_dir = rotate_to_new_direc(jnp.asarray([0, 0, 1.0]), track_dir, photon_rel_dir)
+
+        # Set initial photon state
+        initial_photon_state = {
+            "pos": position,
+            "dir": photon_dir,
+            "time": time_along,
+            "isec": False,
+            "stepcnt": jnp.int32(0),
+            "wavelength": wl,
+        }
+        return initial_photon_state
+
+    return init</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.photon_sphere_intersection" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">photon_sphere_intersection</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">photon_sphere_intersection(photon_x, photon_p, target_x, target_r, step_size, dtype=jnp.float64)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate photon-sphere intersection.</p>
+<p>Given a photon origin, a photon direction, a step size, a target location, and a
+target radius, determine whether the photon intersects the target and compute
+the intersection point.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>photon_x</code></b>
+                  (<code><span title="jax.numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Photon origin position (shape (3,)).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>photon_p</code></b>
+                  (<code><span title="jax.numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Photon direction vector (shape (3,)).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>target_x</code></b>
+                  (<code><span title="jax.numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Target center position (shape (3,)).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>target_r</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Target radius.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>step_size</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Step size.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dtype</code></b>
+                  (<code><span title="jax.numpy.dtype">dtype</span></code>, default:
+                      <code><span title="jax.numpy.float64">float64</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Data type for computations (default is <code>jax.numpy.float64</code>).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="tuple">tuple</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Tuple <code>(is_intersected, position)</code> where <code>is_intersected</code> is a boolean
+indicating whether an intersection occurred and <code>position</code> is the
+intersection point as a JAX array when intersected; otherwise a sentinel array.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def photon_sphere_intersection(
+    photon_x, photon_p, target_x, target_r, step_size, dtype=jnp.float64
+):
+    """Calculate photon-sphere intersection.
+
+    Given a photon origin, a photon direction, a step size, a target location, and a
+    target radius, determine whether the photon intersects the target and compute
+    the intersection point.
+
+    Parameters
+    ----------
+    photon_x : jnp.ndarray
+        Photon origin position (shape (3,)).
+    photon_p : jnp.ndarray
+        Photon direction vector (shape (3,)).
+    target_x : jnp.ndarray
+        Target center position (shape (3,)).
+    target_r : float
+        Target radius.
+    step_size : float
+        Step size.
+    dtype : jnp.dtype, optional
+        Data type for computations (default is ``jax.numpy.float64``).
+
+    Returns
+    -------
+    tuple
+        Tuple ``(is_intersected, position)`` where ``is_intersected`` is a boolean
+        indicating whether an intersection occurred and ``position`` is the
+        intersection point as a JAX array when intersected; otherwise a sentinel array.
+    """
+    p_normed = jnp.asarray(photon_p, dtype=dtype)  # assume normed
+
+    a = jnp.dot(p_normed, (photon_x - target_x))
+    b = a**2 - (jnp.linalg.norm(photon_x - target_x) ** 2 - target_r**2)
+    # Distance of of the intersection point along the line
+    d = -a - jnp.sqrt(b)
+
+    isected = (b &gt;= 0) &amp; (d &gt; 0) &amp; (d &lt; step_size)
+
+    # need to check intersection here, otherwise nan-gradients (sqrt(b) if b &lt; 0)
+    result = cond(
+        isected,
+        lambda _: (True, photon_x + d * p_normed),
+        lambda _: (False, jnp.ones(3) * 1e8),
+        0,
+    )
+
+    return result</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.sph_to_cart" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">sph_to_cart</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">sph_to_cart(theta, phi=0, r=1)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Transform spherical to cartesian coordinates.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>theta</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Polar angle in radians.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>phi</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Azimuthal angle in radians (default is 0).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>r</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>1</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Radius (default is 1).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="jax.numpy.ndarray">ndarray</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Cartesian coordinates as a 3-element array.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def sph_to_cart(theta, phi=0, r=1):
+    """Transform spherical to cartesian coordinates.
+
+    Parameters
+    ----------
+    theta : float
+        Polar angle in radians.
+    phi : float, optional
+        Azimuthal angle in radians (default is 0).
+    r : float, optional
+        Radius (default is 1).
+
+    Returns
+    -------
+    jax.numpy.ndarray
+        Cartesian coordinates as a 3-element array.
+    """
+    x = r * jnp.sin(theta) * jnp.cos(phi)
+    y = r * jnp.sin(theta) * jnp.sin(phi)
+    z = r * jnp.cos(theta)
+
+    return jnp.array([x, y, z])</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.propagate.unpack_args" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">unpack_args</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">unpack_args(f)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Wrap a function by unpacking a single argument tuple.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>f</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Function that accepts positional arguments; the wrapper will accept a
+single tuple and unpack it into <code>f</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="callable">callable</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Wrapper function accepting a single tuple argument.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/propagate.py</code></summary>
+              <pre class="highlight"><code class="language-python">def unpack_args(f):
+    """Wrap a function by unpacking a single argument tuple.
+
+    Parameters
+    ----------
+    f : callable
+        Function that accepts positional arguments; the wrapper will accept a
+        single tuple and unpack it into ``f``.
+
+    Returns
+    -------
+    callable
+        Wrapper function accepting a single tuple argument.
+    """
+
+    def _f(args):
+        """Unpack a single tuple argument and call ``f`` with it.
+
+        Parameters
+        ----------
+        args : tuple
+            Positional arguments to unpack for ``f``.
+        """
+        return f(*args)
+
+    return _f</code></pre>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../pmt/pmt/" class="btn btn-neutral float-left" title="pmt"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../utils/" class="btn btn-neutral float-right" title="utils">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../pmt/pmt/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../utils/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="../../../js/popper.min.js"></script>
+      <script src="../../../js/tippy-bundle.umd.js"></script>
+      <script src="../../../js/clipboard.js"></script>
+      <script src="../../../js/extra.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

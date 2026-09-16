@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../../../../../../img/favicon.ico" />
+    <title>utils - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../../../../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../../../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../../../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../../../../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "utils";
+        var mkdocs_page_input_path = "api-reference/prometheus/photon_propagation/olympus/event_generation/photon_propagation/utils.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../../../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../../../../../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Installation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../../../installation/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../../../installation/built-in-installer/">Built-in installer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../../../installation/containers/">Containers</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../../../citation/">Citation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../../../papers/">Papers Using Prometheus</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="../../../../../">prometheus</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../compat/">compat</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../compat/haiku_unpickler/">haiku_unpickler</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../config/">config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../config_types/">config_types</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../detector/">detector</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../detector/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../detector/detector_factory/">detector_factory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../detector/medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../detector/module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../detector/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../injection/">injection</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../injection/genie_injector/">genie_injector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../injection/genie_parser/">genie_parser</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../injection/injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../injection/injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../injection/injection/genie_injection/">genie_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../injection/injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../injection/injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../injection/injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../injection/injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../injection/injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../injection/interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../injection/lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../injection/registered_injectors/">registered_injectors</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../injection/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../lepton_propagation/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../logging/">logging</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../logging/handlers/">handlers</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../logging_config/">logging_config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="../../../../">photon_propagation</a>
+    <ul class="current">
+                <li class="toctree-l3"><a class="reference internal" href="../../../../hit/">hit</a>
+                </li>
+                <li class="toctree-l3 current"><a class="reference internal current" href="../../../">olympus</a>
+    <ul class="current">
+                <li class="toctree-l4 current"><a class="reference internal current" href="../../">event_generation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../optimization/">optimization</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../plotting/">plotting</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../ppc_photon_propagator/">ppc_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../registry/">registry</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../summary/">summary</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../utils/">utils</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/capture/">capture</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/detector_layers/">detector_layers</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/dom_response/">dom_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/f2k_utils/">f2k_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/fadc_digitization/">fadc_digitization</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/formatting/">formatting</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/layered_sim/">layered_sim</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/memory/">memory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/pmt_response/">pmt_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../utils/serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../utils/serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../utils/serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../utils/serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../utils/serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../utils/serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/timing/">timing</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../utils/write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../../hyperion/">hyperion</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../../hyperion/constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../../hyperion/data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../../hyperion/medium/">medium</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../../hyperion/models/">models</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../../hyperion/models/photon_arrival_time_nflow/">photon_arrival_time_nflow</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../../hyperion/models/photon_arrival_time_nflow/net/">net</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../../hyperion/models/photon_arrival_time_nflow/training_data/">training_data</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../../hyperion/models/photon_arrival_time_nflow/validation/">validation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../../hyperion/models/photon_binned_amplitude/">photon_binned_amplitude</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../../hyperion/models/photon_binned_amplitude/net/">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../../hyperion/pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../../hyperion/pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../../hyperion/propagate/">propagate</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../../hyperion/utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../../../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item"><a href="../../../../../">prometheus</a></li>
+          <li class="breadcrumb-item"><a href="../../../../">photon_propagation</a></li>
+          <li class="breadcrumb-item"><a href="../../../">olympus</a></li>
+          <li class="breadcrumb-item"><a href="../../">event_generation</a></li>
+          <li class="breadcrumb-item"><a href="../">photon_propagation</a></li>
+      <li class="breadcrumb-item active">utils</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="prometheus.photon_propagation.olympus.event_generation.photon_propagation.utils" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">prometheus.photon_propagation.olympus.event_generation.photon_propagation.utils</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="next_bucket (prometheus.photon_propagation.olympus.event_generation.photon_propagation.utils.next_bucket)" href="#prometheus.photon_propagation.olympus.event_generation.photon_propagation.utils.next_bucket">next_bucket</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Return the smallest power of <code>base</code> that is &gt;= both <code>n</code> and <code>minimum</code>.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="source_to_model_input_per_module (prometheus.photon_propagation.olympus.event_generation.photon_propagation.utils.source_to_model_input_per_module)" href="#prometheus.photon_propagation.olympus.event_generation.photon_propagation.utils.source_to_model_input_per_module">source_to_model_input_per_module</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Convert photon source and module coordinates into neural net input.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="sources_to_model_input_chunked (prometheus.photon_propagation.olympus.event_generation.photon_propagation.utils.sources_to_model_input_chunked)" href="#prometheus.photon_propagation.olympus.event_generation.photon_propagation.utils.sources_to_model_input_chunked">sources_to_model_input_chunked</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Evaluate the model-input kernel in fixed-size module chunks.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.photon_propagation.olympus.event_generation.photon_propagation.utils.next_bucket" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">next_bucket</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">next_bucket(n: int, base: int = 2, minimum: int = 1) -&gt; int</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Return the smallest power of <code>base</code> that is &gt;= both <code>n</code> and <code>minimum</code>.</p>
+<p>Array shapes padded to bucket sizes let jitted functions compile once per
+bucket instead of once per unique shape, which otherwise dominates the
+runtime of the photon propagation loop.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>n</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of elements that must fit in the bucket.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>base</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>2</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Bucket growth factor.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>minimum</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>1</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Smallest bucket size to return.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="int">int</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Bucket size.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/photon_propagation/olympus/event_generation/photon_propagation/utils.py</code></summary>
+              <pre class="highlight"><code class="language-python">def next_bucket(n: int, base: int = 2, minimum: int = 1) -&gt; int:
+    """Return the smallest power of ``base`` that is &gt;= both ``n`` and ``minimum``.
+
+    Array shapes padded to bucket sizes let jitted functions compile once per
+    bucket instead of once per unique shape, which otherwise dominates the
+    runtime of the photon propagation loop.
+
+    Parameters
+    ----------
+    n : int
+        Number of elements that must fit in the bucket.
+    base : int
+        Bucket growth factor.
+    minimum : int
+        Smallest bucket size to return.
+
+    Returns
+    -------
+    int
+        Bucket size.
+    """
+    bucket = minimum
+    while bucket &lt; n:
+        bucket *= base
+    return bucket</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.photon_propagation.olympus.event_generation.photon_propagation.utils.source_to_model_input_per_module" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">source_to_model_input_per_module</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">source_to_model_input_per_module(module_coords, source_pos, source_dir, source_t0, c_medium)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Convert photon source and module coordinates into neural net input.</p>
+<p>Calculates the distance and viewing angle between the source and the module.
+The viewing angle is the angle of the vector between module and source and the direction
+vector of the source.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>module_coords</code></b>
+                  (<code><span title="jax.numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Coordinates of the module.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>source_pos</code></b>
+                  (<code><span title="jax.numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Position of the photon source.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>source_dir</code></b>
+                  (<code><span title="jax.numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Direction vector of the photon source.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>source_t0</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Emission time of the photon source.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>c_medium</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Speed of light in the medium.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>inp_pars</code></b>(                  <code><span title="jax.numpy.ndarray">ndarray</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Array of <code>[log10(distance), viewing_angle]</code>.</p>
+              </div>
+            </li>
+            <li>
+<b><code>time_geo</code></b>(                  <code><span title="float">float</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Geometric time (expected arrival time for a direct photon).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/photon_propagation/olympus/event_generation/photon_propagation/utils.py</code></summary>
+              <pre class="highlight"><code class="language-python">def source_to_model_input_per_module(module_coords, source_pos, source_dir, source_t0, c_medium):
+    """Convert photon source and module coordinates into neural net input.
+
+    Calculates the distance and viewing angle between the source and the module.
+    The viewing angle is the angle of the vector between module and source and the direction
+    vector of the source.
+
+    Parameters
+    ----------
+    module_coords : jnp.ndarray
+        Coordinates of the module.
+    source_pos : jnp.ndarray
+        Position of the photon source.
+    source_dir : jnp.ndarray
+        Direction vector of the photon source.
+    source_t0 : float
+        Emission time of the photon source.
+    c_medium : float
+        Speed of light in the medium.
+
+    Returns
+    -------
+    inp_pars : jnp.ndarray
+        Array of ``[log10(distance), viewing_angle]``.
+    time_geo : float
+        Geometric time (expected arrival time for a direct photon).
+
+    """
+
+    source_targ_vec = module_coords - source_pos
+
+    dist = jnp.linalg.norm(source_targ_vec)
+    # angles = jnp.arccos(jnp.einsum("ak, k -&gt; a", source_targ_vec, source_dir) / dist)
+
+    angle = jnp.arccos(jnp.sum(source_targ_vec * source_dir) / dist)
+
+    time_geo = dist / c_medium + source_t0
+
+    inp_pars = jnp.asarray([jnp.log10(dist), angle])
+
+    return inp_pars, time_geo</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.photon_propagation.olympus.event_generation.photon_propagation.utils.sources_to_model_input_chunked" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">sources_to_model_input_chunked</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">sources_to_model_input_chunked(module_coords, source_pos, source_dir, source_time, c_medium, module_chunk)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Evaluate the model-input kernel in fixed-size module chunks.</p>
+<p><code>sources_to_model_input</code> is jitted and vmapped over both the module and
+the source axis, so XLA compiles one executable per distinct
+<code>(n_sources, n_modules)</code> shape pair. Padding both axes to power-of-two
+buckets makes the number of cached executables the <em>product</em> of the two
+ladders -- roughly nine module buckets times eight source buckets, so up
+to ~70 resident variants of this one kernel. That cache is never
+reclaimed, and it is the bulk of the several GB each process accumulates.</p>
+<p>Holding the module axis at a fixed <code>module_chunk</code> and looping takes it
+out of the cross-product, leaving only the source bucket to vary. Values
+are unchanged: each <code>(module, source)</code> pair is evaluated independently
+of every other, so splitting the module axis is exact. The fixed chunk
+also wastes less padding than rounding a few thousand modules up to the
+next power of two.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>module_coords</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Module coordinates, shape <code>(n_modules, 3)</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>source_pos</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Source positions, shape <code>(n_sources, 3)</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>source_dir</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Source direction vectors, shape <code>(n_sources, 3)</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>source_time</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Source emission times, shape <code>(n_sources, 1)</code>.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>c_medium</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Speed of light in the medium.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>module_chunk</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of modules per jitted call.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>inp_pars</code></b>(                  <code><span title="numpy.ndarray">ndarray</span></code>
+)              –
+              <div class="doc-md-description">
+                <p><code>[log10(distance), viewing_angle]</code> per pair, shape
+<code>(n_sources, n_modules, 2)</code>.</p>
+              </div>
+            </li>
+            <li>
+<b><code>time_geo</code></b>(                  <code><span title="numpy.ndarray">ndarray</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Geometric arrival time per pair, shape <code>(n_sources, n_modules, 1)</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/photon_propagation/olympus/event_generation/photon_propagation/utils.py</code></summary>
+              <pre class="highlight"><code class="language-python">def sources_to_model_input_chunked(
+    module_coords, source_pos, source_dir, source_time, c_medium, module_chunk
+):
+    """Evaluate the model-input kernel in fixed-size module chunks.
+
+    ``sources_to_model_input`` is jitted and vmapped over both the module and
+    the source axis, so XLA compiles one executable per distinct
+    ``(n_sources, n_modules)`` shape pair. Padding both axes to power-of-two
+    buckets makes the number of cached executables the *product* of the two
+    ladders -- roughly nine module buckets times eight source buckets, so up
+    to ~70 resident variants of this one kernel. That cache is never
+    reclaimed, and it is the bulk of the several GB each process accumulates.
+
+    Holding the module axis at a fixed ``module_chunk`` and looping takes it
+    out of the cross-product, leaving only the source bucket to vary. Values
+    are unchanged: each ``(module, source)`` pair is evaluated independently
+    of every other, so splitting the module axis is exact. The fixed chunk
+    also wastes less padding than rounding a few thousand modules up to the
+    next power of two.
+
+    Parameters
+    ----------
+    module_coords : np.ndarray
+        Module coordinates, shape ``(n_modules, 3)``.
+    source_pos : np.ndarray
+        Source positions, shape ``(n_sources, 3)``.
+    source_dir : np.ndarray
+        Source direction vectors, shape ``(n_sources, 3)``.
+    source_time : np.ndarray
+        Source emission times, shape ``(n_sources, 1)``.
+    c_medium : float
+        Speed of light in the medium.
+    module_chunk : int
+        Number of modules per jitted call.
+
+    Returns
+    -------
+    inp_pars : np.ndarray
+        ``[log10(distance), viewing_angle]`` per pair, shape
+        ``(n_sources, n_modules, 2)``.
+    time_geo : np.ndarray
+        Geometric arrival time per pair, shape ``(n_sources, n_modules, 1)``.
+    """
+    module_coords = np.asarray(module_coords)
+    n_mod = module_coords.shape[0]
+    n_src = np.shape(source_pos)[0]
+    chunk = max(1, int(module_chunk))
+
+    if n_mod == 0:
+        return np.empty((n_src, 0, 2)), np.empty((n_src, 0, 1))
+
+    inp_chunks = []
+    time_chunks = []
+    for start in range(0, n_mod, chunk):
+        block = module_coords[start : start + chunk]
+        pad = chunk - block.shape[0]
+        if pad:
+            # Only the final chunk is ever padded, and its extra columns are
+            # trimmed below. 1e6 merely keeps the distance finite and nonzero
+            # so that log10 and arccos stay well defined.
+            block = np.pad(block, ((0, pad), (0, 0)), constant_values=1e6)
+        inp_pars, time_geo = sources_to_model_input(
+            block, source_pos, source_dir, source_time, c_medium
+        )
+        inp_chunks.append(np.asarray(inp_pars))
+        time_chunks.append(np.asarray(time_geo))
+
+    inp_pars = np.concatenate(inp_chunks, axis=1)[:, :n_mod]
+    time_geo = np.concatenate(time_chunks, axis=1)[:, :n_mod]
+    return inp_pars, time_geo</code></pre>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../norm_flow_photons/" class="btn btn-neutral float-left" title="norm_flow_photons"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../photon_source/" class="btn btn-neutral float-right" title="photon_source">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../norm_flow_photons/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../photon_source/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../../../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../../../../../..";</script>
+    <script src="../../../../../../../js/theme_extra.js"></script>
+    <script src="../../../../../../../js/theme.js"></script>
+      <script src="../../../../../../../js/popper.min.js"></script>
+      <script src="../../../../../../../js/tippy-bundle.umd.js"></script>
+      <script src="../../../../../../../js/clipboard.js"></script>
+      <script src="../../../../../../../js/extra.js"></script>
+      <script src="../../../../../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
