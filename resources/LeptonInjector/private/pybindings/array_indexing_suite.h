@@ -54,6 +54,15 @@ typename Array,
 			boost::python::throw_error_already_set();
 		}
 
+		// Boost 1.92 added a "clear" method to indexing_suite that calls
+		// DerivedPolicies::clear. The array view has a fixed size, so it
+		// refuses the way delete_item does. Older Boost never calls it.
+		static void clear( Array& /*arr*/ )
+		{
+			::PyErr_SetString( ::PyExc_TypeError, "Cannot clear a fixed-size array" );
+			boost::python::throw_error_already_set();
+		}
+
 		static size_type size( Array& arr )
 		{
 			return arr.size();
