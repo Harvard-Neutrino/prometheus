@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../../../img/favicon.ico" />
+    <title>fadc_digitization - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "fadc_digitization";
+        var mkdocs_page_input_path = "api-reference/prometheus/utils/fadc_digitization.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Installation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../installation/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../installation/built-in-installer/">Built-in installer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../installation/containers/">Containers</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../citation/">Citation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../papers/">Papers Using Prometheus</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="../../">prometheus</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../../compat/">compat</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../compat/haiku_unpickler/">haiku_unpickler</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../config/">config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../config_types/">config_types</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../detector/">detector</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/detector_factory/">detector_factory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../injection/">injection</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/genie_injector/">genie_injector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/genie_parser/">genie_parser</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/genie_injection/">genie_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/registered_injectors/">registered_injectors</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../logging/">logging</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../logging/handlers/">handlers</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../logging_config/">logging_config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/hit/">hit</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/olympus/">olympus</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/event_generation/">event_generation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/optimization/">optimization</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/plotting/">plotting</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/ppc_photon_propagator/">ppc_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/registry/">registry</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../summary/">summary</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="../">utils</a>
+    <ul class="current">
+                <li class="toctree-l3"><a class="reference internal" href="../capture/">capture</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../detector_layers/">detector_layers</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../dom_response/">dom_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../f2k_utils/">f2k_utils</a>
+                </li>
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">fadc_digitization</a>
+    <ul class="current">
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.utils.fadc_digitization.dark_noise">dark_noise</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.utils.fadc_digitization.generate_fadc_response">generate_fadc_response</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../formatting/">formatting</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../layered_sim/">layered_sim</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../memory/">memory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../pmt_response/">pmt_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timing/">timing</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../hyperion/">hyperion</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/medium/">medium</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/models/">models</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/">photon_arrival_time_nflow</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/net/">net</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/training_data/">training_data</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/validation/">validation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/">photon_binned_amplitude</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/net/">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/propagate/">propagate</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item"><a href="../../">prometheus</a></li>
+          <li class="breadcrumb-item"><a href="../">utils</a></li>
+      <li class="breadcrumb-item active">fadc_digitization</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="prometheus.utils.fadc_digitization" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">prometheus.utils.fadc_digitization</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+        <p>Analog pulse formation and digitisation for the mDOM response model.</p>
+<ol>
+<li>Dark noise injection (thermal + correlated radioactive bursts)
+   (:func:<code>dark_noise</code>).</li>
+<li>SPE-template convolution and FADC digitisation, plus a discriminator
+   threshold-crossing pass producing ToT hits -- the only readout a real
+   KM3NeT DOM front-end provides (:func:<code>generate_fadc_response</code>,
+   :func:<code>_threshold_crossings</code>).</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="dark_noise (prometheus.utils.fadc_digitization.dark_noise)" href="#prometheus.utils.fadc_digitization.dark_noise">dark_noise</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Sample dark-noise hit times in a window.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="generate_fadc_response (prometheus.utils.fadc_digitization.generate_fadc_response)" href="#prometheus.utils.fadc_digitization.generate_fadc_response">generate_fadc_response</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Apply QE, TTS, dark noise, FADC digitisation, and ToT hit extraction.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.utils.fadc_digitization.dark_noise" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">dark_noise</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">dark_noise(t_min: float, t_max: float, rate_hz: float, correlated_frac: float = 0.2, rng: Generator | None = None) -&gt; np.ndarray</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Sample dark-noise hit times in a window.</p>
+<p>Combines a uniform thermal component with correlated radioactive bursts
+(exponentially spaced secondaries).</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>t_min</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Window bounds [ns].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>t_max</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Window bounds [ns].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>rate_hz</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Total dark-noise rate [Hz].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>correlated_frac</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.2</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Fraction of the rate attributed to correlated bursts.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>rng</code></b>
+                  (<code><span title="numpy.random.Generator">Generator</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Random number generator.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="numpy.ndarray">ndarray</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Sorted noise hit times [ns].</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/utils/fadc_digitization.py</code></summary>
+              <pre class="highlight"><code class="language-python">def dark_noise(
+    t_min: float,
+    t_max: float,
+    rate_hz: float,
+    correlated_frac: float = 0.2,
+    rng: np.random.Generator | None = None,
+) -&gt; np.ndarray:
+    """Sample dark-noise hit times in a window.
+
+    Combines a uniform thermal component with correlated radioactive bursts
+    (exponentially spaced secondaries).
+
+    Parameters
+    ----------
+    t_min, t_max : float
+        Window bounds [ns].
+    rate_hz : float
+        Total dark-noise rate [Hz].
+    correlated_frac : float
+        Fraction of the rate attributed to correlated bursts.
+    rng : np.random.Generator, optional
+        Random number generator.
+
+    Returns
+    -------
+    np.ndarray
+        Sorted noise hit times [ns].
+    """
+    if rng is None:
+        rng = np.random.default_rng()
+    dt_s = max(0.0, t_max - t_min) * 1e-9
+
+    n_th = rng.poisson(rate_hz * (1.0 - correlated_frac) * dt_s)
+    thermal = rng.uniform(t_min, t_max, n_th)
+
+    burst_rate = rate_hz * correlated_frac / 2.5
+    burst_times: list[float] = []
+    for _ in range(rng.poisson(burst_rate * dt_s)):
+        t0 = float(rng.uniform(t_min, t_max))
+        burst_times.append(t0)
+        n_sec = rng.poisson(1.5)
+        if n_sec &gt; 0:
+            burst_times.extend((t0 + rng.exponential(15.0, n_sec)).tolist())
+
+    parts = [thermal]
+    if burst_times:
+        parts.append(np.asarray(burst_times))
+    return np.sort(np.concatenate(parts)) if len(parts) &gt; 1 or n_th &gt; 0 else np.array([])</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.utils.fadc_digitization.generate_fadc_response" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">generate_fadc_response</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">generate_fadc_response(photon_times: ndarray, qe: float = 1.0, tts_ns: float = TTS_NS, dark_rate_hz: float = PMT_DARK_RATE_HZ, rng: Generator | None = None, tot_threshold_pe: float = TOT_THRESHOLD_PE, tot_max_ns: float = TOT_MAX_NS) -&gt; tuple[np.ndarray, np.ndarray, int, np.ndarray, np.ndarray]</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Apply QE, TTS, dark noise, FADC digitisation, and ToT hit extraction.</p>
+<p>Applies QE filtering, TTS smearing, dark-noise injection, and SPE-template
+FADC digitisation, plus a discriminator threshold-crossing pass over the
+same analog trace to produce ToT hits (leading-edge time, Time-over-
+Threshold duration) — the only readout a real KM3NeT DOM front-end
+provides.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>photon_times</code></b>
+                  (<code><span title="ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Photon arrival times at the module face [ns].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>qe</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>1.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Quantum efficiency (detection probability per photon).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>tts_ns</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code><span title="prometheus.utils.fadc_digitization.TTS_NS">TTS_NS</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Transit-time spread sigma [ns].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dark_rate_hz</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code><span title="prometheus.utils.fadc_digitization.PMT_DARK_RATE_HZ">PMT_DARK_RATE_HZ</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Total PMT dark-noise rate [Hz].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>rng</code></b>
+                  (<code><span title="numpy.random.Generator">Generator</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Random number generator.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>tot_threshold_pe</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code><span title="prometheus.utils.fadc_digitization.TOT_THRESHOLD_PE">TOT_THRESHOLD_PE</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Discriminator threshold, PE-equivalent amplitude.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>tot_max_ns</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code><span title="prometheus.utils.fadc_digitization.TOT_MAX_NS">TOT_MAX_NS</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>ToT saturation cap [ns].</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>fadc_t</code></b>(                  <code><span title="ndarray">ndarray</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>FADC bin centre times [ns].</p>
+              </div>
+            </li>
+            <li>
+<b><code>fadc_q</code></b>(                  <code><span title="ndarray">ndarray</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Charge in each non-zero bin [PE].</p>
+              </div>
+            </li>
+            <li>
+<b><code>n_signal_pe</code></b>(                  <code><span title="int">int</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Number of detected signal photoelectrons before dark noise.</p>
+              </div>
+            </li>
+            <li>
+<b><code>hit_t</code></b>(                  <code><span title="ndarray">ndarray</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Leading-edge time of each ToT hit [ns].</p>
+              </div>
+            </li>
+            <li>
+<b><code>tot_ns</code></b>(                  <code><span title="ndarray">ndarray</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>ToT duration of each hit [ns].</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/utils/fadc_digitization.py</code></summary>
+              <pre class="highlight"><code class="language-python">def generate_fadc_response(
+    photon_times: np.ndarray,
+    qe: float = 1.0,  # QE already applied upstream when qe=1
+    tts_ns: float = TTS_NS,
+    dark_rate_hz: float = PMT_DARK_RATE_HZ,
+    rng: np.random.Generator | None = None,
+    tot_threshold_pe: float = TOT_THRESHOLD_PE,
+    tot_max_ns: float = TOT_MAX_NS,
+) -&gt; tuple[np.ndarray, np.ndarray, int, np.ndarray, np.ndarray]:
+    """Apply QE, TTS, dark noise, FADC digitisation, and ToT hit extraction.
+
+    Applies QE filtering, TTS smearing, dark-noise injection, and SPE-template
+    FADC digitisation, plus a discriminator threshold-crossing pass over the
+    same analog trace to produce ToT hits (leading-edge time, Time-over-
+    Threshold duration) — the only readout a real KM3NeT DOM front-end
+    provides.
+
+    Parameters
+    ----------
+    photon_times : ndarray
+        Photon arrival times at the module face [ns].
+    qe : float
+        Quantum efficiency (detection probability per photon).
+    tts_ns : float
+        Transit-time spread sigma [ns].
+    dark_rate_hz : float
+        Total PMT dark-noise rate [Hz].
+    rng : numpy.random.Generator, optional
+        Random number generator.
+    tot_threshold_pe : float
+        Discriminator threshold, PE-equivalent amplitude.
+    tot_max_ns : float
+        ToT saturation cap [ns].
+
+    Returns
+    -------
+    fadc_t : ndarray
+        FADC bin centre times [ns].
+    fadc_q : ndarray
+        Charge in each non-zero bin [PE].
+    n_signal_pe : int
+        Number of detected signal photoelectrons before dark noise.
+    hit_t : ndarray
+        Leading-edge time of each ToT hit [ns].
+    tot_ns : ndarray
+        ToT duration of each hit [ns].
+    """
+    if rng is None:
+        rng = np.random.default_rng()
+    times = np.asarray(photon_times, dtype=float)
+
+    # QE filter (only applied when qe &lt; 1; for per-PMT calls qe=1 since
+    # assignment already encoded the geometric + QE probability)
+    detected = rng.random(len(times)) &lt; qe
+    signal_t = times[detected] + rng.normal(0.0, tts_ns, detected.sum())
+    n_signal_pe = len(signal_t)
+
+    if n_signal_pe &gt; 0:
+        win_min = float(np.floor(signal_t.min())) - 100.0
+        win_max = float(np.ceil(signal_t.max())) + 100.0
+    else:
+        win_min, win_max = 0.0, 1000.0
+
+    noise_t = dark_noise(win_min, win_max, dark_rate_hz, rng=rng)
+    all_t = np.sort(np.concatenate([signal_t, noise_t])) if len(noise_t) else np.sort(signal_t)
+
+    if len(all_t) == 0:
+        return np.array([]), np.array([]), n_signal_pe, np.array([]), np.array([])
+
+    charges = np.clip(rng.normal(SPE_MEAN, SPE_SIGMA, len(all_t)), 0.1, None)
+
+    # Sparse clustering to avoid allocating dense arrays over large windows
+    gaps = np.diff(all_t)
+    split_idx = np.where(gaps &gt; 50.0)[0] + 1
+    t_clusters = np.split(all_t, split_idx)
+    q_clusters = np.split(charges, split_idx)
+
+    template_t = np.arange(-15.0, 15.0, SIM_DT_NS)
+    spe_template_raw = np.exp(-0.5 * (template_t / PULSE_WIDTH_NS) ** 2)
+    template_peak_scale = spe_template_raw.sum()
+    spe_template = spe_template_raw / template_peak_scale
+
+    fadc_t_parts: list[np.ndarray] = []
+    fadc_q_parts: list[np.ndarray] = []
+    hit_t_parts: list[np.ndarray] = []
+    tot_ns_parts: list[np.ndarray] = []
+
+    for ct, cq in zip(t_clusters, q_clusters):
+        if len(ct) == 0:
+            continue
+        c_min = np.floor((ct[0] - 20.0) / FADC_BIN_NS) * FADC_BIN_NS
+        c_max = np.ceil((ct[-1] + 20.0) / FADC_BIN_NS) * FADC_BIN_NS
+
+        hi_bins = np.arange(c_min, c_max + SIM_DT_NS, SIM_DT_NS)
+        hi_sig, _ = np.histogram(ct, bins=hi_bins, weights=cq)
+        analog = scipy.signal.fftconvolve(hi_sig, spe_template, mode="same")
+        t_analog = hi_bins[:-1] + SIM_DT_NS / 2.0
+
+        fadc_bins = np.arange(c_min, c_max + FADC_BIN_NS, FADC_BIN_NS)
+        digi_q, _ = np.histogram(t_analog, bins=fadc_bins, weights=analog)
+        fadc_t_cluster = fadc_bins[:-1] + FADC_BIN_NS / 2.0
+
+        mask = digi_q &gt; 0.05
+        fadc_t_parts.append(fadc_t_cluster[mask])
+        fadc_q_parts.append(digi_q[mask])
+
+        # ToT: threshold-crossing on the (un-normalised) amplitude trace, so
+        # an isolated single-PE hit peaks at ~1.0 PE-equivalent amplitude.
+        amplitude = analog * template_peak_scale
+        hit_t_cluster, tot_ns_cluster = _threshold_crossings(
+            amplitude, t_analog, tot_threshold_pe, tot_max_ns
+        )
+        hit_t_parts.append(hit_t_cluster)
+        tot_ns_parts.append(tot_ns_cluster)
+
+    if not fadc_t_parts:
+        return np.array([]), np.array([]), n_signal_pe, np.array([]), np.array([])
+
+    fadc_t = np.concatenate(fadc_t_parts)
+    fadc_q = np.concatenate(fadc_q_parts)
+    order = np.argsort(fadc_t)
+
+    hit_t = np.concatenate(hit_t_parts)
+    tot_ns = np.concatenate(tot_ns_parts)
+    tot_order = np.argsort(hit_t)
+
+    return (fadc_t[order], fadc_q[order], n_signal_pe, hit_t[tot_order], tot_ns[tot_order])</code></pre>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../f2k_utils/" class="btn btn-neutral float-left" title="f2k_utils"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../find_cog/" class="btn btn-neutral float-right" title="find_cog">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../f2k_utils/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../find_cog/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../../..";</script>
+    <script src="../../../../js/theme_extra.js"></script>
+    <script src="../../../../js/theme.js"></script>
+      <script src="../../../../js/popper.min.js"></script>
+      <script src="../../../../js/tippy-bundle.umd.js"></script>
+      <script src="../../../../js/clipboard.js"></script>
+      <script src="../../../../js/extra.js"></script>
+      <script src="../../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

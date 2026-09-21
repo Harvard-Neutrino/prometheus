@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../../../../../img/favicon.ico" />
+    <title>event_generation - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../../../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../../../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "event_generation";
+        var mkdocs_page_input_path = "api-reference/prometheus/photon_propagation/olympus/event_generation/event_generation.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../../../../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Installation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../../installation/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../../installation/built-in-installer/">Built-in installer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../../installation/containers/">Containers</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../../citation/">Citation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../../papers/">Papers Using Prometheus</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="../../../../">prometheus</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../../../../compat/">compat</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../compat/haiku_unpickler/">haiku_unpickler</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../config/">config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../config_types/">config_types</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../detector/">detector</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../detector/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../detector/detector_factory/">detector_factory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../detector/medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../detector/module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../detector/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../injection/">injection</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../injection/genie_injector/">genie_injector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../injection/genie_parser/">genie_parser</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../injection/injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../injection/injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../injection/injection/genie_injection/">genie_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../injection/injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../injection/injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../injection/injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../injection/injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../injection/injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../injection/interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../injection/lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../injection/registered_injectors/">registered_injectors</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../injection/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../lepton_propagation/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../logging/">logging</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../logging/handlers/">handlers</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../logging_config/">logging_config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="../../../">photon_propagation</a>
+    <ul class="current">
+                <li class="toctree-l3"><a class="reference internal" href="../../../hit/">hit</a>
+                </li>
+                <li class="toctree-l3 current"><a class="reference internal current" href="../../">olympus</a>
+    <ul class="current">
+                <li class="toctree-l4 current"><a class="reference internal current" href="../">event_generation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../optimization/">optimization</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../plotting/">plotting</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../ppc_photon_propagator/">ppc_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../registry/">registry</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../summary/">summary</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../utils/">utils</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/capture/">capture</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/detector_layers/">detector_layers</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/dom_response/">dom_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/f2k_utils/">f2k_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/fadc_digitization/">fadc_digitization</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/formatting/">formatting</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/layered_sim/">layered_sim</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/memory/">memory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/pmt_response/">pmt_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../utils/serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../utils/serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../utils/serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../utils/serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../utils/serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../utils/serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/timing/">timing</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../utils/write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../hyperion/">hyperion</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../hyperion/constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../hyperion/data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../hyperion/medium/">medium</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../hyperion/models/">models</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../hyperion/models/photon_arrival_time_nflow/">photon_arrival_time_nflow</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../hyperion/models/photon_arrival_time_nflow/net/">net</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../hyperion/models/photon_arrival_time_nflow/training_data/">training_data</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../hyperion/models/photon_arrival_time_nflow/validation/">validation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../hyperion/models/photon_binned_amplitude/">photon_binned_amplitude</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../../hyperion/models/photon_binned_amplitude/net/">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../hyperion/pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../../hyperion/pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../hyperion/propagate/">propagate</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../hyperion/utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item"><a href="../../../../">prometheus</a></li>
+          <li class="breadcrumb-item"><a href="../../../">photon_propagation</a></li>
+          <li class="breadcrumb-item"><a href="../../">olympus</a></li>
+          <li class="breadcrumb-item"><a href="../">event_generation</a></li>
+      <li class="breadcrumb-item active">event_generation</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="prometheus.photon_propagation.olympus.event_generation.event_generation" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">prometheus.photon_propagation.olympus.event_generation.event_generation</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+        <p>Event generation helpers.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="generate_cascade (prometheus.photon_propagation.olympus.event_generation.event_generation.generate_cascade)" href="#prometheus.photon_propagation.olympus.event_generation.event_generation.generate_cascade">generate_cascade</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Generate a single cascade and return detected photon times.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="generate_cascades (prometheus.photon_propagation.olympus.event_generation.event_generation.generate_cascades)" href="#prometheus.photon_propagation.olympus.event_generation.event_generation.generate_cascades">generate_cascades</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Generate a sample of cascades sampled uniformly in a cylinder.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="generate_realistic_starting_tracks (prometheus.photon_propagation.olympus.event_generation.event_generation.generate_realistic_starting_tracks)" href="#prometheus.photon_propagation.olympus.event_generation.event_generation.generate_realistic_starting_tracks">generate_realistic_starting_tracks</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Generate realistic starting tracks (cascade + track).</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="generate_realistic_track (prometheus.photon_propagation.olympus.event_generation.event_generation.generate_realistic_track)" href="#prometheus.photon_propagation.olympus.event_generation.event_generation.generate_realistic_track">generate_realistic_track</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Generate a realistic muon track using energy losses from PROPOSAL.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="generate_realistic_tracks (prometheus.photon_propagation.olympus.event_generation.event_generation.generate_realistic_tracks)" href="#prometheus.photon_propagation.olympus.event_generation.event_generation.generate_realistic_tracks">generate_realistic_tracks</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Generate realistic muon tracks sampled from the cylinder surface.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.photon_propagation.olympus.event_generation.event_generation.generate_cascade" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">generate_cascade</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">generate_cascade(det, event_data, seed, pprop_func, converter_func, max_distance=300.0)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Generate a single cascade and return detected photon times.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>det</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Detector (prometheus.detector.Detector)" href="../../../../#prometheus.Detector">Detector</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Instance of Detector class.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>event_data</code></b>
+                  (<code><span title="dict">dict</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Container with event parameters (position, energy, direction, time, etc.).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>seed</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Random seed.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>pprop_func</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Function that computes the photon propagation signal.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>converter_func</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Callable that converts event energy and metadata to source positions,
+directions, times and photon counts.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>max_distance</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>300.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Maximum source-to-module distance in metres.  Source positions farther
+than this from every module are dropped before photon propagation.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="tuple">tuple</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Tuple <code>(propagation_result, record)</code> where <code>propagation_result</code> is an
+<code>awkward.Array</code> of detected photon times and <code>record</code> is an
+<code>MCRecord</code> instance.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/photon_propagation/olympus/event_generation/event_generation.py</code></summary>
+              <pre class="highlight"><code class="language-python">def generate_cascade(
+    det,
+    event_data,
+    seed,
+    pprop_func,
+    converter_func,
+    max_distance=300.0,
+):
+    """Generate a single cascade and return detected photon times.
+
+    Parameters
+    ----------
+    det : Detector
+        Instance of Detector class.
+    event_data : dict
+        Container with event parameters (position, energy, direction, time, etc.).
+    seed : int
+        Random seed.
+    pprop_func : callable
+        Function that computes the photon propagation signal.
+    converter_func : callable
+        Callable that converts event energy and metadata to source positions,
+        directions, times and photon counts.
+    max_distance : float, optional
+        Maximum source-to-module distance in metres.  Source positions farther
+        than this from every module are dropped before photon propagation.
+
+    Returns
+    -------
+    tuple
+        Tuple ``(propagation_result, record)`` where ``propagation_result`` is an
+        ``awkward.Array`` of detected photon times and ``record`` is an
+        ``MCRecord`` instance.
+    """
+
+    k1, k2 = random.split(seed)
+
+    source_pos, source_dir, source_time, source_nphotons = converter_func(
+        event_data["pos"],
+        event_data["time"],
+        event_data["dir"],
+        event_data["energy"],
+        event_data["particle_id"],
+        key=k1,
+    )
+
+    # Drop sources whose photon budget is negligible — they cannot produce
+    # detected hits (detection efficiency &lt;&lt; 1) and dominate the flat
+    # (n_sources × n_modules) matrix built in the photon propagator.
+    photon_mask = np.asarray(source_nphotons).squeeze() &gt;= 1.0
+    source_pos = source_pos[photon_mask]
+    source_dir = source_dir[photon_mask]
+    source_time = source_time[photon_mask]
+    source_nphotons = source_nphotons[photon_mask]
+
+    # Drop sources farther than max_distance from every module, and modules
+    # farther than max_distance from every surviving source — neither can
+    # contribute hits, and both inflate the dense (n_sources x n_modules)
+    # matrix built in the photon propagator.
+    module_mask = np.zeros(det.module_coords.shape[0], dtype=bool)
+    if source_pos.shape[0] &gt; 0:
+        distance_mask, module_mask = _in_range_masks(source_pos, det.module_coords, max_distance)
+        source_pos = source_pos[distance_mask]
+        source_dir = source_dir[distance_mask]
+        source_time = source_time[distance_mask]
+        source_nphotons = source_nphotons[distance_mask]
+
+    record = MCRecord(
+        "cascade",
+        source_array_to_sources(source_pos, source_dir, source_time, source_nphotons),
+        event_data,
+    )
+
+    propagation_result = _propagate_in_range_modules(
+        det,
+        module_mask,
+        source_pos,
+        source_dir,
+        source_time,
+        source_nphotons,
+        pprop_func,
+        k2,
+    )
+
+    return propagation_result, record</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.photon_propagation.olympus.event_generation.event_generation.generate_cascades" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">generate_cascades</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">generate_cascades(det, cylinder_height, cylinder_radius, nsamples, seed, log_emin, log_emax, particle_id, pprop_func, converter_func, noise_function=simulate_noise)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Generate a sample of cascades sampled uniformly in a cylinder.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>det</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Detector (prometheus.detector.Detector)" href="../../../../#prometheus.Detector">Detector</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Detector instance used for propagation.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>cylinder_height</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cylinder height for source sampling.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>cylinder_radius</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cylinder radius for source sampling.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>nsamples</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of cascades to generate.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>seed</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>RNG seed.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>log_emin</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Log10 of minimum energy.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>log_emax</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Log10 of maximum energy.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>particle_id</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>PDG particle id used by the converter.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>pprop_func</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Photon propagation function.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>converter_func</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Function converting event parameters to source descriptions.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>noise_function</code></b>
+                  (<code><span title="callable">callable</span></code>, default:
+                      <code><span title="prometheus.photon_propagation.olympus.event_generation.event_generation.simulate_noise">simulate_noise</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Function used to simulate detector noise (default is <code>simulate_noise</code>).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="tuple">tuple</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Tuple <code>(events, records)</code> where <code>events</code> is a list of per-event
+<code>awkward.Array</code> objects and <code>records</code> is a list of corresponding
+<code>MCRecord</code> objects.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/photon_propagation/olympus/event_generation/event_generation.py</code></summary>
+              <pre class="highlight"><code class="language-python">def generate_cascades(
+    det,
+    cylinder_height,
+    cylinder_radius,
+    nsamples,
+    seed,
+    log_emin,
+    log_emax,
+    particle_id,
+    pprop_func,
+    converter_func,
+    noise_function=simulate_noise,
+):
+    """Generate a sample of cascades sampled uniformly in a cylinder.
+
+    Parameters
+    ----------
+    det : Detector
+        Detector instance used for propagation.
+    cylinder_height : float
+        Cylinder height for source sampling.
+    cylinder_radius : float
+        Cylinder radius for source sampling.
+    nsamples : int
+        Number of cascades to generate.
+    seed : int
+        RNG seed.
+    log_emin : float
+        Log10 of minimum energy.
+    log_emax : float
+        Log10 of maximum energy.
+    particle_id : int
+        PDG particle id used by the converter.
+    pprop_func : callable
+        Photon propagation function.
+    converter_func : callable
+        Function converting event parameters to source descriptions.
+    noise_function : callable, optional
+        Function used to simulate detector noise (default is ``simulate_noise``).
+
+    Returns
+    -------
+    tuple
+        Tuple ``(events, records)`` where ``events`` is a list of per-event
+        ``awkward.Array`` objects and ``records`` is a list of corresponding
+        ``MCRecord`` objects.
+    """
+    rng = np.random.RandomState(seed)
+    key = random.PRNGKey(seed)
+
+    events = []
+    records = []
+
+    for i in trange(nsamples):
+        pos = sample_cylinder_volume(cylinder_height, cylinder_radius, 1, rng).squeeze()
+        energy = np.power(10, rng.uniform(log_emin, log_emax))
+        dir = sample_direction(1, rng).squeeze()
+
+        event_data = {
+            "pos": pos,
+            "dir": dir,
+            "energy": energy,
+            "time": 0,
+            "particle_id": particle_id,
+        }
+
+        key, subkey = random.split(key)
+        event, record = generate_cascade(
+            det,
+            event_data,
+            subkey,
+            pprop_func,
+            converter_func,
+        )
+        if noise_function is not None:
+            event, _ = noise_function(det, event)
+
+        events.append(event)
+        records.append(record)
+
+    return events, records</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.photon_propagation.olympus.event_generation.event_generation.generate_realistic_starting_tracks" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">generate_realistic_starting_tracks</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">generate_realistic_starting_tracks(det, cylinder_height, cylinder_radius, nsamples, seed, log_emin, log_emax, pprop_func, proposal_prop=None)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Generate realistic starting tracks (cascade + track).</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>det</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Detector (prometheus.detector.Detector)" href="../../../../#prometheus.Detector">Detector</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Detector instance used for propagation.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>cylinder_height</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cylinder height for source sampling.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>cylinder_radius</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cylinder radius for source sampling.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>nsamples</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of tracks to generate.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>seed</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>RNG seed.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>log_emin</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Log10 of minimum energy.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>log_emax</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Log10 of maximum energy.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>pprop_func</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Photon propagation function.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>proposal_prop</code></b>
+                  (<code><span title="callable">callable</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>PROPOSAL propagator instance.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="tuple">tuple</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Tuple <code>(events, records)</code> where <code>events</code> is a list of per-event
+<code>awkward.Array</code> objects and <code>records</code> is a list of corresponding
+<code>MCRecord</code> objects.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/photon_propagation/olympus/event_generation/event_generation.py</code></summary>
+              <pre class="highlight"><code class="language-python">def generate_realistic_starting_tracks(
+    det,
+    cylinder_height,
+    cylinder_radius,
+    nsamples,
+    seed,
+    log_emin,
+    log_emax,
+    pprop_func,
+    proposal_prop=None,
+):
+    """Generate realistic starting tracks (cascade + track).
+
+    Parameters
+    ----------
+    det : Detector
+        Detector instance used for propagation.
+    cylinder_height : float
+        Cylinder height for source sampling.
+    cylinder_radius : float
+        Cylinder radius for source sampling.
+    nsamples : int
+        Number of tracks to generate.
+    seed : int
+        RNG seed.
+    log_emin : float
+        Log10 of minimum energy.
+    log_emax : float
+        Log10 of maximum energy.
+    pprop_func : callable
+        Photon propagation function.
+    proposal_prop : callable, optional
+        PROPOSAL propagator instance.
+
+    Returns
+    -------
+    tuple
+        Tuple ``(events, records)`` where ``events`` is a list of per-event
+        ``awkward.Array`` objects and ``records`` is a list of corresponding
+        ``MCRecord`` objects.
+    """
+    rng = np.random.RandomState(seed)
+    key, subkey = random.split(random.PRNGKey(seed))
+    # Safe length to that tracks will appear infinite
+    # TODO: Calculate intersection with generation cylinder
+    track_length = 3000
+
+    events = []
+    records = []
+
+    for i in trange(nsamples):
+        pos = sample_cylinder_volume(cylinder_height, cylinder_radius, 1, rng).squeeze()
+        energy = np.power(10, rng.uniform(log_emin, log_emax))
+        direc = sample_direction(1, rng).squeeze()
+        inelas = rng.uniform(1e-6, 1 - 1e-6)
+
+        event_data = {
+            "pos": pos,
+            "dir": direc,
+            "energy": inelas * energy,
+            "time": 0,
+            "length": track_length,
+        }
+
+        track, track_record = generate_realistic_track(
+            det,
+            event_data,
+            key=subkey,
+            proposal_prop=proposal_prop,
+            pprop_func=pprop_func,
+        )
+
+        event_data = {
+            "pos": pos,
+            "dir": direc,
+            "energy": (1 - inelas) * energy,
+            "time": 0,
+            "length": track_length,
+            "particle_id": 211,
+        }
+
+        cascade, cascade_record = generate_cascade(
+            det,
+            event_data,
+            subkey,
+            pprop_func,
+            functools.partial(make_realistic_cascade_source, moliere_rand=True, resolution=0.2),
+        )
+
+        if (ak.count(track) == 0) &amp; (ak.count(cascade) == 0):
+            event = ak.Array([])
+
+        elif ak.count(track) == 0:
+            event = cascade
+        elif (ak.count(cascade)) == 0:
+            event = track
+        else:
+            event = ak.sort(ak.concatenate([track, cascade], axis=1))
+        record = track_record + cascade_record
+
+        event, _ = simulate_noise(det, event)
+        events.append(event)
+        records.append(record)
+
+    return events, records</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.photon_propagation.olympus.event_generation.event_generation.generate_realistic_track" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">generate_realistic_track</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">generate_realistic_track(det, event_data, key, pprop_func, proposal_prop, max_distance=300.0)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Generate a realistic muon track using energy losses from PROPOSAL.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>det</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Detector (prometheus.detector.Detector)" href="../../../../#prometheus.Detector">Detector</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Detector instance used for propagation.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>event_data</code></b>
+                  (<code><span title="dict">dict</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Event parameters including position, direction, energy and length.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>key</code></b>
+                  (<code><span title="jax.random.PRNGKey">PRNGKey</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Random key for stochastic sampling.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>pprop_func</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Photon propagation function.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>proposal_prop</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>PROPOSAL propagator instance.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>max_distance</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>300.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Maximum source-to-module distance in metres.  Energy-loss sources
+farther than this from every module are dropped before propagation.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="tuple">tuple</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Tuple <code>(propagation_result, record)</code> where <code>propagation_result</code> is an
+<code>awkward.Array</code> of detected photon times and <code>record</code> is an
+<code>MCRecord</code> instance, or <code>(None, None)</code> when no sources remain.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/photon_propagation/olympus/event_generation/event_generation.py</code></summary>
+              <pre class="highlight"><code class="language-python">def generate_realistic_track(det, event_data, key, pprop_func, proposal_prop, max_distance=300.0):
+    """Generate a realistic muon track using energy losses from PROPOSAL.
+
+    Parameters
+    ----------
+    det : Detector
+        Detector instance used for propagation.
+    event_data : dict
+        Event parameters including position, direction, energy and length.
+    key : jax.random.PRNGKey
+        Random key for stochastic sampling.
+    pprop_func : callable
+        Photon propagation function.
+    proposal_prop : callable
+        PROPOSAL propagator instance.
+    max_distance : float, optional
+        Maximum source-to-module distance in metres.  Energy-loss sources
+        farther than this from every module are dropped before propagation.
+
+    Returns
+    -------
+    tuple
+        Tuple ``(propagation_result, record)`` where ``propagation_result`` is an
+        ``awkward.Array`` of detected photon times and ``record`` is an
+        ``MCRecord`` instance, or ``(None, None)`` when no sources remain.
+    """
+
+    if proposal_prop is None:
+        raise RuntimeError()
+    key, k1, k2 = random.split(key, 3)
+    (
+        source_pos,
+        source_dir,
+        source_time,
+        source_photons,
+        prop_dist,
+    ) = generate_muon_energy_losses(
+        proposal_prop,
+        event_data["energy"],
+        event_data["length"],
+        event_data["pos"],
+        event_data["dir"],
+        event_data["time"],
+        k1,
+    )
+    event_data["length"] = prop_dist
+
+    if source_pos is None:
+        return None, None
+
+    # Early mask sources that are out of reach of every module, and modules
+    # that are out of reach of every surviving source.
+    mask, module_mask = _in_range_masks(source_pos, det.module_coords, max_distance)
+    source_pos = source_pos[mask]
+    source_dir = source_dir[mask]
+    source_time = source_time[mask]
+    source_photons = source_photons[mask]
+
+    record = MCRecord(
+        "realistic_track",
+        source_array_to_sources(source_pos, source_dir, source_time, source_photons),
+        event_data,
+    )
+
+    propagation_result = _propagate_in_range_modules(
+        det,
+        module_mask,
+        source_pos,
+        source_dir,
+        source_time,
+        source_photons,
+        pprop_func,
+        k2,
+    )
+    return propagation_result, record</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.photon_propagation.olympus.event_generation.event_generation.generate_realistic_tracks" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">generate_realistic_tracks</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">generate_realistic_tracks(det, cylinder_height, cylinder_radius, nsamples, seed, log_emin, log_emax, pprop_func, proposal_prop=None)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Generate realistic muon tracks sampled from the cylinder surface.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>det</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Detector (prometheus.detector.Detector)" href="../../../../#prometheus.Detector">Detector</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Detector instance used for propagation.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>cylinder_height</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cylinder height for source sampling.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>cylinder_radius</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cylinder radius for source sampling.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>nsamples</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of tracks to generate.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>seed</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>RNG seed.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>log_emin</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Log10 of minimum energy.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>log_emax</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Log10 of maximum energy.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>pprop_func</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Photon propagation function.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>proposal_prop</code></b>
+                  (<code><span title="callable">callable</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>PROPOSAL propagator instance.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="tuple">tuple</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Tuple <code>(events, records)</code> where <code>events</code> is a list of per-event
+<code>awkward.Array</code> objects and <code>records</code> is a list of corresponding
+<code>MCRecord</code> objects.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/photon_propagation/olympus/event_generation/event_generation.py</code></summary>
+              <pre class="highlight"><code class="language-python">def generate_realistic_tracks(
+    det,
+    cylinder_height,
+    cylinder_radius,
+    nsamples,
+    seed,
+    log_emin,
+    log_emax,
+    pprop_func,
+    proposal_prop=None,
+):
+    """Generate realistic muon tracks sampled from the cylinder surface.
+
+    Parameters
+    ----------
+    det : Detector
+        Detector instance used for propagation.
+    cylinder_height : float
+        Cylinder height for source sampling.
+    cylinder_radius : float
+        Cylinder radius for source sampling.
+    nsamples : int
+        Number of tracks to generate.
+    seed : int
+        RNG seed.
+    log_emin : float
+        Log10 of minimum energy.
+    log_emax : float
+        Log10 of maximum energy.
+    pprop_func : callable
+        Photon propagation function.
+    proposal_prop : callable, optional
+        PROPOSAL propagator instance.
+
+    Returns
+    -------
+    tuple
+        Tuple ``(events, records)`` where ``events`` is a list of per-event
+        ``awkward.Array`` objects and ``records`` is a list of corresponding
+        ``MCRecord`` objects.
+    """
+    rng = np.random.RandomState(seed)
+    key = random.PRNGKey(seed)
+
+    events = []
+    records = []
+
+    for i in trange(nsamples):
+        pos = sample_cylinder_surface(cylinder_height, cylinder_radius, 1, rng).squeeze()
+        energy = np.power(10, rng.uniform(log_emin, log_emax, size=1))
+        # determine the surface normal vectors given the samples position
+        # surface normal always points out
+
+        if pos[2] == cylinder_height / 2:
+            # upper cap
+            area_norm = np.array([0, 0, 1])
+        elif pos[2] == -cylinder_height / 2:
+            # lower cap
+            area_norm = np.array([0, 0, -1])
+        else:
+            area_norm = np.array(pos, copy=True)
+            area_norm[2] = 0
+            area_norm /= np.linalg.norm(area_norm)
+
+        orientation = 1
+        # Rejection sampling to generate only inward facing tracks
+        while orientation &gt; 0:
+            direc = sample_direction(1, rng).squeeze()
+            orientation = np.dot(area_norm, direc)
+
+        # shift pos back by half the length:
+        # pos = pos - track_length / 2 * direc
+
+        isec = track_isects_cyl(det._outer_cylinder[0], det._outer_cylinder[1], pos, direc)
+        track_length = 3000
+        if (isec[0] != np.nan) and (isec[1] != np.nan):
+            track_length = isec[1] - isec[0] + 300
+
+        event_data = {
+            "pos": pos,
+            "dir": direc,
+            "energy": energy,
+            "time": 0,
+            "length": track_length,
+        }
+
+        key, subkey = random.split(key)
+        result = generate_realistic_track(
+            det,
+            event_data,
+            key=subkey,
+            proposal_prop=proposal_prop,
+            pprop_func=pprop_func,
+        )
+
+        event, record = result
+        event, _ = simulate_noise(det, event)
+
+        events.append(event)
+        records.append(record)
+
+    return events, records</code></pre>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../detector/" class="btn btn-neutral float-left" title="detector"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../lightyield/" class="btn btn-neutral float-right" title="lightyield">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../detector/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../lightyield/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../../../../..";</script>
+    <script src="../../../../../../js/theme_extra.js"></script>
+    <script src="../../../../../../js/theme.js"></script>
+      <script src="../../../../../../js/popper.min.js"></script>
+      <script src="../../../../../../js/tippy-bundle.umd.js"></script>
+      <script src="../../../../../../js/clipboard.js"></script>
+      <script src="../../../../../../js/extra.js"></script>
+      <script src="../../../../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

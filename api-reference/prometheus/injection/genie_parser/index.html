@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../../../img/favicon.ico" />
+    <title>genie_parser - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "genie_parser";
+        var mkdocs_page_input_path = "api-reference/prometheus/injection/genie_parser.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Installation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../installation/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../installation/built-in-installer/">Built-in installer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../installation/containers/">Containers</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../citation/">Citation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../papers/">Papers Using Prometheus</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="../../">prometheus</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../../compat/">compat</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../compat/haiku_unpickler/">haiku_unpickler</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../config/">config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../config_types/">config_types</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../detector/">detector</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/detector_factory/">detector_factory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="../">injection</a>
+    <ul class="current">
+                <li class="toctree-l3"><a class="reference internal" href="../genie_injector/">genie_injector</a>
+                </li>
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">genie_parser</a>
+    <ul class="current">
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.injection.genie_parser.angle">angle</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.injection.genie_parser.final_parser">final_parser</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.injection.genie_parser.genie2prometheus">genie2prometheus</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.injection.genie_parser.genie_loader">genie_loader</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.injection.genie_parser.genie_parser">genie_parser</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.injection.genie_parser.p2azimuthAndzenith">p2azimuthAndzenith</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../injection/genie_injection/">genie_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../registered_injectors/">registered_injectors</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../logging/">logging</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../logging/handlers/">handlers</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../logging_config/">logging_config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/hit/">hit</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/olympus/">olympus</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/event_generation/">event_generation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/optimization/">optimization</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/plotting/">plotting</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/ppc_photon_propagator/">ppc_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/registry/">registry</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../summary/">summary</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../utils/">utils</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/capture/">capture</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/detector_layers/">detector_layers</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/dom_response/">dom_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/f2k_utils/">f2k_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/fadc_digitization/">fadc_digitization</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/formatting/">formatting</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/layered_sim/">layered_sim</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/memory/">memory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/pmt_response/">pmt_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/timing/">timing</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../hyperion/">hyperion</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/medium/">medium</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/models/">models</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/">photon_arrival_time_nflow</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/net/">net</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/training_data/">training_data</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/validation/">validation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/">photon_binned_amplitude</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/net/">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/propagate/">propagate</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item"><a href="../../">prometheus</a></li>
+          <li class="breadcrumb-item"><a href="../">injection</a></li>
+      <li class="breadcrumb-item active">genie_parser</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="prometheus.injection.genie_parser" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">prometheus.injection.genie_parser</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="angle (prometheus.injection.genie_parser.angle)" href="#prometheus.injection.genie_parser.angle">angle</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Calculate the angle between two vectors in radians.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="final_parser (prometheus.injection.genie_parser.final_parser)" href="#prometheus.injection.genie_parser.final_parser">final_parser</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Fetch the final states.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="genie2prometheus (prometheus.injection.genie_parser.genie2prometheus)" href="#prometheus.injection.genie_parser.genie2prometheus">genie2prometheus</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Reformat parsed GENIE events into a usable format for Prometheus.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="genie_loader (prometheus.injection.genie_parser.genie_loader)" href="#prometheus.injection.genie_parser.genie_loader">genie_loader</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Load and parse GENIE data.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="genie_parser (prometheus.injection.genie_parser.genie_parser)" href="#prometheus.injection.genie_parser.genie_parser">genie_parser</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Fetch the relevant information from GENIE events (in rootracker format).</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="p2azimuthAndzenith (prometheus.injection.genie_parser.p2azimuthAndzenith)" href="#prometheus.injection.genie_parser.p2azimuthAndzenith">p2azimuthAndzenith</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Convert a momentum vector to azimuth and zenith angles.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.injection.genie_parser.angle" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">angle</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">angle(v1: array, v2: array) -&gt; float</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate the angle between two vectors in radians.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>v1</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Vector 1.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>v2</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Vector 2.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>angle</code></b>(                  <code><span title="float">float</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>The calculated angle in radians.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/injection/genie_parser.py</code></summary>
+              <pre class="highlight"><code class="language-python">def angle(v1: np.array, v2: np.array) -&gt; float:
+    """Calculate the angle between two vectors in radians.
+
+    Parameters
+    ----------
+    v1 : np.ndarray
+        Vector 1.
+    v2 : np.ndarray
+        Vector 2.
+
+    Returns
+    -------
+    angle : float
+        The calculated angle in radians.
+    """
+    angle = np.arccos(np.clip(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)), -1, 1))
+    return angle</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.injection.genie_parser.final_parser" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">final_parser</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">final_parser(parsed_events: DataFrame) -&gt; pd.DataFrame</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Fetch the final states.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>parsed_events</code></b>
+                  (<code><span title="pandas.DataFrame">DataFrame</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The parsed events.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+              –
+              <div class="doc-md-description">
+                <p>The initial and final state info.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/injection/genie_parser.py</code></summary>
+              <pre class="highlight"><code class="language-python">def final_parser(parsed_events: pd.DataFrame) -&gt; pd.DataFrame:
+    """Fetch the final states.
+
+    Parameters
+    ----------
+    parsed_events : pd.DataFrame
+        The parsed events.
+
+    Returns
+    -------
+    pd.DataFrame
+        The initial and final state info.
+    """
+    inital_energies_inj = np.array([event[0][3] for event in parsed_events["event_momenta"]])
+    inital_momenta_inj = [np.array(event[0][:3]) for event in parsed_events["event_momenta"]]
+    inital_energies_target = np.array([event[1][3] for event in parsed_events["event_momenta"]])
+    inital_id_inj = np.array([event[0] for event in parsed_events["event_pdg_id"]])
+    inital_id_target = np.array([event[1] for event in parsed_events["event_pdg_id"]])
+    final_ids = _object_array(
+        [
+            np.where(event == np.array("final"), True, False)
+            for event in parsed_events["event_status"]
+        ]
+    )
+    children_ids = _object_array(
+        [event[final_ids[id_event]] for id_event, event in enumerate(parsed_events["event_pdg_id"])]
+    )
+    children_energy = _object_array(
+        [
+            event[:, 3][final_ids[id_event]]
+            for id_event, event in enumerate(parsed_events["event_momenta"])
+        ]
+    )
+    children_momenta = _object_array(
+        [
+            event[:, :3][final_ids[id_event]]
+            for id_event, event in enumerate(parsed_events["event_momenta"])
+        ]
+    )
+    final_ids = _object_array(
+        [
+            np.where(event == np.array("final nuclear"), True, False)
+            for event in parsed_events["event_status"]
+        ]
+    )
+    children_nuc_ids = _object_array(
+        [event[final_ids[id_event]] for id_event, event in enumerate(parsed_events["event_pdg_id"])]
+    )
+    children_nuc_energy = _object_array(
+        [
+            event[:, 3][final_ids[id_event]]
+            for id_event, event in enumerate(parsed_events["event_momenta"])
+        ]
+    )
+    dic = {}
+    dic["event_descr"] = parsed_events["event_description"]
+    dic["event_xsec"] = parsed_events["event_xsec"]
+    dic["event_vertex"] = parsed_events.event_vertex
+    dic["init_inj_e"] = inital_energies_inj
+    dic["init_inj_p"] = inital_momenta_inj
+    dic["init_target_e"] = inital_energies_target
+    dic["init_inj_id"] = inital_id_inj
+    dic["init_target_id"] = inital_id_target
+    dic["final_ids"] = children_ids
+    dic["final_e"] = children_energy
+    dic["final_p"] = children_momenta
+    dic["final_nuc_ids"] = children_nuc_ids
+    dic["final_nuc_e"] = children_nuc_energy
+    return pd.DataFrame.from_dict(dic)</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.injection.genie_parser.genie2prometheus" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">genie2prometheus</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">genie2prometheus(parsed_events: DataFrame)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Reformat parsed GENIE events into a usable format for Prometheus.</p>
+<p>Create a standardized scheme function. This could then be used as an interface
+to Prometheus for any injector. A user would only need to create a function to
+translate their injector output to the scheme format.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>parsed_events</code></b>
+                  (<code><span title="pandas.DataFrame">DataFrame</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Dataframe object containing all relevant (and additional) information needed by Prometheus.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>particles</code></b>(                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Formatted data set with values which can be used directly.</p>
+              </div>
+            </li>
+            <li>
+<b><code>injection</code></b>(                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>The injected particle in the same format.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/injection/genie_parser.py</code></summary>
+              <pre class="highlight"><code class="language-python">def genie2prometheus(parsed_events: pd.DataFrame):
+    """Reformat parsed GENIE events into a usable format for Prometheus.
+
+    Create a standardized scheme function. This could then be used as an interface
+    to Prometheus for any injector. A user would only need to create a function to
+    translate their injector output to the scheme format.
+
+    Parameters
+    ----------
+    parsed_events : pd.DataFrame
+        Dataframe object containing all relevant (and additional) information needed by Prometheus.
+
+    Returns
+    -------
+    particles : pd.DataFrame
+        Formatted data set with values which can be used directly.
+    injection : pd.DataFrame
+        The injected particle in the same format.
+    """
+    # TODO: Use a more elegant definition to couple to the particle class
+    primaries = {}
+    event_set = {}
+    for index, event in parsed_events.iterrows():
+        if "CC" in event.event_descr:
+            event_type = "CC"
+        elif "NC" in event.event_descr:
+            event_type = "NC"
+        else:
+            event_type = "other"
+        azimuth, zenith = p2azimuthAndzenith(event.init_inj_p)
+        primary_particle = {
+            "primary": True,  # If this thing is a primary particle
+            "e": event.init_inj_e,  # The energy in GeV,  # NOTE: Should this be kinetic energy?
+            "pdg_code": event.init_inj_id,  # The PDG id
+            "interaction": event_type,  # Should we use ints to define interactions or strings?
+            "theta": zenith,  # It's zenith angle
+            "phi": azimuth,  # It's azimuth angle
+            "bjorken_x": -1,  # Bjorken x variable
+            "bjorken_y": -1,  # Bjorken y variable
+            "pos_x": event.event_vertex[0],  # position x (in detector coordinates)
+            "pos_y": event.event_vertex[1],  # position y (in detector coordinates)
+            "pos_z": event.event_vertex[2],  # position z (in detector coordinates)
+            "position": event.event_vertex[:3],  # 3d position
+            "column_depth": -1,  # Column depth where the interaction happened
+            "custom_info": event.event_descr,  # Additional info as a string.
+            # TODO: This should be handed to the propagators
+        }
+        # TODO: Optimize
+        angles = np.array([p2azimuthAndzenith(p) for p in event.final_p])
+        particles = {
+            "primary": np.array(
+                np.zeros(len(event.final_ids)), dtype=bool
+            ),  # If this thing is a primary particle
+            "e": event.final_e,  # The energy in GeV,  # NOTE: Should this be kinetic energy?
+            "pdg_code": event.final_ids,  # The PDG id
+            "interaction": np.array(
+                [event_type for _ in range(len(event.final_ids))]
+            ),  # Should we use ints to define interactions or strings?
+            "theta": angles[:, 1],  # It's zenith angle
+            "phi": angles[:, 0],  # It's azimuth angle
+            "bjorken_x": np.ones(len(event.final_ids)) * -1,  # Bjorken x variable
+            "bjorken_y": np.ones(len(event.final_ids)) * -1,  # Bjorken y variable
+            "pos_x": np.ones(len(event.final_ids))
+            * event.event_vertex[0],  # position x (in detector coordinates)
+            "pos_y": np.ones(len(event.final_ids))
+            * event.event_vertex[1],  # position y (in detector coordinates)
+            "pos_z": np.ones(len(event.final_ids))
+            * event.event_vertex[2],  # position z (in detector coordinates)
+            "position": np.array(
+                [event.event_vertex[:3] for _ in range(len(event.final_ids))]
+            ),  # 3d position
+            "column_depth": np.ones(len(event.final_ids))
+            * -1,  # Column depth where the interaction happened
+            "custom_info": np.array(
+                ["child" for _ in range(len(event.final_ids))]
+            ),  # Additional info as a string.
+            # TODO: This should be handed to the propagators
+        }
+        event_set[index] = particles
+        primaries[index] = primary_particle
+    return pd.DataFrame.from_dict(event_set, orient="index"), pd.DataFrame.from_dict(
+        primaries, orient="index"
+    )</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.injection.genie_parser.genie_loader" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">genie_loader</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">genie_loader(filepath: str) -&gt; pd.DataFrame</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Load and parse GENIE data.</p>
+<p>A gRooTracker file with O(10^5) events parses into a DataFrame with
+hundreds of MB of ragged, object-dtype momentum/status arrays, and
+reparsing it repeatedly (e.g. once per layer batch in the layered
+simulation scripts) causes the process RSS to climb steadily — CPython's
+allocator does not always return the memory of many small freed objects
+to the OS, so back-to-back parse/discard cycles fragment the heap rather
+than staying flat.  Caching the parsed result per file path means a batch
+loop over the same file parses it exactly once.</p>
+<p>The cache holds a single file (<code>maxsize=1</code>): every batch loop in this
+codebase (layers within a signal channel, CC/NC within a background
+flavour) processes one file at a time, so this fully covers the access
+pattern while capping per-worker memory to one parsed file — important
+when running with <code>--jobs N</code>, since each worker process holds its own
+cache. Switching to a different file simply evicts the previous one
+rather than accumulating every file ever loaded in the process.</p>
+<p>.. warning::
+    The returned DataFrame is shared by every caller for the same
+    <code>filepath</code>. Callers must treat it as read-only — filter or
+    resample into a new DataFrame instead of mutating it in place.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>filepath</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Path to the GENIE data file.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+              –
+              <div class="doc-md-description">
+                <p>The parsed GENIE data.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/injection/genie_parser.py</code></summary>
+              <pre class="highlight"><code class="language-python">def genie_loader(filepath: str) -&gt; pd.DataFrame:
+    """Load and parse GENIE data.
+
+    A gRooTracker file with O(10^5) events parses into a DataFrame with
+    hundreds of MB of ragged, object-dtype momentum/status arrays, and
+    reparsing it repeatedly (e.g. once per layer batch in the layered
+    simulation scripts) causes the process RSS to climb steadily — CPython's
+    allocator does not always return the memory of many small freed objects
+    to the OS, so back-to-back parse/discard cycles fragment the heap rather
+    than staying flat.  Caching the parsed result per file path means a batch
+    loop over the same file parses it exactly once.
+
+    The cache holds a single file (``maxsize=1``): every batch loop in this
+    codebase (layers within a signal channel, CC/NC within a background
+    flavour) processes one file at a time, so this fully covers the access
+    pattern while capping per-worker memory to one parsed file — important
+    when running with ``--jobs N``, since each worker process holds its own
+    cache. Switching to a different file simply evicts the previous one
+    rather than accumulating every file ever loaded in the process.
+
+    .. warning::
+        The returned DataFrame is shared by every caller for the same
+        ``filepath``. Callers must treat it as read-only — filter or
+        resample into a new DataFrame instead of mutating it in place.
+
+    Parameters
+    ----------
+    filepath : str
+        Path to the GENIE data file.
+
+    Returns
+    -------
+    pd.DataFrame
+        The parsed GENIE data.
+    """
+    return _cached_genie_loader(str(filepath))</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.injection.genie_parser.genie_parser" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">genie_parser</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">genie_parser(events) -&gt; pd.DataFrame</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Fetch the relevant information from GENIE events (in rootracker format).</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>events</code></b>
+                  (<code><span title="dict">dict</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>A dictionary of GENIE events.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>df</code></b>(                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Data frame containing the relevant information.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/injection/genie_parser.py</code></summary>
+              <pre class="highlight"><code class="language-python">def genie_parser(events) -&gt; pd.DataFrame:
+    """Fetch the relevant information from GENIE events (in rootracker format).
+
+    Parameters
+    ----------
+    events : dict
+        A dictionary of GENIE events.
+
+    Returns
+    -------
+    df : pd.DataFrame
+        Data frame containing the relevant information.
+    """
+    dic = {}
+    dic["event_description"] = events["EvtCode/fString"].array(
+        library="np"
+    )  # String describing the event
+    dic["event_id"] = events["EvtNum"].array(library="np")  # Number of the event
+    dic["event_children"] = events["StdHepN"].array(
+        library="np"
+    )  # NUmber of the generated sub-particles
+    dic["event_prob"] = events["EvtProb"].array(library="np")  # Probability of the event
+    dic["event_xsec"] = events["EvtXSec"].array(library="np")  # Total xsec of the event
+    dic["event_pdg_id"] = events["StdHepPdg"].array(
+        library="np"
+    )  # PDG ids of all produced particles
+    dic["event_momenta"] = events["StdHepP4"].array(library="np")  # Momenta of the particles
+    tmp = events["EvtVtx"].array(library="np")  # Position of the particles
+    dic["event_vertex"] = [np.array(vtx) for vtx in tmp]
+    dic["event_coords"] = events["StdHepX4"].array(library="np")  # Position of the particles
+    dic["event_weight"] = events["EvtWght"].array(library="np")  # Weight of the events
+    tmp = events["StdHepStatus"].array(library="np")  # Status of the particle
+    # Converting the codes
+    particle_dic = {
+        0: "initial",
+        1: "final",
+        2: "intermediate",
+        3: "decayed",
+        11: "nucleon target",
+        12: "DIS pre-frag hadronic state",
+        13: "resonance",
+        14: "hadron in nucleus",
+        15: "final nuclear",
+        16: "nucleon cluster target",
+    }
+    dic["event_status"] = _object_array(
+        [np.array([particle_dic[particle] for particle in event]) for event in tmp]
+    )
+    return pd.DataFrame.from_dict(dic)</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.injection.genie_parser.p2azimuthAndzenith" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">p2azimuthAndzenith</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">p2azimuthAndzenith(p: array)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Convert a momentum vector to azimuth and zenith angles.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>p</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The 3D momentum.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>azimuth</code></b>(                  <code><span title="float">float</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Azimuth angle in radians.</p>
+              </div>
+            </li>
+            <li>
+<b><code>zenith</code></b>(                  <code><span title="float">float</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Zenith angle in radians.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/injection/genie_parser.py</code></summary>
+              <pre class="highlight"><code class="language-python">def p2azimuthAndzenith(p: np.array):
+    """Convert a momentum vector to azimuth and zenith angles.
+
+    Parameters
+    ----------
+    p : np.ndarray
+        The 3D momentum.
+
+    Returns
+    -------
+    azimuth : float
+        Azimuth angle in radians.
+    zenith : float
+        Zenith angle in radians.
+    """
+    azimuth = angle(p[:2], np.array([0, 1]))
+    zenith = angle(p[1:], np.array([0.0, 1]))
+    return azimuth, zenith</code></pre>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../genie_injector/" class="btn btn-neutral float-left" title="genie_injector"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../injection/" class="btn btn-neutral float-right" title="injection">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../genie_injector/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../injection/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../../..";</script>
+    <script src="../../../../js/theme_extra.js"></script>
+    <script src="../../../../js/theme.js"></script>
+      <script src="../../../../js/popper.min.js"></script>
+      <script src="../../../../js/tippy-bundle.umd.js"></script>
+      <script src="../../../../js/clipboard.js"></script>
+      <script src="../../../../js/extra.js"></script>
+      <script src="../../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

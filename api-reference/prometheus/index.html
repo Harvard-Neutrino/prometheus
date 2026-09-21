@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>prometheus - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "prometheus";
+        var mkdocs_page_input_path = "api-reference/prometheus/index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Installation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../installation/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../installation/built-in-installer/">Built-in installer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../installation/containers/">Containers</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../citation/">Citation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../papers/">Papers Using Prometheus</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">prometheus</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="compat/">compat</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="compat/haiku_unpickler/">haiku_unpickler</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="config/">config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="config_types/">config_types</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="detector/">detector</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="detector/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="detector/detector_factory/">detector_factory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="detector/medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="detector/module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="detector/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="injection/">injection</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="injection/genie_injector/">genie_injector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="injection/genie_parser/">genie_parser</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="injection/injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="injection/injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="injection/injection/genie_injection/">genie_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="injection/injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="injection/injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="injection/injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="injection/injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="injection/injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="injection/interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="injection/lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="injection/registered_injectors/">registered_injectors</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="injection/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="lepton_propagation/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="logging/">logging</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="logging/handlers/">handlers</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="logging_config/">logging_config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="photon_propagation/hit/">hit</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="photon_propagation/olympus/">olympus</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="photon_propagation/olympus/event_generation/">event_generation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="photon_propagation/olympus/optimization/">optimization</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="photon_propagation/olympus/plotting/">plotting</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="photon_propagation/olympus/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="photon_propagation/olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="photon_propagation/photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="photon_propagation/ppc_photon_propagator/">ppc_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="photon_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="photon_propagation/registry/">registry</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="photon_propagation/utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="photon_propagation/utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="photon_propagation/utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="summary/">summary</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="utils/">utils</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="utils/capture/">capture</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/detector_layers/">detector_layers</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/dom_response/">dom_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/f2k_utils/">f2k_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/fadc_digitization/">fadc_digitization</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/formatting/">formatting</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/layered_sim/">layered_sim</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/memory/">memory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/pmt_response/">pmt_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="utils/serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="utils/serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="utils/serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="utils/serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="utils/serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="utils/serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/timing/">timing</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="utils/write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../hyperion/">hyperion</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../hyperion/constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../hyperion/data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../hyperion/medium/">medium</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../hyperion/models/">models</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../hyperion/models/photon_arrival_time_nflow/">photon_arrival_time_nflow</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../hyperion/models/photon_arrival_time_nflow/net/">net</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../hyperion/models/photon_arrival_time_nflow/training_data/">training_data</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../hyperion/models/photon_arrival_time_nflow/validation/">validation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../hyperion/models/photon_binned_amplitude/">photon_binned_amplitude</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../hyperion/models/photon_binned_amplitude/net/">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../hyperion/pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../hyperion/pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../hyperion/propagate/">propagate</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../hyperion/utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+      <li class="breadcrumb-item active">prometheus</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="prometheus" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">prometheus</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+<p><span class="doc-section-title">Modules:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="prometheus.compat" href="compat/#prometheus.compat">compat</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Compatibility helpers for optional/removed backends.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="prometheus.config_types" href="config_types/#prometheus.config_types">config_types</a></code></b>
+          –
+          <div class="doc-md-description">
+            
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="prometheus.detector" href="detector/#prometheus.detector">detector</a></code></b>
+          –
+          <div class="doc-md-description">
+            
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="prometheus.injection" href="injection/#prometheus.injection">injection</a></code></b>
+          –
+          <div class="doc-md-description">
+            
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="prometheus.lepton_propagation" href="lepton_propagation/#prometheus.lepton_propagation">lepton_propagation</a></code></b>
+          –
+          <div class="doc-md-description">
+            
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="prometheus.logging" href="logging/#prometheus.logging">logging</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Logging subpackage for Prometheus.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="prometheus.logging_config" href="logging_config/#prometheus.logging_config">logging_config</a></code></b>
+          –
+          <div class="doc-md-description">
+            
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="prometheus.particle" href="particle/#prometheus.particle">particle</a></code></b>
+          –
+          <div class="doc-md-description">
+            
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="prometheus.photon_propagation" href="photon_propagation/#prometheus.photon_propagation">photon_propagation</a></code></b>
+          –
+          <div class="doc-md-description">
+            
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="prometheus.plotting" href="plotting/#prometheus.plotting">plotting</a></code></b>
+          –
+          <div class="doc-md-description">
+            
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="prometheus.prometheus" href="prometheus/#prometheus.prometheus">prometheus</a></code></b>
+          –
+          <div class="doc-md-description">
+            
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="prometheus.summary" href="summary/#prometheus.summary">summary</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Run summary builder and emitter.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="prometheus.utils" href="utils/#prometheus.utils">utils</a></code></b>
+          –
+          <div class="doc-md-description">
+            
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="prometheus.weighting" href="weighting/#prometheus.weighting">weighting</a></code></b>
+          –
+          <div class="doc-md-description">
+            
+          </div>
+        </li>
+    </ul>
+
+
+
+
+
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="Detector (prometheus.Detector)" href="#prometheus.Detector">Detector</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Prometheus detector object.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="Prometheus (prometheus.Prometheus)" href="#prometheus.Prometheus">Prometheus</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Class for unifying injection, energy loss calculation, and photon propagation.</p>
+          </div>
+        </li>
+    </ul>
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.Detector" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Detector</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">Detector(modules: List[Module], medium: Union[Medium, None])</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="object">object</span></code></p>
+
+
+
+        <p>Prometheus detector object.</p>
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>modules</code></b>
+                  (<code>list of Module</code>)
+              –
+              <div class="doc-md-description">
+                <p>List of all the modules in the detector.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>medium</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Medium (prometheus.detector.medium.Medium)" href="detector/medium/#prometheus.detector.medium.Medium">Medium</a> or None</code>)
+              –
+              <div class="doc-md-description">
+                <p>Medium in which the detector is embedded.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="to_f2k (prometheus.Detector.to_f2k)" href="#prometheus.Detector.to_f2k">to_f2k</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Write detector coordinates into f2k format.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+                  <details class="quote">
+                    <summary>Source code in <code>prometheus/detector/detector.py</code></summary>
+                    <pre class="highlight"><code class="language-python">def __init__(self, modules: List[Module], medium: Union[Medium, None]):
+    """Initialize detector.
+
+    Parameters
+    ----------
+    modules : list of Module
+        List of all the modules in the detector.
+    medium : Medium or None
+        Medium in which the detector is embedded.
+    """
+    validate_modules(modules)
+    self._modules = modules
+    self._medium = medium
+    self._offset = np.mean(np.array([m.pos for m in modules]), axis=0)
+    self.module_coords = np.vstack([m.pos for m in self.modules])
+    self.module_coords_ak = ak.Array(self.module_coords)
+    self.module_efficiencies = np.asarray([m.efficiency for m in self.modules])
+    self.module_noise_rates = np.asarray([m.noise_rate for m in self.modules])
+
+    # TODO replace this with the functions David writes
+    self._outer_radius = np.linalg.norm(self.module_coords - self.offset, axis=1).max()
+    self._outer_cylinder = (
+        np.linalg.norm(self.module_coords[:, :2] - self.offset[:2].transpose(), axis=1).max(),
+        self.module_coords[:, 2].max() - self.module_coords[:, 2].min(),
+    )
+    self._n_modules = len(modules)
+    self._om_keys = [om.key for om in self.modules]</code></pre>
+                  </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="prometheus.Detector.to_f2k" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">to_f2k</span>
+
+
+</h3>
+<pre class="highlight"><code class="language-python doc-signature">to_f2k(geo_file: str, serial_nos: List[str] = [], mac_ids: List[str] = []) -&gt; None</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Write detector coordinates into f2k format.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>geo_file</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Filepath of the output geometry file.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>serial_nos</code></b>
+                  (<code>list of str</code>, default:
+                      <code>[]</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Serial numbers for the optical modules. These MUST be in
+hexadecimal format, but their exact value does not matter. If
+nothing is provided, these values will be randomly generated.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>mac_ids</code></b>
+                  (<code>list of str</code>, default:
+                      <code>[]</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>MAC (I don't think this is actually what this is called) IDs
+for the DOMs. By default these will be randomly generated, which
+is probably what you want to do.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Raises:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><a class="autorefs autorefs-internal" title="IncompatibleSerialNumbersError (prometheus.detector.detector.IncompatibleSerialNumbersError)" href="detector/detector/#prometheus.detector.detector.IncompatibleSerialNumbersError">IncompatibleSerialNumbersError</a></code>
+              –
+              <div class="doc-md-description">
+                <p>Raised if serial numbers length doesn't match number of DOMs.</p>
+              </div>
+            </li>
+            <li>
+                  <code><a class="autorefs autorefs-internal" title="IncompatibleMACIDsError (prometheus.detector.detector.IncompatibleMACIDsError)" href="detector/detector/#prometheus.detector.detector.IncompatibleMACIDsError">IncompatibleMACIDsError</a></code>
+              –
+              <div class="doc-md-description">
+                <p>Raised if MAC IDs length doesn't match number of DOMs.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/detector/detector.py</code></summary>
+              <pre class="highlight"><code class="language-python">def to_f2k(self, geo_file: str, serial_nos: List[str] = [], mac_ids: List[str] = []) -&gt; None:
+    """Write detector coordinates into f2k format.
+
+    Parameters
+    ----------
+    geo_file : str
+        Filepath of the output geometry file.
+    serial_nos : list of str, optional
+        Serial numbers for the optical modules. These MUST be in
+        hexadecimal format, but their exact value does not matter. If
+        nothing is provided, these values will be randomly generated.
+    mac_ids : list of str, optional
+        MAC (I don't think this is actually what this is called) IDs
+        for the DOMs. By default these will be randomly generated, which
+        is probably what you want to do.
+
+    Raises
+    ------
+    IncompatibleSerialNumbersError
+        Raised if serial numbers length doesn't match number of DOMs.
+    IncompatibleMACIDsError
+        Raised if MAC IDs length doesn't match number of DOMs.
+    """
+    if serial_nos and len(serial_nos) != len(self.modules):
+        raise IncompatibleSerialNumbersError()
+
+    if mac_ids and len(mac_ids) != len(self.modules):
+        raise IncompatibleMACIDsError()
+
+    # Make serial numbers place holders
+    if not serial_nos:
+        from .utils import random_serial
+
+        serial_nos = [random_serial() for _ in range(self.n_modules)]
+
+    # Make MAC ID place holders
+    if not mac_ids:
+        from .utils import random_mac
+
+        mac_ids = [random_mac() for _ in range(self.n_modules)]
+
+    keys = [m.key for m in self.modules]
+    iterable = zip(mac_ids, serial_nos, self.module_coords, keys)
+    with open(geo_file, "w") as f2k_out:
+        for mac_id, serial_no, pos, key in iterable:
+            line = f"{mac_id}\t{serial_no}\t{pos[0]}\t{pos[1]}\t{pos[2]}"
+            if hasattr(key, "__iter__"):
+                for x in key:
+                    line += f"\t{x}"
+            else:
+                line += f"\t{key}"
+            line += "\n"
+            f2k_out.write(line)</code></pre>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.Prometheus" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Prometheus</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">Prometheus(userconfig: Union[None, dict, str] = None, detector: Union[None, Detector] = None)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="object">object</span></code></p>
+
+
+
+        <p>Class for unifying injection, energy loss calculation, and photon propagation.</p>
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>userconfig</code></b>
+                  (<code><span title="dict">dict</span> or <span title="str">str</span> or None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Configuration dictionary or path to YAML file specifying configuration.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>detector</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Detector (prometheus.detector.Detector)" href="#prometheus.Detector">Detector</a> or None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Detector to be used or path to geo file to load detector from. If omitted,
+the path from <code>userconfig["detector"]["geo file"]</code> will be loaded.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Raises:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><a class="autorefs autorefs-internal" title="UnknownInjectorError (prometheus.utils.UnknownInjectorError)" href="utils/error_handling/#prometheus.utils.error_handling.UnknownInjectorError">UnknownInjectorError</a></code>
+              –
+              <div class="doc-md-description">
+                <p>If the injector specified in the config is unknown.</p>
+              </div>
+            </li>
+            <li>
+                  <code><a class="autorefs autorefs-internal" title="UnknownPhotonPropagatorError (prometheus.utils.UnknownPhotonPropagatorError)" href="utils/error_handling/#prometheus.utils.error_handling.UnknownPhotonPropagatorError">UnknownPhotonPropagatorError</a></code>
+              –
+              <div class="doc-md-description">
+                <p>If the photon propagator specified in the config is unknown.</p>
+              </div>
+            </li>
+            <li>
+                  <code><a class="autorefs autorefs-internal" title="CannotLoadDetectorError (prometheus.utils.CannotLoadDetectorError)" href="utils/error_handling/#prometheus.utils.error_handling.CannotLoadDetectorError">CannotLoadDetectorError</a></code>
+              –
+              <div class="doc-md-description">
+                <p>If no detector is provided and no geo file path is provided in config.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="construct_output (prometheus.Prometheus.construct_output)" href="#prometheus.Prometheus.construct_output">construct_output</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Construct a parquet file with metadata from the generated files.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="inject (prometheus.Prometheus.inject)" href="#prometheus.Prometheus.inject">inject</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Determine initial neutrino and final particle states according to config.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="propagate (prometheus.Prometheus.propagate)" href="#prometheus.Prometheus.propagate">propagate</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Calculate energy losses, generate photon yields, and propagate photons.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="sim (prometheus.Prometheus.sim)" href="#prometheus.Prometheus.sim">sim</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Perform injection, calculate energy losses and photon yield, propagate photons, and save resulting photons.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+                  <details class="quote">
+                    <summary>Source code in <code>prometheus/prometheus.py</code></summary>
+                    <pre class="highlight"><code class="language-python">def __init__(
+    self, userconfig: Union[None, dict, str] = None, detector: Union[None, Detector] = None
+) -&gt; None:
+    """Initialize the Prometheus class.
+
+    Parameters
+    ----------
+    userconfig : dict or str or None
+        Configuration dictionary or path to YAML file specifying configuration.
+    detector : Detector or None
+        Detector to be used or path to geo file to load detector from. If omitted,
+        the path from ``userconfig["detector"]["geo file"]`` will be loaded.
+
+    Raises
+    ------
+    UnknownInjectorError
+        If the injector specified in the config is unknown.
+    UnknownPhotonPropagatorError
+        If the photon propagator specified in the config is unknown.
+    CannotLoadDetectorError
+        If no detector is provided and no geo file path is provided in config.
+    """
+    self._start_timing_misc = time()
+    if userconfig is not None:
+        from .config_types import PrometheusConfig
+
+        if isinstance(userconfig, PrometheusConfig):
+            # Caller passed a pre-built config object; use it directly.
+            config.__dict__.update(userconfig.__dict__)
+        elif isinstance(userconfig, dict):
+            config.from_dict(userconfig)
+        else:
+            config.from_yaml(userconfig)
+
+    if detector is None and config.detector.geo_file is None:
+        raise CannotLoadDetectorError(
+            "No Detector provided and no geo file path given in config"
+        )
+
+    # Defer detector construction until after logging/warning capture is
+    # configured below so we can suppress its noisy prints in user mode.
+    self._detector = detector
+    self._injection = None
+
+    # Configure logging centrally from the config as early as possible
+    try:
+        configure_logging(config)
+    except Exception:
+        # Fallback to basic config if configuration fails
+        logging.basicConfig(level=logging.WARNING)
+
+    # Determine summary mode before capturing warnings/redirects
+    try:
+        summary_mode = getattr(config.run, "summary_mode", "user") or "user"
+    except Exception:
+        summary_mode = "user"
+    self._summary_mode = summary_mode
+
+    # Capture Python warnings into an in-memory list so we can present
+    # them in a tidy summary rather than interleaving them with stdout.
+    try:
+        self._captured_warnings = []
+        self._orig_showwarning = warnings.showwarning
+
+        def _capture_warning(message, category, filename, lineno, file=None, line=None):
+            try:
+                self._captured_warnings.append(str(message))
+            except Exception:
+                pass
+            # In debug mode, still show the warning immediately
+            if getattr(self, "_summary_mode", "user") == "debug":
+                try:
+                    self._orig_showwarning(message, category, filename, lineno, file, line)
+                except Exception:
+                    pass
+
+        warnings.showwarning = _capture_warning
+    except Exception:
+        self._captured_warnings = []
+
+    # Attach a lightweight log-counter to capture warning/error counts
+    try:
+        self._log_counter = LogCounterHandler()
+        logging.getLogger().addHandler(self._log_counter)
+    except Exception:
+        self._log_counter = None
+
+    # Welcome banner (ascii logo) - show only if enabled in config.run.banner
+    try:
+        show_banner = False
+        try:
+            show_banner = bool(
+                getattr(config, "run", None) and getattr(config.run, "banner", False)
+            )
+        except Exception:
+            show_banner = False
+        logo_path = Path(__file__).resolve().parent.parent / "assets" / "ascii-logo.txt"
+        if show_banner:
+            try:
+                with open(logo_path, "r") as _fh:
+                    logo = _fh.read()
+                if self._summary_mode == "user":
+                    print("\n" + logo)
+                else:
+                    logger.info("\n%s", logo)
+            except Exception:
+                if show_banner and self._summary_mode != "user":
+                    logger.debug("Could not load ascii logo from %s", logo_path)
+    except Exception:
+        pass
+
+    # Construct detector after logging/warning capture is in place so
+    # we can collapse any noisy prints from detector construction.
+    try:
+        if self._detector is None:
+            from .detector import detector_from_geo
+
+            if getattr(self, "_summary_mode", "user") == "user":
+                with _COutputCapture() as _cap:
+                    self._detector = detector_from_geo(config.detector.geo_file)
+                try:
+                    self._init_output = (
+                        (getattr(self, "_init_output", "") or "")
+                        + (_cap.out or "")
+                        + (_cap.err or "")
+                    )
+                except Exception:
+                    self._init_output = getattr(self, "_init_output", "") or ""
+            else:
+                self._detector = detector_from_geo(config.detector.geo_file)
+    except Exception:
+        # If detector fails to construct, re-raise to preserve behaviour
+        raise
+
+    # Now import PROPOSAL and the lepton propagator (kept after logging
+    # configuration and warning capture so we can suppress their noise).
+    import proposal as pp
+
+    from .lepton_propagation.new_proposal_lepton_propagator import (
+        NewProposalLeptonPropagator as LeptonPropagator,
+    )
+
+    config.lepton_propagator.name = "new proposal"
+    config.lepton_propagator.version = pp.__version__
+
+    config_mims(config, self.detector)
+    clean_config(config)
+
+    self._injector = getattr(RegisteredInjectors, regularize(config.injection.name))
+
+    self._pp = getattr(RegisteredPhotonPropagators, regularize(config.photon_propagator.name))
+
+    if regularize(config.injection.name) not in RegisteredInjectors.list():
+        raise UnknownInjectorError(config.injection.name + "is not supported as an injector!")
+
+    if regularize(config.photon_propagator.name) not in RegisteredPhotonPropagators.list():
+        raise UnknownPhotonPropagatorError(
+            config.photon_propagator.name + " is not a known photon propagator"
+        )
+
+    pp.RandomGenerator.get().set_seed(config.run.random_state_seed)
+    lepton_prop_config = config.lepton_propagator[config.lepton_propagator.name]
+    # Construct lepton propagator and photon propagator; these can be
+    # noisy (print() calls) in some third-party components, so capture
+    # their stdout/stderr in user mode and present it only in the
+    # collapsed warnings section.
+    try:
+        if getattr(self, "_summary_mode", "user") == "user":
+            with _COutputCapture() as _cap:
+                self._lepton_propagator = LeptonPropagator(lepton_prop_config)
+                pp_config = config.photon_propagator[config.photon_propagator.name]
+                self._photon_propagator = get_photon_propagator(config.photon_propagator.name)(
+                    self._lepton_propagator, self.detector, pp_config
+                )
+            try:
+                self._init_output = (_cap.out or "") + (_cap.err or "")
+            except Exception:
+                self._init_output = ""
+        else:
+            self._lepton_propagator = LeptonPropagator(lepton_prop_config)
+            pp_config = config.photon_propagator[config.photon_propagator.name]
+            self._photon_propagator = get_photon_propagator(config.photon_propagator.name)(
+                self._lepton_propagator, self.detector, pp_config
+            )
+    except Exception:
+        # If constructor fails, propagate the exception as before.
+        raise
+    self._end_timing_misc = time()
+
+    # High-level initialization summary (print minimal in user mode so
+    # it appears even when the root logger is elevated to WARNING).
+    init_msg = (
+        f"Prometheus initialized: run={config.run.run_number} nevents={config.run.nevents} "
+        f"injector={config.injection.name} propagator={config.photon_propagator.name} "
+        f"modules={getattr(self.detector, 'n_modules', len(getattr(self.detector, 'modules', [])))}"  # noqa: E501
+    )
+    if getattr(self, "_summary_mode", "user") == "user":
+        try:
+            print(init_msg)
+        except Exception:
+            logger.info("Prometheus initialized")
+    else:
+        logger.info(init_msg)
+    if logger.isEnabledFor(logging.DEBUG):
+        try:
+            logger.debug("Resolved config: %s", config.to_dict())
+        except Exception:
+            logger.debug("Resolved config: &lt;unserializable&gt;")</code></pre>
+                  </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="prometheus.Prometheus.construct_output" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">construct_output</span>
+
+
+</h3>
+<pre class="highlight"><code class="language-python doc-signature">construct_output()</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Construct a parquet file with metadata from the generated files.</p>
+<p>Currently this still treats Olympus and ppc output differently.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/prometheus.py</code></summary>
+              <pre class="highlight"><code class="language-python">def construct_output(self):
+    """Construct a parquet file with metadata from the generated files.
+
+    Currently this still treats Olympus and ppc output differently.
+    """
+    # sim_switch = config["photon propagator"]["name"]
+
+    from .utils.serialization import serialize_particles_to_awkward, set_serialization_index
+
+    set_serialization_index(self.injection)
+    json_config = json.dumps(config.to_dict())
+    test_arr = serialize_particles_to_awkward(self.detector, self.injection)
+    if test_arr is not None:
+        outarr = ak.Array(
+            {
+                "mc_truth": self.injection.to_awkward(),
+                config.photon_propagator.photon_field_name: test_arr,
+            }
+        )
+    else:
+        logger.warning(
+            "No photon hits were recorded for any event. "
+            "Output will contain mc_truth only. "
+            "Check that event vertices are within the detector volume."
+        )
+        outarr = ak.Array({"mc_truth": self.injection.to_awkward()})
+    outfile = config.run.outfile
+    # Converting to pyarrow table
+    outarr = ak.to_arrow_table(outarr)
+    custom_meta_data_key = "config_prometheus"
+    combined_meta = {custom_meta_data_key.encode(): json_config.encode()}
+    outarr = outarr.replace_schema_metadata(combined_meta)
+    with time_block("write_output", logger):
+        pq.write_table(outarr, outfile)
+    # Record end of write phase
+    end_out = time()
+    self._end_out = end_out
+
+    size = None
+    try:
+        size = Path(outfile).stat().st_size
+        logger.info("Wrote output to %s (%d bytes)", outfile, size)
+    except Exception:
+        logger.info("Wrote output to %s", outfile)
+
+    # Build and emit run summary (extracted to prometheus.summary.emit_run_summary)
+    try:
+        emit_run_summary(self, outfile, end_out, size=size)
+    except Exception:
+        logger.debug("Failed to produce run summary")</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="prometheus.Prometheus.inject" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">inject</span>
+
+
+</h3>
+<pre class="highlight"><code class="language-python doc-signature">inject()</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Determine initial neutrino and final particle states according to config.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/prometheus.py</code></summary>
+              <pre class="highlight"><code class="language-python">def inject(self):
+    """Determine initial neutrino and final particle states according to config."""
+    injection_config = config.injection[config.injection.name]
+    logger.info(
+        "Starting injection: mode=%s inject=%s",
+        config.injection.name,
+        injection_config.inject,
+    )
+    with time_block("injection", logger):
+        if self._injector not in INJECTORS:
+            raise InjectorNotImplementedError(
+                str(self._injector) + " is not a registered injector"
+            )
+        plugin = INJECTORS[self._injector]
+        if injection_config.inject:
+            injection_config.simulation.random_state_seed = config.run.random_state_seed
+            plugin.runner(
+                injection_config.paths,
+                injection_config.simulation,
+                detector_offset=self.detector.offset,
+                detector=self._detector,
+            )
+        try:
+            self._injection = plugin.constructor(
+                injection_config.paths.injection_file,
+                simulation_config=injection_config.simulation,
+                detector=self._detector,
+                detector_offset=self.detector.offset,
+            )
+        except Exception:
+            logger.exception(
+                "Failed to construct injection from %s", injection_config.paths.injection_file
+            )
+            raise
+    try:
+        n_inj = len(self._injection)
+    except Exception:
+        n_inj = None
+    logger.info(
+        "Injection complete: loaded %s events from %s",
+        n_inj,
+        injection_config.paths.injection_file,
+    )</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="prometheus.Prometheus.propagate" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">propagate</span>
+
+
+</h3>
+<pre class="highlight"><code class="language-python doc-signature">propagate(capture: bool = False)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate energy losses, generate photon yields, and propagate photons.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>capture</code></b>
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>If <code>True</code>, capture stdout/stderr emitted by downstream modules into
+<code>self._propagate_output</code> instead of letting it print to the console.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/prometheus.py</code></summary>
+              <pre class="highlight"><code class="language-python">def propagate(self, capture: bool = False):
+    """Calculate energy losses, generate photon yields, and propagate photons.
+
+    Parameters
+    ----------
+    capture : bool
+        If ``True``, capture stdout/stderr emitted by downstream modules into
+        `self._propagate_output` instead of letting it print to the console.
+    """
+    pp_name = config.photon_propagator.name.lower()
+    logger.info("Starting propagation: propagator=%s", config.photon_propagator.name)
+    try:
+        total_events = len(self.injection)
+    except Exception:
+        total_events = None
+    if total_events is not None:
+        logger.info("Propagating %d events", total_events)
+    if pp_name == "olympus":
+        # Import lazily so JAX messages can be controlled by configure_logging
+        from jax import random
+
+        rng_key = random.PRNGKey(config.run.random_state_seed)
+    elif pp_name == "ppc":
+        import shutil
+        from glob import glob
+
+        from .utils.clean_ppc_tmpdir import clean_ppc_tmpdir
+
+        ppc_tmpdir = Path(config.photon_propagator.ppc.paths.ppc_tmpdir)
+        if ppc_tmpdir.exists() and not config.photon_propagator.ppc.paths.force:
+            raise PpcTmpdirExistsError(str(ppc_tmpdir))
+        ppc_tmpdir.mkdir(parents=True, exist_ok=False)
+        fs = glob(str(Path(config.photon_propagator.ppc.paths.ppctables) / "*"))
+        for f in fs:
+            shutil.copy(f, str(ppc_tmpdir))
+    elif pp_name == "ppc_cuda":
+        import shutil
+        from glob import glob
+
+        from .utils.clean_ppc_tmpdir import clean_ppc_tmpdir
+
+        ppc_cuda_tmpdir = Path(config.photon_propagator.ppc_cuda.paths.ppc_tmpdir)
+        if ppc_cuda_tmpdir.exists() and not config.photon_propagator.ppc_cuda.paths.force:
+            raise PpcTmpdirExistsError(str(ppc_cuda_tmpdir))
+        elif ppc_cuda_tmpdir.exists():
+            clean_ppc_tmpdir(str(ppc_cuda_tmpdir))
+        ppc_cuda_tmpdir.mkdir(parents=True, exist_ok=False)
+        fs = glob(str(Path(config.photon_propagator.ppc_cuda.paths.ppctables) / "*"))
+        for f in fs:
+            shutil.copy(f, str(ppc_cuda_tmpdir))
+
+    nevents = len(self.injection)
+
+    # Decide whether to show progress bars: only when number of events
+    # exceed the configured `progress_threshold`.
+    threshold = getattr(config.run, "progress_threshold", 10)
+    show_progress = bool(nevents &gt; threshold)
+
+    # If caller requested capture but progress is meaningful, we avoid
+    # capturing to allow interactive feedback.
+    should_capture = bool(capture and not show_progress)
+
+    cap = None
+    if should_capture:
+        cap = _COutputCapture()
+
+    if cap is not None:
+        cap.__enter__()
+    try:
+        if show_progress:
+            iterator = tqdm(enumerate(self.injection), total=len(self.injection))
+        else:
+            iterator = enumerate(self.injection)
+
+        # Optionally drop the XLA compiled-executable cache every N
+        # propagations. It accumulates to several GB per process on a
+        # large detector and is never reclaimed otherwise, so on a long
+        # run it is what exhausts memory rather than the event data.
+        release_interval = int(getattr(config.run, "jax_release_interval", 0) or 0)
+        n_propagations = 0
+
+        for idx, injection_event in iterator:
+            if idx == nevents:
+                break
+            for final_state in injection_event.final_states:
+                if show_progress:
+                    try:
+                        iterator.set_description(f"Propagating {final_state}")
+                    except Exception:
+                        pass
+                if pp_name == "olympus":
+                    # random already imported above for olympus
+                    rng_key, subkey = random.split(rng_key)
+                else:
+                    subkey = None
+                try:
+                    self._photon_propagator.propagate(final_state, subkey)
+                except Exception:
+                    logger.exception(
+                        "Error propagating event %s final_state=%s", idx, final_state
+                    )
+                    raise
+
+                n_propagations += 1
+                if release_interval and n_propagations % release_interval == 0:
+                    release_propagator_memory()
+    finally:
+        if cap is not None:
+            cap.__exit__(None, None, None)
+            try:
+                self._propagate_output = (cap.out or "") + (cap.err or "")
+            except Exception:
+                self._propagate_output = ""
+    logger.info("Propagation complete")
+    if pp_name == "olympus":
+        pass
+    elif pp_name == "ppc":
+        clean_ppc_tmpdir(config.photon_propagator.ppc.paths.ppc_tmpdir)
+    elif pp_name == "ppc_cuda":
+        clean_ppc_tmpdir(config.photon_propagator.ppc_cuda.paths.ppc_tmpdir)</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="prometheus.Prometheus.sim" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">sim</span>
+
+
+</h3>
+<pre class="highlight"><code class="language-python doc-signature">sim()</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Perform injection, calculate energy losses and photon yield, propagate photons, and save resulting photons.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/prometheus.py</code></summary>
+              <pre class="highlight"><code class="language-python">def sim(self):
+    """Perform injection, calculate energy losses and photon yield, propagate photons, and save resulting photons."""  # noqa: E501
+    logger.info("Starting full simulation run %s", config.run.run_number)
+    # Record phase start/end timestamps on self so construct_output can summarise
+    self._run_start_time = time()
+
+    # Injection: capture printed noise in user mode so the console stays clean
+    self._start_inj = time()
+    try:
+        if getattr(self, "_summary_mode", "user") == "user":
+            with _COutputCapture() as _cap:
+                self.inject()
+            try:
+                self._inject_output = (_cap.out or "") + (_cap.err or "")
+            except Exception:
+                self._inject_output = ""
+        else:
+            self.inject()
+    finally:
+        self._end_inj = time()
+
+    # Decide progress behaviour and whether to capture propagation output
+    try:
+        nevents = len(self._injection)
+    except Exception:
+        nevents = getattr(config.run, "nevents", 0)
+    threshold = getattr(config.run, "progress_threshold", 10)
+    show_progress = bool(nevents &gt; threshold)
+    capture_prop = (getattr(self, "_summary_mode", "user") == "user") and (not show_progress)
+
+    self._start_prop = time()
+    self.propagate(capture=capture_prop)
+    self._end_prop = time()
+
+    self._start_out = time()
+    # construct_output will set self._end_out when finished
+    self.construct_output()
+    self._end_out = getattr(self, "_end_out", time())
+    logger.info("Simulation run complete")
+    # Timing array: misc, inj, prop, out
+    self._timing_arr = np.array(
+        [
+            self._end_timing_misc - self._start_timing_misc,
+            self._end_inj - self._start_inj,
+            self._end_prop - self._start_prop,
+            self._end_out - self._start_out,
+        ]
+    )
+    try:
+        logger.info(
+            "Timings (s): misc=%.3f inj=%.3f prop=%.3f out=%.3f",
+            float(self._timing_arr[0]),
+            float(self._timing_arr[1]),
+            float(self._timing_arr[2]),
+            float(self._timing_arr[3]),
+        )
+    except Exception:
+        pass</code></pre>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../papers/" class="btn btn-neutral float-left" title="Papers Using Prometheus"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="compat/" class="btn btn-neutral float-right" title="compat">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../../papers/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="compat/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../js/popper.min.js"></script>
+      <script src="../../js/tippy-bundle.umd.js"></script>
+      <script src="../../js/clipboard.js"></script>
+      <script src="../../js/extra.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

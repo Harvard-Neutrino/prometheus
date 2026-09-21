@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../../../img/favicon.ico" />
+    <title>f2k_utils - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "f2k_utils";
+        var mkdocs_page_input_path = "api-reference/prometheus/utils/f2k_utils.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Installation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../installation/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../installation/built-in-installer/">Built-in installer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../installation/containers/">Containers</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../citation/">Citation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../papers/">Papers Using Prometheus</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="../../">prometheus</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../../compat/">compat</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../compat/haiku_unpickler/">haiku_unpickler</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../config/">config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../config_types/">config_types</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../detector/">detector</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/detector_factory/">detector_factory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../detector/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../injection/">injection</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/genie_injector/">genie_injector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/genie_parser/">genie_parser</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/genie_injection/">genie_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/registered_injectors/">registered_injectors</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../logging/">logging</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../logging/handlers/">handlers</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../logging_config/">logging_config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/hit/">hit</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/olympus/">olympus</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/event_generation/">event_generation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/optimization/">optimization</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/plotting/">plotting</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/ppc_photon_propagator/">ppc_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/registry/">registry</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../summary/">summary</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="../">utils</a>
+    <ul class="current">
+                <li class="toctree-l3"><a class="reference internal" href="../capture/">capture</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../detector_layers/">detector_layers</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../dom_response/">dom_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">f2k_utils</a>
+    <ul class="current">
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.utils.f2k_utils.clean_icecube">clean_icecube</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.utils.f2k_utils.from_f2k">from_f2k</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.utils.f2k_utils.get_cylinder">get_cylinder</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.utils.f2k_utils.get_endcap">get_endcap</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.utils.f2k_utils.get_injRadius">get_injRadius</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.utils.f2k_utils.get_xyz">get_xyz</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.utils.f2k_utils.offset">offset</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../fadc_digitization/">fadc_digitization</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../formatting/">formatting</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../layered_sim/">layered_sim</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../memory/">memory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../pmt_response/">pmt_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../timing/">timing</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../hyperion/">hyperion</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/medium/">medium</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/models/">models</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/">photon_arrival_time_nflow</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/net/">net</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/training_data/">training_data</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/validation/">validation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/">photon_binned_amplitude</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/net/">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/propagate/">propagate</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item"><a href="../../">prometheus</a></li>
+          <li class="breadcrumb-item"><a href="../">utils</a></li>
+      <li class="breadcrumb-item active">f2k_utils</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="prometheus.utils.f2k_utils" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">prometheus.utils.f2k_utils</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="clean_icecube (prometheus.utils.f2k_utils.clean_icecube)" href="#prometheus.utils.f2k_utils.clean_icecube">clean_icecube</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Remove IceTop modules from an IceCube f2k file.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="from_f2k (prometheus.utils.f2k_utils.from_f2k)" href="#prometheus.utils.f2k_utils.from_f2k">from_f2k</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Read module positions, keys, and serial numbers from an f2k file.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="get_cylinder (prometheus.utils.f2k_utils.get_cylinder)" href="#prometheus.utils.f2k_utils.get_cylinder">get_cylinder</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Compute the bounding cylinder (radius, height) for a set of module coordinates.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="get_endcap (prometheus.utils.f2k_utils.get_endcap)" href="#prometheus.utils.f2k_utils.get_endcap">get_endcap</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Compute the endcap length for LeptonInjector from module coordinates.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="get_injRadius (prometheus.utils.f2k_utils.get_injRadius)" href="#prometheus.utils.f2k_utils.get_injRadius">get_injRadius</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Compute the injection radius for LeptonInjector from module coordinates.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="get_xyz (prometheus.utils.f2k_utils.get_xyz)" href="#prometheus.utils.f2k_utils.get_xyz">get_xyz</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Return module coordinates from an f2k file as an array.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="offset (prometheus.utils.f2k_utils.offset)" href="#prometheus.utils.f2k_utils.offset">offset</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Compute the translation vector that centers the coordinates at the origin.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.utils.f2k_utils.clean_icecube" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">clean_icecube</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">clean_icecube(fname)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Remove IceTop modules from an IceCube f2k file.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>fname</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Path to the f2k file to clean in-place.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/utils/f2k_utils.py</code></summary>
+              <pre class="highlight"><code class="language-python">def clean_icecube(fname):
+    """Remove IceTop modules from an IceCube f2k file.
+
+    Parameters
+    ----------
+    fname : str
+        Path to the f2k file to clean in-place.
+    """
+    with open(fname, "r") as f2k_in:
+        line_list = f2k_in.readlines()
+    with open(fname, "w") as f2k_in:
+        count = 1
+        for line in line_list[:2]:
+            f2k_in.write(line)
+        for line in line_list[2:]:
+            if count &gt;= 65:
+                count = 1
+            if count not in list(range(61, 66)):
+                f2k_in.write(line)
+            count += 1</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.utils.f2k_utils.from_f2k" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">from_f2k</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">from_f2k(fname)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Read module positions, keys, and serial numbers from an f2k file.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>fname</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Path to the f2k file.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>pos_out</code></b>(                  <code><span title="numpy.ndarray">ndarray</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Array of shape <code>(N, 3)</code> with the (x, y, z) positions of each OM.</p>
+              </div>
+            </li>
+            <li>
+<b><code>keys</code></b>(                  <code>list of tuple of int</code>
+)              –
+              <div class="doc-md-description">
+                <p>List of (string_id, om_id) keys for each OM.</p>
+              </div>
+            </li>
+            <li>
+<b><code>sers</code></b>(                  <code>list of str</code>
+)              –
+              <div class="doc-md-description">
+                <p>List of serial numbers for each OM.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/utils/f2k_utils.py</code></summary>
+              <pre class="highlight"><code class="language-python">def from_f2k(fname):
+    """Read module positions, keys, and serial numbers from an f2k file.
+
+    Parameters
+    ----------
+    fname : str
+        Path to the f2k file.
+
+    Returns
+    -------
+    pos_out : np.ndarray
+        Array of shape ``(N, 3)`` with the (x, y, z) positions of each OM.
+    keys : list of tuple of int
+        List of (string_id, om_id) keys for each OM.
+    sers : list of str
+        List of serial numbers for each OM.
+    """
+    # List for the (x,y,z) positions of each OM
+    pos = []
+    # List for the optical module keys
+    keys = []
+    # List for the serial numbers
+    sers = []
+    with open(fname) as f2k_in:
+        for line in f2k_in.readlines():
+            line = line.strip("\n").split("\t")
+            sers.append(line[1])
+            pos.append(np.array([float(line[2]), float(line[3]), float(line[4])]))
+            keys.append((int(line[5]), int(line[6])))
+        pos_out = np.vstack([a for a in pos])
+    return pos_out, keys, sers</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.utils.f2k_utils.get_cylinder" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_cylinder</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">get_cylinder(coords, epsilon=5)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Compute the bounding cylinder (radius, height) for a set of module coordinates.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>coords</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Array of shape <code>(N, 3)</code> with module positions.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>epsilon</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>5</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Tolerance for deciding whether the centroid is already at the origin.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>out_cylinder</code></b>(                  <code>tuple of float</code>
+)              –
+              <div class="doc-md-description">
+                <p>Tuple <code>(radius, height)</code> of the bounding cylinder.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/utils/f2k_utils.py</code></summary>
+              <pre class="highlight"><code class="language-python">def get_cylinder(coords, epsilon=5):
+    """Compute the bounding cylinder (radius, height) for a set of module coordinates.
+
+    Parameters
+    ----------
+    coords : np.ndarray
+        Array of shape ``(N, 3)`` with module positions.
+    epsilon : float, optional
+        Tolerance for deciding whether the centroid is already at the origin.
+
+    Returns
+    -------
+    out_cylinder : tuple of float
+        Tuple ``(radius, height)`` of the bounding cylinder.
+    """
+    # returns cylinder (radius, height) from 3xn array
+    if max(np.average(coords, 0)) &gt; epsilon:
+        coords = coords + offset(coords)
+
+    out_cylinder = (np.linalg.norm(coords[:, :2], axis=1).max(), np.ptp(coords[:, 2:]))
+
+    return out_cylinder</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.utils.f2k_utils.get_endcap" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_endcap</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">get_endcap(coords)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Compute the endcap length for LeptonInjector from module coordinates.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>coords</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Array of shape <code>(N, 3)</code> with module positions.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>endcap_len</code></b>(                  <code><span title="float">float</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Endcap length in meters.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/utils/f2k_utils.py</code></summary>
+              <pre class="highlight"><code class="language-python">def get_endcap(coords):
+    """Compute the endcap length for LeptonInjector from module coordinates.
+
+    Parameters
+    ----------
+    coords : np.ndarray
+        Array of shape ``(N, 3)`` with module positions.
+
+    Returns
+    -------
+    endcap_len : float
+        Endcap length in meters.
+    """
+    cyl = get_cylinder(coords)
+    r = cyl[0]
+    z = cyl[1]
+    theta = (np.pi / 2) - 2 * np.arctan(2 * r / z)
+    endcap_len = padding + np.cos(theta) * (get_injRadius(coords) - padding)
+    return endcap_len</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.utils.f2k_utils.get_injRadius" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_injRadius</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">get_injRadius(coords)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Compute the injection radius for LeptonInjector from module coordinates.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>coords</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Array of shape <code>(N, 3)</code> with module positions.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>injRad</code></b>(                  <code><span title="float">float</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Injection radius in meters.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/utils/f2k_utils.py</code></summary>
+              <pre class="highlight"><code class="language-python">def get_injRadius(coords):
+    """Compute the injection radius for LeptonInjector from module coordinates.
+
+    Parameters
+    ----------
+    coords : np.ndarray
+        Array of shape ``(N, 3)`` with module positions.
+
+    Returns
+    -------
+    injRad : float
+        Injection radius in meters.
+    """
+    cyl = get_cylinder(coords)
+    injRad = padding + (np.sqrt(cyl[0] ** 2 + (0.5 * cyl[1]) ** 2))
+    return injRad</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.utils.f2k_utils.get_xyz" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_xyz</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">get_xyz(fname)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Return module coordinates from an f2k file as an array.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>fname</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Path to the f2k file.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>coords</code></b>(                  <code><span title="numpy.ndarray">ndarray</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Array of shape <code>(N, 3)</code> with the (x, y, z) positions.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/utils/f2k_utils.py</code></summary>
+              <pre class="highlight"><code class="language-python">def get_xyz(fname):
+    """Return module coordinates from an f2k file as an array.
+
+    Parameters
+    ----------
+    fname : str
+        Path to the f2k file.
+
+    Returns
+    -------
+    coords : np.ndarray
+        Array of shape ``(N, 3)`` with the (x, y, z) positions.
+    """
+    # returns 3xn array
+    det = from_f2k(fname)
+    return det[0]</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.utils.f2k_utils.offset" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">offset</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">offset(coords)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Compute the translation vector that centers the coordinates at the origin.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>coords</code></b>
+                  (<code><span title="numpy.ndarray">ndarray</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Array of shape <code>(N, 3)</code> with module positions.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>offset_vec</code></b>(                  <code><span title="numpy.ndarray">ndarray</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Vector such that <code>coords + offset_vec</code> has a mean of <code>[0, 0, 0]</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/utils/f2k_utils.py</code></summary>
+              <pre class="highlight"><code class="language-python">def offset(coords):
+    """Compute the translation vector that centers the coordinates at the origin.
+
+    Parameters
+    ----------
+    coords : np.ndarray
+        Array of shape ``(N, 3)`` with module positions.
+
+    Returns
+    -------
+    offset_vec : np.ndarray
+        Vector such that ``coords + offset_vec`` has a mean of ``[0, 0, 0]``.
+    """
+    # returns x st x+mean(x,y,z) = &lt;o,o,o&gt;
+    xyz_avg = np.average(coords, 0)
+    return -1 * xyz_avg</code></pre>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../extended_enum/" class="btn btn-neutral float-left" title="extended_enum"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../fadc_digitization/" class="btn btn-neutral float-right" title="fadc_digitization">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../extended_enum/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../fadc_digitization/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../../..";</script>
+    <script src="../../../../js/theme_extra.js"></script>
+    <script src="../../../../js/theme.js"></script>
+      <script src="../../../../js/popper.min.js"></script>
+      <script src="../../../../js/tippy-bundle.umd.js"></script>
+      <script src="../../../../js/clipboard.js"></script>
+      <script src="../../../../js/extra.js"></script>
+      <script src="../../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

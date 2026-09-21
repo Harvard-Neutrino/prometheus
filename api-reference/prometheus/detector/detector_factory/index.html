@@ -1,0 +1,2181 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../../../img/favicon.ico" />
+    <title>detector_factory - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "detector_factory";
+        var mkdocs_page_input_path = "api-reference/prometheus/detector/detector_factory.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Installation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../installation/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../installation/built-in-installer/">Built-in installer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../installation/containers/">Containers</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../citation/">Citation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../papers/">Papers Using Prometheus</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="../../">prometheus</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../../compat/">compat</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../compat/haiku_unpickler/">haiku_unpickler</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../config/">config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../config_types/">config_types</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="../">detector</a>
+    <ul class="current">
+                <li class="toctree-l3"><a class="reference internal" href="../detector/">detector</a>
+                </li>
+                <li class="toctree-l3 current"><a class="reference internal current" href="#">detector_factory</a>
+    <ul class="current">
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.detector.detector_factory.InvalidRNGError">InvalidRNGError</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.detector.detector_factory.detector_from_geo">detector_from_geo</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.detector.detector_factory.make_grid">make_grid</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.detector.detector_factory.make_hex_grid">make_hex_grid</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.detector.detector_factory.make_line">make_line</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.detector.detector_factory.make_rhombus">make_rhombus</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.detector.detector_factory.make_triang">make_triang</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.detector.detector_factory.parse_rng">parse_rng</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.detector.detector_factory.read_geo_modules">read_geo_modules</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus.detector.detector_factory.read_medium">read_medium</a>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../injection/">injection</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/genie_injector/">genie_injector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/genie_parser/">genie_parser</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/genie_injection/">genie_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../injection/injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/registered_injectors/">registered_injectors</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../injection/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../lepton_propagation/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../logging/">logging</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../logging/handlers/">handlers</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../logging_config/">logging_config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/hit/">hit</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/olympus/">olympus</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/event_generation/">event_generation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/optimization/">optimization</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/plotting/">plotting</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/olympus/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/ppc_photon_propagator/">ppc_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/registry/">registry</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_propagation/utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_propagation/utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../summary/">summary</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../utils/">utils</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/capture/">capture</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/detector_layers/">detector_layers</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/dom_response/">dom_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/f2k_utils/">f2k_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/fadc_digitization/">fadc_digitization</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/formatting/">formatting</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/layered_sim/">layered_sim</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/memory/">memory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/pmt_response/">pmt_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../utils/serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/timing/">timing</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../utils/write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../hyperion/">hyperion</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/medium/">medium</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/models/">models</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/">photon_arrival_time_nflow</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/net/">net</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/training_data/">training_data</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_arrival_time_nflow/validation/">validation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/">photon_binned_amplitude</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../hyperion/models/photon_binned_amplitude/net/">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../hyperion/pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/propagate/">propagate</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../hyperion/utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item"><a href="../../">prometheus</a></li>
+          <li class="breadcrumb-item"><a href="../">detector</a></li>
+      <li class="breadcrumb-item active">detector_factory</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="prometheus.detector.detector_factory" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">prometheus.detector.detector_factory</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Classes:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+          <b><code><a class="autorefs autorefs-internal" title="InvalidRNGError (prometheus.detector.detector_factory.InvalidRNGError)" href="#prometheus.detector.detector_factory.InvalidRNGError">InvalidRNGError</a></code></b>
+          –
+          <div class="doc-md-description">
+            <p>Raised when rng specification can't be parsed.</p>
+          </div>
+        </li>
+    </ul>
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="detector_from_geo (prometheus.detector.detector_factory.detector_from_geo)" href="#prometheus.detector.detector_factory.detector_from_geo">detector_from_geo</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Build a detector from a Prometheus geofile.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_grid (prometheus.detector.detector_factory.make_grid)" href="#prometheus.detector.detector_factory.make_grid">make_grid</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Build a square detector grid.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_hex_grid (prometheus.detector.detector_factory.make_hex_grid)" href="#prometheus.detector.detector_factory.make_hex_grid">make_hex_grid</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Build a hex detector grid.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_line (prometheus.detector.detector_factory.make_line)" href="#prometheus.detector.detector_factory.make_line">make_line</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Build a line of detector modules.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_rhombus (prometheus.detector.detector_factory.make_rhombus)" href="#prometheus.detector.detector_factory.make_rhombus">make_rhombus</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Build a rhombus detector.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_triang (prometheus.detector.detector_factory.make_triang)" href="#prometheus.detector.detector_factory.make_triang">make_triang</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Build a triangular detector grid.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="parse_rng (prometheus.detector.detector_factory.parse_rng)" href="#prometheus.detector.detector_factory.parse_rng">parse_rng</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Helps determine random number generation state from input.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="read_geo_modules (prometheus.detector.detector_factory.read_geo_modules)" href="#prometheus.detector.detector_factory.read_geo_modules">read_geo_modules</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Read the module block of a geofile, reporting every malformed line.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="read_medium (prometheus.detector.detector_factory.read_medium)" href="#prometheus.detector.detector_factory.read_medium">read_medium</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Figures out detector medium from a geofile.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="prometheus.detector.detector_factory.InvalidRNGError" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">InvalidRNGError</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">InvalidRNGError(rng)</code></pre>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="Exception">Exception</span></code></p>
+
+
+
+        <p>Raised when rng specification can't be parsed.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                  <details class="quote">
+                    <summary>Source code in <code>prometheus/detector/detector_factory.py</code></summary>
+                    <pre class="highlight"><code class="language-python">def __init__(self, rng):
+    self.message = f"Unable to determine random state seeding from {rng}"
+    super().__init__(self.message)</code></pre>
+                  </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.detector.detector_factory.detector_from_geo" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">detector_from_geo</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">detector_from_geo(geofile: str, efficiency: float = 0.2, noise_rate: float = 1) -&gt; Detector</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Build a detector from a Prometheus geofile.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>geofile</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Path to the geofile to read from.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>efficiency</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.2</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Quantum efficiency of OMs.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>noise_rate</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>1</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Noise rate of OMs in Hz.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>detector</code></b>(                  <code><a class="autorefs autorefs-internal" title="Detector (prometheus.detector.detector.Detector)" href="../detector/#prometheus.detector.detector.Detector">Detector</a></code>
+)              –
+              <div class="doc-md-description">
+                <p>Prometheus detector object.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/detector/detector_factory.py</code></summary>
+              <pre class="highlight"><code class="language-python">def detector_from_geo(geofile: str, efficiency: float = 0.2, noise_rate: float = 1) -&gt; Detector:
+    """Build a detector from a Prometheus geofile.
+
+    Parameters
+    ----------
+    geofile : str
+        Path to the geofile to read from.
+    efficiency : float, optional
+        Quantum efficiency of OMs.
+    noise_rate : float, optional
+        Noise rate of OMs in Hz.
+
+    Returns
+    -------
+    detector : Detector
+        Prometheus detector object.
+    """
+    pos, keys = read_geo_modules(geofile)
+    medium = read_medium(geofile)
+
+    sers = [random_serial() for _ in range(len(pos))]
+
+    efficiency = iter_or_rep(efficiency)
+    noise_rate = iter_or_rep(noise_rate)
+
+    modules = [
+        Module(p, k, efficiency=e, noise_rate=nr, serial_no=ser)
+        for p, k, e, nr, ser in zip(pos, keys, efficiency, noise_rate, sers)
+    ]
+    try:
+        det = Detector(modules, medium)
+    except GeometryError as err:
+        raise GeometryError(err.problems, source=f"geo file {geofile}") from None
+    return det</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.detector.detector_factory.make_grid" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_grid</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_grid(n_side: int, dist: float, n_z: int, dist_z: float, z_cent: float, medium: Medium, rng: Union[int, None, RandomState] = 1337, baseline_noise_rate: float = 1000.0, efficiency: float = 0.2) -&gt; Detector</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Build a square detector grid.</p>
+<p>Strings of detector modules are placed on a square grid, with the number of strings
+per side, number of modules per string, and z-spacing on a string set by input.
+The noise rate for each module is randomly sampled from a gamma distribution.
+The random state may be set by input.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>n_side</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of strings per side.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dist</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Spacing between strings along principal axes.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>n_z</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of modules on the line.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dist_z</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Vertical spacing between modules.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>z_cent</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Z-position of the center of the detector.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>medium</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Medium (prometheus.detector.medium.Medium)" href="../medium/#prometheus.detector.medium.Medium">Medium</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Medium in which the detector is embedded.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>rng</code></b>
+                  (<code>(<span title="numpy.random.RandomState">RandomState</span>, <span title="int">int</span> or None)</code>, default:
+                      <code>1337</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The way to set numpy random state. If a np.random.RandomState instance
+is passed, that will be used. If int or None, random state will be
+np.random.RandomState(rng). Anything else will raise error.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>baseline_noise_rate</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>1000.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Baseline dark noise rate for the OMs in GHz.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>efficiency</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.2</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Quantum efficiency of the OMs.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>det</code></b>(                  <code><a class="autorefs autorefs-internal" title="Detector (prometheus.detector.detector.Detector)" href="../detector/#prometheus.detector.detector.Detector">Detector</a></code>
+)              –
+              <div class="doc-md-description">
+                <p>Orthogonal Prometheus detector.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/detector/detector_factory.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_grid(
+    n_side: int,
+    dist: float,
+    n_z: int,
+    dist_z: float,
+    z_cent: float,
+    medium: Medium,
+    rng: Union[int, None, np.random.RandomState] = 1337,
+    baseline_noise_rate: float = 1.0e3,
+    efficiency: float = 0.2,
+) -&gt; Detector:
+    """Build a square detector grid.
+
+    Strings of detector modules are placed on a square grid, with the number of strings
+    per side, number of modules per string, and z-spacing on a string set by input.
+    The noise rate for each module is randomly sampled from a gamma distribution.
+    The random state may be set by input.
+
+    Parameters
+    ----------
+    n_side : int
+        Number of strings per side.
+    dist : float
+        Spacing between strings along principal axes.
+    n_z : int
+        Number of modules on the line.
+    dist_z : float
+        Vertical spacing between modules.
+    z_cent : float
+        Z-position of the center of the detector.
+    medium : Medium
+        Medium in which the detector is embedded.
+    rng : np.random.RandomState, int or None, optional
+        The way to set numpy random state. If a np.random.RandomState instance
+        is passed, that will be used. If int or None, random state will be
+        np.random.RandomState(rng). Anything else will raise error.
+    baseline_noise_rate : float, optional
+        Baseline dark noise rate for the OMs in GHz.
+    efficiency : float, optional
+        Quantum efficiency of the OMs.
+
+    Returns
+    -------
+    det : Detector
+        Orthogonal Prometheus detector.
+    """
+    modules = []
+    x_pos = np.linspace(-n_side / 2 * dist, n_side / 2 * dist, n_side)
+    y_pos = x_pos
+
+    for idx, (x, y) in enumerate(itertools.product(x_pos, y_pos)):
+        modules += make_line(
+            x,
+            y,
+            n_z,
+            dist_z,
+            z_cent,
+            idx,
+            rng=rng,
+            baseline_noise_rate=baseline_noise_rate,
+            efficiency=efficiency,
+        )
+
+    det = Detector(modules, medium)
+    return det</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.detector.detector_factory.make_hex_grid" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_hex_grid</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_hex_grid(n_side: int, dist: float, n_z: int, dist_z: float, z_cent: float, medium: Medium, baseline_noise_rate: float = 1000.0, rng: Union[int, None, RandomState] = 1337, efficiency: float = 0.2) -&gt; Detector</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Build a hex detector grid.</p>
+<p>Strings of detector modules are placed on a hexagonal
+grid with number of OMs per string and distance between these modules set by input.
+The vertical center of the detector is at z_cent.
+The noise rate for each module is randomly sampled from a gamma distribution.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>n_side</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of strings per side of hexagon.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dist</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Interstring spacing in meters.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>n_z</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of modules on the line.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dist_z</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Vertical spacing between modules.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>z_cent</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Z-position of the center of the detector.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>medium</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Medium (prometheus.detector.medium.Medium)" href="../medium/#prometheus.detector.medium.Medium">Medium</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Medium in which the detector is embedded.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>baseline_noise_rate</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>1000.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Baseline dark noise rate for the OMs in GHz.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>rng</code></b>
+                  (<code>(<span title="numpy.random.RandomState">RandomState</span>, <span title="int">int</span> or None)</code>, default:
+                      <code>1337</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The way to set numpy random state. If a np.random.RandomState instance
+is passed, that will be used. If int or None, random state will be
+np.random.RandomState(rng). Anything else will raise error.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>efficiency</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.2</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Quantum efficiency of the OMs.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>det</code></b>(                  <code><a class="autorefs autorefs-internal" title="Detector (prometheus.detector.detector.Detector)" href="../detector/#prometheus.detector.detector.Detector">Detector</a></code>
+)              –
+              <div class="doc-md-description">
+                <p>Hexagonal Prometheus detector.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/detector/detector_factory.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_hex_grid(
+    n_side: int,
+    dist: float,
+    n_z: int,
+    dist_z: float,
+    z_cent: float,
+    medium: Medium,
+    baseline_noise_rate: float = 1e3,
+    rng: Union[int, None, np.random.RandomState] = 1337,
+    efficiency: float = 0.2,
+) -&gt; Detector:
+    """Build a hex detector grid.
+
+    Strings of detector modules are placed on a hexagonal
+    grid with number of OMs per string and distance between these modules set by input.
+    The vertical center of the detector is at z_cent.
+    The noise rate for each module is randomly sampled from a gamma distribution.
+
+    Parameters
+    ----------
+    n_side : int
+        Number of strings per side of hexagon.
+    dist : float
+        Interstring spacing in meters.
+    n_z : int
+        Number of modules on the line.
+    dist_z : float
+        Vertical spacing between modules.
+    z_cent : float
+        Z-position of the center of the detector.
+    medium : Medium
+        Medium in which the detector is embedded.
+    baseline_noise_rate : float, optional
+        Baseline dark noise rate for the OMs in GHz.
+    rng : np.random.RandomState, int or None, optional
+        The way to set numpy random state. If a np.random.RandomState instance
+        is passed, that will be used. If int or None, random state will be
+        np.random.RandomState(rng). Anything else will raise error.
+    efficiency : float, optional
+        Quantum efficiency of the OMs.
+
+    Returns
+    -------
+    det : Detector
+        Hexagonal Prometheus detector.
+    """  # noqa: E501
+
+    modules = []
+    line_id = 0
+
+    for irow in range(0, n_side):
+        i_this_row = 2 * (n_side - 1) - irow
+        x_pos = np.linspace(-(i_this_row - 1) / 2 * dist, (i_this_row - 1) / 2 * dist, i_this_row)
+        y_pos = irow * dist * np.sqrt(3) / 2
+        for x in x_pos:
+            modules += make_line(
+                x,
+                y_pos,
+                n_z,
+                dist_z,
+                z_cent,
+                line_id,
+                rng=rng,
+                baseline_noise_rate=baseline_noise_rate,
+                efficiency=efficiency,
+            )
+            line_id += 1
+
+        if irow == 0:
+            continue
+
+        x_pos = np.linspace(-(i_this_row - 1) / 2 * dist, (i_this_row - 1) / 2 * dist, i_this_row)
+        y_pos = -irow * dist * np.sqrt(3) / 2
+
+        for x in x_pos:
+            modules += make_line(
+                x,
+                y_pos,
+                n_z,
+                dist_z,
+                z_cent,
+                line_id,
+                rng=rng,
+                baseline_noise_rate=baseline_noise_rate,
+                efficiency=efficiency,
+            )
+            line_id += 1
+
+    det = Detector(modules, medium)
+    return det</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.detector.detector_factory.make_line" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_line</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_line(x: float, y: float, n_z: int, dist_z: float, z_cent: float, line_id: int, rng: RandomState = 1337, baseline_noise_rate: float = 1000.0, efficiency: float = 0.2) -&gt; List[Module]</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Build a line of detector modules.</p>
+<p>The modules share the same (x, y) coordinate and are spaced along the z-direction.
+This detector will be symmetrically spaced about z=z_cent.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>x</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>X-position of the line.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>y</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Y-position of the line.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>n_z</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of modules on the line.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dist_z</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Vertical spacing between modules.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>z_cent</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Z-position of the center of the line.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>line_id</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Integer identifier of the line.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>rng</code></b>
+                  (<code>(<span title="numpy.random.RandomState">RandomState</span>, <span title="int">int</span> or None)</code>, default:
+                      <code>1337</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The way to set numpy random state. If a np.random.RandomState instance
+is passed, that will be used. If int or None, random state will be
+np.random.RandomState(rng). Anything else will raise error.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>baseline_noise_rate</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>1000.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Baseline dark noise rate for the OMs in GHz.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>efficiency</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.2</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Quantum efficiency of the OMs.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>modules</code></b>(                  <code>list of Module</code>
+)              –
+              <div class="doc-md-description">
+                <p>A list of modules that can be used to construct a Prometheus detector object
+if a single line detector is desired.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/detector/detector_factory.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_line(
+    x: float,
+    y: float,
+    n_z: int,
+    dist_z: float,
+    z_cent: float,
+    line_id: int,
+    rng: np.random.RandomState = 1337,
+    baseline_noise_rate: float = 1.0e3,
+    efficiency: float = 0.2,
+) -&gt; List[Module]:
+    """Build a line of detector modules.
+
+    The modules share the same (x, y) coordinate and are spaced along the z-direction.
+    This detector will be symmetrically spaced about z=z_cent.
+
+    Parameters
+    ----------
+    x : float
+        X-position of the line.
+    y : float
+        Y-position of the line.
+    n_z : int
+        Number of modules on the line.
+    dist_z : float
+        Vertical spacing between modules.
+    z_cent : float
+        Z-position of the center of the line.
+    line_id : int
+        Integer identifier of the line.
+    rng : np.random.RandomState, int or None, optional
+        The way to set numpy random state. If a np.random.RandomState instance
+        is passed, that will be used. If int or None, random state will be
+        np.random.RandomState(rng). Anything else will raise error.
+    baseline_noise_rate : float, optional
+        Baseline dark noise rate for the OMs in GHz.
+    efficiency : float, optional
+        Quantum efficiency of the OMs.
+
+    Returns
+    -------
+    modules : list of Module
+        A list of modules that can be used to construct a Prometheus detector object
+        if a single line detector is desired.
+    """
+    baseline_noise_rate *= 1e9
+    rng = parse_rng(rng)
+    modules = []
+    zmin = -dist_z * n_z / 2 + z_cent
+    zmax = dist_z * n_z / 2 + z_cent
+    for idx, z in enumerate(np.linspace(zmin, zmax, n_z)):
+        pos = np.array([x, y, z])
+        noise_rate = scipy.stats.gamma.rvs(1, 0.25, random_state=rng) * baseline_noise_rate
+        mod = Module(pos, key=(line_id, idx), noise_rate=noise_rate, efficiency=efficiency)
+        modules.append(mod)
+    return modules</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.detector.detector_factory.make_rhombus" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_rhombus</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_rhombus(side_len, n_z, dist_z, z_cent, medium: Medium, rng: Union[int, None, RandomState] = 1337, baseline_noise_rate: float = 1000.0, efficiency: float = 0.2) -&gt; Detector</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Build a rhombus detector.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>side_len</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Length of the rhombus in meters.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>n_z</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of modules on the line.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dist_z</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Vertical spacing between modules in meters.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>z_cent</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Z-position of the center of the detector in meters.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>rng</code></b>
+                  (<code>(<span title="numpy.random.RandomState">RandomState</span>, <span title="int">int</span> or None)</code>, default:
+                      <code>1337</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The way to set numpy random state. If a np.random.RandomState instance
+is passed, that will be used. If int or None, random state will be
+np.random.RandomState(rng). Anything else will raise error.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>baseline_noise_rate</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>1000.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Baseline dark noise rate for the OMs in GHz.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>efficiency</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.2</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Quantum efficiency of the OMs.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>det</code></b>(                  <code><a class="autorefs autorefs-internal" title="Detector (prometheus.detector.detector.Detector)" href="../detector/#prometheus.detector.detector.Detector">Detector</a></code>
+)              –
+              <div class="doc-md-description">
+                <p>Rhombus Prometheus detector.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/detector/detector_factory.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_rhombus(
+    side_len,
+    n_z,
+    dist_z,
+    z_cent,
+    medium: Medium,
+    rng: Union[int, None, np.random.RandomState] = 1337,
+    baseline_noise_rate: float = 1.0e3,
+    efficiency: float = 0.2,
+) -&gt; Detector:
+    """Build a rhombus detector.
+
+    Parameters
+    ----------
+    side_len : float
+        Length of the rhombus in meters.
+    n_z : int
+        Number of modules on the line.
+    dist_z : float
+        Vertical spacing between modules in meters.
+    z_cent : float
+        Z-position of the center of the detector in meters.
+    rng : np.random.RandomState, int or None, optional
+        The way to set numpy random state. If a np.random.RandomState instance
+        is passed, that will be used. If int or None, random state will be
+        np.random.RandomState(rng). Anything else will raise error.
+    baseline_noise_rate : float, optional
+        Baseline dark noise rate for the OMs in GHz.
+    efficiency : float, optional
+        Quantum efficiency of the OMs.
+
+    Returns
+    -------
+    det : Detector
+        Rhombus Prometheus detector.
+
+    """
+
+    modules = make_line(
+        -side_len / 2,
+        0,
+        n_z,
+        dist_z,
+        z_cent,
+        0,
+        rng=rng,
+        baseline_noise_rate=baseline_noise_rate,
+        efficiency=efficiency,
+    )
+    modules += make_line(
+        side_len / 2,
+        0,
+        n_z,
+        dist_z,
+        z_cent,
+        1,
+        rng=rng,
+        baseline_noise_rate=baseline_noise_rate,
+        efficiency=efficiency,
+    )
+    modules += make_line(
+        0,
+        np.sqrt(3) / 2 * side_len,
+        n_z,
+        dist_z,
+        z_cent,
+        2,
+        rng=rng,
+        baseline_noise_rate=baseline_noise_rate,
+        efficiency=efficiency,
+    )
+    modules += make_line(
+        0,
+        -np.sqrt(3) / 2 * side_len,
+        n_z,
+        dist_z,
+        z_cent,
+        3,
+        rng=rng,
+        baseline_noise_rate=baseline_noise_rate,
+        efficiency=efficiency,
+    )
+    det = Detector(modules, medium)
+    return det</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.detector.detector_factory.make_triang" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_triang</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_triang(side_len, n_z, dist_z, z_cent, medium: Medium, rng: RandomState = 1337, baseline_noise_rate: float = 1000.0, efficiency: float = 0.2) -&gt; Detector</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Build a triangular detector grid.</p>
+<p>Strings of detector modules are placed
+on a the corners of a equilateral triangle, with input side length,
+number of modules per string, and z-spacing on a string set by input.
+The noise rate for each module is randomly sampled from a gamma distribution.
+The random state may be set by input.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>side_len</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Length of the triangle in meters.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>n_z</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of modules on the line.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dist_z</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Vertical spacing between modules.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>z_cent</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Z-position of the center of the detector.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>medium</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="Medium (prometheus.detector.medium.Medium)" href="../medium/#prometheus.detector.medium.Medium">Medium</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>Medium in which the detector is embedded.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>rng</code></b>
+                  (<code>(<span title="numpy.random.RandomState">RandomState</span>, <span title="int">int</span> or None)</code>, default:
+                      <code>1337</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The way to set numpy random state. If a np.random.RandomState instance
+is passed, that will be used. If int or None, random state will be
+np.random.RandomState(rng). Anything else will raise error.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>baseline_noise_rate</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>1000.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Baseline dark noise rate for the OMs in GHz.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>efficiency</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.2</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Quantum efficiency of the OMs.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>det</code></b>(                  <code><a class="autorefs autorefs-internal" title="Detector (prometheus.detector.detector.Detector)" href="../detector/#prometheus.detector.detector.Detector">Detector</a></code>
+)              –
+              <div class="doc-md-description">
+                <p>Triangular Prometheus detector.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/detector/detector_factory.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_triang(
+    side_len,
+    n_z,
+    dist_z,
+    z_cent,
+    medium: Medium,
+    rng: np.random.RandomState = 1337,
+    baseline_noise_rate: float = 1.0e3,
+    efficiency: float = 0.2,
+) -&gt; Detector:
+    """Build a triangular detector grid.
+
+    Strings of detector modules are placed
+    on a the corners of a equilateral triangle, with input side length,
+    number of modules per string, and z-spacing on a string set by input.
+    The noise rate for each module is randomly sampled from a gamma distribution.
+    The random state may be set by input.
+
+    Parameters
+    ----------
+    side_len : float
+        Length of the triangle in meters.
+    n_z : int
+        Number of modules on the line.
+    dist_z : float
+        Vertical spacing between modules.
+    z_cent : float
+        Z-position of the center of the detector.
+    medium : Medium
+        Medium in which the detector is embedded.
+    rng : np.random.RandomState, int or None, optional
+        The way to set numpy random state. If a np.random.RandomState instance
+        is passed, that will be used. If int or None, random state will be
+        np.random.RandomState(rng). Anything else will raise error.
+    baseline_noise_rate : float, optional
+        Baseline dark noise rate for the OMs in GHz.
+    efficiency : float, optional
+        Quantum efficiency of the OMs.
+
+    Returns
+    -------
+    det : Detector
+        Triangular Prometheus detector.
+    """
+
+    height = np.sqrt(side_len**2 - (side_len / 2) ** 2)
+
+    modules = make_line(
+        -side_len / 2,
+        -height / 3,
+        n_z,
+        dist_z,
+        z_cent,
+        0,
+        rng=rng,
+        baseline_noise_rate=baseline_noise_rate,
+        efficiency=efficiency,
+    )
+    modules += make_line(
+        side_len / 2,
+        -height / 3,
+        n_z,
+        dist_z,
+        z_cent,
+        1,
+        rng=rng,
+        baseline_noise_rate=baseline_noise_rate,
+        efficiency=efficiency,
+    )
+    modules += make_line(
+        0,
+        2 / 3 * height,
+        n_z,
+        dist_z,
+        z_cent,
+        2,
+        rng=rng,
+        baseline_noise_rate=baseline_noise_rate,
+        efficiency=efficiency,
+    )
+
+    det = Detector(modules, medium)
+    return det</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.detector.detector_factory.parse_rng" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">parse_rng</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">parse_rng(rng: Union[None, int, RandomState]) -&gt; np.random.RandomState</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Helps determine random number generation state from input.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>rng</code></b>
+                  (<code>(<span title="int">int</span>, None or <span title="numpy.random.RandomState">RandomState</span>)</code>)
+              –
+              <div class="doc-md-description">
+                <p>rng generator to parse.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>rng</code></b>(                  <code><span title="numpy.random.RandomState">RandomState</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Random state corresponding to the input.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Raises:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><a class="autorefs autorefs-internal" title="InvalidRNGError (prometheus.detector.detector_factory.InvalidRNGError)" href="#prometheus.detector.detector_factory.InvalidRNGError">InvalidRNGError</a></code>
+              –
+              <div class="doc-md-description">
+                <p>Raised if we don't know how to handle the input rng.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/detector/detector_factory.py</code></summary>
+              <pre class="highlight"><code class="language-python">def parse_rng(rng: Union[None, int, np.random.RandomState]) -&gt; np.random.RandomState:
+    """Helps determine random number generation state from input.
+
+    Parameters
+    ----------
+    rng : int, None or np.random.RandomState
+        rng generator to parse.
+
+    Returns
+    -------
+    rng : np.random.RandomState
+        Random state corresponding to the input.
+
+    Raises
+    ------
+    InvalidRNGError
+        Raised if we don't know how to handle the input rng.
+    """
+    if not (isinstance(rng, int) or isinstance(rng, np.random.RandomState) or rng is None):
+        raise InvalidRNGError(rng)
+    if rng is None or isinstance(rng, int):
+        rng = np.random.RandomState(rng)
+    return rng</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.detector.detector_factory.read_geo_modules" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">read_geo_modules</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">read_geo_modules(geofile: str)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Read the module block of a geofile, reporting every malformed line.</p>
+<p>A module line is <code>x y z string_id om_id</code> separated by tabs. The first
+three fields must be finite floats and the last two integers.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>geofile</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Path to the geofile to read from.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>pos</code></b>(                  <code>list of np.ndarray</code>
+)              –
+              <div class="doc-md-description">
+                <p>Module positions in m.</p>
+              </div>
+            </li>
+            <li>
+<b><code>keys</code></b>(                  <code>list of tuple of int</code>
+)              –
+              <div class="doc-md-description">
+                <p><code>(string_id, om_id)</code> for each module.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Raises:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><a class="autorefs autorefs-internal" title="GeometryError (prometheus.detector.detector.GeometryError)" href="../detector/#prometheus.detector.detector.GeometryError">GeometryError</a></code>
+              –
+              <div class="doc-md-description">
+                <p>If the module header is missing, no modules are listed, or any line
+cannot be parsed.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/detector/detector_factory.py</code></summary>
+              <pre class="highlight"><code class="language-python">def read_geo_modules(geofile: str):
+    """Read the module block of a geofile, reporting every malformed line.
+
+    A module line is ``x y z string_id om_id`` separated by tabs. The first
+    three fields must be finite floats and the last two integers.
+
+    Parameters
+    ----------
+    geofile : str
+        Path to the geofile to read from.
+
+    Returns
+    -------
+    pos : list of np.ndarray
+        Module positions in m.
+    keys : list of tuple of int
+        ``(string_id, om_id)`` for each module.
+
+    Raises
+    ------
+    GeometryError
+        If the module header is missing, no modules are listed, or any line
+        cannot be parsed.
+    """
+    with open(geofile) as geo_in:
+        read_lines = geo_in.readlines()
+    header = [i for i, line in enumerate(read_lines) if line.strip() == "### Modules ###"]
+    if not header:
+        raise GeometryError(["missing '### Modules ###' header"], source=f"geo file {geofile}")
+
+    pos = []
+    keys = []
+    problems = []
+    for lineno, line in enumerate(read_lines[header[0] + 1 :], start=header[0] + 2):
+        if not line.strip():
+            continue
+        fields = line.strip("\n").split("\t")
+        if len(fields) != 5:
+            problems.append(
+                f"line {lineno}: expected 5 tab-separated fields "
+                f"(x y z string_id om_id), got {len(fields)}: {line.strip()!r}"
+            )
+            continue
+        try:
+            xyz = np.array([float(f) for f in fields[:3]])
+        except ValueError:
+            problems.append(f"line {lineno}: position is not numeric: {line.strip()!r}")
+            continue
+        if not np.isfinite(xyz).all():
+            problems.append(f"line {lineno}: position is not finite: {line.strip()!r}")
+            continue
+        try:
+            key = (int(fields[3]), int(fields[4]))
+        except ValueError:
+            problems.append(f"line {lineno}: string_id/om_id are not integers: {line.strip()!r}")
+            continue
+        pos.append(xyz)
+        keys.append(key)
+
+    if not problems and not pos:
+        problems.append("no modules listed after '### Modules ###'")
+    if problems:
+        raise GeometryError(problems, source=f"geo file {geofile}")
+    return pos, keys</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="prometheus.detector.detector_factory.read_medium" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">read_medium</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">read_medium(geofile) -&gt; Union[Medium, None]</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Figures out detector medium from a geofile.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>geofile</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Detector geofile path.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>medium</code></b>(                  <code><a class="autorefs autorefs-internal" title="Medium (prometheus.detector.medium.Medium)" href="../medium/#prometheus.detector.medium.Medium">Medium</a> or None</code>
+)              –
+              <div class="doc-md-description">
+                <p>Medium for the detector.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>prometheus/detector/detector_factory.py</code></summary>
+              <pre class="highlight"><code class="language-python">def read_medium(geofile) -&gt; Union[Medium, None]:
+    """Figures out detector medium from a geofile.
+
+    Parameters
+    ----------
+    geofile : str
+        Detector geofile path.
+
+    Returns
+    -------
+    medium : Medium or None
+        Medium for the detector.
+    """
+    medium_string = ""
+    with open(geofile) as geo_in:
+        for line in geo_in.readlines():
+            if "medium" in line.lower():
+                medium_string = line.split()[1].upper()
+                break
+    if medium_string and medium_string not in Medium.list():
+        raise ValueError(f"Unknown medium. Only {Medium.list()} currently supported")
+    if not medium_string:
+        return None
+    return getattr(Medium, medium_string)</code></pre>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../detector/" class="btn btn-neutral float-left" title="detector"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../medium/" class="btn btn-neutral float-right" title="medium">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../detector/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../medium/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../../..";</script>
+    <script src="../../../../js/theme_extra.js"></script>
+    <script src="../../../../js/theme.js"></script>
+      <script src="../../../../js/popper.min.js"></script>
+      <script src="../../../../js/tippy-bundle.umd.js"></script>
+      <script src="../../../../js/clipboard.js"></script>
+      <script src="../../../../js/extra.js"></script>
+      <script src="../../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
