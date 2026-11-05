@@ -103,8 +103,10 @@ examples/genie_config/
 *.pickle
 !photon_arrival_time_counts_params.pickle
 !photon_arrival_time_nflow_params.pickle
-!antares_counts_params_low_E.pickle
-!antares_nflow_params_low_E.pickle
+!km3net_sea_cherenkov_counts_params.pickle
+!km3net_sea_cherenkov_nflow_params.pickle
+!km3net_sea_isotropic_counts_params.pickle
+!km3net_sea_isotropic_nflow_params.pickle
 
 !pone_config.json
 

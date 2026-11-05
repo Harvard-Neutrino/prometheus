@@ -12,8 +12,13 @@ Usage
 
 Output
 ------
-    resources/olympus_resources/antares_nflow_params.pickle
-    resources/olympus_resources/antares_counts_params.pickle
+    resources/olympus_resources/km3net_sea_<emission>_nflow_params.pickle
+    resources/olympus_resources/km3net_sea_<emission>_counts_params.pickle
+
+``<emission>`` is ``cherenkov`` or ``isotropic``, as recorded by 01 in
+``training_meta.json``. The counts model is checked with
+``03_check_photon_model.py`` before it is written; a model that fails is saved
+with a ``.FAILED`` suffix instead and the script exits with status 1.
 
 Notes on model sizing (learned empirically)
 -------------------------------------------
@@ -25,7 +30,10 @@ full-batch; a large MLP overfits it severely.
 """
 
 import argparse
+import importlib.util
+import json
 import pickle
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -36,6 +44,7 @@ from hyperion.models.photon_arrival_time_nflow.net import (
     train_counts_model,
     train_shape_model,
 )
+from hyperion.models.photon_arrival_time_nflow.training_data import pool_counts_rows
 from hyperion.models.photon_arrival_time_nflow.validation import check_counts_physics
 
 # ---------------------------------------------------------------------------
@@ -89,6 +98,39 @@ def _make_loaders(dataset, batch_size, rng, train_frac=_TRAIN_FRAC):
     return train_loader, test_loader
 
 
+def _training_domain(meta_path):
+    """Return the config entries describing the training domain of a run.
+
+    Parameters
+    ----------
+    meta_path : Path
+        ``training_meta.json`` written by ``01_generate_photon_mc.py``.
+
+    Returns
+    -------
+    dict
+        ``train_d_min``, ``train_d_max`` [m], ``dom_radius_m``,
+        ``train_n_angle_bins``, ``train_n_photons_per_distance``,
+        ``train_seed`` and ``angle_convention``. Empty when the file is
+        missing (data from before the record existed).
+    """
+    if not meta_path.exists():
+        print(f"No {meta_path.name} next to the data; the pickles carry no training domain.")
+        return {}
+    with open(meta_path) as handle:
+        meta = json.load(handle)
+    return {
+        "train_d_min": float(meta["train_d_min"]),
+        "train_d_max": float(meta["train_d_max"]),
+        "dom_radius_m": float(meta.get("dom_radius_m", 0.30)),
+        "train_n_angle_bins": int(meta.get("n_angle_bins", 0)),
+        "train_n_photons_per_distance": int(meta.get("n_photons_per_distance", 0)),
+        "train_seed": int(meta.get("seed", 0)),
+        "angle_convention": str(meta.get("angle_convention", "unknown")),
+        "emission": str(meta.get("emission", "isotropic")),
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -117,6 +159,11 @@ def main():
     )
     parser.add_argument("--seed", type=int, default=_SEED)
     parser.add_argument(
+        "--no-pool",
+        action="store_true",
+        help="Fit the raw counts rows. Loses light where rows rest on few scattered photons.",
+    )
+    parser.add_argument(
         "--counts-only",
         action="store_true",
         help="Skip shape model training; only retrain the counts model.",
@@ -128,15 +175,31 @@ def main():
         "overfits severely on the ~1,400-row counts dataset.",
     )
     parser.add_argument(
+        "--shape-out",
+        type=str,
+        default=None,
+        help="Output filename for the shape model pickle (relative to --out-dir); default "
+        "km3net_sea_<emission>_nflow_params.pickle.",
+    )
+    parser.add_argument(
         "--counts-out",
         type=str,
-        default="antares_counts_params_low_E.pickle",
-        help="Output filename for the counts model pickle (relative to --out-dir).",
+        default=None,
+        help="Output filename for the counts model pickle (relative to --out-dir); default "
+        "km3net_sea_<emission>_counts_params.pickle.",
     )
     args = parser.parse_args()
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(args.seed)
+
+    # Training domain from 01's meta record, stored in both pickle configs so
+    # the propagator and the model checks can tell where the networks are
+    # interpolating and where they are guessing.
+    domain = _training_domain(args.data_dir / "training_meta.json")
+    emission = domain.get("emission", "isotropic")
+    shape_name = args.shape_out or f"km3net_sea_{emission}_nflow_params.pickle"
+    counts_name = args.counts_out or f"km3net_sea_{emission}_counts_params.pickle"
 
     # -----------------------------------------------------------------------
     # Shape model
@@ -150,12 +213,13 @@ def main():
 
         shape_config = dict(_SHAPE_CONFIG)
         shape_config["steps"] = args.shape_steps
+        shape_config.update(domain)
 
         train_loader, test_loader = _make_loaders(shape_ds, _SHAPE_BATCH, rng)
         print(f"\nTraining shape model ({shape_config['steps']} steps) …")
         shape_params = train_shape_model(shape_config, train_loader, test_loader)
 
-        shape_out = args.out_dir / "antares_nflow_params_low_E.pickle"
+        shape_out = args.out_dir / shape_name
         with open(shape_out, "wb") as f:
             pickle.dump((shape_config, shape_params), f)
         print(f"Shape model saved → {shape_out}")
@@ -166,12 +230,21 @@ def main():
     counts_path = args.data_dir / "counts_data.npz"
     print(f"\nLoading counts data from {counts_path}")
     c = np.load(counts_path)
-    counts_ds = SimpleDataset(c["log10_dist"], c["angle"], c["log10_survival"], c["n_detected"])
+    # The fit runs on labels pooled over windows fixed by distance: see
+    # pool_counts_rows for why rows must not be weighted by their own effective
+    # count. The checks of 03 below still compare with the raw rows.
+    rows = {key: c[key] for key in c.files}
+    if not args.no_pool:
+        rows = pool_counts_rows(rows)
+    n_rows = rows["n_effective"] if "n_effective" in rows else rows["n_detected"]
+    counts_ds = SimpleDataset(rows["log10_dist"], rows["angle"], rows["log10_survival"], n_rows)
     print(f"  {len(counts_ds):,} samples")
 
     base_config = _COUNTS_CONFIG if args.large_counts else _COUNTS_CONFIG_SMALL
     counts_config = dict(base_config)
     counts_config["steps"] = args.counts_steps
+    counts_config.update(domain)
+    counts_config["label_pooling"] = "none" if args.no_pool else "fixed-window"
 
     # Full-batch training: with only ~1,400 counts samples, using the whole
     # training set as one batch avoids the noisy mini-batch gradient estimates
@@ -185,9 +258,25 @@ def main():
     counts_net = make_counts_net_fn(counts_config)
     check_counts_physics(counts_net, counts_params)
 
-    counts_out = args.out_dir / args.counts_out
-    with open(counts_out, "wb") as f:
+    # The physics checks of 03 decide whether the model is written under its
+    # final name: the propagator multiplies the counts fraction by every photon
+    # a source emits, so a model in the wrong convention or above the
+    # geometric bound distorts every simulation that uses it.
+    counts_out = args.out_dir / counts_name
+    candidate = counts_out.with_name(counts_out.name + ".candidate")
+    with open(candidate, "wb") as f:
         pickle.dump((counts_config, counts_params), f)
+    spec = importlib.util.spec_from_file_location("check", _HERE / "03_check_photon_model.py")
+    check = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(check)
+    counts_file = args.data_dir / "counts_data.npz"
+    d_max = domain.get("train_d_max", 300.0)
+    if not check.check_model(candidate, counts_file, d_max):
+        failed = counts_out.with_name(counts_out.name + ".FAILED")
+        candidate.replace(failed)
+        print(f"Counts model FAILED the physics checks; saved as {failed}")
+        sys.exit(1)
+    candidate.replace(counts_out)
     print(f"Counts model saved → {counts_out}")
 
     print("\nDone.")

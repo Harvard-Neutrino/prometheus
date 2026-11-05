@@ -10,6 +10,7 @@ Output
 ------
   <out_dir>/shape_data.npz   — (log10_dist, angle, t_residual, weight)
   <out_dir>/counts_data.npz  — (log10_dist, angle, log10_survival, n_detected)
+  <out_dir>/training_meta.json — emission, distance range, grid and MC settings
 
 Usage
 -----
@@ -21,6 +22,7 @@ Usage
 """
 
 import argparse
+import json
 import logging
 import sys
 from pathlib import Path
@@ -51,7 +53,8 @@ def parse_args():
         "--n-photons",
         type=int,
         default=100_000,
-        help="Photons emitted per source distance.",
+        help="Photons emitted per source distance (isotropic) or per (distance, viewing "
+        "angle) pair (cherenkov).",
     )
     p.add_argument(
         "--n-distances",
@@ -63,7 +66,34 @@ def parse_args():
         "--n-angle-bins",
         type=int,
         default=20,
-        help="Emission-angle bins for counts data.",
+        help="Equal bins over 0-180 deg; their centres are the base viewing-angle grid.",
+    )
+    p.add_argument(
+        "--emission",
+        choices=["cherenkov", "isotropic"],
+        default="cherenkov",
+        help="Angular emission profile of the source: the cascade Cherenkov profile, or "
+        "isotropic (flat in viewing angle, conserves the total light only).",
+    )
+    p.add_argument(
+        "--refine-deg",
+        type=float,
+        default=8.0,
+        help="Half-width [deg] of the band of extra viewing angles, 0.5 deg apart, around the "
+        "Cherenkov angle (cherenkov emission only).",
+    )
+    p.add_argument(
+        "--aim-fraction",
+        type=float,
+        default=0.5,
+        help="Fraction of photons drawn inside the aim cone toward the DOM "
+        "(importance sampling; the labels' expectation does not depend on it).",
+    )
+    p.add_argument(
+        "--chunk-size",
+        type=int,
+        default=500_000,
+        help="Photons propagated per JAX batch.",
     )
     p.add_argument(
         "--d-min",
@@ -98,7 +128,7 @@ def main():
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    shape_data, counts_data = generate_training_data(
+    shape_data, counts_data, meta = generate_training_data(
         n_photons=args.n_photons,
         n_distances=args.n_distances,
         n_angle_bins=args.n_angle_bins,
@@ -108,7 +138,17 @@ def main():
         wl_max=args.wl_max,
         max_time=args.max_time,
         seed=args.seed,
+        aim_fraction=args.aim_fraction,
+        chunk_size=args.chunk_size,
+        emission=args.emission,
+        refine_deg=args.refine_deg,
     )
+    meta["wl_min_nm"] = args.wl_min
+    meta["wl_max_nm"] = args.wl_max
+    meta_path = out_dir / "training_meta.json"
+    with open(meta_path, "w") as handle:
+        json.dump(meta, handle, indent=2)
+    print(f"\nTraining domain -> {meta_path}")
 
     if shape_data is not None:
         shape_npz = out_dir / "shape_data.npz"

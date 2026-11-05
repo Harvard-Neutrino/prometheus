@@ -1,0 +1,29 @@
+{
+  "emission": "isotropic",
+  "angle_convention": "viewing-angle-isotropic",
+  "train_d_min": 0.31,
+  "train_d_max": 300.0000000000001,
+  "n_distances": 85,
+  "n_angle_bins": 36,
+  "n_photons_per_distance": 2000000,
+  "dom_radius_m": 0.3,
+  "aim_fraction": 0.25,
+  "max_time_ns": 5000.0,
+  "seed": 20260916,
+  "wl_min_nm": 290.0,
+  "wl_max_nm": 700.0,
+  "far_range": {
+    "train_d_min": 29.999999999999996,
+    "train_d_max": 300.0000000000001,
+    "n_distances": 25,
+    "n_photons_per_distance": 10000000,
+    "aim_fraction": 0.1,
+    "seed": 20260917
+  },
+  "far_rows_extrapolated": {
+    "n_eff_min": 8.0,
+    "d_measured_max_m": 120.0,
+    "rows": 936,
+    "from_distance_m": 118.10615719045573
+  }
+}
