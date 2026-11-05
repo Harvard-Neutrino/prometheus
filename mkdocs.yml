@@ -13,6 +13,7 @@ nav:
       - 'Built-in installer': './installation/built-in-installer.md'
       - 'Containers': './installation/containers.md'
     - 'Usage': './usage.md'
+    - 'Water Models': './water-models.md'
     - 'Citation': './citation.md'
     - 'Papers Using Prometheus': './papers.md'
 extra_css:

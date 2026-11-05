@@ -45,7 +45,9 @@ _FLOW_MODEL_MAP: dict[str, tuple[str, str]] = {
     # profile of a cascade. See km3net_sea_cherenkov_training_meta.json and
     # examples/water_model/. The isotropic-emission variant of the same water
     # (km3net_sea_isotropic_*.pickle) conserves the total light but not the
-    # per-module pattern; select it through the olympus ``paths`` config.
+    # per-module pattern; select it through the olympus ``paths`` config. The
+    # antares_*_low_E pickles remain only to reproduce older results. See
+    # docs/water-models.md.
     "antares": (
         "km3net_sea_cherenkov_nflow_params.pickle",
         "km3net_sea_cherenkov_counts_params.pickle",
