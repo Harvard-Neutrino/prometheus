@@ -22,7 +22,9 @@ jobs:
       - run: ruff format --check .
 
   test:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moves to a new compiler and system libraries without
+    # notice, which can break the native builds in install.sh.
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
