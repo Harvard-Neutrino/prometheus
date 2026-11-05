@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Ana Lastoviria" />
+      <link rel="shortcut icon" href="../../../../../img/favicon.ico" />
+    <title>training_data - Prometheus Documentation</title>
+    <link rel="stylesheet" href="../../../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../../../../css/custom_rules.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "training_data";
+        var mkdocs_page_input_path = "api-reference/hyperion/models/photon_arrival_time_nflow/training_data.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../../../.." class="icon icon-home"> Prometheus Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../..">Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Installation</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../installation/">Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../installation/built-in-installer/">Built-in installer</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../../installation/containers/">Containers</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../usage/">Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../water-models/">Water Models</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../citation/">Citation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../../papers/">Papers Using Prometheus</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../../../../prometheus/">prometheus</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/compat/">compat</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/compat/haiku_unpickler/">haiku_unpickler</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/config/">config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/config_types/">config_types</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/detector/">detector</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/detector/detector/">detector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/detector/detector_factory/">detector_factory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/detector/medium/">medium</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/detector/module/">module</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/detector/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/injection/">injection</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/injection/genie_injector/">genie_injector</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/injection/genie_parser/">genie_parser</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/injection/injection/">injection</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/injection/injection/LI_injection/">LI_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/injection/injection/genie_injection/">genie_injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/injection/injection/injection/">injection</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/injection/injection/prometheus_injection/">prometheus_injection</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/injection/injection_event/">injection_event</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/injection/injection_event/LI_injection_event/">LI_injection_event</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/injection/injection_event/injection_event/">injection_event</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/injection/interactions/">interactions</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/injection/lepton_injector_utils/">lepton_injector_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/injection/registered_injectors/">registered_injectors</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/injection/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/lepton_propagation/">lepton_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/lepton_propagation/lepton_propagator/">lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/lepton_propagation/loss/">loss</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/lepton_propagation/new_proposal_lepton_propagator/">new_proposal_lepton_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/lepton_propagation/registry/">registry</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/logging/">logging</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/logging/handlers/">handlers</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/logging_config/">logging_config</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/particle/">particle</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/particle/particle/">particle</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/particle/particle_from_proposal/">particle_from_proposal</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/photon_propagation/">photon_propagation</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/photon_propagation/hit/">hit</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/photon_propagation/olympus/">olympus</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/photon_propagation/olympus/event_generation/">event_generation</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/photon_propagation/olympus/optimization/">optimization</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/photon_propagation/olympus/plotting/">plotting</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/photon_propagation/olympus/utils/">utils</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/photon_propagation/olympus_photon_propagator/">olympus_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/photon_propagation/photon_propagator/">photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/photon_propagation/ppc_photon_propagator/">ppc_photon_propagator</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/photon_propagation/registered_propagators/">registered_propagators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/photon_propagation/registry/">registry</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/photon_propagation/utils/">utils</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/photon_propagation/utils/parse_ppc/">parse_ppc</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/photon_propagation/utils/should_propagate/">should_propagate</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/plotting/">plotting</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/prometheus/">prometheus</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/summary/">summary</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/utils/">utils</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/capture/">capture</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/clean_config/">clean_config</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/clean_ppc_tmpdir/">clean_ppc_tmpdir</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/config_mims/">config_mims</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/convert_loss_name/">convert_loss_name</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/detector_dictionaries/">detector_dictionaries</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/detector_layers/">detector_layers</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/dom_response/">dom_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/error_handling/">error_handling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/extended_enum/">extended_enum</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/f2k_utils/">f2k_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/fadc_digitization/">fadc_digitization</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/find_cog/">find_cog</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/formatting/">formatting</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/geo_utils/">geo_utils</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/iter_or_rep/">iter_or_rep</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/join_awkward_arrays/">join_awkward_arrays</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/layered_sim/">layered_sim</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/memory/">memory</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/path_length_sampling/">path_length_sampling</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/pmt_response/">pmt_response</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/serialization/">serialization</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/utils/serialization/accumulate_hits/">accumulate_hits</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/utils/serialization/construct_totals_from_dict/">construct_totals_from_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/utils/serialization/serialize_particles_to_awkward/">serialize_particles_to_awkward</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/utils/serialization/serialize_results_to_dict/">serialize_results_to_dict</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/utils/serialization/set_serialization_index/">set_serialization_index</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../../../../prometheus/utils/serialization/totals_from_awkward_arr/">totals_from_awkward_arr</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/timing/">timing</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/translators/">translators</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/units/">units</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/utils/write_to_f2k/">write_to_f2k</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../../prometheus/weighting/">weighting</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/weighting/h5_weighter/">h5_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/weighting/parquet_weighter/">parquet_weighter</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../../../prometheus/weighting/weighter/">weighter</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="../../../">hyperion</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../../../constants/">constants</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../data/">data</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../medium/">medium</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="../../">models</a>
+    <ul class="current">
+                <li class="toctree-l3 current"><a class="reference internal current" href="../">photon_arrival_time_nflow</a>
+    <ul class="current">
+                <li class="toctree-l4"><a class="reference internal" href="../net/">net</a>
+                </li>
+                <li class="toctree-l4 current"><a class="reference internal current" href="#">training_data</a>
+                </li>
+                <li class="toctree-l4"><a class="reference internal" href="../validation/">validation</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../photon_binned_amplitude/">photon_binned_amplitude</a>
+    <ul>
+                <li class="toctree-l4"><a class="reference internal" href="../../photon_binned_amplitude/net/">net</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../pmt/">pmt</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../../pmt/pmt/">pmt</a>
+                </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../propagate/">propagate</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../../utils/">utils</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../..">Prometheus Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+          <li class="breadcrumb-item"><a href="../../../">hyperion</a></li>
+          <li class="breadcrumb-item"><a href="../../">models</a></li>
+          <li class="breadcrumb-item"><a href="../">photon_arrival_time_nflow</a></li>
+      <li class="breadcrumb-item active">training_data</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="doc doc-object doc-module">
+
+
+
+<h1 id="hyperion.models.photon_arrival_time_nflow.training_data" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">hyperion.models.photon_arrival_time_nflow.training_data</span>
+
+
+</h1>
+
+    <div class="doc doc-contents first">
+
+        <p>Photon Monte Carlo training-data generation for the shape/counts models.</p>
+<p>Runs photon MC in ANTARES/KM3NeT Mediterranean water with absorption. DOM
+placed at origin (radius 0.30 m); point sources at logarithmically spaced
+distances from d_min to d_max.</p>
+
+
+<details class="angle-convention" open>
+  <summary>Angle convention</summary>
+  <p>The propagator (<code>olympus/event_generation/photon_propagation/utils.py</code>)
+evaluates both models at the VIEWING angle, the angle between the source
+direction and the source-to-module vector, and multiplies the returned counts
+fraction by every photon the source emits (<code>norm_flow_photons.py</code>). The
+labels here are built in that convention: the counts label is the fraction of
+ALL photons a source emits that reach the DOM, and each row is keyed by a
+viewing angle.</p>
+</details>
+
+<details class="emission" open>
+  <summary>Emission</summary>
+  <p><code>emission="cherenkov"</code> (default): the source emits with the angular profile
+of an electromagnetic cascade around its axis (Radel &amp; Wiebusch, arXiv:1210.5140,
+:func:<code>hyperion.utils.cherenkov_ang_dist</code>), so the light peaks near the
+Cherenkov angle. Every (distance, viewing angle) pair is a separate MC run with
+the source axis tilted by the viewing angle away from the source-to-DOM line,
+and <code>n_photons</code> photons are emitted per pair.</p>
+<p><code>emission="isotropic"</code>: the source has no preferred direction, so the
+fraction does not depend on the viewing angle. One MC run per distance is
+written once per point of the viewing-angle grid with the same label, and the
+network learns a flat angle dependence. This conserves the total light but not
+the per-module pattern of a real cascade.</p>
+<p>An earlier version binned photons by their own emission angle and divided
+by the photons emitted into that bin. Read at the viewing angle and scaled
+by all photons, that overstates the light on modules near the source axis
+by the inverse solid angle of the bin, hundreds of times at 50 m.</p>
+<p>Each photon accumulates an absorption survival weight
+<code>w = prod_steps exp(-step_size / abs_len(λ))</code>. This weight-tracking
+approach avoids killing photons early (improving statistics at large
+distances) and is equivalent to the absorption-corrected expected photon
+count.</p>
+</details>
+
+<details class="importance-sampling" open>
+  <summary>Importance sampling</summary>
+  <p>The DOM subtends 2.5e-7 of the sphere at 300 m, so isotropic emission alone
+leaves every far distance empty (25 hits per 2M photons at 50 m).
+Directions are therefore drawn from a mixture: with probability
+<code>aim_fraction</code> uniformly inside a narrow cone around the source-to-DOM
+axis, otherwise from the emission profile itself. Every photon carries the
+weight <code>p_emit / q_mix</code> of its direction. The expectation of every label is
+unchanged for any mixture (the proposal covers the whole sphere); the cone
+supplies the direct photons, the emission component the scattered ones.</p>
+<p>Produces two datasets, compatible with <code>SimpleDataset</code> / <code>DataLoader</code>
+and <code>train_shape_model</code> / <code>train_counts_model</code> in
+:mod:<code>hyperion.models.photon_arrival_time_nflow.net</code>:</p>
+<p>Shape data: one row per detected photon with its weight (absorption times
+direction weight), normalised to mean 1 within its distance so that every
+distance enters the weighted timing fit in proportion to its detected
+photons. The row's angle is its viewing angle (Cherenkov emission) or drawn
+uniformly over 0-180 deg (isotropic emission, where timing does not depend on it).</p>
+<p>Counts data: one row per (distance x viewing-angle grid point), with
+<code>log10_survival = log10(sum_w_detected / n_emitted)</code>, the raw detected
+count <code>n_detected</code> and the Kish effective count <code>n_effective</code>.</p>
+</details>
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Functions:</span></p>
+    <ul>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="generate_training_data (hyperion.models.photon_arrival_time_nflow.training_data.generate_training_data)" href="#hyperion.models.photon_arrival_time_nflow.training_data.generate_training_data">generate_training_data</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Run the photon MC and build the shape and counts training datasets.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="make_step_with_absorption (hyperion.models.photon_arrival_time_nflow.training_data.make_step_with_absorption)" href="#hyperion.models.photon_arrival_time_nflow.training_data.make_step_with_absorption">make_step_with_absorption</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Build a photon step function extended with absorption weight tracking.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="pool_counts_rows (hyperion.models.photon_arrival_time_nflow.training_data.pool_counts_rows)" href="#hyperion.models.photon_arrival_time_nflow.training_data.pool_counts_rows">pool_counts_rows</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Average the counts labels over windows fixed by distance.</p>
+            </div>
+          </li>
+          <li class="doc-section-item field-body">
+            <b><code><a class="autorefs autorefs-internal" title="viewing_angle_grid (hyperion.models.photon_arrival_time_nflow.training_data.viewing_angle_grid)" href="#hyperion.models.photon_arrival_time_nflow.training_data.viewing_angle_grid">viewing_angle_grid</a></code></b>
+            –
+            <div class="doc-md-description">
+              <p>Return the viewing angles [rad] at which the counts labels are written.</p>
+            </div>
+          </li>
+    </ul>
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.models.photon_arrival_time_nflow.training_data.generate_training_data" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">generate_training_data</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">generate_training_data(n_photons: int, n_distances: int, n_angle_bins: int, d_min: float, d_max: float, wl_min: float, wl_max: float, max_time: float, seed: int, aim_fraction: float = 0.5, chunk_size: int = 500000, emission: str = 'cherenkov', refine_deg: float = 8.0)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Run the photon MC and build the shape and counts training datasets.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>n_photons</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Photons emitted per source distance (isotropic emission) or per
+(distance, viewing angle) pair (Cherenkov emission).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>n_distances</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of source distances (log-uniform from <code>d_min</code> to <code>d_max</code>).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>n_angle_bins</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Viewing-angle grid points (bin centres of equal bins over 0-180 deg)
+at which each distance's label is written.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>d_min</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Source distance range [m]. <code>d_min</code> must be greater than
+:data:<code>DOM_RADIUS</code> to avoid the source sitting exactly on the sphere
+surface, which causes d=0 intersection tests to fail the strict d&gt;0
+check and suppresses hits.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>d_max</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Source distance range [m]. <code>d_min</code> must be greater than
+:data:<code>DOM_RADIUS</code> to avoid the source sitting exactly on the sphere
+surface, which causes d=0 intersection tests to fail the strict d&gt;0
+check and suppresses hits.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>wl_min</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cherenkov wavelength range [nm].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>wl_max</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Cherenkov wavelength range [nm].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>max_time</code></b>
+                  (<code><span title="float">float</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Max photon propagation time [ns] (cutoff for un-intersected photons).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>seed</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Random seed.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>aim_fraction</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.5</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Fraction of photons drawn inside the aim cone around the
+source-to-DOM axis (default 0.5). Any value in (0, 1) gives the
+same expectation; it only changes the variance.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>chunk_size</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>500000</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Photons propagated per JAX batch (default 500 000). Throughput
+drops for larger batches; memory grows with them.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>emission</code></b>
+                  (<code>(<span title="cherenkov">cherenkov</span>, <span title="isotropic">isotropic</span>)</code>, default:
+                      <code>&#34;cherenkov&#34;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Angular emission profile of the source (default <code>"cherenkov"</code>).
+Cherenkov emission runs one MC per viewing angle, so many times more
+than isotropic.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>refine_deg</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>8.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Half-width [deg] of the band of extra viewing angles (0.5 deg apart)
+around the Cherenkov angle (default 8; Cherenkov emission only). See
+:func:<code>viewing_angle_grid</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>shape_data</code></b>(                  <code><span title="dict">dict</span> or None</code>
+)              –
+              <div class="doc-md-description">
+                <p>Arrays <code>log10_dist</code>, <code>angle</code>, <code>t_residual</code>, <code>weight</code> (one row
+per detected photon), or <code>None</code> if no photons were detected.</p>
+              </div>
+            </li>
+            <li>
+<b><code>counts_data</code></b>(                  <code><span title="dict">dict</span> or None</code>
+)              –
+              <div class="doc-md-description">
+                <p>Arrays <code>log10_dist</code>, <code>angle</code>, <code>log10_survival</code>, <code>n_detected</code>,
+<code>n_effective</code> (one row per distance x viewing-angle grid point),
+or <code>None</code> if nothing was generated.</p>
+              </div>
+            </li>
+            <li>
+<b><code>meta</code></b>(                  <code><span title="dict">dict</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>Training domain and settings to record with the trained models:
+<code>angle_convention</code>, <code>emission</code>, <code>train_d_min</code>, <code>train_d_max</code>
+[m], <code>n_distances</code>, <code>n_angle_bins</code>, <code>n_photons_per_distance</code>,
+<code>n_photons_per_row</code>, <code>dom_radius_m</code>, <code>aim_fraction</code>,
+<code>max_time_ns</code>, <code>seed</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/models/photon_arrival_time_nflow/training_data.py</code></summary>
+              <pre class="highlight"><code class="language-python">def generate_training_data(
+    n_photons: int,
+    n_distances: int,
+    n_angle_bins: int,
+    d_min: float,
+    d_max: float,
+    wl_min: float,
+    wl_max: float,
+    max_time: float,
+    seed: int,
+    aim_fraction: float = 0.5,
+    chunk_size: int = 500_000,
+    emission: str = "cherenkov",
+    refine_deg: float = 8.0,
+):
+    """Run the photon MC and build the shape and counts training datasets.
+
+    Parameters
+    ----------
+    n_photons : int
+        Photons emitted per source distance (isotropic emission) or per
+        (distance, viewing angle) pair (Cherenkov emission).
+    n_distances : int
+        Number of source distances (log-uniform from ``d_min`` to ``d_max``).
+    n_angle_bins : int
+        Viewing-angle grid points (bin centres of equal bins over 0-180 deg)
+        at which each distance's label is written.
+    d_min, d_max : float
+        Source distance range [m]. ``d_min`` must be greater than
+        :data:`DOM_RADIUS` to avoid the source sitting exactly on the sphere
+        surface, which causes d=0 intersection tests to fail the strict d&gt;0
+        check and suppresses hits.
+    wl_min, wl_max : float
+        Cherenkov wavelength range [nm].
+    max_time : float
+        Max photon propagation time [ns] (cutoff for un-intersected photons).
+    seed : int
+        Random seed.
+    aim_fraction : float, optional
+        Fraction of photons drawn inside the aim cone around the
+        source-to-DOM axis (default 0.5). Any value in (0, 1) gives the
+        same expectation; it only changes the variance.
+    chunk_size : int, optional
+        Photons propagated per JAX batch (default 500 000). Throughput
+        drops for larger batches; memory grows with them.
+    emission : {"cherenkov", "isotropic"}, optional
+        Angular emission profile of the source (default ``"cherenkov"``).
+        Cherenkov emission runs one MC per viewing angle, so many times more
+        than isotropic.
+    refine_deg : float, optional
+        Half-width [deg] of the band of extra viewing angles (0.5 deg apart)
+        around the Cherenkov angle (default 8; Cherenkov emission only). See
+        :func:`viewing_angle_grid`.
+
+    Returns
+    -------
+    shape_data : dict or None
+        Arrays ``log10_dist``, ``angle``, ``t_residual``, ``weight`` (one row
+        per detected photon), or ``None`` if no photons were detected.
+    counts_data : dict or None
+        Arrays ``log10_dist``, ``angle``, ``log10_survival``, ``n_detected``,
+        ``n_effective`` (one row per distance x viewing-angle grid point),
+        or ``None`` if nothing was generated.
+    meta : dict
+        Training domain and settings to record with the trained models:
+        ``angle_convention``, ``emission``, ``train_d_min``, ``train_d_max``
+        [m], ``n_distances``, ``n_angle_bins``, ``n_photons_per_distance``,
+        ``n_photons_per_row``, ``dom_radius_m``, ``aim_fraction``,
+        ``max_time_ns``, ``seed``.
+    """
+    if not 0.0 &lt; aim_fraction &lt; 1.0:
+        raise ValueError("aim_fraction must lie strictly between 0 and 1")
+    if emission not in ANGLE_CONVENTIONS:
+        raise ValueError(f"emission must be one of {sorted(ANGLE_CONVENTIONS)}, got {emission!r}")
+    convention = ANGLE_CONVENTIONS[emission]
+    cherenkov = emission == "cherenkov"
+
+    # Reference speed of light (400 nm) used for t_residual = t_hit - d/c_ref
+    c_ref = float(_C_VAC_M_NS / antares_ref_index_func(400.0))
+
+    distances = np.logspace(np.log10(d_min), np.log10(d_max), n_distances)
+    angle_centers = viewing_angle_grid(n_angle_bins)
+    run_angles = viewing_angle_grid(n_angle_bins, refine_deg) if cherenkov else angle_centers[:1]
+
+    n_runs_per_distance = len(run_angles)
+    meta = {
+        "angle_convention": convention,
+        "emission": emission,
+        "train_d_min": float(distances[0]),
+        "train_d_max": float(distances[-1]),
+        "n_distances": int(n_distances),
+        "n_angle_bins": int(n_angle_bins),
+        "n_viewing_angles": int(len(run_angles) if cherenkov else len(angle_centers)),
+        "refine_deg": float(refine_deg if cherenkov else 0.0),
+        "n_photons_per_distance": int(n_photons) * n_runs_per_distance,
+        "n_photons_per_row": int(n_photons),
+        "dom_radius_m": float(DOM_RADIUS),
+        "aim_fraction": float(aim_fraction),
+        "max_time_ns": float(max_time),
+        "seed": int(seed),
+    }
+
+    print(f"DOM radius : {DOM_RADIUS:.2f} m")
+    print(f"Convention : {convention}")
+    print(f"c_ref (400nm): {c_ref:.4f} m/ns")
+    print(f"Distances  : {distances[0]:.2f} – {distances[-1]:.2f} m  ({n_distances} points)")
+    print(f"Angle grid : {len(run_angles) if cherenkov else n_angle_bins} viewing angles")
+    per = "(distance, angle)" if cherenkov else "distance"
+    print(f"Photons    : {n_photons:,} per {per}  (aim fraction {aim_fraction:.2f})")
+    print(f"Chunk size : {chunk_size:,}")
+    print(f"Max time   : {max_time:.0f} ns")
+    print()
+
+    # --- Build physics functions ---
+    km3net_abs_len = _make_km3net_abs_len()
+    isec_f = make_photon_sphere_intersection_func(jnp.zeros(3), DOM_RADIUS)
+    wl_sampler = make_cherenkov_spectral_sampling_func((wl_min, wl_max), antares_ref_index_func)
+    step_fn = make_step_with_absorption(
+        isec_f,
+        mixed_hg_rayleigh_antares,
+        sca_len_func_antares,
+        antares_ref_index_func,
+        km3net_abs_len,
+    )
+
+    max_time_j = jnp.float64(max_time)
+    abs_len_grid, cher_w = _absorption_bound_tables(wl_min, wl_max)
+    aim_frac_j = jnp.float64(aim_fraction)
+    p_iso = jnp.float64(1.0 / (4.0 * np.pi))
+    two_pi = 2.0 * np.pi
+    cos_grid_np, pdf_np, cdf_np = _cherenkov_tables()
+    cos_grid_j, pdf_j, cdf_j = jnp.array(cos_grid_np), jnp.array(pdf_np), jnp.array(cdf_np)
+
+    def p_emit(direction, axis):
+        """Emission density per steradian of ``direction`` for a source along ``axis``."""
+        if not cherenkov:
+            return p_iso
+        return jnp.interp(jnp.dot(direction, axis), cos_grid_j, pdf_j) / two_pi
+
+    # --- JIT-compile batch propagator (compiled once, reused for all distances) ---
+    @jax.jit
+    def run_batch(keys, source_pos, cos_alpha, frame):
+        """Propagate N photons from ``source_pos``; return ``(dir_weights, final_states)``.
+
+        Directions come from the emission-profile / aim-cone mixture; the
+        photon's initial weight is the importance weight of its direction.
+        ``frame`` holds the source axis and two normal unit vectors (only the
+        Cherenkov profile uses them).
+        """
+        inv_cone = jnp.float64(1.0) / (two_pi * (jnp.float64(1.0) - cos_alpha))
+        axis, e1, e2 = frame[0], frame[1], frame[2]
+
+        def run_one(key):
+            k_mix, k_theta, k_phi, k_wl, k_prop = random.split(key, 5)
+            aimed = random.uniform(k_mix, dtype=jnp.float64) &lt; aim_frac_j
+            u = random.uniform(k_theta, dtype=jnp.float64)
+            phi = random.uniform(k_phi, minval=0.0, maxval=two_pi, dtype=jnp.float64)
+            cphi, sphi = jnp.cos(phi), jnp.sin(phi)
+            # Aimed: uniform inside the cone around the source-to-DOM axis (0, 0, -1).
+            cos_aim = -(jnp.float64(1.0) - u * (jnp.float64(1.0) - cos_alpha))
+            sin_aim = jnp.sqrt(jnp.maximum(jnp.float64(1.0) - cos_aim**2, jnp.float64(0.0)))
+            dir_aim = jnp.array([sin_aim * cphi, sin_aim * sphi, cos_aim], dtype=jnp.float64)
+            # Emission profile: isotropic, or cos(psi) from the Cherenkov
+            # inverse CDF around the source axis.
+            if cherenkov:
+                cos_em = jnp.interp(u, cdf_j, cos_grid_j)
+                sin_em = jnp.sqrt(jnp.maximum(jnp.float64(1.0) - cos_em**2, jnp.float64(0.0)))
+                dir_em = cos_em * axis + sin_em * (cphi * e1 + sphi * e2)
+            else:
+                cos_em = jnp.float64(2.0) * u - jnp.float64(1.0)
+                sin_em = jnp.sqrt(jnp.maximum(jnp.float64(1.0) - cos_em**2, jnp.float64(0.0)))
+                dir_em = jnp.array([sin_em * cphi, sin_em * sphi, cos_em], dtype=jnp.float64)
+            init_dir = jnp.where(aimed, dir_aim, dir_em)
+            in_cone = -init_dir[2] &gt;= cos_alpha
+            p_dir = p_emit(init_dir, axis)
+            q_mix = (
+                aim_frac_j * jnp.where(in_cone, inv_cone, jnp.float64(0.0))
+                + (jnp.float64(1.0) - aim_frac_j) * p_dir
+            )
+            dir_weight = p_dir / q_mix
+
+            wl = wl_sampler(k_wl)
+
+            init_state = {
+                "pos": jnp.asarray(source_pos, dtype=jnp.float64),
+                "dir": init_dir,
+                "time": jnp.float64(0.0),
+                "isec": jnp.bool_(False),
+                "stepcnt": jnp.int32(0),
+                "wavelength": jnp.float64(wl),
+                "weight": dir_weight,
+            }
+
+            final_state, _ = while_loop(
+                lambda args: ~args[0]["isec"] &amp; (args[0]["time"] &lt; max_time_j),
+                lambda args: step_fn(args[0], args[1]),
+                (init_state, k_prop),
+            )
+            return dir_weight, final_state
+
+        return jax.vmap(run_one)(keys)
+
+    # --- Storage for training data ---
+    shape_log10d: list = []
+    shape_angle: list = []
+    shape_tres: list = []
+    shape_weight: list = []
+
+    counts_log10d: list = []
+    counts_angle: list = []
+    counts_log10surv: list = []
+    counts_ndet: list = []
+    counts_neff: list = []
+
+    # Most recent populated (d, log10_survival) per viewing angle: survival can
+    # only fall with distance, bounded by the incremental absorption factor.
+    last_populated = {}
+
+    rng_key = random.PRNGKey(seed)
+    angle_rng = np.random.default_rng(seed)
+
+    print("Compiling JAX batch propagator (first call)...")
+    t_compile = wall_time()
+
+    first_call = True
+    for i_d, d in enumerate(distances):
+        if d &lt;= DOM_RADIUS:
+            print(f"  d={d:7.2f} m  SKIPPED (source on or inside DOM surface)")
+            continue
+
+        source_pos = jnp.array([0.0, 0.0, float(d)], dtype=jnp.float64)
+        sin_alpha = min(1.0, _AIM_RADIUS_FACTOR * DOM_RADIUS / float(d))
+        cos_alpha = jnp.float64(np.sqrt(1.0 - sin_alpha**2))
+        log10d = np.float32(np.log10(d))
+        t0 = wall_time()
+        n_hits_d = 0
+
+        for i_a, theta_run in enumerate(run_angles):
+            frame = jnp.array(_source_frame(theta_run), dtype=jnp.float64)
+            isec_parts, time_parts, weight_parts = [], [], []
+            n_left = int(n_photons)
+            while n_left &gt; 0:
+                n_chunk = min(int(chunk_size), n_left)
+                rng_key, subkey = random.split(rng_key)
+                keys = random.split(subkey, n_chunk)
+                _, final_states = run_batch(keys, source_pos, cos_alpha, frame)
+                jax.block_until_ready(final_states["time"])
+                if first_call:
+                    logger.info("First-call (compile + run): %.1f s", wall_time() - t_compile)
+                    first_call = False
+                isec_parts.append(np.asarray(final_states["isec"]))
+                time_parts.append(np.asarray(final_states["time"]))
+                weight_parts.append(np.asarray(final_states["weight"]))
+                n_left -= n_chunk
+
+            isec_np = np.concatenate(isec_parts)  # (N,) bool
+            time_np = np.concatenate(time_parts)  # (N,) float64
+            weight_np = np.concatenate(weight_parts)  # (N,) direction x absorption weight
+
+            n_detected = int(isec_np.sum())
+            n_hits_d += n_detected
+            w_det = weight_np[isec_np]
+            w_sum = float(w_det.sum())
+
+            if n_detected == 0 or w_sum &lt;= 0.0:
+                # No more than the DOM's solid angle times the largest emission
+                # density toward it, attenuated over the straight path, can
+                # arrive; and no more than the last populated distance allowed.
+                alpha_dom = np.arcsin(min(1.0, DOM_RADIUS / float(d)))
+                if cherenkov:
+                    psi = np.linspace(max(theta_run - alpha_dom, 0.0), theta_run + alpha_dom, 64)
+                    p_max = np.interp(np.cos(psi), cos_grid_np, pdf_np).max() / two_pi
+                else:
+                    p_max = 1.0 / (4.0 * np.pi)
+                bounds = [
+                    np.log10(
+                        _dom_solid_angle(float(d))
+                        * p_max
+                        * _absorption_upper_bound(d, abs_len_grid, cher_w)
+                    )
+                ]
+                if i_a in last_populated:
+                    d_prev, s_prev = last_populated[i_a]
+                    bounds.append(
+                        s_prev
+                        + np.log10(_absorption_upper_incremental(d_prev, d, abs_len_grid, cher_w))
+                    )
+                label = np.float32(min(bounds))
+                n_det_row, n_eff_row = np.float32(0), np.float32(0)
+            else:
+                survival = w_sum / n_photons
+                label = np.float32(np.log10(survival))
+                n_eff = w_sum**2 / float(np.sum(w_det**2))
+                n_det_row, n_eff_row = np.float32(n_detected), np.float32(n_eff)
+                if n_eff &gt;= 2.0:
+                    last_populated[i_a] = (d, float(label))
+
+                # --- Shape data: detected photons, weights relative within the run ---
+                # Weights enter the weighted NLL loss during training:
+                #   L = -sum(w_i * log p(t_i)) / sum(w_i)
+                # The aimed photons carry direction weights many orders below the
+                # emission-profile ones, so weights are normalised to mean 1 per run.
+                t_res_det = time_np[isec_np] - d / c_ref
+                shape_log10d.append(np.full(n_detected, log10d, dtype=np.float32))
+                if cherenkov:
+                    shape_angle.append(np.full(n_detected, theta_run, dtype=np.float32))
+                else:
+                    # Isotropic timing does not depend on the angle.
+                    shape_angle.append(angle_rng.uniform(0.0, np.pi, n_detected).astype(np.float32))
+                shape_tres.append(t_res_det.astype(np.float32))
+                shape_weight.append((w_det / w_det.mean()).astype(np.float32))
+
+            # --- Counts data: this run's row, or the same label at every grid
+            # point for isotropic emission ---
+            for theta_v in [theta_run] if cherenkov else angle_centers:
+                counts_log10d.append(log10d)
+                counts_angle.append(np.float32(theta_v))
+                counts_log10surv.append(label)
+                counts_ndet.append(n_det_row)
+                counts_neff.append(n_eff_row)
+
+        print(
+            f"  d={d:7.2f} m  hits={n_hits_d:9d} in {len(run_angles)} run(s) of {n_photons:,}  "
+            f"[{wall_time() - t0:.1f} s]"
+        )
+
+    # --- Build shape data ---
+    if shape_log10d:
+        shape_data = {
+            "log10_dist": np.concatenate(shape_log10d),
+            "angle": np.concatenate(shape_angle),
+            "t_residual": np.concatenate(shape_tres),
+            "weight": np.concatenate(shape_weight),
+        }
+    else:
+        shape_data = None
+
+    # --- Build counts data ---
+    if counts_log10d:
+        counts_data = {
+            "log10_dist": np.array(counts_log10d, dtype=np.float32),
+            "angle": np.array(counts_angle, dtype=np.float32),
+            "log10_survival": np.array(counts_log10surv, dtype=np.float32),
+            "n_detected": np.array(counts_ndet, dtype=np.float32),
+            "n_effective": np.array(counts_neff, dtype=np.float32),
+        }
+        n_bound = int((counts_data["n_detected"] == 0).sum())
+        print(f"\nCounts rows : {len(counts_log10d)} ({n_bound} labelled with an upper bound)")
+    else:
+        counts_data = None
+
+    return shape_data, counts_data, meta</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.models.photon_arrival_time_nflow.training_data.make_step_with_absorption" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_step_with_absorption</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">make_step_with_absorption(intersection_f, scattering_function, scattering_length_function, ref_index_func, absorption_length_function, dtype=jnp.float64)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Build a photon step function extended with absorption weight tracking.</p>
+<p>Identical to <code>hyperion.propagate.make_step_function</code> except that the
+photon state carries an additional <code>weight</code> field which is multiplied by
+<code>exp(-actual_step / abs_len(λ))</code> at every step. Photons are never
+killed; the weight encodes the cumulative survival probability.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>intersection_f</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>DOM intersection function (from
+<code>hyperion.propagate.make_photon_sphere_intersection_func</code>).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>scattering_function</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Scattering angle sampler.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>scattering_length_function</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Scattering length as a function of wavelength [nm] -&gt; [m].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>ref_index_func</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Refractive index as a function of wavelength [nm].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>absorption_length_function</code></b>
+                  (<code><span title="callable">callable</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Absorption length as a function of wavelength [nm] -&gt; [m].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dtype</code></b>
+                  (<code><span title="jax.numpy.dtype">dtype</span></code>, default:
+                      <code><span title="jax.numpy.float64">float64</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Floating-point precision (default <code>jnp.float64</code>).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="callable">callable</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Step function <code>(photon_state, rng_key) -&gt; (new_state, new_key)</code>.
+Photon state keys: <code>pos</code>, <code>dir</code>, <code>time</code>, <code>isec</code>, <code>stepcnt</code>,
+<code>wavelength</code>, <code>weight</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/models/photon_arrival_time_nflow/training_data.py</code></summary>
+              <pre class="highlight"><code class="language-python">def make_step_with_absorption(
+    intersection_f,
+    scattering_function,
+    scattering_length_function,
+    ref_index_func,
+    absorption_length_function,
+    dtype=jnp.float64,
+):
+    """Build a photon step function extended with absorption weight tracking.
+
+    Identical to ``hyperion.propagate.make_step_function`` except that the
+    photon state carries an additional ``weight`` field which is multiplied by
+    ``exp(-actual_step / abs_len(λ))`` at every step. Photons are never
+    killed; the weight encodes the cumulative survival probability.
+
+    Parameters
+    ----------
+    intersection_f : callable
+        DOM intersection function (from
+        ``hyperion.propagate.make_photon_sphere_intersection_func``).
+    scattering_function : callable
+        Scattering angle sampler.
+    scattering_length_function : callable
+        Scattering length as a function of wavelength [nm] -&gt; [m].
+    ref_index_func : callable
+        Refractive index as a function of wavelength [nm].
+    absorption_length_function : callable
+        Absorption length as a function of wavelength [nm] -&gt; [m].
+    dtype : jnp.dtype, optional
+        Floating-point precision (default ``jnp.float64``).
+
+    Returns
+    -------
+    callable
+        Step function ``(photon_state, rng_key) -&gt; (new_state, new_key)``.
+        Photon state keys: ``pos``, ``dir``, ``time``, ``isec``, ``stepcnt``,
+        ``wavelength``, ``weight``.
+    """
+
+    def step(photon_state, rng_key):
+        pos = photon_state["pos"]
+        pdir = photon_state["dir"]
+        time = photon_state["time"]
+        stepcnt = photon_state["stepcnt"]
+        wavelength = photon_state["wavelength"]
+        weight = photon_state["weight"]
+
+        k1, k2, k3, k4 = random.split(rng_key, 4)
+
+        sca_coeff = dtype(1.0) / scattering_length_function(wavelength)
+        abs_coeff = dtype(1.0) / absorption_length_function(wavelength)
+        c_med = dtype(_C_VAC_M_NS / ref_index_func(wavelength))
+
+        step_size = -jnp.log(random.uniform(k1, dtype=dtype)) / sca_coeff
+
+        new_pos = jnp.asarray(pos + step_size * pdir, dtype=dtype)
+        new_time = time + step_size / c_med
+
+        isec_hit, isec_pos = intersection_f(photon_x=pos, photon_p=pdir, step_size=step_size)
+
+        # Distance actually travelled (straight-line to DOM or full step)
+        dist_to_isec = jnp.linalg.norm(pos - isec_pos)
+        actual_step = jnp.where(isec_hit, dist_to_isec, step_size)
+        new_weight = weight * jnp.exp(-actual_step * abs_coeff)
+
+        isec_time = time + dist_to_isec / c_med
+
+        new_pos = cond(isec_hit, lambda a: a[0], lambda a: a[1], (isec_pos, new_pos))
+        new_time = cond(isec_hit, lambda a: a[0], lambda a: a[1], (isec_time, new_time))
+        new_dir = cond(
+            isec_hit,
+            lambda a: a[1],
+            lambda a: calc_new_direction(a[0], a[1], scattering_function),
+            ([k2, k3], pdir),
+        )
+        stepcnt = cond(isec_hit, lambda s: s, lambda s: s + jnp.int32(1), stepcnt)
+
+        return {
+            "pos": new_pos,
+            "dir": new_dir,
+            "time": new_time,
+            "isec": isec_hit,
+            "stepcnt": stepcnt,
+            "wavelength": wavelength,
+            "weight": new_weight,
+        }, k4
+
+    return step</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.models.photon_arrival_time_nflow.training_data.pool_counts_rows" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">pool_counts_rows</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">pool_counts_rows(counts: dict, refine_deg: float = 8.0, cone_deg: float = 42.2) -&gt; dict</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Average the counts labels over windows fixed by distance.</p>
+<p>Far from the source a row's label rests on a few scattered photons of large
+weight. A row that catches one has a high label and a low effective count,
+and a row that misses them has a low label and a high effective count. A
+fit of the logarithm weighted by that count therefore follows the second
+kind and loses light. The labels are averaged here in linear space, with
+solid-angle weights, which keeps their expectation.</p>
+<p>The window depends only on the distance (<code>_POOL_SCHEDULE</code>). A window that
+grew until its effective count looked sufficient would stop early on the
+rows that missed the heavy photons and repeat the same selection. Angles
+are pooled only within their zone (below, inside or above the Cherenkov
+cone), so that the cone stays as sharp as the schedule allows. Rows are
+carried across a distance window with a smooth fit of the light against
+distance.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>counts</code></b>
+                  (<code><span title="dict">dict</span></code>)
+              –
+              <div class="doc-md-description">
+                <p><code>log10_dist</code>, <code>angle</code>, <code>log10_survival</code>, <code>n_detected</code> and
+<code>n_effective</code>, on a rectangular grid of distance and angle.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>refine_deg</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>8.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Half-width of the Cherenkov zone [deg].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>cone_deg</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>42.2</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Centre of the Cherenkov zone [deg].</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="dict">dict</span></code>
+              –
+              <div class="doc-md-description">
+                <p>The same arrays with pooled labels. <code>n_detected</code> is the number of raw
+hits in the window and <code>n_effective</code> the effective count of the
+window.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Raises:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="ValueError">ValueError</span></code>
+              –
+              <div class="doc-md-description">
+                <p>If the rows do not form a rectangular grid.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/models/photon_arrival_time_nflow/training_data.py</code></summary>
+              <pre class="highlight"><code class="language-python">def pool_counts_rows(counts: dict, refine_deg: float = 8.0, cone_deg: float = 42.2) -&gt; dict:
+    """Average the counts labels over windows fixed by distance.
+
+    Far from the source a row's label rests on a few scattered photons of large
+    weight. A row that catches one has a high label and a low effective count,
+    and a row that misses them has a low label and a high effective count. A
+    fit of the logarithm weighted by that count therefore follows the second
+    kind and loses light. The labels are averaged here in linear space, with
+    solid-angle weights, which keeps their expectation.
+
+    The window depends only on the distance (``_POOL_SCHEDULE``). A window that
+    grew until its effective count looked sufficient would stop early on the
+    rows that missed the heavy photons and repeat the same selection. Angles
+    are pooled only within their zone (below, inside or above the Cherenkov
+    cone), so that the cone stays as sharp as the schedule allows. Rows are
+    carried across a distance window with a smooth fit of the light against
+    distance.
+
+    Parameters
+    ----------
+    counts : dict
+        ``log10_dist``, ``angle``, ``log10_survival``, ``n_detected`` and
+        ``n_effective``, on a rectangular grid of distance and angle.
+    refine_deg : float, optional
+        Half-width of the Cherenkov zone [deg].
+    cone_deg : float, optional
+        Centre of the Cherenkov zone [deg].
+
+    Returns
+    -------
+    dict
+        The same arrays with pooled labels. ``n_detected`` is the number of raw
+        hits in the window and ``n_effective`` the effective count of the
+        window.
+
+    Raises
+    ------
+    ValueError
+        If the rows do not form a rectangular grid.
+    """
+    log10_dist, dist_index = np.unique(counts["log10_dist"], return_inverse=True)
+    angle, angle_index = np.unique(counts["angle"], return_inverse=True)
+    n_dist, n_angle = log10_dist.size, angle.size
+    if counts["log10_dist"].size != n_dist * n_angle:
+        raise ValueError("pool_counts_rows needs a rectangular distance x angle grid")
+
+    def on_grid(key):
+        out = np.zeros((n_dist, n_angle))
+        out[dist_index, angle_index] = counts[key]
+        return out
+
+    label = 10.0 ** on_grid("log10_survival")
+    hits = on_grid("n_detected")
+    sum_w2 = label**2 / np.maximum(on_grid("n_effective"), 1e-9)
+
+    dist = 10.0**log10_dist
+    weight = np.gradient(angle) * np.sin(angle)
+    weight = weight / weight.sum()
+    light = (label * weight).sum(axis=1)
+    fit = dist &gt;= 5.0
+    coeff = np.polyfit(dist[fit], np.log(dist[fit] ** 2 * light[fit]), 2)
+    scale = np.exp(np.polyval(coeff, dist)) / dist**2
+
+    degrees = np.degrees(angle)
+    zone = np.digitize(degrees, [cone_deg - refine_deg, cone_deg + refine_deg])
+    pooled, pooled_hits, pooled_w2 = (
+        np.zeros_like(label),
+        np.zeros_like(label),
+        np.zeros_like(label),
+    )
+    for i, d in enumerate(dist):
+        n_rows, half_cone, half_off = next(s[1:] for s in _POOL_SCHEDULE if d &lt; s[0])
+        rows = np.arange(max(i - n_rows, 0), min(i + n_rows + 1, n_dist))
+        carry = (scale[i] / scale[rows])[:, None]
+        for j in range(n_angle):
+            half = half_cone if zone[j] == 1 else half_off
+            cols = np.flatnonzero((zone == zone[j]) &amp; (np.abs(degrees - degrees[j]) &lt;= half + 1e-6))
+            w = weight[cols] / weight[cols].sum()
+            pooled[i, j] = (label[np.ix_(rows, cols)] * carry * w).sum() / rows.size
+            pooled_hits[i, j] = hits[np.ix_(rows, cols)].sum()
+            pooled_w2[i, j] = (sum_w2[np.ix_(rows, cols)] * carry**2 * w**2).sum() / rows.size**2
+
+    return {
+        **counts,
+        "log10_survival": np.log10(pooled[dist_index, angle_index]).astype(np.float32),
+        "n_detected": pooled_hits[dist_index, angle_index].astype(np.float32),
+        "n_effective": (pooled**2 / np.maximum(pooled_w2, 1e-300))[dist_index, angle_index].astype(
+            np.float32
+        ),
+    }</code></pre>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="hyperion.models.photon_arrival_time_nflow.training_data.viewing_angle_grid" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">viewing_angle_grid</span>
+
+
+</h2>
+<pre class="highlight"><code class="language-python doc-signature">viewing_angle_grid(n_angle_bins, refine_deg=0.0, refine_step_deg=0.5)</code></pre>
+
+    <div class="doc doc-contents ">
+
+        <p>Return the viewing angles [rad] at which the counts labels are written.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>n_angle_bins</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Equal bins over 0-180 deg; their centres form the base grid.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>refine_deg</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Half-width [deg] of a band around the Cherenkov angle filled with
+extra points (default 0: the base grid only). The cascade profile has
+a cusp about 0.4 deg wide at the Cherenkov angle, which a coarse grid
+cannot resolve, so the network would not conserve the total light.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>refine_step_deg</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.5</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Spacing [deg] of the extra points (default 0.5).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="numpy.ndarray">ndarray</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Sorted unique viewing angles [rad].</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hyperion/models/photon_arrival_time_nflow/training_data.py</code></summary>
+              <pre class="highlight"><code class="language-python">def viewing_angle_grid(n_angle_bins, refine_deg=0.0, refine_step_deg=0.5):
+    """Return the viewing angles [rad] at which the counts labels are written.
+
+    Parameters
+    ----------
+    n_angle_bins : int
+        Equal bins over 0-180 deg; their centres form the base grid.
+    refine_deg : float, optional
+        Half-width [deg] of a band around the Cherenkov angle filled with
+        extra points (default 0: the base grid only). The cascade profile has
+        a cusp about 0.4 deg wide at the Cherenkov angle, which a coarse grid
+        cannot resolve, so the network would not conserve the total light.
+    refine_step_deg : float, optional
+        Spacing [deg] of the extra points (default 0.5).
+
+    Returns
+    -------
+    np.ndarray
+        Sorted unique viewing angles [rad].
+    """
+    edges = np.linspace(0.0, np.pi, n_angle_bins + 1)
+    grid = 0.5 * (edges[:-1] + edges[1:])
+    if refine_deg &gt; 0.0:
+        half = np.radians(refine_deg)
+        step = np.radians(refine_step_deg)
+        extra = np.arange(_THETA_CHERENKOV - half, _THETA_CHERENKOV + half + 0.5 * step, step)
+        grid = np.concatenate([grid, extra[(extra &gt; 0.0) &amp; (extra &lt; np.pi)]])
+    return np.unique(np.round(grid, 6))</code></pre>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../net/" class="btn btn-neutral float-left" title="net"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../validation/" class="btn btn-neutral float-right" title="validation">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>© Prometheus</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Harvard-Neutrino/prometheus" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../net/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../validation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../../../..";</script>
+    <script src="../../../../../js/theme_extra.js"></script>
+    <script src="../../../../../js/theme.js"></script>
+      <script src="../../../../../js/popper.min.js"></script>
+      <script src="../../../../../js/tippy-bundle.umd.js"></script>
+      <script src="../../../../../js/clipboard.js"></script>
+      <script src="../../../../../js/extra.js"></script>
+      <script src="../../../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
