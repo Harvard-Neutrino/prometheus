@@ -1,8 +1,38 @@
 """Photon Monte Carlo training-data generation for the shape/counts models.
 
 Runs photon MC in ANTARES/KM3NeT Mediterranean water with absorption. DOM
-placed at origin (radius 0.30 m); isotropic Cherenkov photon sources at
-logarithmically spaced distances from d_min to d_max.
+placed at origin (radius 0.30 m); point sources at logarithmically spaced
+distances from d_min to d_max.
+
+Angle convention
+----------------
+The propagator (``olympus/event_generation/photon_propagation/utils.py``)
+evaluates both models at the VIEWING angle, the angle between the source
+direction and the source-to-module vector, and multiplies the returned counts
+fraction by every photon the source emits (``norm_flow_photons.py``). The
+labels here are built in that convention: the counts label is the fraction of
+ALL photons a source emits that reach the DOM, and each row is keyed by a
+viewing angle.
+
+Emission
+--------
+``emission="cherenkov"`` (default): the source emits with the angular profile
+of an electromagnetic cascade around its axis (Radel & Wiebusch, arXiv:1210.5140,
+:func:`hyperion.utils.cherenkov_ang_dist`), so the light peaks near the
+Cherenkov angle. Every (distance, viewing angle) pair is a separate MC run with
+the source axis tilted by the viewing angle away from the source-to-DOM line,
+and ``n_photons`` photons are emitted per pair.
+
+``emission="isotropic"``: the source has no preferred direction, so the
+fraction does not depend on the viewing angle. One MC run per distance is
+written once per point of the viewing-angle grid with the same label, and the
+network learns a flat angle dependence. This conserves the total light but not
+the per-module pattern of a real cascade.
+
+An earlier version binned photons by their own emission angle and divided
+by the photons emitted into that bin. Read at the viewing angle and scaled
+by all photons, that overstates the light on modules near the source axis
+by the inverse solid angle of the bin, hundreds of times at 50 m.
 
 Each photon accumulates an absorption survival weight
 ``w = prod_steps exp(-step_size / abs_len(λ))``. This weight-tracking
@@ -10,17 +40,30 @@ approach avoids killing photons early (improving statistics at large
 distances) and is equivalent to the absorption-corrected expected photon
 count.
 
+Importance sampling
+-------------------
+The DOM subtends 2.5e-7 of the sphere at 300 m, so isotropic emission alone
+leaves every far distance empty (25 hits per 2M photons at 50 m).
+Directions are therefore drawn from a mixture: with probability
+``aim_fraction`` uniformly inside a narrow cone around the source-to-DOM
+axis, otherwise from the emission profile itself. Every photon carries the
+weight ``p_emit / q_mix`` of its direction. The expectation of every label is
+unchanged for any mixture (the proposal covers the whole sphere); the cone
+supplies the direct photons, the emission component the scattered ones.
+
 Produces two datasets, compatible with ``SimpleDataset`` / ``DataLoader``
 and ``train_shape_model`` / ``train_counts_model`` in
 :mod:`hyperion.models.photon_arrival_time_nflow.net`:
 
-Shape data: one row per detected photon after importance-sampling thinning
-(i.e., each detected photon is kept with probability proportional to its
-absorption weight, producing unweighted samples from the correct
-distribution).
+Shape data: one row per detected photon with its weight (absorption times
+direction weight), normalised to mean 1 within its distance so that every
+distance enters the weighted timing fit in proportion to its detected
+photons. The row's angle is its viewing angle (Cherenkov emission) or drawn
+uniformly over 0-180 deg (isotropic emission, where timing does not depend on it).
 
-Counts data: one row per (distance x angle-bin) combination, with
-``log10_survival = log10(sum_weights_detected / n_emitted_in_bin)``.
+Counts data: one row per (distance x viewing-angle grid point), with
+``log10_survival = log10(sum_w_detected / n_emitted)``, the raw detected
+count ``n_detected`` and the Kish effective count ``n_effective``.
 """
 
 import logging
@@ -43,6 +86,7 @@ from hyperion.propagate import (
     make_cherenkov_spectral_sampling_func,
     make_photon_sphere_intersection_func,
 )
+from hyperion.utils import cherenkov_ang_dist
 
 jax.config.update("jax_enable_x64", True)
 jax.config.update("jax_platform_name", "cpu")
@@ -55,6 +99,17 @@ logger = logging.getLogger(__name__)
 
 _C_VAC_M_NS = Constants.BaseConstants.c_vac * 1e-9  # 0.2998 m/ns
 DOM_RADIUS = 0.30  # m — from orca.geo / arca.geo metadata
+# Recorded with every model so the propagator and the checks know what was trained.
+ANGLE_CONVENTIONS = {
+    "cherenkov": "viewing-angle-cherenkov",
+    "isotropic": "viewing-angle-isotropic",
+}
+# Refractive index for the position of the Cherenkov peak in the emission profile
+_N_CHERENKOV = 1.35
+_THETA_CHERENKOV = np.arccos(1.0 / _N_CHERENKOV)
+# The aim cone is the DOM disc with this margin, so photons that scatter
+# slightly on the way still start inside the well-sampled component.
+_AIM_RADIUS_FACTOR = 2.0
 
 # ---------------------------------------------------------------------------
 # KM3NeT absorption length model
@@ -262,6 +317,104 @@ def _absorption_upper_incremental(d_from, d_to, abs_len_grid, cher_w):
 # ---------------------------------------------------------------------------
 
 
+def _dom_solid_angle(d, radius=DOM_RADIUS):
+    """Return the solid angle [sr] a sphere of ``radius`` subtends at distance ``d``.
+
+    Parameters
+    ----------
+    d : float
+        Distance from the source to the sphere centre [m].
+    radius : float, optional
+        Sphere radius [m].
+
+    Returns
+    -------
+    float
+        ``2 pi (1 - sqrt(1 - (R/d)^2))``, the exact solid angle.
+    """
+    ratio = min(1.0, radius / d)
+    return 2.0 * np.pi * (1.0 - np.sqrt(1.0 - ratio**2))
+
+
+def _cherenkov_tables(n_ph=_N_CHERENKOV, n_grid=20001):
+    """Tabulate the cascade emission profile in ``cos(psi)`` around the source axis.
+
+    Parameters
+    ----------
+    n_ph : float, optional
+        Refractive index that places the Cherenkov peak.
+    n_grid : int, optional
+        Grid points over ``cos(psi)`` in [-1, 1].
+
+    Returns
+    -------
+    cos_grid : np.ndarray
+        ``cos(psi)`` grid.
+    pdf : np.ndarray
+        Probability density in ``cos(psi)``, normalised to 1 over [-1, 1].
+    cdf : np.ndarray
+        Its cumulative distribution, from 0 to 1.
+    """
+    cos_grid = np.linspace(-1.0, 1.0, n_grid)
+    f = np.maximum(cherenkov_ang_dist(cos_grid, n_ph), 0.0)
+    cdf = np.concatenate([[0.0], np.cumsum(0.5 * (f[1:] + f[:-1]) * np.diff(cos_grid))])
+    pdf = f / cdf[-1]
+    return cos_grid, pdf, cdf / cdf[-1]
+
+
+def viewing_angle_grid(n_angle_bins, refine_deg=0.0, refine_step_deg=0.5):
+    """Return the viewing angles [rad] at which the counts labels are written.
+
+    Parameters
+    ----------
+    n_angle_bins : int
+        Equal bins over 0-180 deg; their centres form the base grid.
+    refine_deg : float, optional
+        Half-width [deg] of a band around the Cherenkov angle filled with
+        extra points (default 0: the base grid only). The cascade profile has
+        a cusp about 0.4 deg wide at the Cherenkov angle, which a coarse grid
+        cannot resolve, so the network would not conserve the total light.
+    refine_step_deg : float, optional
+        Spacing [deg] of the extra points (default 0.5).
+
+    Returns
+    -------
+    np.ndarray
+        Sorted unique viewing angles [rad].
+    """
+    edges = np.linspace(0.0, np.pi, n_angle_bins + 1)
+    grid = 0.5 * (edges[:-1] + edges[1:])
+    if refine_deg > 0.0:
+        half = np.radians(refine_deg)
+        step = np.radians(refine_step_deg)
+        extra = np.arange(_THETA_CHERENKOV - half, _THETA_CHERENKOV + half + 0.5 * step, step)
+        grid = np.concatenate([grid, extra[(extra > 0.0) & (extra < np.pi)]])
+    return np.unique(np.round(grid, 6))
+
+
+def _source_frame(theta_v):
+    """Return the source axis and two unit vectors normal to it for a viewing angle.
+
+    The DOM sits at the origin and the source at ``(0, 0, d)``, so the
+    source-to-DOM direction is ``(0, 0, -1)``. The axis is tilted by
+    ``theta_v`` away from it in the x-z plane.
+
+    Parameters
+    ----------
+    theta_v : float
+        Viewing angle [rad].
+
+    Returns
+    -------
+    np.ndarray
+        Array of shape (3, 3): the axis, then the two normal unit vectors.
+    """
+    axis = np.array([np.sin(theta_v), 0.0, -np.cos(theta_v)])
+    e1 = np.array([np.cos(theta_v), 0.0, np.sin(theta_v)])
+    e2 = np.cross(axis, e1)
+    return np.stack([axis, e1, e2])
+
+
 def generate_training_data(
     n_photons: int,
     n_distances: int,
@@ -272,17 +425,23 @@ def generate_training_data(
     wl_max: float,
     max_time: float,
     seed: int,
+    aim_fraction: float = 0.5,
+    chunk_size: int = 500_000,
+    emission: str = "cherenkov",
+    refine_deg: float = 8.0,
 ):
     """Run the photon MC and build the shape and counts training datasets.
 
     Parameters
     ----------
     n_photons : int
-        Photons emitted per source distance.
+        Photons emitted per source distance (isotropic emission) or per
+        (distance, viewing angle) pair (Cherenkov emission).
     n_distances : int
         Number of source distances (log-uniform from ``d_min`` to ``d_max``).
     n_angle_bins : int
-        Emission-angle bins for the counts data.
+        Viewing-angle grid points (bin centres of equal bins over 0-180 deg)
+        at which each distance's label is written.
     d_min, d_max : float
         Source distance range [m]. ``d_min`` must be greater than
         :data:`DOM_RADIUS` to avoid the source sitting exactly on the sphere
@@ -294,6 +453,21 @@ def generate_training_data(
         Max photon propagation time [ns] (cutoff for un-intersected photons).
     seed : int
         Random seed.
+    aim_fraction : float, optional
+        Fraction of photons drawn inside the aim cone around the
+        source-to-DOM axis (default 0.5). Any value in (0, 1) gives the
+        same expectation; it only changes the variance.
+    chunk_size : int, optional
+        Photons propagated per JAX batch (default 500 000). Throughput
+        drops for larger batches; memory grows with them.
+    emission : {"cherenkov", "isotropic"}, optional
+        Angular emission profile of the source (default ``"cherenkov"``).
+        Cherenkov emission runs one MC per viewing angle, so many times more
+        than isotropic.
+    refine_deg : float, optional
+        Half-width [deg] of the band of extra viewing angles (0.5 deg apart)
+        around the Cherenkov angle (default 8; Cherenkov emission only). See
+        :func:`viewing_angle_grid`.
 
     Returns
     -------
@@ -301,21 +475,56 @@ def generate_training_data(
         Arrays ``log10_dist``, ``angle``, ``t_residual``, ``weight`` (one row
         per detected photon), or ``None`` if no photons were detected.
     counts_data : dict or None
-        Arrays ``log10_dist``, ``angle``, ``log10_survival``, ``n_detected``
-        (one row per populated distance x angle-bin combination), or ``None``
-        if no bins were populated.
+        Arrays ``log10_dist``, ``angle``, ``log10_survival``, ``n_detected``,
+        ``n_effective`` (one row per distance x viewing-angle grid point),
+        or ``None`` if nothing was generated.
+    meta : dict
+        Training domain and settings to record with the trained models:
+        ``angle_convention``, ``emission``, ``train_d_min``, ``train_d_max``
+        [m], ``n_distances``, ``n_angle_bins``, ``n_photons_per_distance``,
+        ``n_photons_per_row``, ``dom_radius_m``, ``aim_fraction``,
+        ``max_time_ns``, ``seed``.
     """
+    if not 0.0 < aim_fraction < 1.0:
+        raise ValueError("aim_fraction must lie strictly between 0 and 1")
+    if emission not in ANGLE_CONVENTIONS:
+        raise ValueError(f"emission must be one of {sorted(ANGLE_CONVENTIONS)}, got {emission!r}")
+    convention = ANGLE_CONVENTIONS[emission]
+    cherenkov = emission == "cherenkov"
+
     # Reference speed of light (400 nm) used for t_residual = t_hit - d/c_ref
     c_ref = float(_C_VAC_M_NS / antares_ref_index_func(400.0))
 
     distances = np.logspace(np.log10(d_min), np.log10(d_max), n_distances)
-    angle_edges = np.linspace(0.0, np.pi, n_angle_bins + 1)
-    angle_centers = 0.5 * (angle_edges[:-1] + angle_edges[1:])
+    angle_centers = viewing_angle_grid(n_angle_bins)
+    run_angles = viewing_angle_grid(n_angle_bins, refine_deg) if cherenkov else angle_centers[:1]
+
+    n_runs_per_distance = len(run_angles)
+    meta = {
+        "angle_convention": convention,
+        "emission": emission,
+        "train_d_min": float(distances[0]),
+        "train_d_max": float(distances[-1]),
+        "n_distances": int(n_distances),
+        "n_angle_bins": int(n_angle_bins),
+        "n_viewing_angles": int(len(run_angles) if cherenkov else len(angle_centers)),
+        "refine_deg": float(refine_deg if cherenkov else 0.0),
+        "n_photons_per_distance": int(n_photons) * n_runs_per_distance,
+        "n_photons_per_row": int(n_photons),
+        "dom_radius_m": float(DOM_RADIUS),
+        "aim_fraction": float(aim_fraction),
+        "max_time_ns": float(max_time),
+        "seed": int(seed),
+    }
 
     print(f"DOM radius : {DOM_RADIUS:.2f} m")
+    print(f"Convention : {convention}")
     print(f"c_ref (400nm): {c_ref:.4f} m/ns")
     print(f"Distances  : {distances[0]:.2f} – {distances[-1]:.2f} m  ({n_distances} points)")
-    print(f"Photons/d  : {n_photons:,}")
+    print(f"Angle grid : {len(run_angles) if cherenkov else n_angle_bins} viewing angles")
+    per = "(distance, angle)" if cherenkov else "distance"
+    print(f"Photons    : {n_photons:,} per {per}  (aim fraction {aim_fraction:.2f})")
+    print(f"Chunk size : {chunk_size:,}")
     print(f"Max time   : {max_time:.0f} ns")
     print()
 
@@ -333,22 +542,60 @@ def generate_training_data(
 
     max_time_j = jnp.float64(max_time)
     abs_len_grid, cher_w = _absorption_bound_tables(wl_min, wl_max)
+    aim_frac_j = jnp.float64(aim_fraction)
+    p_iso = jnp.float64(1.0 / (4.0 * np.pi))
+    two_pi = 2.0 * np.pi
+    cos_grid_np, pdf_np, cdf_np = _cherenkov_tables()
+    cos_grid_j, pdf_j, cdf_j = jnp.array(cos_grid_np), jnp.array(pdf_np), jnp.array(cdf_np)
+
+    def p_emit(direction, axis):
+        """Emission density per steradian of ``direction`` for a source along ``axis``."""
+        if not cherenkov:
+            return p_iso
+        return jnp.interp(jnp.dot(direction, axis), cos_grid_j, pdf_j) / two_pi
 
     # --- JIT-compile batch propagator (compiled once, reused for all distances) ---
     @jax.jit
-    def run_batch(keys, source_pos):
-        """Propagate N photons from ``source_pos``; return ``(init_dirs, final_states)``."""
+    def run_batch(keys, source_pos, cos_alpha, frame):
+        """Propagate N photons from ``source_pos``; return ``(dir_weights, final_states)``.
+
+        Directions come from the emission-profile / aim-cone mixture; the
+        photon's initial weight is the importance weight of its direction.
+        ``frame`` holds the source axis and two normal unit vectors (only the
+        Cherenkov profile uses them).
+        """
+        inv_cone = jnp.float64(1.0) / (two_pi * (jnp.float64(1.0) - cos_alpha))
+        axis, e1, e2 = frame[0], frame[1], frame[2]
 
         def run_one(key):
-            k_dir, k_wl, k_prop = random.split(key, 3)
-            k_theta, k_phi = random.split(k_dir, 2)
-            cos_theta = random.uniform(k_theta, minval=-1.0, maxval=1.0, dtype=jnp.float64)
-            phi = random.uniform(k_phi, minval=0.0, maxval=2.0 * np.pi, dtype=jnp.float64)
-            sin_theta = jnp.sqrt(jnp.maximum(jnp.float64(1.0) - cos_theta**2, jnp.float64(0.0)))
-            init_dir = jnp.array(
-                [sin_theta * jnp.cos(phi), sin_theta * jnp.sin(phi), cos_theta],
-                dtype=jnp.float64,
+            k_mix, k_theta, k_phi, k_wl, k_prop = random.split(key, 5)
+            aimed = random.uniform(k_mix, dtype=jnp.float64) < aim_frac_j
+            u = random.uniform(k_theta, dtype=jnp.float64)
+            phi = random.uniform(k_phi, minval=0.0, maxval=two_pi, dtype=jnp.float64)
+            cphi, sphi = jnp.cos(phi), jnp.sin(phi)
+            # Aimed: uniform inside the cone around the source-to-DOM axis (0, 0, -1).
+            cos_aim = -(jnp.float64(1.0) - u * (jnp.float64(1.0) - cos_alpha))
+            sin_aim = jnp.sqrt(jnp.maximum(jnp.float64(1.0) - cos_aim**2, jnp.float64(0.0)))
+            dir_aim = jnp.array([sin_aim * cphi, sin_aim * sphi, cos_aim], dtype=jnp.float64)
+            # Emission profile: isotropic, or cos(psi) from the Cherenkov
+            # inverse CDF around the source axis.
+            if cherenkov:
+                cos_em = jnp.interp(u, cdf_j, cos_grid_j)
+                sin_em = jnp.sqrt(jnp.maximum(jnp.float64(1.0) - cos_em**2, jnp.float64(0.0)))
+                dir_em = cos_em * axis + sin_em * (cphi * e1 + sphi * e2)
+            else:
+                cos_em = jnp.float64(2.0) * u - jnp.float64(1.0)
+                sin_em = jnp.sqrt(jnp.maximum(jnp.float64(1.0) - cos_em**2, jnp.float64(0.0)))
+                dir_em = jnp.array([sin_em * cphi, sin_em * sphi, cos_em], dtype=jnp.float64)
+            init_dir = jnp.where(aimed, dir_aim, dir_em)
+            in_cone = -init_dir[2] >= cos_alpha
+            p_dir = p_emit(init_dir, axis)
+            q_mix = (
+                aim_frac_j * jnp.where(in_cone, inv_cone, jnp.float64(0.0))
+                + (jnp.float64(1.0) - aim_frac_j) * p_dir
             )
+            dir_weight = p_dir / q_mix
+
             wl = wl_sampler(k_wl)
 
             init_state = {
@@ -358,7 +605,7 @@ def generate_training_data(
                 "isec": jnp.bool_(False),
                 "stepcnt": jnp.int32(0),
                 "wavelength": jnp.float64(wl),
-                "weight": jnp.float64(1.0),
+                "weight": dir_weight,
             }
 
             final_state, _ = while_loop(
@@ -366,7 +613,7 @@ def generate_training_data(
                 lambda args: step_fn(args[0], args[1]),
                 (init_state, k_prop),
             )
-            return init_dir, final_state
+            return dir_weight, final_state
 
         return jax.vmap(run_one)(keys)
 
@@ -380,125 +627,119 @@ def generate_training_data(
     counts_angle: list = []
     counts_log10surv: list = []
     counts_ndet: list = []
+    counts_neff: list = []
 
-    # Per-angle-bin record of the most recent *populated* (d, log10_survival) entry.
-    # Used to propagate the monotonicity upper bound: survival can only decrease
-    # with distance, bounded by the incremental absorption factor.
-    _last_surv_by_bin: dict = {}  # j -> (d_last, log10surv_last)
+    # Most recent populated (d, log10_survival) per viewing angle: survival can
+    # only fall with distance, bounded by the incremental absorption factor.
+    last_populated = {}
 
     rng_key = random.PRNGKey(seed)
+    angle_rng = np.random.default_rng(seed)
 
     print("Compiling JAX batch propagator (first call)...")
     t_compile = wall_time()
 
+    first_call = True
     for i_d, d in enumerate(distances):
         if d <= DOM_RADIUS:
             print(f"  d={d:7.2f} m  SKIPPED (source on or inside DOM surface)")
             continue
 
         source_pos = jnp.array([0.0, 0.0, float(d)], dtype=jnp.float64)
-        rng_key, subkey = random.split(rng_key)
-        keys = random.split(subkey, n_photons)
-
+        sin_alpha = min(1.0, _AIM_RADIUS_FACTOR * DOM_RADIUS / float(d))
+        cos_alpha = jnp.float64(np.sqrt(1.0 - sin_alpha**2))
+        log10d = np.float32(np.log10(d))
         t0 = wall_time()
-        init_dirs, final_states = run_batch(keys, source_pos)
-        jax.block_until_ready(final_states["time"])
+        n_hits_d = 0
 
-        if i_d == 0:
-            logger.info("First-call (compile + run): %.1f s", wall_time() - t_compile)
+        for i_a, theta_run in enumerate(run_angles):
+            frame = jnp.array(_source_frame(theta_run), dtype=jnp.float64)
+            isec_parts, time_parts, weight_parts = [], [], []
+            n_left = int(n_photons)
+            while n_left > 0:
+                n_chunk = min(int(chunk_size), n_left)
+                rng_key, subkey = random.split(rng_key)
+                keys = random.split(subkey, n_chunk)
+                _, final_states = run_batch(keys, source_pos, cos_alpha, frame)
+                jax.block_until_ready(final_states["time"])
+                if first_call:
+                    logger.info("First-call (compile + run): %.1f s", wall_time() - t_compile)
+                    first_call = False
+                isec_parts.append(np.asarray(final_states["isec"]))
+                time_parts.append(np.asarray(final_states["time"]))
+                weight_parts.append(np.asarray(final_states["weight"]))
+                n_left -= n_chunk
 
-        init_dirs_np = np.asarray(init_dirs)  # (N, 3)
-        isec_np = np.asarray(final_states["isec"])  # (N,) bool
-        time_np = np.asarray(final_states["time"])  # (N,) float64
-        weight_np = np.asarray(final_states["weight"])  # (N,) float64
+            isec_np = np.concatenate(isec_parts)  # (N,) bool
+            time_np = np.concatenate(time_parts)  # (N,) float64
+            weight_np = np.concatenate(weight_parts)  # (N,) direction x absorption weight
 
-        n_detected = int(isec_np.sum())
-        elapsed = wall_time() - t0
+            n_detected = int(isec_np.sum())
+            n_hits_d += n_detected
+            w_det = weight_np[isec_np]
+            w_sum = float(w_det.sum())
 
-        # Emission angle: angle between init_dir and source→DOM axis (0,0,-1)
-        # cos(em_angle) = dot(init_dir, (0,0,-1)) = -init_dir_z
-        em_angle_all = np.arccos(np.clip(-init_dirs_np[:, 2], -1.0, 1.0))  # (N,)
+            if n_detected == 0 or w_sum <= 0.0:
+                # No more than the DOM's solid angle times the largest emission
+                # density toward it, attenuated over the straight path, can
+                # arrive; and no more than the last populated distance allowed.
+                alpha_dom = np.arcsin(min(1.0, DOM_RADIUS / float(d)))
+                if cherenkov:
+                    psi = np.linspace(max(theta_run - alpha_dom, 0.0), theta_run + alpha_dom, 64)
+                    p_max = np.interp(np.cos(psi), cos_grid_np, pdf_np).max() / two_pi
+                else:
+                    p_max = 1.0 / (4.0 * np.pi)
+                bounds = [
+                    np.log10(
+                        _dom_solid_angle(float(d))
+                        * p_max
+                        * _absorption_upper_bound(d, abs_len_grid, cher_w)
+                    )
+                ]
+                if i_a in last_populated:
+                    d_prev, s_prev = last_populated[i_a]
+                    bounds.append(
+                        s_prev
+                        + np.log10(_absorption_upper_incremental(d_prev, d, abs_len_grid, cher_w))
+                    )
+                label = np.float32(min(bounds))
+                n_det_row, n_eff_row = np.float32(0), np.float32(0)
+            else:
+                survival = w_sum / n_photons
+                label = np.float32(np.log10(survival))
+                n_eff = w_sum**2 / float(np.sum(w_det**2))
+                n_det_row, n_eff_row = np.float32(n_detected), np.float32(n_eff)
+                if n_eff >= 2.0:
+                    last_populated[i_a] = (d, float(label))
+
+                # --- Shape data: detected photons, weights relative within the run ---
+                # Weights enter the weighted NLL loss during training:
+                #   L = -sum(w_i * log p(t_i)) / sum(w_i)
+                # The aimed photons carry direction weights many orders below the
+                # emission-profile ones, so weights are normalised to mean 1 per run.
+                t_res_det = time_np[isec_np] - d / c_ref
+                shape_log10d.append(np.full(n_detected, log10d, dtype=np.float32))
+                if cherenkov:
+                    shape_angle.append(np.full(n_detected, theta_run, dtype=np.float32))
+                else:
+                    # Isotropic timing does not depend on the angle.
+                    shape_angle.append(angle_rng.uniform(0.0, np.pi, n_detected).astype(np.float32))
+                shape_tres.append(t_res_det.astype(np.float32))
+                shape_weight.append((w_det / w_det.mean()).astype(np.float32))
+
+            # --- Counts data: this run's row, or the same label at every grid
+            # point for isotropic emission ---
+            for theta_v in [theta_run] if cherenkov else angle_centers:
+                counts_log10d.append(log10d)
+                counts_angle.append(np.float32(theta_v))
+                counts_log10surv.append(label)
+                counts_ndet.append(n_det_row)
+                counts_neff.append(n_eff_row)
 
         print(
-            f"  d={d:7.2f} m  hits={n_detected:7d}/{n_photons}  "
-            f"w_sum={weight_np[isec_np].sum():.3e}  [{elapsed:.1f} s]"
+            f"  d={d:7.2f} m  hits={n_hits_d:9d} in {len(run_angles)} run(s) of {n_photons:,}  "
+            f"[{wall_time() - t0:.1f} s]"
         )
-
-        if n_detected == 0:
-            continue
-
-        em_angle_det = em_angle_all[isec_np]  # angles of detected photons
-        weight_det = weight_np[isec_np]  # absorption weights of detected photons
-        t_res_det = time_np[isec_np] - d / c_ref  # time residuals [ns]
-
-        # --- Shape data: keep all detected photons with absorption weights ---
-        # Weights are used directly in the weighted NLL loss during training:
-        #   L = -sum(w_i * log p(t_i)) / sum(w_i)
-        # This avoids the acceptance-rejection thinning that discards >90% of
-        # photons at large distances, where weights span many orders of magnitude.
-        shape_log10d.append(np.full(n_detected, np.log10(d), dtype=np.float32))
-        shape_angle.append(em_angle_det.astype(np.float32))
-        shape_tres.append(t_res_det.astype(np.float32))
-        shape_weight.append(weight_det.astype(np.float32))
-
-        # --- Counts data: bin detected photons by emission angle ---
-        for j in range(n_angle_bins):
-            a_lo = angle_edges[j]
-            a_hi = angle_edges[j + 1]
-
-            in_bin_all = (em_angle_all >= a_lo) & (em_angle_all < a_hi)
-            in_bin_det = in_bin_all & isec_np
-
-            n_emit_bin = int(in_bin_all.sum())
-            if n_emit_bin == 0:
-                continue
-
-            w_bin = float(weight_np[in_bin_det].sum())
-            if w_bin <= 0.0:
-                # No photons reached the DOM from this bin.  Compute the tightest
-                # of three independent upper bounds on the true survival fraction:
-                #
-                # (1) Absorption physics: every photon travels the straight-line
-                #     path of length d; scatter-assisted paths are longer so this
-                #     is a genuine upper bound.
-                bound_abs = np.log10(_absorption_upper_bound(d, abs_len_grid, cher_w))
-                #
-                # (2) MC statistics: threw n_emit_bin photons and observed 0 hits;
-                #     Poisson 95 % upper limit on the rate is 3 / n_emit_bin.
-                bound_mc = np.log10(3.0 / n_emit_bin)
-                #
-                # (3) Monotonicity: survival decreases with distance.  If the
-                #     closest populated bin at the same angle had log10_survival
-                #     s_prev at d_prev, the upper bound at d is
-                #     s_prev + log10(<exp(-(d-d_prev)/abs_len(λ))>_spectrum).
-                bounds = [bound_abs, bound_mc]
-                if j in _last_surv_by_bin:
-                    d_prev, s_prev = _last_surv_by_bin[j]
-                    mono_bound = s_prev + np.log10(
-                        _absorption_upper_incremental(d_prev, d, abs_len_grid, cher_w)
-                    )
-                    bounds.append(mono_bound)
-                #
-                log10_surv_upper = min(bounds)
-                counts_log10d.append(np.float32(np.log10(d)))
-                counts_angle.append(np.float32(angle_centers[j]))
-                counts_log10surv.append(np.float32(log10_surv_upper))
-                counts_ndet.append(np.float32(0))  # training weight = sqrt(0+1) = 1
-                continue
-
-            n_det_bin = int(in_bin_det.sum())
-            survival = w_bin / n_emit_bin
-            log10s = float(np.log10(survival))
-            # Only seed the monotonicity tracker from reliable multi-photon bins.
-            # Single-photon entries can have extreme absorption weights from rare
-            # long scatter paths, producing spuriously large negative values that
-            # would propagate forward and over-constrain all subsequent distances.
-            if n_det_bin >= 2:
-                _last_surv_by_bin[j] = (d, log10s)
-            counts_log10d.append(np.float32(np.log10(d)))
-            counts_angle.append(np.float32(angle_centers[j]))
-            counts_log10surv.append(np.float32(log10s))
-            counts_ndet.append(np.float32(n_det_bin))
 
     # --- Build shape data ---
     if shape_log10d:
@@ -511,65 +752,122 @@ def generate_training_data(
     else:
         shape_data = None
 
-    # --- Angular monotonicity pass for counts data ---
-    # Survival is physically non-increasing with angle (forward emission always
-    # dominates backward).  Empty bins near 180° are assigned a loose MC Poisson
-    # upper bound log10(3/n_emit) that can be orders of magnitude above the true
-    # value.  By sweeping from small to large angles within each distance slice
-    # we propagate the tightest available bound: any empty bin at angle θ has
-    # survival ≤ survival(θ_prev) where θ_prev < θ is the most recent bin.
-    # This only tightens labels that were already upper bounds (n_det = 0); real
-    # measurements (n_det > 0) are never modified.
+    # --- Build counts data ---
     if counts_log10d:
-        _c_log10d = np.array(counts_log10d)
-        _c_angle = np.array(counts_angle)
-        _c_log10s = np.array(counts_log10surv)
-        _c_ndet = np.array(counts_ndet)
-
-        unique_log10d = np.unique(_c_log10d)
-        n_tightened = 0
-        for ld in unique_log10d:
-            mask = _c_log10d == ld
-            idx = np.where(mask)[0]
-            # Sort by angle within this distance slice
-            order = np.argsort(_c_angle[idx])
-            idx_sorted = idx[order]
-
-            running_bound = 0.0  # start at 0 (log10(1) = no constraint yet)
-            for k in idx_sorted:
-                if _c_ndet[k] >= 2:
-                    # Reliable multi-photon measurement: update running bound
-                    # but do not modify the label.  Single-photon entries are
-                    # excluded here because an extreme absorption weight on one
-                    # photon produces spuriously large negative log10_survival
-                    # values that would over-constrain all larger-angle bins.
-                    running_bound = _c_log10s[k]
-                elif _c_ndet[k] == 0:
-                    # Empty bin: tighten if the angular neighbour bound is stricter
-                    if _c_log10s[k] > running_bound:
-                        n_tightened += 1
-                        _c_log10s[k] = running_bound
-                    # Propagate only if this tightened value is itself tighter
-                    running_bound = min(running_bound, _c_log10s[k])
-                # n_det == 1: single photon — do not update running_bound,
-                # but do tighten the label if the running bound is stricter.
-                elif _c_log10s[k] > running_bound:
-                    n_tightened += 1
-                    _c_log10s[k] = running_bound
-
-        if n_tightened:
-            print(
-                f"  Angular monotonicity pass tightened {n_tightened} empty-bin "
-                f"labels (of {int((_c_ndet == 0).sum())} total empty bins)."
-            )
-
         counts_data = {
-            "log10_dist": _c_log10d,
-            "angle": _c_angle,
-            "log10_survival": _c_log10s,
-            "n_detected": _c_ndet,
+            "log10_dist": np.array(counts_log10d, dtype=np.float32),
+            "angle": np.array(counts_angle, dtype=np.float32),
+            "log10_survival": np.array(counts_log10surv, dtype=np.float32),
+            "n_detected": np.array(counts_ndet, dtype=np.float32),
+            "n_effective": np.array(counts_neff, dtype=np.float32),
         }
+        n_bound = int((counts_data["n_detected"] == 0).sum())
+        print(f"\nCounts rows : {len(counts_log10d)} ({n_bound} labelled with an upper bound)")
     else:
         counts_data = None
 
-    return shape_data, counts_data
+    return shape_data, counts_data, meta
+
+
+# Half-widths of the label pooling, fixed by distance only: upper distance [m],
+# distance rows, degrees inside the Cherenkov zone, degrees outside it.
+_POOL_SCHEDULE = (
+    (8.0, 0, 0.0, 0.0),
+    (15.0, 1, 0.5, 0.0),
+    (30.0, 2, 1.0, 10.0),
+    (60.0, 3, 2.0, 20.0),
+    (120.0, 4, 3.0, 30.0),
+    (np.inf, 6, 4.0, 45.0),
+)
+
+
+def pool_counts_rows(counts: dict, refine_deg: float = 8.0, cone_deg: float = 42.2) -> dict:
+    """Average the counts labels over windows fixed by distance.
+
+    Far from the source a row's label rests on a few scattered photons of large
+    weight. A row that catches one has a high label and a low effective count,
+    and a row that misses them has a low label and a high effective count. A
+    fit of the logarithm weighted by that count therefore follows the second
+    kind and loses light. The labels are averaged here in linear space, with
+    solid-angle weights, which keeps their expectation.
+
+    The window depends only on the distance (``_POOL_SCHEDULE``). A window that
+    grew until its effective count looked sufficient would stop early on the
+    rows that missed the heavy photons and repeat the same selection. Angles
+    are pooled only within their zone (below, inside or above the Cherenkov
+    cone), so that the cone stays as sharp as the schedule allows. Rows are
+    carried across a distance window with a smooth fit of the light against
+    distance.
+
+    Parameters
+    ----------
+    counts : dict
+        ``log10_dist``, ``angle``, ``log10_survival``, ``n_detected`` and
+        ``n_effective``, on a rectangular grid of distance and angle.
+    refine_deg : float, optional
+        Half-width of the Cherenkov zone [deg].
+    cone_deg : float, optional
+        Centre of the Cherenkov zone [deg].
+
+    Returns
+    -------
+    dict
+        The same arrays with pooled labels. ``n_detected`` is the number of raw
+        hits in the window and ``n_effective`` the effective count of the
+        window.
+
+    Raises
+    ------
+    ValueError
+        If the rows do not form a rectangular grid.
+    """
+    log10_dist, dist_index = np.unique(counts["log10_dist"], return_inverse=True)
+    angle, angle_index = np.unique(counts["angle"], return_inverse=True)
+    n_dist, n_angle = log10_dist.size, angle.size
+    if counts["log10_dist"].size != n_dist * n_angle:
+        raise ValueError("pool_counts_rows needs a rectangular distance x angle grid")
+
+    def on_grid(key):
+        out = np.zeros((n_dist, n_angle))
+        out[dist_index, angle_index] = counts[key]
+        return out
+
+    label = 10.0 ** on_grid("log10_survival")
+    hits = on_grid("n_detected")
+    sum_w2 = label**2 / np.maximum(on_grid("n_effective"), 1e-9)
+
+    dist = 10.0**log10_dist
+    weight = np.gradient(angle) * np.sin(angle)
+    weight = weight / weight.sum()
+    light = (label * weight).sum(axis=1)
+    fit = dist >= 5.0
+    coeff = np.polyfit(dist[fit], np.log(dist[fit] ** 2 * light[fit]), 2)
+    scale = np.exp(np.polyval(coeff, dist)) / dist**2
+
+    degrees = np.degrees(angle)
+    zone = np.digitize(degrees, [cone_deg - refine_deg, cone_deg + refine_deg])
+    pooled, pooled_hits, pooled_w2 = (
+        np.zeros_like(label),
+        np.zeros_like(label),
+        np.zeros_like(label),
+    )
+    for i, d in enumerate(dist):
+        n_rows, half_cone, half_off = next(s[1:] for s in _POOL_SCHEDULE if d < s[0])
+        rows = np.arange(max(i - n_rows, 0), min(i + n_rows + 1, n_dist))
+        carry = (scale[i] / scale[rows])[:, None]
+        for j in range(n_angle):
+            half = half_cone if zone[j] == 1 else half_off
+            cols = np.flatnonzero((zone == zone[j]) & (np.abs(degrees - degrees[j]) <= half + 1e-6))
+            w = weight[cols] / weight[cols].sum()
+            pooled[i, j] = (label[np.ix_(rows, cols)] * carry * w).sum() / rows.size
+            pooled_hits[i, j] = hits[np.ix_(rows, cols)].sum()
+            pooled_w2[i, j] = (sum_w2[np.ix_(rows, cols)] * carry**2 * w**2).sum() / rows.size**2
+
+    return {
+        **counts,
+        "log10_survival": np.log10(pooled[dist_index, angle_index]).astype(np.float32),
+        "n_detected": pooled_hits[dist_index, angle_index].astype(np.float32),
+        "n_effective": (pooled**2 / np.maximum(pooled_w2, 1e-300))[dist_index, angle_index].astype(
+            np.float32
+        ),
+    }

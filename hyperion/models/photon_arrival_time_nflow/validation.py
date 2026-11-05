@@ -3,15 +3,16 @@
 import numpy as np
 
 
-def check_counts_physics(net_fn, params):
+def check_counts_physics(net_fn, params, tol=0.05):
     """Run physical plausibility checks on a trained counts model.
 
     The counts model maps ``[log10(distance_m), angle_rad]`` to
     ``log10(survival_fraction)``. Several invariants must hold for any
     physically realistic Cherenkov medium:
 
-    1. **Forward dominance** — survival at ~0° is >= 100x (2 log10 units)
-       larger than at 90° for all tested distances.
+    1. **Forward dominance** — survival at ~0° is not below survival at 90°
+       at any tested distance. An angle-independent (isotropic-source)
+       model passes; one with more light sideways than forward does not.
     2. **No backward peak** — survival at ~180° never exceeds survival at ~0°.
     3. **No 90° spike** — survival at exactly 90° must not form a local
        maximum relative to its +-5° neighbours (85° and 95°).
@@ -24,6 +25,10 @@ def check_counts_physics(net_fn, params):
         Counts network built by ``make_counts_net_fn``.
     params : dict
         Trained parameter dictionary.
+
+    tol : float, optional
+        Tolerance in log10 units for checks 1-3 (default 0.05), so a flat
+        profile is not failed on fit noise.
 
     Returns
     -------
@@ -63,9 +68,9 @@ def check_counts_physics(net_fn, params):
     ratios = ls_fwd - ls_side
     checks.append(
         (
-            "forward > sideways",
-            bool(np.all(ratios > 0.0)),
-            f"min log10-ratio(fwd/90°) = {ratios.min():.3f}  (need > 0; "
+            "forward >= sideways",
+            bool(np.all(ratios > -tol)),
+            f"min log10-ratio(fwd/90°) = {ratios.min():.3f}  (need > -{tol}; "
             f"per-dist: {np.round(ratios, 3).tolist()})",
         )
     )
@@ -77,8 +82,8 @@ def check_counts_physics(net_fn, params):
     checks.append(
         (
             "no backward peak",
-            bool(np.all(excess_bwd <= 0.0)),
-            f"max excess of 180° over fwd = {excess_bwd.max():.3f}  (need ≤ 0; "
+            bool(np.all(excess_bwd <= tol)),
+            f"max excess of 180° over fwd = {excess_bwd.max():.3f}  (need ≤ {tol}; "
             f"per-dist: {np.round(excess_bwd, 3).tolist()})",
         )
     )
@@ -87,7 +92,7 @@ def check_counts_physics(net_fn, params):
     # it must not exceed BOTH its neighbours simultaneously.  A monotone fall-off
     # (85° > 90° > 95°) is perfectly fine; only a bump (90° > 85° AND 90° > 95°)
     # is unphysical.
-    is_local_max_90 = (ls_side > ls_85) & (ls_side > ls_95)
+    is_local_max_90 = (ls_side > ls_85 + tol) & (ls_side > ls_95 + tol)
     worst_vs_85 = float((ls_side - ls_85).max())
     worst_vs_95 = float((ls_side - ls_95).max())
     checks.append(

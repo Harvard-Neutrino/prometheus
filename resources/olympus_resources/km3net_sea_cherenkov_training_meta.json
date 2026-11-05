@@ -1,0 +1,18 @@
+{
+  "angle_convention": "viewing-angle-cherenkov",
+  "emission": "cherenkov",
+  "train_d_min": 0.31,
+  "train_d_max": 300.0000000000001,
+  "n_distances": 40,
+  "n_angle_bins": 18,
+  "n_viewing_angles": 51,
+  "refine_deg": 8.0,
+  "n_photons_per_distance": 25500000,
+  "n_photons_per_row": 500000,
+  "dom_radius_m": 0.3,
+  "aim_fraction": 0.25,
+  "max_time_ns": 5000.0,
+  "seed": 20261104,
+  "wl_min_nm": 290.0,
+  "wl_max_nm": 700.0
+}

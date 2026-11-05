@@ -25,6 +25,10 @@ python examples/<SCRIPT_NAME>
 
 Replace `<SCRIPT_NAME>` with the name of your script: `01_basic_water.py` or `02_basic_ice.py` for a quick-start option.
 
+## Choosing a Water Model
+
+The `Medium` entry in your geofile selects the photon model for water detectors. For the available models, how to override the default, and how to train your own model, see [Water Models](water-models.md).
+
 ## Memory on the GPU
 
 Prometheus never batches events together. The photon propagator runs one

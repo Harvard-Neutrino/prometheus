@@ -40,9 +40,17 @@ _FLOW_MODEL_MAP: dict[str, tuple[str, str]] = {
         "photon_arrival_time_nflow_params.pickle",
         "photon_arrival_time_counts_params.pickle",
     ),
+    # KM3NeT sea water (ANTARES scattering, KM3NeT absorption), 0.3-300 m, in
+    # the propagator's viewing-angle convention, with the Cherenkov emission
+    # profile of a cascade. See km3net_sea_cherenkov_training_meta.json and
+    # examples/water_model/. The isotropic-emission variant of the same water
+    # (km3net_sea_isotropic_*.pickle) conserves the total light but not the
+    # per-module pattern; select it through the olympus ``paths`` config. The
+    # antares_*_low_E pickles remain only to reproduce older results. See
+    # docs/water-models.md.
     "antares": (
-        "antares_nflow_params_low_E.pickle",
-        "antares_counts_params_low_E.pickle",
+        "km3net_sea_cherenkov_nflow_params.pickle",
+        "km3net_sea_cherenkov_counts_params.pickle",
     ),
 }
 
