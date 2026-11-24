@@ -125,8 +125,10 @@ def cone_positions(axis, distance, n):
 def closure(args, lom):
     """Run the clear-ice check; return the figures of merit and plotted arrays."""
     axes = []
+    # The response varies with azimuth by several percent. The LOM-16 repeats every 90 deg.
     for tilt in np.radians(args.tilts):
-        axes.append([np.sin(tilt), 0.0, np.cos(tilt)])
+        for azimuth in np.radians(90 * np.arange(args.n_azimuth) / args.n_azimuth):
+            axes.append(unit_vector(tilt, azimuth))
     keys = ("cos", "hits", "reference", "expected", "wl_lom", "wl_ref", "counts", "shares")
     result = {key: [] for key in keys}
     pmt_axes = unit_vector(*np.radians(np.array(lom["pmt_dirs"])).T)
@@ -319,6 +321,7 @@ def main():
     parser.add_argument("--distance", type=float, default=30.0, help="clear-ice distance [m]")
     parser.add_argument("--n-modules", type=int, default=24, help="modules on the cone")
     parser.add_argument("--tilts", type=float, nargs="+", default=[0, 35, 70, 90, 110, 145, 180])
+    parser.add_argument("--n-azimuth", type=int, default=8, help="cascade azimuths per tilt")
     parser.add_argument("--n-sphere", type=int, default=48)
     parser.add_argument(
         "--distances",
