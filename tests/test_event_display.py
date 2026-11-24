@@ -30,8 +30,6 @@ def _row():
             "sensor_id": [2, 2, 3],
             "t": [30.0, 10.0, 20.0],
             "pmt_id": [3, 4, 5],
-            "photon_zenith": [np.pi / 2] * 3,
-            "photon_azimuth": [0.0] * 3,
         },
         "mc_truth": {
             "initial_state_type": 14,
@@ -54,7 +52,6 @@ def test_build():
     assert len(data["modules"]) == 4
     assert data["selected"] == 1
     assert data["modules"][1]["hits"] == [[10.0, 4], [30.0, 3]]
-    np.testing.assert_allclose(data["modules"][1]["travel"], [1, 0, 0], atol=1e-12)
     np.testing.assert_allclose(data["direction"], [1, 0, 0], atol=1e-12)
 
 
@@ -62,6 +59,25 @@ def test_track_leaves_the_detector():
     positions = np.array([[0.0, 0.0, -50.0], [0.0, 0.0, 50.0]])
     length = ed.track_length(np.array([-30.0, 0, 0]), np.array([1.0, 0, 0]), positions, margin=10.0)
     assert length == pytest.approx(90.0)
+
+
+def test_direct_light_leaves_at_the_cherenkov_angle():
+    angle = np.arccos(1 / ed.PHASE_INDEX)
+    vertex, direction = np.zeros(3), np.array([0.6, 0.0, 0.8])
+    position = np.array([100.0, 20.0, 60.0])
+    point, on_cone = ed.direct_light(position, vertex, direction, 500.0, angle)
+    path = position - point
+    assert on_cone
+    assert path @ direction / np.linalg.norm(path) == pytest.approx(np.cos(angle))
+    np.testing.assert_allclose(np.cross(point, direction), 0, atol=1e-9)
+
+
+@pytest.mark.parametrize("x,expected", [(-50.0, 0.0), (900.0, 500.0)])
+def test_direct_light_stays_on_the_track(x, expected):
+    direction = np.array([1.0, 0.0, 0.0])
+    point, on_cone = ed.direct_light(np.array([x, 20.0, 0.0]), np.zeros(3), direction, 500.0, 0.7)
+    assert not on_cone
+    np.testing.assert_allclose(point, [expected, 0, 0])
 
 
 def test_unknown_module_is_reported():

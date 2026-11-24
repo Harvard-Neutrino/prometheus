@@ -254,6 +254,8 @@ function draw() {
     drawFlat(ribbon(a, b, width * 0.6, eye), Array(6).fill(1 - i / 14), light() ? [0.35, 0.4, 0.5, 1] : [0.75, 0.8, 0.9, 1]);
   }
   drawFlat(ribbon(start, tip, width, eye), Array(6).fill(1), [0.9, 0.12, 0.42, 1]);
+  const sel = modules[selected];
+  if (sel.emission) drawFlat(ribbon(sel.emission, sel.pos, width * 0.55, eye), Array(6).fill(sel.on_cone ? 1 : 0.5), light() ? [0.0, 0.55, 0.5, 1] : [0.1, 0.95, 0.85, 1]);
   if ($("cone").checked && reach > 0) {
     // Light emitted at the Cherenkov angle lies on a cone behind the muon.
     const [u, v] = perp(dir), length = Math.min(reach, extent * 0.75);
@@ -287,7 +289,9 @@ function drawModule() {
   seen.forEach(([, p]) => counts[p]++);
   const max = Math.max(1, ...D.pmt_axes.map((_, p) => m.hits.filter((x) => x[1] === p).length));
   $("modname").textContent = `String ${m.string}, module ${m.om}`;
-  $("modinfo").textContent = `${seen.length} of ${m.hits.length} photons. Discs: PMT number and photons (purple 0 to yellow ${max}).`;
+  $("modinfo").textContent = `${seen.length} of ${m.hits.length} photons. Discs: PMT number and photons (purple 0 to yellow ${max}). ` +
+    (!m.emission ? "" : m.on_cone ? `Arrow: direct Cherenkov light from the muon, ${m.distance.toFixed(0)} m away.`
+      : `Dashed arrow: direct line from the ${dot(add(m.emission, D.vertex, -1), D.direction) < 1 ? "vertex" : "track end"}, ${m.distance.toFixed(0)} m; no muon Cherenkov light reaches it unscattered.`);
   const d = [Math.cos(mview.el) * Math.cos(mview.az), Math.cos(mview.el) * Math.sin(mview.az), Math.sin(mview.el)];
   const x = norm(cross([0, 0, 1], d)), y = cross(d, x);
   const size = Math.max(...D.outline.map(([r, z]) => Math.hypot(r, z))), k = (0.36 * H) / size;
@@ -315,11 +319,12 @@ function drawModule() {
     }
   });
   if (m.travel) {
-    // Mean photon travel direction, drawn where the light comes from.
+    // Direct light from the track, drawn on the side it comes from.
     const onFront = dot(m.travel, d) < 0, tip = m.travel.map((q) => -q * size * 1.02), tail = m.travel.map((q) => -q * size * 1.55);
     const [a, b] = [at(tail), at(tip)], ang = Math.atan2(b[1] - a[1], b[0] - a[0]);
-    g.globalAlpha = onFront ? 1 : 0.35; g.strokeStyle = g.fillStyle = "#ff3b6b"; g.lineWidth = 6;
-    g.beginPath(); g.moveTo(...a); g.lineTo(...b); g.stroke();
+    g.globalAlpha = onFront ? 1 : 0.35; g.strokeStyle = g.fillStyle = light() ? "#008c80" : "#1af2d9";
+    if (!m.on_cone) g.setLineDash([12, 9]); g.lineWidth = 6;
+    g.beginPath(); g.moveTo(...a); g.lineTo(...b); g.stroke(); g.setLineDash([]);
     path([b, [b[0] - 26 * Math.cos(ang - 0.45), b[1] - 26 * Math.sin(ang - 0.45)], [b[0] - 26 * Math.cos(ang + 0.45), b[1] - 26 * Math.sin(ang + 0.45)]]); g.fill();
     g.globalAlpha = 1;
   }

@@ -5,7 +5,10 @@ Write an interactive 3-D display of one multi-PMT event as a single HTML file.
 The style follows KM3NeT's RainbowAlga.jl: each photon is a small sphere on the
 axis of the PMT it hit, later photons farther out, colored by arrival time. The
 line is the muon, the dashes the neutrino, and the cone the Cherenkov front.
-Clicking a module shows its PMTs. The file needs a browser with WebGL 2 and no
+Clicking a module shows its PMTs. The
+arrow there, and the thin line in the scene, are the path of unscattered Cherenkov
+light from the muon to the module, or from the vertex if the muon would have had to
+emit it before it was created. The file needs a browser with WebGL 2 and no
 network access.
 
 The muon is drawn until it leaves the detector region, because its stopping point
@@ -41,6 +44,31 @@ _spec.loader.exec_module(event_view)
 NAMES = {12: "electron", 14: "muon", 16: "tau"}
 
 
+def direct_light(position, vertex, direction, length, angle):
+    """Return where unscattered light to ``position`` leaves the track.
+
+    Parameters
+    ----------
+    position, vertex, direction : np.ndarray
+        Module position, start of the track, and unit direction of the track.
+    length : float
+        Track length; light from beyond it is taken from the end of the track.
+    angle : float
+        Cherenkov angle [rad].
+
+    Returns
+    -------
+    tuple
+        Emission point and whether it is at the Cherenkov angle.
+    """
+    offset = position - vertex
+    along = offset @ direction
+    distance = np.linalg.norm(offset - along * direction)
+    emission = along - distance / np.tan(angle)
+    clipped = min(max(emission, 0.0), length)
+    return vertex + clipped * direction, bool(clipped == emission)
+
+
 def module_records(detector, photons):
     """Return every module with its photons, sorted by time."""
     records = {}
@@ -59,17 +87,8 @@ def module_records(detector, photons):
         if pmt is None:
             raise SystemExit("Photons have no PMT; was PPC run in multi-PMT mode?")
         records[key]["hits"].append([round(t, 2), int(pmt)])
-    zenith, azimuth = np.array(photons["photon_zenith"]), np.array(photons["photon_azimuth"])
-    travel = event_view.unit_vector(zenith, azimuth)
-    index = {}
-    for i, key in enumerate(keys):
-        index.setdefault(key, []).append(i)
-    for key, rows in index.items():
-        records[key]["hits"].sort()
-        mean = travel[rows].mean(axis=0)
-        length = np.linalg.norm(mean)
-        if length > 0:
-            records[key]["travel"] = [float(x) for x in mean / length]
+    for record in records.values():
+        record["hits"].sort()
     return list(records.values())
 
 
@@ -88,9 +107,8 @@ def track_length(vertex, direction, positions, margin=60.0):
 def build(row, detector, om, scale):
     """Return the data the HTML template needs."""
     photons, truth = row["photons"], row["mc_truth"]
-    for name in ("pmt_id", "photon_zenith"):
-        if name not in photons:
-            raise SystemExit(f"The parquet file has no {name}; use output_mode 'standard'")
+    if "pmt_id" not in photons:
+        raise SystemExit("The parquet file has no pmt_id; use output_mode 'standard'")
     if not photons["t"]:
         raise SystemExit("This event has no photons")
     records = module_records(detector, photons)
@@ -106,6 +124,18 @@ def build(row, detector, om, scale):
     direction = event_view.unit_vector(
         np.array(truth["final_state_zenith"][i]), np.array(truth["final_state_azimuth"][i])
     )
+
+    length = track_length(vertex, direction, positions)
+    angle = float(np.arccos(1 / PHASE_INDEX))
+    for record, position in zip(records, positions):
+        point, on_cone = direct_light(position, vertex, direction, length, angle)
+        path = position - point
+        distance = np.linalg.norm(path)
+        if distance > 0:
+            record["emission"] = point.tolist()
+            record["travel"] = (path / distance).tolist()
+            record["distance"] = float(distance)
+            record["on_cone"] = on_cone
 
     zenith, azimuth = np.radians(np.array(om["pmt_dirs"], dtype=float)).T
     axes = event_view.unit_vector(zenith, azimuth)
@@ -136,9 +166,9 @@ def build(row, detector, om, scale):
         "scale": scale,
         "vertex": vertex.tolist(),
         "direction": direction.tolist(),
-        "track_length": track_length(vertex, direction, positions),
+        "track_length": length,
         "c": SPEED_OF_LIGHT,
-        "cherenkov_angle": float(np.arccos(1 / PHASE_INDEX)),
+        "cherenkov_angle": angle,
         "t_min": float(t_min),
         "t_max": float(t_max if t_max > t_min else t_min + 1),
         "t_end": float(np.percentile(times, 99)),
