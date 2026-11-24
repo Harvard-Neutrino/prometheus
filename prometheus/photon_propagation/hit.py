@@ -42,3 +42,4 @@ class Hit:
     om_azimuth: Optional[float]  # radian
     photon_zenith: Optional[float]  # radian
     photon_azimuth: Optional[float]  # radian
+    pmt_id: Optional[int] = None  # PMT index within module; None in legacy mode

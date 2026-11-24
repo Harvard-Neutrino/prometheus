@@ -9,3 +9,5 @@ from .detector_factory import (
 )
 from .medium import Medium
 from .module import Module
+from .om_conf import read_om_conf
+from .om_dirs import write_om_dirs

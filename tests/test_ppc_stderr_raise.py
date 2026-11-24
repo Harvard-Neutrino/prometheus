@@ -25,6 +25,9 @@ class _FakeDetector:
     def to_f2k(self, path, serial_nos=None):
         pass
 
+    def needs_nextgen(self):
+        return False
+
 
 class _FakeProc:
     """Stand-in for subprocess.Popen's return value."""
@@ -54,7 +57,7 @@ def _drive(monkeypatch, returncode, stderr=b""):
     monkeypatch.setattr(ppc_mod, "should_propagate", lambda p: True)
     monkeypatch.setattr(ppc_mod, "serialize_to_f2k", lambda *a, **k: None)
     monkeypatch.setattr(ppc_mod.os, "remove", lambda *a, **k: None)
-    monkeypatch.setattr(ppc_mod, "parse_ppc", lambda f: ["HIT"])
+    monkeypatch.setattr(ppc_mod, "parse_ppc", lambda f, **k: ["HIT"])
     monkeypatch.setattr(ppc_mod.subprocess, "Popen", lambda *a, **k: _FakeProc(returncode, stderr))
     # Hadron (2212): lp=None is safe; deposits a loss then reaches the subprocess.
     particle = PropagatableParticle(
