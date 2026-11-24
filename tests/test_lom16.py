@@ -3,7 +3,6 @@
 The slow tests need the official PPC in PPC_EXE and ice tables in PPC_TABLES_DIR.
 """
 
-import copy
 import os
 import shutil
 import subprocess
@@ -14,7 +13,7 @@ import h5py
 import numpy as np
 import pytest
 
-from prometheus.detector import Detector, Medium, Module, read_om_conf
+from prometheus.detector import Detector, Medium, Module, detector_from_geo, read_om_conf
 
 _ROOT = Path(__file__).parents[1]
 _LOM16 = _ROOT / "resources" / "optical_modules" / "lom16"
@@ -107,13 +106,22 @@ def test_cascade_lights_the_side_it_points_to(tmp_path, sign):
     assert (z * sign > 0).mean() > 0.6
 
 
+def test_demo_geometry_has_the_shipped_module():
+    det = detector_from_geo(str(_ROOT / "resources" / "geofiles" / "demo_lom16.geo"))
+    expected = read_om_conf(_LOM16 / "om.conf")[171]
+    assert det.n_modules == 140
+    for module in det.modules:
+        assert {key: getattr(module, key) for key in expected} == expected
+
+
 @pytest.mark.slow
-def test_full_chain(tmp_path):
+@pytest.mark.parametrize("from_geo", [False, True])
+def test_full_chain(tmp_path, from_geo):
     import pyarrow.parquet as pq
 
     pytest.importorskip("proposal")
     from prometheus import Prometheus
-    from prometheus import config as base
+    from prometheus.config_types import PrometheusConfig
 
     exe, tables = _ppc()
     ice = tmp_path / "ice"
@@ -121,7 +129,8 @@ def test_full_chain(tmp_path):
     events = tmp_path / "events.h5"
     _write_events(events, [0.0, np.pi])
 
-    cfg = copy.deepcopy(base)
+    # Prometheus changes the shared config, so do not start from that.
+    cfg = PrometheusConfig()
     cfg.run.run_number = 1
     cfg.run.random_state_seed = 1
     cfg.run.nevents = 2
@@ -136,7 +145,13 @@ def test_full_chain(tmp_path):
     ppc.paths.om_tables = str(_LOM16)
     ppc.simulation.ppc_version = "official"
     ppc.simulation.output_mode = "extended"
-    Prometheus(cfg, detector=_detector()).sim()
+    if from_geo:
+        # Through the config, as a user without Python code would.
+        _detector().to_geo(str(tmp_path / "lom16.geo"))
+        cfg.detector.geo_file = str(tmp_path / "lom16.geo")
+        Prometheus(cfg).sim()
+    else:
+        Prometheus(cfg, detector=_detector()).sim()
 
     (path,) = tmp_path.glob("*.parquet")
     rows = pq.read_table(path).to_pylist()

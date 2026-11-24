@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import warnings
+from pathlib import Path
 from typing import List, Tuple, Union
 
 import awkward as ak
@@ -331,13 +332,51 @@ class Detector(object):
                     f.write(f"{string_id}\t{om_id}\t{m.module_type}\n")
 
     def to_geo(self, geofile):
+        """Write a geofile.
+
+        If the detector has module types, their definitions are written next to
+        it, in a file with the same name and the suffix ``.om.conf``.
+
+        Parameters
+        ----------
+        geofile : str
+            Output file path.
+
+        Raises
+        ------
+        ValueError
+            If modules with the same type ID differ in shape or PMTs, which the
+            file cannot describe.
+        """
+        shapes = {}
+        for m in self.modules:
+            if m.module_type == -1:
+                continue
+            shape = (
+                m.area,
+                m.beta,
+                m.Rr,
+                m.Rz,
+                [tuple(d) for d in m.pmt_dirs],
+                m.cable_azimuth,
+            )
+            if shapes.setdefault(m.module_type, shape) != shape:
+                raise ValueError(f"Modules of type {m.module_type} differ in shape or PMTs")
+
+        om_conf = Path(geofile).with_suffix(".om.conf")
+        if shapes:
+            self.to_om_conf(str(om_conf))
         with open(geofile, "w") as f:
             f.write("### Metadata ###\n")
             f.write(f"Medium:\t{self.medium.name.lower()}\n")
+            if shapes:
+                f.write(f"OM conf:\t{om_conf.name}\n")
             f.write("### Modules ###\n")
             for module in self.modules:
                 line = f"{module.pos[0]}\t{module.pos[1]}\t{module.pos[2]}"
                 for x in module.key:
                     line += f"\t{x}"
+                if module.module_type != -1:
+                    line += f"\t{module.module_type}"
                 line += "\n"
                 f.write(line)

@@ -89,6 +89,7 @@ of optical modules for each detector.
 |---|---|
 | `demo_water.geo` | Small demo water detector (used by `examples/01_basic_water.py`) |
 | `demo_ice.geo` | Small demo ice detector (used by `examples/02_basic_ice.py`) |
+| `demo_lom16.geo` | Seven strings of the LOM-16 in `optical_modules/lom16` |
 | `icecube.geo` | IceCube (86 strings) |
 | `icecube_gen2.geo` | IceCube-Gen2 |
 | `deepcore.geo` | DeepCore sub-array |
@@ -100,6 +101,21 @@ of optical modules for each detector.
 | `trident.geo` | TRIDENT |
 
 Geo files are loaded with `prometheus.detector.detector_from_geo(path)`.
+
+A module line is `x y z string_id om_id`, separated by tabs, with an optional sixth field,
+the type ID of a multi-PMT module. The shapes come from an `om.conf`, named in the metadata
+relative to the geo file:
+
+```
+### Metadata ###
+Medium:	ice
+OM conf:	../optical_modules/lom16/om.conf
+### Modules ###
+0.0	0.0	-2100.0	1	1	171
+```
+
+Modules without a type ID are legacy modules, and a file may mix both. Multi-PMT modules
+need the official PPC and wavelength tables; see `examples/README.md`.
 
 ---
 

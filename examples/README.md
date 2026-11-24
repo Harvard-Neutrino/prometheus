@@ -65,7 +65,7 @@ PPC needs one `om.wv_<type>.<pmt type>` file per module type. The LOM-16 in `res
 
 #### Multi-PMT detectors in a full simulation
 
-This is experimental. Geometry files cannot describe module types, so build the detector in Python:
+This is experimental. Build the detector in Python:
 
 ```python
 from prometheus import Prometheus, config
@@ -83,6 +83,15 @@ ppc.simulation.ppc_version = "official"
 ppc.simulation.output_mode = "extended"
 Prometheus(config, detector=Detector(modules, Medium.ICE)).sim()
 ```
+
+or name a geometry file with module types, for example `resources/geofiles/demo_lom16.geo`:
+
+```python
+config.detector.geo_file = "resources/geofiles/demo_lom16.geo"
+Prometheus(config).sim()
+```
+
+The other settings are the same. `resources/README.md` describes the format.
 
 #### LOM example
 
