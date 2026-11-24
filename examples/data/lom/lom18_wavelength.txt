@@ -1,0 +1,25 @@
+# IceCube-Gen2 Technical Design Report, version 0.05 (27 July 2023), Parts I and II,
+# Fig. 75 right panel, p. 119. See README.md in this directory.
+# Columns: wavelength [nm], direction-averaged effective area [cm^2].
+# Digitized from the vector paths of the PDF. Plotted line: Gen2 DOM (18 PMTs).
+280 0.000
+300 1.846
+320 47.616
+340 109.077
+360 134.371
+380 139.209
+400 137.507
+420 127.680
+440 114.870
+460 100.124
+480 82.875
+500 71.613
+520 52.428
+540 28.665
+560 17.360
+580 10.424
+600 4.674
+620 1.548
+640 0.338
+660 0.432
+680 0.556
