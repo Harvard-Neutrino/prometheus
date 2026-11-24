@@ -124,6 +124,7 @@ The numbered scripts each demonstrate a self-contained simulation. Run them from
 | `06_fit_lom_shape.py` | Fit the LOM-16 `om.conf` values to its published effective area |
 | `07_numu_lom_array.py` | Simulate a muon neutrino in a multi-string LOM-16 array |
 | `08_event_display.py` | Write an interactive 3-D display of a multi-PMT event as one HTML file |
+| `09_gen1_dom_comparison.py` | Compare a one-PMT multi-PMT module with the vanilla PPC DOM |
 | `genie/01_genie_injection.py` | Neutrino injection using a GENIE flux |
 
 ```bash

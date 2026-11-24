@@ -1,11 +1,13 @@
-# Inputs for the LOM-16 fit
+# Published LOM data
 
-Used by `examples/06_fit_lom_shape.py`. All sources are public.
+Used by `examples/06_fit_lom_shape.py` (fit) and `scripts/check_lom16_yield.py` (check). All sources are public.
 
 | File | Contents | Source |
 |------|----------|--------|
 | `lom16_zenith_400nm.txt`, `lom18_zenith_400nm.txt` | cos(zenith), effective area [cm^2] at 400 nm | [1], Fig. 75 left |
 | `lom16_wavelength.txt`, `lom18_wavelength.txt` | wavelength [nm], direction-averaged effective area [cm^2] | [1], Fig. 75 right |
+| `gen1_wavelength.txt` | wavelength [nm], direction-averaged effective area [cm^2] of the IceCube DOM | [1], Fig. 75 right |
+| `lom16_relative_yield.txt`, `lom18_relative_yield.txt` | propagation distance [m], Cherenkov-weighted effective area over that of the IceCube DOM | [1], Fig. 76 |
 | `lom16_start.conf` | PMT layout, tilts and vessel size in `om.conf` format | [2] |
 
 The form of the PMT response is from [3].
@@ -22,6 +24,11 @@ lie on (offsets below 0.02 nm) and areas below 0.005 cm^2 set to zero.
   The text does not say whether the left panel is averaged over azimuth; the fit assumes so.
 - The area rises from 640 to 680 nm in both wavelength curves. That is in the figure, is
   not expected of a PMT, and is below 0.6 cm^2.
+
+**Fig. 76.** Page 126 of the PDF (printed page 120), converted in the same way.
+
+- The ice model used is not stated near the figure. The horizontal axis is
+  the photon path length, so the curve depends on the ice.
 
 **`lom16_start.conf`.** From the constants in `OMSimLOM16.hh` [2]: ring tilts 36 and 62 deg,
 ring azimuths offset by 45 deg. `Rr` is the glass radius plus the bulge of the cylinder,
