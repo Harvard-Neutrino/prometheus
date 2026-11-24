@@ -93,6 +93,8 @@ Prometheus(config).sim()
 
 The other settings are the same. `resources/README.md` describes the format.
 
+Olympus does not support module types and raises an error for a detector that has them. `pmts/01_photon_to_pulses.py` and `pmts/03_mdom_view.py` take the geometry file with `--geo` and use the PMTs stored by PPC (`output_mode` `standard` or `extended`). No efficiency is applied to these hits. The electronics (time spread, dark noise, digitisation) are those of the mDOM for every module type.
+
 #### LOM example
 
 ```bash

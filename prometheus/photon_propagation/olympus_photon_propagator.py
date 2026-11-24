@@ -59,6 +59,31 @@ _DEFAULT_FLOW_FILE = "photon_arrival_time_nflow_params.pickle"
 _DEFAULT_COUNTS_FILE = "photon_arrival_time_counts_params.pickle"
 
 
+def _check_module_types(detector: Detector) -> None:
+    """Raise if the detector has modules that need PPC.
+
+    Olympus gives every module the response it was trained with, so a type
+    would be ignored without any other sign.
+
+    Raises
+    ------
+    ValueError
+        If any module has a PPC type ID.
+    """
+    typed = [m for m in detector.modules if m.module_type != -1]
+    if not typed:
+        return
+    types = sorted({m.module_type for m in typed})
+    raise ValueError(
+        f"Olympus cannot simulate module types, but {len(typed)} of "
+        f"{len(detector.modules)} modules have one (type IDs {types}; the first is module "
+        f"{typed[0].key}). Olympus would treat them as its standard module and ignore their "
+        "shape and PMTs. Use the 'ppc' or 'ppc_cuda' propagator with ppc_version 'official' "
+        "(see examples/README.md), or remove the type IDs, the sixth field in the geo file, "
+        "to simulate standard modules."
+    )
+
+
 def hits_from_olympus_result(detector: Detector, res_event) -> list:
     """Convert per-module olympus photon times into Prometheus ``Hit`` objects.
 
@@ -112,7 +137,14 @@ class OlympusPhotonPropagator(PhotonPropagator):
             Prometheus detector object.
         config : dict
             Olympus photon propagator configuration dictionary.
+
+        Raises
+        ------
+        ValueError
+            If the detector has modules with a PPC type ID, which Olympus
+            cannot simulate.
         """
+        _check_module_types(detector)
         super().__init__(lepton_propagator, detector, config)
 
         if not self.config["simulation"]["files"]:

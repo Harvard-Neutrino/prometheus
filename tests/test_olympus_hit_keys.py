@@ -12,7 +12,10 @@ import pytest
 
 from prometheus.detector import Detector, Medium
 from prometheus.detector.module import Module
-from prometheus.photon_propagation.olympus_photon_propagator import hits_from_olympus_result
+from prometheus.photon_propagation.olympus_photon_propagator import (
+    OlympusPhotonPropagator,
+    hits_from_olympus_result,
+)
 
 
 def _detector(keys):
@@ -68,3 +71,11 @@ def test_module_count_mismatch_raises():
     det = _detector([(0, 0), (0, 1)])
     with pytest.raises(ValueError, match="module entries"):
         hits_from_olympus_result(det, ak.Array([[1.0]]))
+
+
+def test_module_types_are_rejected():
+    modules = [Module(np.array([0.0, 0.0, 10.0 * o]), (1, o)) for o in range(2)]
+    typed = Module(np.array([0.0, 0.0, 20.0]), (1, 2), module_type=171)
+    det = Detector([*modules, typed], Medium.WATER)
+    with pytest.raises(ValueError, match=r"1 of 3 modules.*\[171\].*\(1, 2\).*official"):
+        OlympusPhotonPropagator(None, det, {})
