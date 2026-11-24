@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """07_numu_lom_array.py
-Simulate one muon neutrino in a hexagonal array of LOM-16 strings.
+Simulate muon neutrinos in a hexagonal array of LOM-16 strings.
 
-The neutrino comes from a stored LeptonInjector file, so its energy, direction
-and inelasticity were sampled from the interaction model. Its vertex is moved to
---vertex, so the event is an illustration and cannot be weighted.
+The neutrinos come from a stored LeptonInjector file, so their energies, zenith
+angles and inelasticities were sampled from the interaction model. By default one
+event is moved to --vertex. With --n-events, the stored events below --max-energy
+are repeated with random azimuths and vertices. Either way the events are
+illustrations and cannot be weighted. PPC takes about 1 s per TeV on a CPU.
 
 Writes the photons (parquet) and the module positions (geo).
 
@@ -31,6 +33,7 @@ PPC_DIR = REPO_ROOT / "resources" / "PPC_executables" / "icecube-ppc"
 LOM16_DIR = REPO_ROOT / "resources" / "optical_modules" / "lom16"
 EVENTS = REPO_ROOT / "tests" / "resources" / "MuMinus_Hadrons_seed_925_LI_output.h5"
 LOM16_TYPE = 171
+VERTEX_MARGIN = 30.0  # m, around the detector, for random vertices
 
 
 def hexagonal_strings(n_rings, spacing):
@@ -54,18 +57,45 @@ def make_detector(args):
     return Detector(modules, Medium.ICE)
 
 
-def write_event(source_path, index, vertex, path):
-    """Copy one LeptonInjector event, moved to ``vertex``."""
-    with h5py.File(source_path) as source, h5py.File(path, "w") as out:
+def write_events(source_path, out_path, indices, vertices, rotations):
+    """Copy LeptonInjector events, moved to ``vertices`` and rotated in azimuth [rad]."""
+    with h5py.File(source_path) as source, h5py.File(out_path, "w") as out:
         name = next(iter(source))
         for key, dataset in source[name].items():
-            rows = dataset[index : index + 1]
+            rows = dataset[:][indices]
             if key == "properties":
-                for axis, value in zip("xyz", vertex):
-                    rows[axis] = value
+                for column, axis in enumerate("xyz"):
+                    rows[axis] = vertices[:, column]
+                rows["azimuth"] = (rows["azimuth"] + rotations) % (2 * np.pi)
             else:
-                rows["Position"] = vertex
+                rows["Position"] = vertices
+                rows["Direction"][:, 1] += rotations
             out.create_dataset(f"{name}/{key}", data=rows)
+
+
+def choose_events(args, detector):
+    """Return the event indices, vertices and azimuth rotations to simulate."""
+    if args.n_events is None:
+        return np.array([args.event]), np.array([args.vertex], dtype=float), np.zeros(1)
+    with h5py.File(EVENTS) as source:
+        energies = source[next(iter(source))]["properties"]["totalEnergy"]
+    usable = np.flatnonzero(energies < args.max_energy)
+    if len(usable) == 0:
+        raise SystemExit(f"No stored event is below {args.max_energy:g} GeV")
+    rng = np.random.default_rng(args.seed)
+    n = args.n_events
+    low = detector.module_coords.min(axis=0)
+    high = detector.module_coords.max(axis=0)
+    center = (low + high) / 2
+    radius = (np.hypot(*(detector.module_coords - center)[:, :2].T).max() + VERTEX_MARGIN) * (
+        np.sqrt(rng.uniform(size=n))
+    )
+    angle = rng.uniform(0, 2 * np.pi, n)
+    z = rng.uniform(low[2] - VERTEX_MARGIN, high[2] + VERTEX_MARGIN, n)
+    vertices = np.column_stack(
+        [center[0] + radius * np.cos(angle), center[1] + radius * np.sin(angle), z]
+    )
+    return np.resize(usable, n), vertices, rng.uniform(0, 2 * np.pi, n)
 
 
 def main():
@@ -76,6 +106,8 @@ def main():
     parser.add_argument(
         "--vertex", type=float, nargs=3, default=(-135.0, 50.0, -2410.0), metavar=("X", "Y", "Z")
     )
+    parser.add_argument("--n-events", type=int, help="simulate this many random events instead")
+    parser.add_argument("--max-energy", type=float, default=2e4, help="[GeV], with --n-events")
     parser.add_argument("--rings", type=int, default=2, help="hexagonal rings of strings")
     parser.add_argument("--string-spacing", type=float, default=60.0)
     parser.add_argument("--module-spacing", type=float, default=20.0)
@@ -95,14 +127,15 @@ def main():
 
     with tempfile.TemporaryDirectory() as tmp:
         events = Path(tmp) / "event.h5"
-        write_event(EVENTS, args.event, args.vertex, events)
+        indices, vertices, rotations = choose_events(args, detector)
+        write_events(EVENTS, events, indices, vertices, rotations)
         # IceCube's per-DOM files would be applied to modules with the same key.
         tables = Path(tmp) / "ice"
         skip = shutil.ignore_patterns("geo-f2k", "eff-f2k", "dx.dat")
         shutil.copytree(args.ice_tables, tables, ignore=skip)
 
         config.run.run_number = 1
-        config.run.nevents = 1
+        config.run.nevents = len(indices)
         config.run.random_state_seed = args.seed
         config.run.storage_prefix = f"{args.out_dir}/"
         config.injection.name = "LeptonInjector"

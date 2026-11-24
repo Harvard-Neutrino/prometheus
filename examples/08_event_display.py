@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """08_event_display.py
-Write an interactive 3-D display of one multi-PMT event as a single HTML file.
+Write an interactive 3-D display of multi-PMT events as a single HTML file.
+
+All events with photons and a muon are included; use the menu, the Previous and Next
+buttons, or the arrow keys to move between them. --events selects some of them.
 
 The style follows KM3NeT's RainbowAlga.jl: each photon is a small sphere on the
 axis of the PMT it hit, later photons farther out, colored by arrival time. The
@@ -34,6 +37,7 @@ HERE = Path(__file__).resolve().parent
 TEMPLATE = HERE / "event_display.html"
 LOM16_CONF = HERE.parent / "resources" / "optical_modules" / "lom16" / "om.conf"
 SPEED_OF_LIGHT = 0.299792458  # m / ns
+PMT_RADIUS = 0.051  # m, as drawn
 PHASE_INDEX = 1.32  # ice, sets the Cherenkov angle drawn
 
 # The module geometry is shared with the static event view.
@@ -69,27 +73,20 @@ def direct_light(position, vertex, direction, length, angle):
     return vertex + clipped * direction, bool(clipped == emission)
 
 
-def module_records(detector, photons):
-    """Return every module with its photons, sorted by time."""
-    records = {}
-    for module in detector.modules:
-        key = tuple(int(i) for i in module.key)
-        records[key] = {
-            "string": key[0],
-            "om": key[1],
-            "pos": [round(float(x), 3) for x in module.pos],
-            "hits": [],
-        }
-    keys = list(zip(photons["string_id"], photons["sensor_id"]))
-    for key, t, pmt in zip(keys, photons["t"], photons["pmt_id"]):
-        if key not in records:
-            raise SystemExit(f"Module {key} has photons but is not in the geo file")
+def module_hits(index, photons):
+    """Return the photons of each module, sorted by time, by position in ``index``."""
+    hits = {}
+    for string, om, t, pmt in zip(
+        photons["string_id"], photons["sensor_id"], photons["t"], photons["pmt_id"]
+    ):
+        if (string, om) not in index:
+            raise SystemExit(f"Module {(string, om)} has photons but is not in the geo file")
         if pmt is None:
             raise SystemExit("Photons have no PMT; was PPC run in multi-PMT mode?")
-        records[key]["hits"].append([round(t, 2), int(pmt)])
-    for record in records.values():
-        record["hits"].sort()
-    return list(records.values())
+        hits.setdefault(index[(string, om)], []).append([round(t, 1), int(pmt)])
+    for rows in hits.values():
+        rows.sort()
+    return hits
 
 
 def track_length(vertex, direction, positions, margin=60.0):
@@ -104,71 +101,95 @@ def track_length(vertex, direction, positions, margin=60.0):
     return max(float(-b + np.sqrt(discriminant)), margin)
 
 
-def build(row, detector, om, scale):
-    """Return the data the HTML template needs."""
-    photons, truth = row["photons"], row["mc_truth"]
+def rounded(vector, digits=3):
+    """Return a list of rounded floats, to keep the file small."""
+    return [round(float(x), digits) for x in vector]
+
+
+def build_detector(detector, om, scale):
+    """Return the data shared by all events."""
+    zenith, azimuth = np.radians(np.array(om["pmt_dirs"], dtype=float)).T
+    axes = event_view.unit_vector(zenith, azimuth)
+    radius, height = event_view.profile(om, "vessel", n=8)
+    modules = []
+    for module in detector.modules:
+        string, number = (int(i) for i in module.key)
+        modules.append({"string": string, "om": number, "pos": rounded(module.pos)})
+    return {
+        "modules": modules,
+        "pmt_axes": axes.tolist(),
+        "pmt_distance": event_view.surface_distance(om, "vessel", axes).tolist(),
+        "pmt_radius": PMT_RADIUS,
+        "pmt_depth": PMT_RADIUS**2 / (2 * om["Rr"]),
+        "outline": np.column_stack([radius, height]).tolist(),
+        "scale": scale,
+        "c": SPEED_OF_LIGHT,
+        "cherenkov_angle": float(np.arccos(1 / PHASE_INDEX)),
+    }
+
+
+def find_muon(row):
+    """Return the index of the primary muon in the final state, or None."""
+    truth = row["mc_truth"]
+    for i, pdg in enumerate(truth["final_state_type"]):
+        if abs(pdg) == 13:
+            return i
+    return None
+
+
+def build_event(row, number, modules, n_pmts):
+    """Return the data of one event, or None if it has no photons or no muon."""
+    photons, truth = row.get("photons"), row["mc_truth"]
+    i = find_muon(row)
+    if i is None or not photons or not photons["t"]:
+        return None
     if "pmt_id" not in photons:
         raise SystemExit("The parquet file has no pmt_id; use output_mode 'standard'")
-    if not photons["t"]:
-        raise SystemExit("This event has no photons")
-    records = module_records(detector, photons)
-    positions = np.array([r["pos"] for r in records])
-    if max(photons["pmt_id"]) >= om["n_pmts"]:
-        raise SystemExit(f"pmt_id does not fit a module with {om['n_pmts']} PMTs")
+    index = {(m["string"], m["om"]): k for k, m in enumerate(modules)}
+    hits = module_hits(index, photons)
+    if max(photons["pmt_id"]) >= n_pmts:
+        raise SystemExit(f"pmt_id does not fit a module with {n_pmts} PMTs")
 
-    muons = [i for i, pdg in enumerate(truth["final_state_type"]) if abs(pdg) == 13]
-    if not muons:
-        raise SystemExit("This event has no muon in the final state")
-    i = muons[0]
+    positions = np.array([m["pos"] for m in modules])
     vertex = np.array([truth[f"initial_state_{axis}"] for axis in "xyz"])
     direction = event_view.unit_vector(
         np.array(truth["final_state_zenith"][i]), np.array(truth["final_state_azimuth"][i])
     )
-
     length = track_length(vertex, direction, positions)
-    angle = float(np.arccos(1 / PHASE_INDEX))
-    for record, position in zip(records, positions):
-        point, on_cone = direct_light(position, vertex, direction, length, angle)
-        path = position - point
+    angle = np.arccos(1 / PHASE_INDEX)
+    records = {}
+    for k, rows in hits.items():
+        point, on_cone = direct_light(positions[k], vertex, direction, length, angle)
+        record = {"hits": rows}
+        path = positions[k] - point
         distance = np.linalg.norm(path)
         if distance > 0:
-            record["emission"] = point.tolist()
-            record["travel"] = (path / distance).tolist()
-            record["distance"] = float(distance)
+            record["emission"] = rounded(point)
+            record["travel"] = rounded(path / distance, 5)
+            record["distance"] = round(float(distance), 1)
             record["on_cone"] = on_cone
+        records[k] = record
 
-    zenith, azimuth = np.radians(np.array(om["pmt_dirs"], dtype=float)).T
-    axes = event_view.unit_vector(zenith, azimuth)
-    radius, height = event_view.profile(om, "vessel", n=8)
-    pmt_radius = 0.051
     times = np.array(photons["t"])
     t_min, t_max = np.percentile(times, [0, 95])
     flavor = NAMES.get(abs(truth["initial_state_type"]), "unknown").capitalize()
     kind = "antineutrino" if truth["initial_state_type"] < 0 else "neutrino"
-    n_hit = sum(bool(r["hits"]) for r in records)
+    energy = truth["initial_state_energy"] / 1e3
     return {
-        "title": f"{flavor} {kind}, {truth['initial_state_energy'] / 1e3:.1f} TeV",
+        "number": number,
+        "label": f"{number}: {energy:.1f} TeV, {len(times)} photons",
+        "title": f"{flavor} {kind}, {energy:.1f} TeV",
         "lines": [
             f"Muon {truth['final_state_energy'][i] / 1e3:.1f} TeV, "
             f"zenith {np.degrees(truth['final_state_zenith'][i]):.0f} deg (travel direction)",
-            f"{len(times)} photons on {n_hit} of {len(records)} modules, "
-            f"{len({r['string'] for r in records})} strings",
-            f"Modules enlarged {scale:g} times. Click a module for its PMTs. "
-            "Drag to rotate, shift-drag to pan, scroll to zoom.",
+            f"{len(times)} photons on {len(hits)} of {len(modules)} modules, "
+            f"{len({modules[k]['string'] for k in hits})} strings",
         ],
-        "modules": records,
-        "selected": int(np.argmax([len(r["hits"]) for r in records])),
-        "pmt_axes": axes.tolist(),
-        "pmt_distance": event_view.surface_distance(om, "vessel", axes).tolist(),
-        "pmt_radius": pmt_radius,
-        "pmt_depth": pmt_radius**2 / (2 * om["Rr"]),
-        "outline": np.column_stack([radius, height]).tolist(),
-        "scale": scale,
-        "vertex": vertex.tolist(),
+        "hits": records,
+        "selected": max(hits, key=lambda k: len(hits[k])),
+        "vertex": rounded(vertex),
         "direction": direction.tolist(),
         "track_length": length,
-        "c": SPEED_OF_LIGHT,
-        "cherenkov_angle": angle,
         "t_min": float(t_min),
         "t_max": float(t_max if t_max > t_min else t_min + 1),
         "t_end": float(np.percentile(times, 99)),
@@ -183,7 +204,7 @@ def main():
     )
     parser.add_argument("parquet", type=Path, help="Prometheus photon parquet file")
     parser.add_argument("--geo", required=True, help="geo file with all modules")
-    parser.add_argument("--event", type=int, default=0)
+    parser.add_argument("--events", type=int, nargs="+", help="events to include (default: all)")
     parser.add_argument("--om-conf", default=str(LOM16_CONF))
     parser.add_argument("--om-type", type=int, default=171)
     parser.add_argument("--scale", type=float, default=15.0, help="module enlargement")
@@ -191,15 +212,22 @@ def main():
     args = parser.parse_args()
 
     rows = pq.read_table(args.parquet).to_pylist()
-    if not 0 <= args.event < len(rows):
-        parser.error(f"--event must be between 0 and {len(rows) - 1}")
+    numbers = range(len(rows)) if args.events is None else args.events
+    for number in numbers:
+        if not 0 <= number < len(rows):
+            parser.error(f"events must be between 0 and {len(rows) - 1}")
     om = event_view.load_om(args.om_conf, args.om_type)
-    data = build(rows[args.event], detector_from_geo(args.geo), om, args.scale)
+    data = build_detector(detector_from_geo(args.geo), om, args.scale)
+    events = [build_event(rows[n], n, data["modules"], om["n_pmts"]) for n in numbers]
+    data["events"] = [event for event in events if event is not None]
+    if not data["events"]:
+        raise SystemExit("No event has both photons and a muon")
     # "<" must not end the script element early.
-    text = json.dumps(data).replace("<", "\\u003c")
+    text = json.dumps(data, separators=(",", ":")).replace("<", "\\u003c")
     out = args.out or args.parquet.with_name("event_display.html")
     out.write_text(TEMPLATE.read_text().replace("__EVENT_DATA__", text))
-    print(f"Saved {out}")
+    skipped = len(events) - len(data["events"])
+    print(f"Saved {out}: {len(data['events'])} events, {skipped} without photons or muon")
 
 
 if __name__ == "__main__":

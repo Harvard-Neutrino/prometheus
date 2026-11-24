@@ -98,6 +98,8 @@ python examples/07_numu_lom_array.py
 python examples/08_event_display.py examples/output/numu_lom/1_photons.parquet --geo examples/output/numu_lom/detector.geo
 ```
 
+`07_numu_lom_array.py --n-events 100` simulates random events; the display then has a menu and arrow keys to move between them. On a CPU this takes about 20 minutes.
+
 `06_fit_lom_shape.py` derives the LOM-16 values from public sources. Its inputs and citations are in `data/lom/README.md`.
 
 PPC assigns each hit to a PMT from the photon direction only, not from where the photon lands on the module, and gives every PMT the same angular response.

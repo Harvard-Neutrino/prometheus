@@ -45,14 +45,30 @@ def _row():
     }
 
 
+def _build(row):
+    shared = ed.build_detector(_detector(), _OM, 15.0)
+    return shared, ed.build_event(row, 7, shared["modules"], _OM["n_pmts"])
+
+
 def test_build():
-    data = ed.build(_row(), _detector(), _OM, 15.0)
-    json.dumps(data)
-    assert data["title"] == "Muon neutrino, 2.0 TeV"
-    assert len(data["modules"]) == 4
-    assert data["selected"] == 1
-    assert data["modules"][1]["hits"] == [[10.0, 4], [30.0, 3]]
-    np.testing.assert_allclose(data["direction"], [1, 0, 0], atol=1e-12)
+    shared, event = _build(_row())
+    json.dumps([shared, event])
+    assert len(shared["modules"]) == 4
+    assert event["title"] == "Muon neutrino, 2.0 TeV"
+    assert event["label"].startswith("7:")
+    assert event["selected"] == 1
+    assert set(event["hits"]) == {1, 2}
+    assert event["hits"][1]["hits"] == [[10.0, 4], [30.0, 3]]
+    np.testing.assert_allclose(event["direction"], [1, 0, 0], atol=1e-12)
+
+
+def test_events_without_photons_or_muon_are_skipped():
+    row = _row()
+    row["photons"] = {key: [] for key in row["photons"]}
+    assert _build(row)[1] is None
+    row = _row()
+    row["mc_truth"]["final_state_type"] = [11, -2000001006]
+    assert _build(row)[1] is None
 
 
 def test_track_leaves_the_detector():
@@ -84,14 +100,7 @@ def test_unknown_module_is_reported():
     row = _row()
     row["photons"]["sensor_id"][0] = 99
     with pytest.raises(SystemExit, match="not in the geo file"):
-        ed.build(row, _detector(), _OM, 15.0)
-
-
-def test_event_without_muon_is_reported():
-    row = _row()
-    row["mc_truth"]["final_state_type"] = [11, -2000001006]
-    with pytest.raises(SystemExit, match="no muon"):
-        ed.build(row, _detector(), _OM, 15.0)
+        _build(row)
 
 
 def test_template_has_one_data_slot():

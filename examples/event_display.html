@@ -24,7 +24,8 @@
   #breakout h2 { font-size: 13px; margin: 0; }
   #breakout p { margin: 2px 0; color: var(--dim); }
   button { font: inherit; color: inherit; background: transparent; border: 1px solid var(--line); border-radius: 4px; padding: 3px 9px; cursor: pointer; }
-  label { white-space: nowrap; }
+  select { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 3px; max-width: 230px; }
+  label, #count { white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -32,6 +33,7 @@
 <div id="info" class="panel"></div>
 <div id="bar" class="panel"><canvas width="16" height="220"></canvas><div id="ticks"></div></div>
 <div id="controls" class="panel">
+  <button id="prev">Previous</button><select id="pick" aria-label="Event"></select><button id="next">Next</button><span id="count"></span>
   <button id="play">Play</button>
   <input id="time" type="range" min="0" max="1000" value="1000" aria-label="Time">
   <span id="clock"></span>
@@ -48,7 +50,9 @@
 <script id="data" type="application/json">__EVENT_DATA__</script>
 <script>
 "use strict";
-const D = JSON.parse(document.getElementById("data").textContent);
+const B = JSON.parse(document.getElementById("data").textContent);
+// Current event, with the detector data; replaced by load().
+let D = { ...B, ...B.events[0] };
 const $ = (id) => document.getElementById(id);
 
 // ---- vectors -------------------------------------------------------------
@@ -74,21 +78,24 @@ const shade = (t) => (t - D.t_min) / (D.t_max - D.t_min);
 // ---- scene geometry ------------------------------------------------------
 const gl = $("scene").getContext("webgl2", { alpha: false, antialias: true, preserveDrawingBuffer: true });
 if (!gl) document.body.textContent = "This display needs WebGL 2.";
-const modules = D.modules;
+let modules = B.modules;
 const mean = [0, 1, 2].map((k) => modules.reduce((s, m) => s + m.pos[k], 0) / modules.length);
 const extent = Math.max(...modules.map((m) => Math.hypot(...add(m.pos, mean, -1))));
 const BODY = D.scale;
 
 // Photons sit along the axis of their PMT, later ones farther out.
-const spheres = [];
-modules.forEach((m, mi) => {
+let spheres = [];
+function place() {
+ spheres = [];
+ modules.forEach((m, mi) => {
   const rank = {};
   m.hits.forEach(([t, pmt]) => {
     const k = (rank[pmt] = (rank[pmt] || 0) + 1);
     const r = BODY * (D.pmt_distance[pmt] + 0.10 * Math.pow(k, 0.75));
     spheres.push({ pos: add(m.pos, D.pmt_axes[pmt], r), t, r: BODY * 0.075, module: mi });
   });
-});
+ });
+}
 
 function buffer(data, loc, size, divisor = 0) {
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
@@ -139,14 +146,17 @@ const flatProg = program(
    void main() { va = a; gl_Position = proj * view * vec4(p, 1.0); }`,
   `in float va; uniform vec4 color; out vec4 o; void main() { o = vec4(color.rgb, color.a * va); }`);
 
-const balls = vao(() => {
-  buffer([-1, -1, 1, -1, -1, 1, 1, 1], 0, 2);
-  buffer(spheres.flatMap((s) => [...s.pos, s.r]), 1, 4, 1);
-  buffer(spheres.map((s) => s.t), 2, 1, 1);
-});
-const ballColor = gl.createBuffer();
+const balls = vao(() => buffer([-1, -1, 1, -1, -1, 1, 1, 1], 0, 2));
+const ballPos = gl.createBuffer(), ballTime = gl.createBuffer(), ballColor = gl.createBuffer();
 function paint() {
   gl.bindVertexArray(balls);
+  for (const [b, loc, size, data] of [[ballPos, 1, 4, spheres.flatMap((s) => [...s.pos, s.r])], [ballTime, 2, 1, spheres.map((s) => s.t)]]) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, b);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribDivisor(loc, 1);
+  }
   gl.bindBuffer(gl.ARRAY_BUFFER, ballColor);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(spheres.flatMap((s) => ramp(shade(s.t)))), gl.STATIC_DRAW);
   gl.enableVertexAttribArray(3);
@@ -202,8 +212,8 @@ function ribbon(a, b, width, eye) {
 }
 
 // ---- camera --------------------------------------------------------------
-const HOME = { az: D.camera_az, el: 0.16, dist: extent * 3.0 };
-let cam = { ...HOME }, target = [...mean];
+const home = () => ({ az: D.camera_az, el: 0.16, dist: extent * 3.0 });
+let cam = home(), target = [...mean];
 let view, proj, eye;
 function camera(w, h) {
   const d = [Math.cos(cam.el) * Math.cos(cam.az), Math.cos(cam.el) * Math.sin(cam.az), Math.sin(cam.el)];
@@ -365,7 +375,7 @@ $("scene").addEventListener("wheel", (e) => { e.preventDefault(); cam.dist *= Ma
 $("time").addEventListener("input", (e) => { playing = false; $("play").textContent = "Play"; now = (D.t_end * e.target.value) / 1000; refresh(); });
 $("cone").addEventListener("change", draw);
 $("theme").addEventListener("change", (e) => { document.body.classList.toggle("light", e.target.checked); paint(); bar(); refresh(); });
-$("reset").addEventListener("click", () => { cam = { ...HOME }; target = [...mean]; draw(); });
+$("reset").addEventListener("click", () => { cam = home(); target = [...mean]; draw(); });
 $("lit").addEventListener("click", () => litSide(1));
 $("far").addEventListener("click", () => litSide(-1));
 $("save").addEventListener("click", () => { draw(); const a = document.createElement("a"); a.href = $("scene").toDataURL("image/png"); a.download = "event.png"; a.click(); });
@@ -388,12 +398,35 @@ function bar() {
   for (let i = 0; i < 220; i++) { g.fillStyle = css(ramp(1 - i / 219)); g.fillRect(0, i, 16, 1); }
   $("ticks").replaceChildren(...[4, 3, 2, 1, 0].map((i) => { const s = document.createElement("span"); s.textContent = Math.round(D.t_min + (i / 4) * (D.t_max - D.t_min)) + (i === 4 ? "+ ns" : ""); return s; }));
 }
-$("info").replaceChildren(...[["h1", D.title], ...D.lines.map((l) => ["p", l])].map(([tag, text]) => { const e = document.createElement(tag); e.textContent = text; return e; }));
 const query = new URLSearchParams(location.search);
 if (query.has("light")) { document.body.classList.add("light"); $("theme").checked = true; }
+let current = 0;
+function load(i, keepView) {
+  current = (i + B.events.length) % B.events.length;
+  const ev = B.events[current];
+  D = { ...B, ...ev };
+  modules = B.modules.map((m, k) => ({ ...m, hits: [], ...(ev.hits[k] || {}) }));
+  selected = ev.selected; now = D.t_end; playing = false; $("play").textContent = "Play";
+  const help = `Modules enlarged ${D.scale} times. Click a module for its PMTs. Drag to rotate, shift-drag to pan, scroll to zoom.`;
+  $("info").replaceChildren(...[["h1", D.title], ...[...D.lines, help].map((l) => ["p", l])].map(([tag, text]) => { const e = document.createElement(tag); e.textContent = text; return e; }));
+  $("pick").value = current; $("count").textContent = `${current + 1} of ${B.events.length}`;
+  if (!keepView) { cam = home(); target = [...mean]; }
+  place(); paint(); bar(); litSide(1); draw();
+}
+B.events.forEach((ev, i) => $("pick").add(new Option(ev.label, i)));
+$("pick").addEventListener("change", (e) => { load(Number(e.target.value)); e.target.blur(); });
+$("prev").addEventListener("click", () => load(current - 1));
+$("next").addEventListener("click", () => load(current + 1));
+window.addEventListener("keydown", (e) => {
+  if (["INPUT", "SELECT"].includes(e.target.tagName) && e.target.type !== "checkbox") return;
+  if (e.key === "ArrowRight") load(current + 1);
+  if (e.key === "ArrowLeft") load(current - 1);
+});
+const wanted = B.events.findIndex((ev) => String(ev.number) === query.get("event"));
+load(Math.max(wanted, 0));
 if (query.has("t")) now = Math.min(Math.max(Number(query.get("t")) || 0, 0), D.t_end);
 window.addEventListener("resize", draw);
-paint(); bar(); litSide(1); draw();
+refresh();
 </script>
 </body>
 </html>
