@@ -189,6 +189,45 @@ class TestHit:
         assert h.wavelength is None
         assert h.om_zenith is None
 
+    def test_pmt_id_defaults_to_none(self):
+        h = Hit(
+            string_id=1,
+            om_id=2,
+            time=0.0,
+            wavelength=None,
+            om_zenith=None,
+            om_azimuth=None,
+            photon_zenith=None,
+            photon_azimuth=None,
+        )
+        assert h.pmt_id is None
+
+    def test_pmt_id_stored(self):
+        h = Hit(
+            string_id=1,
+            om_id=2,
+            time=0.0,
+            wavelength=None,
+            om_zenith=None,
+            om_azimuth=None,
+            photon_zenith=None,
+            photon_azimuth=None,
+            pmt_id=1,
+        )
+        assert h.pmt_id == 1
+
+    def test_legacy_construction_unchanged(self):
+        h = Hit(1, 2, 123.4, 400.0, 0.5, 1.2, 0.3, 0.7)
+        assert h.string_id == 1
+        assert h.om_id == 2
+        assert h.time == pytest.approx(123.4)
+        assert h.wavelength == pytest.approx(400.0)
+        assert h.om_zenith == pytest.approx(0.5)
+        assert h.om_azimuth == pytest.approx(1.2)
+        assert h.photon_zenith == pytest.approx(0.3)
+        assert h.photon_azimuth == pytest.approx(0.7)
+        assert h.pmt_id is None
+
 
 # ---------------------------------------------------------------------------
 # Interactions enum

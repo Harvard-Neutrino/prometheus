@@ -633,6 +633,8 @@ class PPCPathsConfig(ConfigBase):
     f2k_prefix: str = ""
     ppctables: str = "../resources/PPC_tables/south_pole/"
     ppc_exe: str = "../resources/PPC_executables/PPC/ppc"
+    om_dirs: str = ""  # path to om.dirs; empty = use ppctables, else generate it
+    om_tables: str = ""  # directory with om.wv_* files, in addition to ppctables
 
 
 @dataclass
@@ -641,6 +643,18 @@ class PPCSimConfig(ConfigBase):
 
     device: int = 0
     supress_output: bool = True
+    output_mode: str = "default"  # "default", "photon", or "full"
+    # Which PPC ppc_exe is: "bundled" (PPC or PPC_CUDA) or "official" (icecube/ppc).
+    # They read track angles and write hit angles differently.
+    ppc_version: str = "bundled"
+
+    def __post_init__(self):
+        _valid = ("default", "photon", "full")
+        if self.output_mode not in _valid:
+            raise ValueError(f"output_mode must be one of {_valid!r}, got {self.output_mode!r}")
+        _versions = ("bundled", "official")
+        if self.ppc_version not in _versions:
+            raise ValueError(f"ppc_version must be one of {_versions!r}, got {self.ppc_version!r}")
 
 
 @dataclass
@@ -664,6 +678,8 @@ class PPCCudaPathsConfig(ConfigBase):
     f2k_prefix: str = ""
     ppctables: str = "../resources/PPC_tables/south_pole/"
     ppc_exe: str = "../resources/PPC_executables/PPC_CUDA/ppc"
+    om_dirs: str = ""  # path to om.dirs; empty = use ppctables, else generate it
+    om_tables: str = ""  # directory with om.wv_* files, in addition to ppctables
 
 
 @dataclass

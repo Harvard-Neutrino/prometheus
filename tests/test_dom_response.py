@@ -3,7 +3,9 @@ fadc_digitization).
 """
 
 import numpy as np
+import pytest
 
+from prometheus.detector import Detector, Medium, Module
 from prometheus.utils.dom_response import (
     PMT_DIRS,
     assign_to_pmts_per_hit,
@@ -148,3 +150,65 @@ class TestProcessEvent:
         photons = self._make_photons(rng)
         result = process_event(photons, np.array([5.0, 5.0, -20.0]), rng=rng)
         assert all(0 <= pid < len(PMT_DIRS) for pid in result["pmt_id"])
+
+
+class TestKnownPmts:
+    """Hits that already carry a PMT ID, as from PPC with multi-PMT modules."""
+
+    DIRS = [(0.0, 0.0), (90.0, 90.0)]
+
+    def _detector(self, module_type=5):
+        shape = dict(module_type=module_type, n_pmts=2, pmt_dirs=self.DIRS)
+        modules = [Module(np.array([0.0, 0.0, 0.0]), (1, 1), **shape)]
+        modules.append(Module(np.array([0.0, 0.0, 20.0]), (1, 2)))
+        return Detector(modules, Medium.ICE)
+
+    def _photons(self, pmt_ids, sensor_id=1):
+        n = len(pmt_ids)
+        photons = {
+            "string_id": [1] * n,
+            "sensor_id": [sensor_id] * n,
+            "t": list(np.linspace(0.0, 50.0, n)),
+            "pmt_id": pmt_ids,
+        }
+        for axis in "xyz":
+            photons[f"sensor_pos_{axis}"] = [0.0] * n
+        return photons
+
+    def _run(self, photons, detector):
+        rng = np.random.default_rng(0)
+        return process_event(photons, np.zeros(3), rng, qe=0.1, detector=detector)
+
+    def test_keeps_pmt_directions_and_every_hit(self):
+        result = self._run(self._photons([1] * 30 + [0] * 10), self._detector())
+        assert result["pmt_id"] == [0, 1]
+        # With the efficiency of 0.1 applied, most of these would be lost.
+        assert result["n_pe"] == [10, 30]
+        dirs = np.column_stack([result[f"pmt_dir_{a}"] for a in "xyz"])
+        np.testing.assert_allclose(dirs, [[0, 0, 1], [0, 1, 0]], atol=1e-12)
+
+    def test_ids_without_detector(self):
+        with pytest.raises(ValueError, match="Pass the detector"):
+            self._run(self._photons([0, 1]), None)
+
+    def test_id_outside_module(self):
+        with pytest.raises(ValueError, match="2 PMTs, but a hit has PMT ID 2"):
+            self._run(self._photons([0, 2]), self._detector())
+
+    def test_ids_not_stored(self):
+        with pytest.raises(ValueError, match="has type 5"):
+            self._run(self._photons([None, None]), self._detector())
+
+    def test_ids_partly_stored(self):
+        with pytest.raises(ValueError, match="Only some hits"):
+            self._run(self._photons([0, None]), self._detector())
+
+    def test_module_not_in_detector(self):
+        with pytest.raises(ValueError, match="not in the detector"):
+            self._run(self._photons([0], sensor_id=9), self._detector())
+
+    def test_standard_module_is_unchanged(self):
+        photons = self._photons([None] * 200, sensor_id=2)
+        with_detector = self._run(photons, self._detector())
+        del photons["pmt_id"]
+        assert with_detector == self._run(photons, None)

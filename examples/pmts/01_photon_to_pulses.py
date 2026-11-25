@@ -12,6 +12,10 @@ response model:
   3. Dark noise injection (thermal + correlated radioactive bursts)
   4. SPE-template convolution and FADC digitisation (3.3 ns bins)
 
+Photons with PMT IDs, from PPC with multi-PMT modules, skip step 1 and keep
+their PMT. Pass the geometry file with ``--geo``. The electronics in steps 2 to 4
+stay those of the mDOM.
+
 Output ``output/11_pulses.parquet`` has one row per event, with per-module
 fields ``string_id``, ``sensor_id``, ``n_pe``, ``fadc_t`` and ``fadc_q``.
 
@@ -30,6 +34,7 @@ from pathlib import Path
 import awkward as ak
 import numpy as np
 
+from prometheus.detector import detector_from_geo
 from prometheus.utils.dom_response import process_event
 
 logger = logging.getLogger(__name__)
@@ -57,6 +62,11 @@ def main() -> None:
         default=OUTPUT_FILE,
         help="Output parquet file (default: %(default)s)",
     )
+    parser.add_argument(
+        "--geo",
+        type=Path,
+        help="geometry file of the simulation; needed for multi-PMT modules",
+    )
     args = parser.parse_args()
     input_file = args.input
     output_file = args.output
@@ -70,6 +80,7 @@ def main() -> None:
     n_events = len(events)
     print(f"  {n_events} events")
 
+    detector = detector_from_geo(str(args.geo)) if args.geo else None
     rng = np.random.default_rng(42)
     pulse_records: list[dict] = []
 
@@ -84,7 +95,7 @@ def main() -> None:
                 mc["initial_state_z"],
             ]
         )
-        record = process_event(photons, vertex_pos, rng)
+        record = process_event(photons, vertex_pos, rng, detector=detector)
         pulse_records.append(record)
         if (i + 1) % 20 == 0:
             print(f"  processed {i + 1}/{n_events} events")

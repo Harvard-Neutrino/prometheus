@@ -1,0 +1,4 @@
+[submodule "resources/PPC_executables/icecube-ppc"]
+	path = resources/PPC_executables/icecube-ppc
+	url = https://github.com/icecube/ppc.git
+	ignore = untracked

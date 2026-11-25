@@ -1,10 +1,12 @@
+import glob
 import logging
 import os
+import shutil
 import subprocess
 
 import numpy as np
 
-from ..detector import Detector
+from ..detector import Detector, write_om_dirs
 from ..lepton_propagation import LeptonPropagator, Loss
 from ..particle import Particle
 from ..utils import serialize_to_f2k
@@ -15,6 +17,61 @@ logger = logging.getLogger(__name__)
 
 # Collect subprocess statuses for run summaries
 subprocess_statuses = []
+
+_PPC_VERSIONS = ("bundled", "official")
+
+
+def _uses_official_ppc(det: Detector, ppc_config: dict) -> bool:
+    """Return whether the configured PPC is the official one.
+
+    Raises
+    ------
+    ValueError
+        If the setting is unknown, or multi-PMT modules are used with the
+        bundled PPC, which does not support them.
+    """
+    version = ppc_config["simulation"].get("ppc_version", "bundled")
+    if version not in _PPC_VERSIONS:
+        raise ValueError(f"ppc_version must be one of {_PPC_VERSIONS!r}, got {version!r}")
+    if det.needs_nextgen() and version != "official":
+        raise ValueError(
+            "Multi-PMT modules need the official PPC. Set ppc_exe to it and the simulation "
+            "setting ppc_version to 'official'; see examples/README.md."
+        )
+    return version == "official"
+
+
+def _write_module_files(det: Detector, paths: dict) -> None:
+    """Put the files PPC needs for multi-PMT modules in its working directory."""
+    tmpdir = paths["ppc_tmpdir"]
+    det.to_om_conf(os.path.join(tmpdir, "om.conf"))
+    det.to_om_map(os.path.join(tmpdir, "om.map"))
+
+    om_dirs = paths.get("om_dirs", "")
+    in_tables = os.path.join(paths["ppctables"], "om.dirs")
+    target = os.path.join(tmpdir, "om.dirs")
+    if om_dirs:
+        if not os.path.exists(om_dirs):
+            raise FileNotFoundError(f"om_dirs file {om_dirs} does not exist")
+        shutil.copy(om_dirs, target)
+    elif not os.path.exists(in_tables):
+        write_om_dirs(target)
+    elif not (os.path.exists(target) and os.path.samefile(in_tables, target)):
+        shutil.copy(in_tables, target)
+
+    for module_type in sorted({m.module_type for m in det.modules} - {-1}):
+        name = f"om.wv_{module_type}.*"
+        pattern = os.path.join(glob.escape(tmpdir), name)
+        om_tables = paths.get("om_tables", "")
+        if om_tables:
+            for table in glob.glob(os.path.join(glob.escape(om_tables), name)):
+                shutil.copy(table, tmpdir)
+        # PPC only warns on stderr and then drops every hit in such modules.
+        if not glob.glob(pattern):
+            raise FileNotFoundError(
+                f"No om.wv_{module_type}.* in {tmpdir}; PPC needs a wavelength "
+                f"table for module type {module_type}. Add it to ppctables or om_tables."
+            )
 
 
 def ppc_sim(particle: Particle, det: Detector, lp: LeptonPropagator, ppc_config: dict) -> None:
@@ -80,10 +137,20 @@ def ppc_sim(particle: Particle, det: Detector, lp: LeptonPropagator, ppc_config:
 
     if not should_propagate(particle):
         return
-    serialize_to_f2k(particle, f2k_tmpfile)
+    official_ppc = _uses_official_ppc(det, ppc_config)
+    serialize_to_f2k(particle, f2k_tmpfile, official_ppc=official_ppc)
     det.to_f2k(geo_tmpfile, serial_nos=[m.serial_no for m in det.modules])
+
+    ppc_tmpdir = ppc_config["paths"]["ppc_tmpdir"]
+
+    if det.needs_nextgen():
+        _write_module_files(det, ppc_config["paths"])
+
     tenv = os.environ.copy()
-    tenv["PPCTABLESDIR"] = ppc_config["paths"]["ppc_tmpdir"]
+    tenv["PPCTABLESDIR"] = ppc_tmpdir
+    # PPC prefers this directory for om.conf and om.map, so a value inherited from
+    # the user's shell would replace the files written above.
+    tenv["NEXTGENDIR"] = ppc_tmpdir
 
     process = subprocess.Popen(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=tenv
@@ -100,7 +167,12 @@ def ppc_sim(particle: Particle, det: Detector, lp: LeptonPropagator, ppc_config:
         raise RuntimeError(f"PPC failed with exit code {rc}; see logged stderr")
     if stderr_text and not ppc_config["simulation"]["supress_output"]:
         logger.info("PPC stderr:\n%s", stderr_text)
-    particle.hits = parse_ppc(ppc_tmpfile)
+    particle.hits = parse_ppc(ppc_tmpfile, official_ppc=official_ppc)
+    if det.needs_nextgen() and any(h.pmt_id is None for h in particle.hits):
+        raise RuntimeError(
+            f"{ppc_config['paths']['ppc_exe']} ignored om.conf and returned hits without PMT "
+            "IDs. Multi-PMT modules need the official PPC; see examples/README.md."
+        )
     for f in [geo_tmpfile, f2k_tmpfile, ppc_tmpfile]:
         os.remove(f)
 

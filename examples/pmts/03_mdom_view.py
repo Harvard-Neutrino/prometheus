@@ -54,6 +54,9 @@ import numpy as np
 import pandas as pd
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 — registers 3-D projection
 
+from prometheus.detector import detector_from_geo
+from prometheus.utils.dom_response import module_pmt_dirs
+
 logger = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -179,6 +182,11 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--show", action="store_true", default=False, help="Open interactive matplotlib window"
     )
+    p.add_argument(
+        "--geo",
+        type=Path,
+        help="geometry file of the simulation; needed for multi-PMT modules",
+    )
     p.add_argument("--dpi", type=int, default=150)
     return p.parse_args()
 
@@ -246,6 +254,16 @@ def build_module_df(pulses_row, pos_map: dict[tuple[int, int], tuple]) -> pd.Dat
             }
         )
     return pd.DataFrame(rows)
+
+
+def check_pmt_dirs(pulses_row, key: tuple[int, int]) -> None:
+    """Exit if the PMT directions in the pulse file are not the ones drawn."""
+    columns = ["string_id", "sensor_id", "pmt_id", "pmt_dir_x", "pmt_dir_y", "pmt_dir_z"]
+    for sid, mid, pmt, *direction in zip(*(ak.to_list(pulses_row[c]) for c in columns)):
+        if (sid, mid) != key:
+            continue
+        if pmt >= _N_PMTS or not np.allclose(_PMT_DIRS[pmt], direction, atol=1e-3):
+            sys.exit(f"PMT layout of module {key} does not match the pulses; pass its --geo file")
 
 
 def build_pmt_df(pulses_row, string_id: int, sensor_id: int) -> pd.DataFrame:
@@ -378,7 +396,7 @@ def draw_pmt_sphere(
     alpha_val: float,
     dipole_val: float,
 ) -> None:
-    """Azimuth × elevation sky map of the 24 PMTs for one module.
+    """Azimuth × elevation sky map of the PMTs of one module.
 
     Circle area ∝ detected PE.  Unhit PMTs are drawn as small gray rings.
     The photon source direction (pointing from module toward vertex) is
@@ -386,7 +404,7 @@ def draw_pmt_sphere(
     """
     ax.set_facecolor(_BG)
 
-    # ---- Build 24-element PE and first_t arrays ----
+    # ---- Build per-PMT PE and first_t arrays ----
     n_pe_arr = np.zeros(_N_PMTS)
     first_t_arr = np.full(_N_PMTS, np.nan)
     if not pmt_df.empty:
@@ -638,6 +656,7 @@ def draw_pmt_curves(
 
 
 def main() -> None:
+    global _N_PMTS, _PMT_DIRS
     args = parse_args()
 
     if not args.show:
@@ -678,7 +697,14 @@ def main() -> None:
             int(best["n_pe"]),
         )
 
+    if args.geo:
+        detector = detector_from_geo(str(args.geo))
+        # PPC gives every hit a PMT ID if any module has a type.
+        if detector.needs_nextgen():
+            _PMT_DIRS = module_pmt_dirs(detector, sel_key)
+            _N_PMTS = len(_PMT_DIRS)
     pmt_df = build_pmt_df(pulses_row, sel_key[0], sel_key[1])
+    check_pmt_dirs(pulses_row, sel_key)
 
     # ---- Source direction for the selected module ----
     mod_pos = np.array(pos_map.get(sel_key, (0.0, 0.0, 0.0)))

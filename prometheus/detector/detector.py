@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import warnings
+from pathlib import Path
 from typing import List, Tuple, Union
 
 import awkward as ak
@@ -242,6 +243,10 @@ class Detector(object):
             from .utils import random_serial
 
             serial_nos = [random_serial() for _ in range(self.n_modules)]
+        elif any(s is None for s in serial_nos):
+            from .utils import random_serial
+
+            serial_nos = [s if s is not None else random_serial() for s in serial_nos]
 
         # Make MAC ID place holders
         if not mac_ids:
@@ -279,14 +284,99 @@ class Detector(object):
         ax.view_init(np.degrees(elevation_angle), np.degrees(azimuth))
         plt.show()
 
+    def needs_nextgen(self) -> bool:
+        """Return True if any module requires PPC's nextgen (om.conf) mode."""
+        return any(m.module_type != -1 for m in self.modules)
+
+    def to_om_conf(self, path: str) -> None:
+        """Write an om.conf file for all non-legacy module types in this detector.
+
+        Parameters
+        ----------
+        path : str
+            Output file path.
+        """
+        # Collect unique type IDs (excluding -1) and pick a representative module.
+        type_rep = {}
+        for m in self.modules:
+            if m.module_type != -1 and m.module_type not in type_rep:
+                type_rep[m.module_type] = m
+
+        with open(path, "w") as f:
+            f.write("# name module area beta Rr Rz num dir cable\n")
+            for type_id, m in sorted(type_rep.items()):
+                first_zenith, first_azimuth = m.pmt_dirs[0]
+                line = (
+                    f"type_{type_id}\t{type_id}\t{m.area}\t{m.beta}"
+                    f"\t{m.Rr}\t{m.Rz}\t{m.n_pmts}"
+                    f"\t{first_zenith} {first_azimuth}"
+                )
+                if m.cable_azimuth is not None:
+                    line += f"\t{m.cable_azimuth}"
+                f.write(line + "\n")
+                for zenith, azimuth in m.pmt_dirs[1:]:
+                    f.write(f"\t\t\t\t\t\t\t{zenith} {azimuth}\n")
+
+    def to_om_map(self, path: str) -> None:
+        """Write an om.map file mapping physical DOMs to module type IDs.
+
+        Parameters
+        ----------
+        path : str
+            Output file path.
+        """
+        with open(path, "w") as f:
+            for m in self.modules:
+                if m.module_type != -1:
+                    string_id, om_id = m.key
+                    f.write(f"{string_id}\t{om_id}\t{m.module_type}\n")
+
     def to_geo(self, geofile):
+        """Write a geofile.
+
+        If the detector has module types, their definitions are written next to
+        it, in a file with the same name and the suffix ``.om.conf``.
+
+        Parameters
+        ----------
+        geofile : str
+            Output file path.
+
+        Raises
+        ------
+        ValueError
+            If modules with the same type ID differ in shape or PMTs, which the
+            file cannot describe.
+        """
+        shapes = {}
+        for m in self.modules:
+            if m.module_type == -1:
+                continue
+            shape = (
+                m.area,
+                m.beta,
+                m.Rr,
+                m.Rz,
+                [tuple(d) for d in m.pmt_dirs],
+                m.cable_azimuth,
+            )
+            if shapes.setdefault(m.module_type, shape) != shape:
+                raise ValueError(f"Modules of type {m.module_type} differ in shape or PMTs")
+
+        om_conf = Path(geofile).with_suffix(".om.conf")
+        if shapes:
+            self.to_om_conf(str(om_conf))
         with open(geofile, "w") as f:
             f.write("### Metadata ###\n")
             f.write(f"Medium:\t{self.medium.name.lower()}\n")
+            if shapes:
+                f.write(f"OM conf:\t{om_conf.name}\n")
             f.write("### Modules ###\n")
             for module in self.modules:
                 line = f"{module.pos[0]}\t{module.pos[1]}\t{module.pos[2]}"
                 for x in module.key:
                     line += f"\t{x}"
+                if module.module_type != -1:
+                    line += f"\t{module.module_type}"
                 line += "\n"
                 f.write(line)

@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Prometheus event</title>
+<style>
+  :root { --bg: #00000f; --fg: #dfe6f2; --dim: #8b97ad; --panel: rgba(14, 20, 38, 0.82); --line: #2b3650; }
+  body.light { --bg: #ffffff; --fg: #1a2233; --dim: #5b667a; --panel: rgba(246, 248, 252, 0.9); --line: #c9d1de; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--fg);
+    font: 13px/1.4 system-ui, sans-serif; }
+  #scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; }
+  .panel { position: absolute; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; }
+  #info { top: 14px; left: 14px; max-width: 330px; }
+  #info h1 { font-size: 15px; margin: 0 0 4px; }
+  #info p { margin: 2px 0; color: var(--dim); }
+  #bar { top: 14px; right: 14px; display: flex; gap: 8px; align-items: stretch; }
+  #bar canvas { width: 16px; height: 220px; }
+  #ticks { display: flex; flex-direction: column; justify-content: space-between; font-variant-numeric: tabular-nums; }
+  #controls { left: 14px; right: 400px; bottom: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  #controls input[type=range] { flex: 1; min-width: 120px; }
+  #clock { width: 74px; text-align: right; font-variant-numeric: tabular-nums; }
+  #breakout { right: 14px; bottom: 14px; width: 350px; }
+  #breakout canvas { width: 350px; height: 370px; display: block; cursor: grab; }
+  #breakout h2 { font-size: 13px; margin: 0; }
+  #breakout p { margin: 2px 0; color: var(--dim); }
+  button { font: inherit; color: inherit; background: transparent; border: 1px solid var(--line); border-radius: 4px; padding: 3px 9px; cursor: pointer; }
+  select { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 3px; max-width: 230px; }
+  label, #count { white-space: nowrap; }
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+<div id="info" class="panel"></div>
+<div id="bar" class="panel"><canvas width="16" height="220"></canvas><div id="ticks"></div></div>
+<div id="controls" class="panel">
+  <button id="prev">Previous</button><select id="pick" aria-label="Event"></select><button id="next">Next</button><span id="count"></span>
+  <button id="play">Play</button>
+  <input id="time" type="range" min="0" max="1000" value="1000" aria-label="Time">
+  <span id="clock"></span>
+  <label><input id="cone" type="checkbox" checked> Cone</label>
+  <label><input id="theme" type="checkbox"> Light</label>
+  <button id="reset">Reset view</button>
+  <button id="save">Save PNG</button>
+</div>
+<div id="breakout" class="panel">
+  <h2 id="modname"></h2><p id="modinfo"></p>
+  <canvas id="module" width="700" height="740"></canvas>
+  <button id="lit">Lit side</button> <button id="far">Far side</button>
+</div>
+<script id="data" type="application/json">__EVENT_DATA__</script>
+<script>
+"use strict";
+const B = JSON.parse(document.getElementById("data").textContent);
+// Current event, with the detector data; replaced by load().
+let D = { ...B, ...B.events[0] };
+const $ = (id) => document.getElementById(id);
+
+// ---- vectors -------------------------------------------------------------
+const add = (a, b, s = 1) => [a[0] + s * b[0], a[1] + s * b[1], a[2] + s * b[2]];
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const norm = (a) => { const n = Math.hypot(...a) || 1; return a.map((x) => x / n); };
+const perp = (a) => { const u = norm(cross(a, Math.abs(a[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0])); return [u, cross(a, u)]; };
+
+// ---- color scale (dark blue to yellow) -----------------------------------
+const STOPS = [[0.015, 0.14, 0.2], [0.17, 0.2, 0.55], [0.4, 0.28, 0.6], [0.64, 0.35, 0.5], [0.88, 0.43, 0.36], [0.98, 0.63, 0.24], [0.91, 0.98, 0.36]];
+const BRIGHT = [[0.2, 0.34, 0.8], [0.3, 0.32, 0.86], [0.5, 0.34, 0.78], [0.72, 0.36, 0.6], [0.92, 0.45, 0.38], [0.99, 0.65, 0.25], [0.93, 0.98, 0.4]];
+const COUNTS = [[0.27, 0.0, 0.33], [0.23, 0.32, 0.55], [0.13, 0.57, 0.55], [0.37, 0.79, 0.38], [0.99, 0.91, 0.14]];
+function ramp(x, scale) {
+  const s = scale || (document.body.classList.contains("light") ? STOPS : BRIGHT);
+  const p = Math.min(Math.max(x, 0), 1) * (s.length - 1);
+  const i = Math.min(Math.floor(p), s.length - 2);
+  return s[i].map((v, k) => v + (p - i) * (s[i + 1][k] - v));
+}
+const css = (c) => `rgb(${c.map((v) => Math.round(255 * v)).join(",")})`;
+const shade = (t) => (t - D.t_min) / (D.t_max - D.t_min);
+
+// ---- scene geometry ------------------------------------------------------
+const gl = $("scene").getContext("webgl2", { alpha: false, antialias: true, preserveDrawingBuffer: true });
+if (!gl) document.body.textContent = "This display needs WebGL 2.";
+let modules = B.modules;
+const mean = [0, 1, 2].map((k) => modules.reduce((s, m) => s + m.pos[k], 0) / modules.length);
+const extent = Math.max(...modules.map((m) => Math.hypot(...add(m.pos, mean, -1))));
+const BODY = D.scale;
+
+// Photons sit along the axis of their PMT, later ones farther out.
+let spheres = [];
+function place() {
+ spheres = [];
+ modules.forEach((m, mi) => {
+  const rank = {};
+  m.hits.forEach(([t, pmt]) => {
+    const k = (rank[pmt] = (rank[pmt] || 0) + 1);
+    const r = BODY * (D.pmt_distance[pmt] + 0.10 * Math.pow(k, 0.75));
+    spheres.push({ pos: add(m.pos, D.pmt_axes[pmt], r), t, r: BODY * 0.075, module: mi });
+  });
+ });
+}
+
+function buffer(data, loc, size, divisor = 0) {
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribDivisor(loc, divisor);
+}
+function vao(setup) { const v = gl.createVertexArray(); gl.bindVertexArray(v); setup(); return v; }
+function program(vs, fs) {
+  const p = gl.createProgram();
+  for (const [type, src] of [[gl.VERTEX_SHADER, vs], [gl.FRAGMENT_SHADER, fs]]) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, "#version 300 es\nprecision highp float;\n" + src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    gl.attachShader(p, s);
+  }
+  gl.linkProgram(p);
+  const u = {};
+  for (let i = 0; i < gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS); i++) {
+    const n = gl.getActiveUniform(p, i).name;
+    u[n] = gl.getUniformLocation(p, n);
+  }
+  return { p, u };
+}
+
+const ballProg = program(
+  `layout(location=0) in vec2 corner; layout(location=1) in vec4 sphere; layout(location=2) in float t; layout(location=3) in vec3 color;
+   uniform mat4 view, proj; uniform float now; out vec2 q; out vec3 c; out vec3 center; out float rad; out float glow;
+   void main() { q = corner; c = color; rad = sphere.w; float age = now - t; glow = exp(-age / 60.0);
+     rad *= 1.0 + 0.6 * glow; center = (view * vec4(sphere.xyz, 1.0)).xyz;
+     gl_Position = age < 0.0 ? vec4(2.0, 2.0, 2.0, 1.0) : proj * vec4(center + vec3(corner * rad, 0.0), 1.0); }`,
+  `in vec2 q; in vec3 c; in vec3 center; in float rad; in float glow; uniform mat4 proj; out vec4 o;
+   void main() { float r2 = dot(q, q); if (r2 > 1.0) discard; vec3 n = vec3(q, sqrt(1.0 - r2));
+     vec4 clip = proj * vec4(center + rad * n, 1.0); gl_FragDepth = 0.5 * clip.z / clip.w + 0.5;
+     float l = 0.35 + 0.65 * max(dot(n, normalize(vec3(-0.4, 0.6, 0.8))), 0.0);
+     float s = pow(max(dot(n, normalize(vec3(-0.25, 0.4, 0.95))), 0.0), 30.0);
+     o = vec4(c * l + 0.25 * s + 0.35 * glow, 1.0); }`);
+const bodyProg = program(
+  `layout(location=0) in vec3 p; layout(location=1) in vec3 n; layout(location=2) in vec3 offset; layout(location=3) in float mark;
+   uniform mat4 view, proj; out vec3 vn; out float vm; void main() { vn = mat3(view) * n; vm = mark; gl_Position = proj * view * vec4(p + offset, 1.0); }`,
+  `in vec3 vn; in float vm; uniform vec3 base; uniform float picked; out vec4 o;
+   void main() { float l = 0.35 + 0.65 * max(dot(normalize(vn), normalize(vec3(-0.4, 0.6, 0.8))), 0.0);
+     o = vec4((abs(vm - picked) < 0.5 ? vec3(0.1, 0.95, 0.85) : base) * l, 1.0); }`);
+const flatProg = program(
+  `layout(location=0) in vec3 p; layout(location=1) in float a; uniform mat4 view, proj; out float va;
+   void main() { va = a; gl_Position = proj * view * vec4(p, 1.0); }`,
+  `in float va; uniform vec4 color; out vec4 o; void main() { o = vec4(color.rgb, color.a * va); }`);
+
+const balls = vao(() => buffer([-1, -1, 1, -1, -1, 1, 1, 1], 0, 2));
+const ballPos = gl.createBuffer(), ballTime = gl.createBuffer(), ballColor = gl.createBuffer();
+function paint() {
+  gl.bindVertexArray(balls);
+  for (const [b, loc, size, data] of [[ballPos, 1, 4, spheres.flatMap((s) => [...s.pos, s.r])], [ballTime, 2, 1, spheres.map((s) => s.t)]]) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, b);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribDivisor(loc, 1);
+  }
+  gl.bindBuffer(gl.ARRAY_BUFFER, ballColor);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(spheres.flatMap((s) => ramp(shade(s.t)))), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(3);
+  gl.vertexAttribPointer(3, 3, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribDivisor(3, 1);
+}
+
+// Module body: the outline from Python, rotated about z.
+const bodyVerts = [], bodyNormals = [];
+const NA = 14;
+for (let i = 0; i + 1 < D.outline.length; i++) {
+  const [r0, z0] = D.outline[i], [r1, z1] = D.outline[i + 1];
+  for (let j = 0; j < NA; j++) {
+    const at = (r, z, k) => { const a = (2 * Math.PI * k) / NA; return [BODY * r * Math.cos(a), BODY * r * Math.sin(a), BODY * z]; };
+    const quad = [at(r0, z0, j), at(r0, z0, j + 1), at(r1, z1, j + 1), at(r0, z0, j), at(r1, z1, j + 1), at(r1, z1, j)];
+    const mid = (2 * Math.PI * (j + 0.5)) / NA;
+    const n = norm([(z1 - z0) * Math.cos(mid), (z1 - z0) * Math.sin(mid), r0 - r1]);
+    quad.forEach((v) => { bodyVerts.push(...v); bodyNormals.push(...n); });
+  }
+}
+const bodies = vao(() => {
+  buffer(bodyVerts, 0, 3); buffer(bodyNormals, 1, 3);
+  buffer(modules.flatMap((m) => m.pos), 2, 3, 1); buffer(modules.map((_, i) => i), 3, 1, 1);
+});
+const stringEnds = {};
+modules.forEach((m) => {
+  const e = (stringEnds[m.string] = stringEnds[m.string] || { x: m.pos[0], y: m.pos[1], lo: Infinity, hi: -Infinity });
+  e.lo = Math.min(e.lo, m.pos[2]); e.hi = Math.max(e.hi, m.pos[2]);
+});
+const ends = Object.values(stringEnds);
+const lineVerts = ends.flatMap((e) => [e.x, e.y, e.lo - 8, e.x, e.y, e.hi + 22]);
+const lines = vao(() => { buffer(lineVerts, 0, 3); buffer(ends.flatMap(() => [1, 1]), 1, 1); });
+
+// Track, incoming neutrino, and Cherenkov cone are rebuilt every frame.
+const dynPos = gl.createBuffer(), dynAlpha = gl.createBuffer();
+const dynamic = vao(() => {
+  for (const [b, loc, size] of [[dynPos, 0, 3], [dynAlpha, 1, 1]]) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
+  }
+});
+function drawFlat(pos, alpha, color) {
+  gl.bindVertexArray(dynamic);
+  gl.bindBuffer(gl.ARRAY_BUFFER, dynPos); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pos), gl.DYNAMIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER, dynAlpha); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(alpha), gl.DYNAMIC_DRAW);
+  gl.uniform4fv(flatProg.u.color, color);
+  gl.drawArrays(gl.TRIANGLES, 0, alpha.length);
+}
+// A line as a ribbon facing the camera, since WebGL lines are one pixel wide.
+function ribbon(a, b, width, eye) {
+  const side = norm(cross(add(b, a, -1), add(eye, a, -1))).map((v) => v * width);
+  const p = [add(a, side), add(a, side, -1), add(b, side), add(b, side), add(a, side, -1), add(b, side, -1)];
+  return p.flat();
+}
+
+// ---- camera --------------------------------------------------------------
+const home = () => ({ az: D.camera_az, el: 0.16, dist: extent * 3.0 });
+let cam = home(), target = [...mean];
+let view, proj, eye;
+function camera(w, h) {
+  const d = [Math.cos(cam.el) * Math.cos(cam.az), Math.cos(cam.el) * Math.sin(cam.az), Math.sin(cam.el)];
+  eye = add(target, d, cam.dist);
+  const z = d, x = norm(cross([0, 0, 1], z)), y = cross(z, x);
+  view = new Float32Array([x[0], y[0], z[0], 0, x[1], y[1], z[1], 0, x[2], y[2], z[2], 0, -dot(x, eye), -dot(y, eye), -dot(z, eye), 1]);
+  const f = 1 / Math.tan(0.36), n = cam.dist / 60, far = cam.dist + 12 * extent;
+  proj = new Float32Array([(f * h) / w, 0, 0, 0, 0, f, 0, 0, 0, 0, (far + n) / (n - far), -1, 0, 0, (2 * far * n) / (n - far), 0]);
+}
+function project(p, w, h) {
+  const v = [0, 1, 2, 3].map((r) => view[r] * p[0] + view[4 + r] * p[1] + view[8 + r] * p[2] + view[12 + r]);
+  const c = [0, 1, 3].map((r) => proj[r] * v[0] + proj[4 + r] * v[1] + proj[8 + r] * v[2] + proj[12 + r] * v[3]);
+  return [(0.5 + (0.5 * c[0]) / c[2]) * w, (0.5 - (0.5 * c[1]) / c[2]) * h];
+}
+
+// ---- drawing -------------------------------------------------------------
+let now = D.t_end, playing = false, selected = D.selected;
+const light = () => document.body.classList.contains("light");
+function draw() {
+  const c = $("scene"), dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.round(c.clientWidth * dpr), h = Math.round(c.clientHeight * dpr);
+  if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+  gl.viewport(0, 0, w, h);
+  camera(w, h);
+  const bg = light() ? [1, 1, 1] : [0, 0, 0.06];
+  gl.clearColor(...bg, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.enable(gl.DEPTH_TEST); gl.disable(gl.BLEND);
+  const use = (g) => { gl.useProgram(g.p); gl.uniformMatrix4fv(g.u.view, false, view); gl.uniformMatrix4fv(g.u.proj, false, proj); };
+
+  use(flatProg); gl.bindVertexArray(lines);
+  gl.uniform4fv(flatProg.u.color, light() ? [0.65, 0.68, 0.74, 1] : [0.36, 0.4, 0.5, 1]);
+  gl.drawArrays(gl.LINES, 0, lineVerts.length / 3);
+  use(bodyProg); gl.bindVertexArray(bodies);
+  gl.uniform3fv(bodyProg.u.base, light() ? [0.55, 0.58, 0.65] : [0.42, 0.47, 0.58]);
+  gl.uniform1f(bodyProg.u.picked, selected);
+  gl.drawArraysInstanced(gl.TRIANGLES, 0, bodyVerts.length / 3, modules.length);
+  use(ballProg); gl.uniform1f(ballProg.u.now, now); gl.bindVertexArray(balls);
+  gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, spheres.length);
+
+  // Particle paths
+  use(flatProg); gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  const start = D.vertex, dir = D.direction, width = cam.dist * 0.0022;
+  const reach = Math.min(Math.max(now * D.c, 0), D.track_length);
+  const tip = add(start, dir, reach);
+  for (let i = 0; i < 12; i++) {
+    const a = add(start, dir, -extent * 0.07 * (i + 1)), b = add(a, dir, extent * 0.04);
+    drawFlat(ribbon(a, b, width * 0.6, eye), Array(6).fill(1 - i / 14), light() ? [0.35, 0.4, 0.5, 1] : [0.75, 0.8, 0.9, 1]);
+  }
+  drawFlat(ribbon(start, tip, width, eye), Array(6).fill(1), [0.9, 0.12, 0.42, 1]);
+  const sel = modules[selected];
+  if (sel.emission) drawFlat(ribbon(sel.emission, sel.pos, width * 0.55, eye), Array(6).fill(sel.on_cone ? 1 : 0.5), light() ? [0.0, 0.55, 0.5, 1] : [0.1, 0.95, 0.85, 1]);
+  if ($("cone").checked && reach > 0) {
+    // Light emitted at the Cherenkov angle lies on a cone behind the muon.
+    const [u, v] = perp(dir), length = Math.min(reach, extent * 0.75);
+    const back = add(tip, dir, -length), rad = length / Math.tan(D.cherenkov_angle);
+    const pos = [], al = [], N = 64;
+    for (let k = 0; k < N; k++) {
+      const p = [k, k + 1].map((j) => { const a = (2 * Math.PI * j) / N; return add(add(back, u, rad * Math.cos(a)), v, rad * Math.sin(a)); });
+      pos.push(...tip, ...p[0], ...p[1]); al.push(1, 0, 0);
+    }
+    gl.depthMask(false);
+    drawFlat(pos, al, light() ? [0.0, 0.42, 0.62, 0.5] : [0.0, 0.5, 0.85, 0.42]);
+    gl.depthMask(true);
+  }
+  $("clock").textContent = Math.round(now) + " ns";
+  $("time").value = Math.round((1000 * now) / D.t_end);
+}
+
+// ---- module breakout -----------------------------------------------------
+let mview = { az: 0, el: 0.2 };
+function litSide(sign) {
+  const t = modules[selected].travel || [1, 0, 0];
+  const horizontal = Math.hypot(t[0], t[1]) > 0.1 ? Math.atan2(-sign * t[1], -sign * t[0]) : 0;
+  mview = { az: horizontal + 0.6, el: 0.2 };
+  drawModule();
+}
+function drawModule() {
+  const m = modules[selected], c = $("module"), g = c.getContext("2d"), W = c.width, H = c.height;
+  g.clearRect(0, 0, W, H);
+  const seen = m.hits.filter(([t]) => t <= now);
+  const counts = D.pmt_axes.map(() => 0);
+  seen.forEach(([, p]) => counts[p]++);
+  const max = Math.max(1, ...D.pmt_axes.map((_, p) => m.hits.filter((x) => x[1] === p).length));
+  $("modname").textContent = `String ${m.string}, module ${m.om}`;
+  $("modinfo").textContent = `${seen.length} of ${m.hits.length} photons. Discs: PMT number and photons (purple 0 to yellow ${max}). ` +
+    (!m.emission ? "" : m.on_cone ? `Arrow: direct Cherenkov light from the muon, ${m.distance.toFixed(0)} m away.`
+      : `Dashed arrow: direct line from the ${dot(add(m.emission, D.vertex, -1), D.direction) < 1 ? "vertex" : "track end"}, ${m.distance.toFixed(0)} m; no muon Cherenkov light reaches it unscattered.`);
+  const d = [Math.cos(mview.el) * Math.cos(mview.az), Math.cos(mview.el) * Math.sin(mview.az), Math.sin(mview.el)];
+  const x = norm(cross([0, 0, 1], d)), y = cross(d, x);
+  const size = Math.max(...D.outline.map(([r, z]) => Math.hypot(r, z))), k = (0.36 * H) / size;
+  const at = (p) => [W / 2 + k * dot(p, x), H / 2 - k * dot(p, y)];
+  // Silhouette: hull of all outline circles.
+  const pts = [];
+  D.outline.forEach(([r, z]) => { for (let j = 0; j < 48; j++) { const a = (Math.PI * j) / 24; pts.push(at([r * Math.cos(a), r * Math.sin(a), z])); } });
+  pts.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const half = (list) => { const o = []; for (const p of list) { while (o.length > 1 && (o.at(-1)[0] - o.at(-2)[0]) * (p[1] - o.at(-2)[1]) - (o.at(-1)[1] - o.at(-2)[1]) * (p[0] - o.at(-2)[0]) <= 0) o.pop(); o.push(p); } o.pop(); return o; };
+  const hull = [...half(pts), ...half([...pts].reverse())];
+  const path = (list) => { g.beginPath(); list.forEach((p, i) => (i ? g.lineTo(...p) : g.moveTo(...p))); g.closePath(); };
+  const grad = g.createRadialGradient(W * 0.42, H * 0.38, 20, W / 2, H / 2, H * 0.5);
+  grad.addColorStop(0, light() ? "#dfe7f3" : "#5a6987"); grad.addColorStop(1, light() ? "#a9b6cb" : "#222c44");
+  path(hull); g.fillStyle = grad; g.fill(); g.strokeStyle = light() ? "#68748a" : "#8fa0c0"; g.lineWidth = 2; g.stroke();
+  // The vessel is convex, so a PMT is visible if it faces the viewer.
+  D.pmt_axes.map((a, p) => [dot(a, d), p]).filter(([f]) => f > 0.05).sort((a, b) => a[0] - b[0]).forEach(([f, p]) => {
+    const a = D.pmt_axes[p], [u, v] = perp(a), ctr = a.map((q) => q * (D.pmt_distance[p] - D.pmt_depth)), ring = [];
+    for (let j = 0; j < 40; j++) { const q = (Math.PI * j) / 20; ring.push(at(add(add(ctr, u, D.pmt_radius * Math.cos(q)), v, D.pmt_radius * Math.sin(q)))); }
+    const col = ramp(counts[p] / max, COUNTS);
+    path(ring); g.fillStyle = css(col); g.fill(); g.strokeStyle = "#0b1020"; g.lineWidth = 2; g.stroke();
+    if (f > 0.3) {
+      const [tx, ty] = at(ctr);
+      g.fillStyle = dot(col, [0.299, 0.587, 0.114]) > 0.5 ? "#000" : "#fff"; g.textAlign = "center";
+      g.font = "20px system-ui"; g.fillText(p, tx, ty - 4); g.font = "bold 22px system-ui"; g.fillText(counts[p], tx, ty + 20);
+    }
+  });
+  if (m.travel) {
+    // Direct light from the track, drawn on the side it comes from.
+    const onFront = dot(m.travel, d) < 0, tip = m.travel.map((q) => -q * size * 1.02), tail = m.travel.map((q) => -q * size * 1.55);
+    const [a, b] = [at(tail), at(tip)], ang = Math.atan2(b[1] - a[1], b[0] - a[0]);
+    g.globalAlpha = onFront ? 1 : 0.35; g.strokeStyle = g.fillStyle = light() ? "#008c80" : "#1af2d9";
+    if (!m.on_cone) g.setLineDash([12, 9]); g.lineWidth = 6;
+    g.beginPath(); g.moveTo(...a); g.lineTo(...b); g.stroke(); g.setLineDash([]);
+    path([b, [b[0] - 26 * Math.cos(ang - 0.45), b[1] - 26 * Math.sin(ang - 0.45)], [b[0] - 26 * Math.cos(ang + 0.45), b[1] - 26 * Math.sin(ang + 0.45)]]); g.fill();
+    g.globalAlpha = 1;
+  }
+}
+
+// ---- interaction ---------------------------------------------------------
+function refresh() { draw(); drawModule(); }
+function drag(el, move, click) {
+  let last = null, moved = 0;
+  el.addEventListener("pointerdown", (e) => { last = [e.clientX, e.clientY]; moved = 0; el.setPointerCapture(e.pointerId); });
+  el.addEventListener("pointermove", (e) => {
+    if (!last) return;
+    const dx = e.clientX - last[0], dy = e.clientY - last[1];
+    last = [e.clientX, e.clientY]; moved += Math.abs(dx) + Math.abs(dy); move(dx, dy, e);
+  });
+  el.addEventListener("pointerup", (e) => { if (last && moved < 4 && click) click(e); last = null; });
+  el.addEventListener("pointercancel", () => { last = null; });
+}
+const clampEl = (v) => Math.min(Math.max(v, -1.5), 1.5);
+drag($("scene"), (dx, dy, e) => {
+  if (e.shiftKey) {
+    const s = (cam.dist * 0.75) / $("scene").clientHeight, x = [view[0], view[4], view[8]], y = [view[1], view[5], view[9]];
+    target = add(add(target, x, -dx * s), y, dy * s);
+  } else { cam.az -= dx * 0.005; cam.el = clampEl(cam.el + dy * 0.005); }
+  draw();
+}, (e) => {
+  const r = $("scene").getBoundingClientRect();
+  let best = 24, hit = -1;
+  modules.forEach((m, i) => {
+    if (!m.hits.length) return;
+    const p = project(m.pos, r.width, r.height), q = Math.hypot(p[0] - (e.clientX - r.left), p[1] - (e.clientY - r.top));
+    if (q < best) { best = q; hit = i; }
+  });
+  if (hit >= 0) { selected = hit; litSide(1); draw(); }
+});
+drag($("module"), (dx, dy) => { mview.az -= dx * 0.01; mview.el = clampEl(mview.el + dy * 0.01); drawModule(); });
+$("scene").addEventListener("wheel", (e) => { e.preventDefault(); cam.dist *= Math.exp(e.deltaY * 0.001); cam.dist = Math.min(Math.max(cam.dist, extent * 0.1), extent * 10); draw(); }, { passive: false });
+$("time").addEventListener("input", (e) => { playing = false; $("play").textContent = "Play"; now = (D.t_end * e.target.value) / 1000; refresh(); });
+$("cone").addEventListener("change", draw);
+$("theme").addEventListener("change", (e) => { document.body.classList.toggle("light", e.target.checked); paint(); bar(); refresh(); });
+$("reset").addEventListener("click", () => { cam = home(); target = [...mean]; draw(); });
+$("lit").addEventListener("click", () => litSide(1));
+$("far").addEventListener("click", () => litSide(-1));
+$("save").addEventListener("click", () => { draw(); const a = document.createElement("a"); a.href = $("scene").toDataURL("image/png"); a.download = "event.png"; a.click(); });
+let stamp = null;
+function step(ts) {
+  if (!playing) return;
+  // Full event in 12 s.
+  if (stamp !== null) now += ((ts - stamp) * D.t_end) / 12000;
+  stamp = ts;
+  if (now >= D.t_end) { now = D.t_end; playing = false; $("play").textContent = "Play"; }
+  refresh();
+  requestAnimationFrame(step);
+}
+$("play").addEventListener("click", () => {
+  playing = !playing; $("play").textContent = playing ? "Pause" : "Play"; stamp = null;
+  if (playing) { if (now >= D.t_end) now = 0; requestAnimationFrame(step); }
+});
+function bar() {
+  const g = document.querySelector("#bar canvas").getContext("2d");
+  for (let i = 0; i < 220; i++) { g.fillStyle = css(ramp(1 - i / 219)); g.fillRect(0, i, 16, 1); }
+  $("ticks").replaceChildren(...[4, 3, 2, 1, 0].map((i) => { const s = document.createElement("span"); s.textContent = Math.round(D.t_min + (i / 4) * (D.t_max - D.t_min)) + (i === 4 ? "+ ns" : ""); return s; }));
+}
+const query = new URLSearchParams(location.search);
+if (query.has("light")) { document.body.classList.add("light"); $("theme").checked = true; }
+let current = 0;
+function load(i, keepView) {
+  current = (i + B.events.length) % B.events.length;
+  const ev = B.events[current];
+  D = { ...B, ...ev };
+  modules = B.modules.map((m, k) => ({ ...m, hits: [], ...(ev.hits[k] || {}) }));
+  selected = ev.selected; now = D.t_end; playing = false; $("play").textContent = "Play";
+  const help = `Modules enlarged ${D.scale} times. Click a module for its PMTs. Drag to rotate, shift-drag to pan, scroll to zoom.`;
+  $("info").replaceChildren(...[["h1", D.title], ...[...D.lines, help].map((l) => ["p", l])].map(([tag, text]) => { const e = document.createElement(tag); e.textContent = text; return e; }));
+  $("pick").value = current; $("count").textContent = `${current + 1} of ${B.events.length}`;
+  if (!keepView) { cam = home(); target = [...mean]; }
+  place(); paint(); bar(); litSide(1); draw();
+}
+B.events.forEach((ev, i) => $("pick").add(new Option(ev.label, i)));
+$("pick").addEventListener("change", (e) => { load(Number(e.target.value)); e.target.blur(); });
+$("prev").addEventListener("click", () => load(current - 1));
+$("next").addEventListener("click", () => load(current + 1));
+window.addEventListener("keydown", (e) => {
+  if (["INPUT", "SELECT"].includes(e.target.tagName) && e.target.type !== "checkbox") return;
+  if (e.key === "ArrowRight") load(current + 1);
+  if (e.key === "ArrowLeft") load(current - 1);
+});
+const wanted = B.events.findIndex((ev) => String(ev.number) === query.get("event"));
+load(Math.max(wanted, 0));
+if (query.has("t")) now = Math.min(Math.max(Number(query.get("t")) || 0, 0), D.t_end);
+window.addEventListener("resize", draw);
+refresh();
+</script>
+</body>
+</html>

@@ -5,7 +5,33 @@ from .units import SpeedOfLight, s_to_ns
 PPC_MAGIC_Z = 1948.07
 
 
-def serialize_particle(particle, output_f2k):
+def f2k_angles(direction, official_ppc=False):
+    """Return the f2k angles of a direction of travel.
+
+    The official PPC reads degrees and the direction the particle came from, as
+    in the f2000 format. The PPC bundled with Prometheus was changed to read
+    radians and the direction of travel.
+
+    Parameters
+    ----------
+    direction : np.ndarray
+        Unit vector along the direction of travel.
+    official_ppc : bool, optional
+        Whether the file is for the official PPC.
+
+    Returns
+    -------
+    tuple of float
+        ``(theta, phi)`` as the chosen PPC reads them.
+    """
+    theta = np.arccos(direction[2])
+    phi = np.arctan2(direction[1], direction[0])
+    if not official_ppc:
+        return theta, phi
+    return 180 - np.degrees(theta), (np.degrees(phi) + 180) % 360
+
+
+def serialize_particle(particle, output_f2k, official_ppc=False):
     """Write an MC header line for a particle to an open f2k file.
 
     Parameters
@@ -14,17 +40,18 @@ def serialize_particle(particle, output_f2k):
         Particle whose energy and position are written.
     output_f2k : file-like object
         Open file to write to.
+    official_ppc : bool, optional
+        Whether the file is for the official PPC. See ``f2k_angles``.
     """
     offpos = particle.position
-    theta = np.arccos(particle.direction[2])
-    phi = np.arctan2(particle.direction[1], particle.direction[0])
+    theta, phi = f2k_angles(particle.direction, official_ppc)
     output_f2k.write(
         f"MC E {particle.e} x {offpos[0]} y {offpos[1]}"
         f" z {offpos[2] + PPC_MAGIC_Z} theta {theta} phi {phi}\n"
     )
 
 
-def serialize_loss(loss, parent, output_f2k):
+def serialize_loss(loss, parent, output_f2k, official_ppc=False):
     """Write a ``TR`` track line for an energy loss to an open f2k file.
 
     Parameters
@@ -36,11 +63,12 @@ def serialize_loss(loss, parent, output_f2k):
         time are used.
     output_f2k : file-like object
         Open file to write to.
+    official_ppc : bool, optional
+        Whether the file is for the official PPC. See ``f2k_angles``.
     """
     d = np.linalg.norm(loss.position - parent.position)
     offpos = loss.position
-    theta = np.arccos(parent.direction[2])
-    phi = np.arctan2(parent.direction[1], parent.direction[0])
+    theta, phi = f2k_angles(parent.direction, official_ppc)
     c = SpeedOfLight
     c /= s_to_ns
     # Offset by the parent's start time so decay-product light is timed from the
@@ -54,7 +82,7 @@ def serialize_loss(loss, parent, output_f2k):
     output_f2k.write(line)
 
 
-def serialize_to_f2k(particle, fname):
+def serialize_to_f2k(particle, fname, official_ppc=False):
     """Create an f2k file from given events.
 
     The f2k file is modified in place, the output can be passed to ppc to propagate the photons.
@@ -65,6 +93,8 @@ def serialize_to_f2k(particle, fname):
         The particle to serialize.
     fname : str
         File name to write the data to.
+    official_ppc : bool, optional
+        Whether the file is for the official PPC. See ``f2k_angles``.
 
     Notes
     -----
@@ -82,8 +112,8 @@ def serialize_to_f2k(particle, fname):
         "delta," "brems," "epair," "e+,", "e-," and "e" for electromagnetic cascades,
         and "munu" and "hadr" for hadronic cascades.
     - ``x``, ``y`` and ``z`` are the vector components of the track's initial position in meters.
-    - The quantities ``theta`` and ``phi`` are the track's theta and phi angle
-      in degrees, respectively.
+    - The quantities ``theta`` and ``phi`` are the track's theta and phi angle.
+      Their units and sense depend on the PPC version, see ``f2k_angles``.
     - ``length`` is the length of the track in meters.
         - It is only required for muons because cascades are treated as point-like sources.
     - ``energy`` is the track's initial energy in GeV.
@@ -92,11 +122,11 @@ def serialize_to_f2k(particle, fname):
     index = 0
     with open(fname, "w") as output_f2k:
         output_f2k.write(f"EM {index} 1 0 0 0 0 \n")
-        serialize_particle(particle, output_f2k)
+        serialize_particle(particle, output_f2k, official_ppc)
         for loss in particle.losses:
-            serialize_loss(loss, particle, output_f2k)
+            serialize_loss(loss, particle, output_f2k, official_ppc)
         for child in particle.children:
-            serialize_particle(child, output_f2k)
+            serialize_particle(child, output_f2k, official_ppc)
             for loss in child.losses:
-                serialize_loss(loss, child, output_f2k)
+                serialize_loss(loss, child, output_f2k, official_ppc)
         output_f2k.write("EE\n")

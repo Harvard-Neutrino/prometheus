@@ -4,6 +4,17 @@ Original ppc GitHub repository: <https://github.com/icecube/ppc>
 
 Full source code on the ppc website: <https://user-web.icecube.wisc.edu/~dima/work/WISC/ppc/>
 
+## Versions in this repository
+
+Directory | Source | Multi-PMT (`om.conf`)
+----------|--------|----------------------
+`icecube-ppc/` | Submodule of <https://github.com/icecube/ppc>, pinned to `V1.0.1` (commit `bdaa599`, 2025-10-02) | Yes
+`PPC/`, `PPC_CUDA/` | Older copies kept as the Prometheus defaults; upstream commit not recorded | No
+
+Print the checked-out version with `git submodule status`.
+
+The two do not give identical results for legacy modules. They also read track angles and print hit angles differently: `icecube-ppc` reads degrees and the direction of origin, and prints photon direction then impact point; the older copies read radians and the direction of travel, and print impact point then photon direction. Set `ppc_version` to `"official"` for `icecube-ppc` and leave it at `"bundled"` for the older copies.
+
 ## Downloading the code
 
 Both versions of standalone ppc (CPU/GPU, Original/Assembly) can be downloaded from the [ppc website](https://user-web.icecube.wisc.edu/~dima/work/WISC/ppc/).

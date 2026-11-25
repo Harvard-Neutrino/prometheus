@@ -1,5 +1,6 @@
 import itertools
-from typing import List, Union
+from pathlib import Path
+from typing import Dict, List, Union
 
 import numpy as np
 import scipy
@@ -8,7 +9,11 @@ from ..utils import iter_or_rep
 from .detector import Detector, GeometryError
 from .medium import Medium
 from .module import Module
+from .om_conf import read_om_conf
 from .utils import random_serial
+
+#: Metadata field of a geofile that gives the om.conf with its module types.
+OM_CONF_FIELD = "OM conf:"
 
 
 class InvalidRNGError(Exception):
@@ -60,7 +65,8 @@ def read_medium(geofile) -> Union[Medium, None]:
     medium_string = ""
     with open(geofile) as geo_in:
         for line in geo_in.readlines():
-            if "medium" in line.lower():
+            # The path of the om.conf may contain the word.
+            if "medium" in line.lower() and not line.startswith(OM_CONF_FIELD):
                 medium_string = line.split()[1].upper()
                 break
     if medium_string and medium_string not in Medium.list():
@@ -73,8 +79,9 @@ def read_medium(geofile) -> Union[Medium, None]:
 def read_geo_modules(geofile: str):
     """Read the module block of a geofile, reporting every malformed line.
 
-    A module line is ``x y z string_id om_id`` separated by tabs. The first
-    three fields must be finite floats and the last two integers.
+    A module line is ``x y z string_id om_id`` separated by tabs, with an
+    optional sixth field, the type ID of the module. The first three fields
+    must be finite floats and the others integers.
 
     Parameters
     ----------
@@ -94,6 +101,12 @@ def read_geo_modules(geofile: str):
         If the module header is missing, no modules are listed, or any line
         cannot be parsed.
     """
+    pos, keys, _, _ = _read_geo(geofile)
+    return pos, keys
+
+
+def _read_geo(geofile: str):
+    """Return the positions, keys, type IDs and line numbers of the modules."""
     with open(geofile) as geo_in:
         read_lines = geo_in.readlines()
     header = [i for i, line in enumerate(read_lines) if line.strip() == "### Modules ###"]
@@ -102,15 +115,17 @@ def read_geo_modules(geofile: str):
 
     pos = []
     keys = []
+    types = []
+    linenos = []
     problems = []
     for lineno, line in enumerate(read_lines[header[0] + 1 :], start=header[0] + 2):
         if not line.strip():
             continue
         fields = line.strip("\n").split("\t")
-        if len(fields) != 5:
+        if len(fields) not in (5, 6):
             problems.append(
-                f"line {lineno}: expected 5 tab-separated fields "
-                f"(x y z string_id om_id), got {len(fields)}: {line.strip()!r}"
+                f"line {lineno}: expected 5 or 6 tab-separated fields "
+                f"(x y z string_id om_id [type_id]), got {len(fields)}: {line.strip()!r}"
             )
             continue
         try:
@@ -126,18 +141,77 @@ def read_geo_modules(geofile: str):
         except ValueError:
             problems.append(f"line {lineno}: string_id/om_id are not integers: {line.strip()!r}")
             continue
+        try:
+            module_type = int(fields[5]) if len(fields) == 6 else -1
+        except ValueError:
+            problems.append(f"line {lineno}: type_id is not an integer: {line.strip()!r}")
+            continue
         pos.append(xyz)
         keys.append(key)
+        types.append(module_type)
+        linenos.append(lineno)
 
     if not problems and not pos:
         problems.append("no modules listed after '### Modules ###'")
     if problems:
         raise GeometryError(problems, source=f"geo file {geofile}")
-    return pos, keys
+    return pos, keys, types, linenos
+
+
+def _read_om_conf_path(geofile: str) -> Union[Path, None]:
+    """Return the om.conf named in the metadata of a geofile, if any."""
+    with open(geofile) as geo_in:
+        for line in geo_in:
+            if line.strip() == "### Modules ###":
+                break
+            if line.startswith(OM_CONF_FIELD):
+                value = line[len(OM_CONF_FIELD) :].strip()
+                if not value:
+                    raise GeometryError(
+                        [f"'{OM_CONF_FIELD}' has no path"], source=f"geo file {geofile}"
+                    )
+                # A relative path is relative to the geofile. An absolute one stays as it is.
+                return Path(geofile).parent / value
+    return None
+
+
+def _module_shapes(geofile: str, types: List[int], linenos: List[int]) -> Dict[int, dict]:
+    """Return the ``Module`` arguments of each type ID used in a geofile."""
+    source = f"geo file {geofile}"
+    om_conf = _read_om_conf_path(geofile)
+    if om_conf is None:
+        problems = [
+            f"line {lineno}: type_id {t} needs an '{OM_CONF_FIELD}' line in the metadata"
+            for t, lineno in zip(types, linenos)
+            if t != -1
+        ]
+        if problems:
+            raise GeometryError(problems, source=source)
+        return {}
+    if all(t == -1 for t in types):
+        raise GeometryError(
+            [f"'{OM_CONF_FIELD}' is given but no module has a type_id"], source=source
+        )
+    try:
+        shapes = read_om_conf(om_conf)
+    except (OSError, ValueError) as err:
+        raise GeometryError([f"cannot read {om_conf}: {err}"], source=source) from err
+    problems = [
+        f"line {lineno}: type_id {t} is not defined in {om_conf}"
+        for t, lineno in zip(types, linenos)
+        if t != -1 and t not in shapes
+    ]
+    if problems:
+        raise GeometryError(problems, source=source)
+    return shapes
 
 
 def detector_from_geo(geofile: str, efficiency: float = 0.2, noise_rate: float = 1) -> Detector:
     """Build a detector from a Prometheus geofile.
+
+    Modules with a type ID in the sixth field take their shape and PMTs from the
+    ``om.conf`` named by an ``OM conf:`` line in the metadata. The others are
+    legacy modules.
 
     Parameters
     ----------
@@ -153,7 +227,8 @@ def detector_from_geo(geofile: str, efficiency: float = 0.2, noise_rate: float =
     detector : Detector
         Prometheus detector object.
     """
-    pos, keys = read_geo_modules(geofile)
+    pos, keys, types, linenos = _read_geo(geofile)
+    shapes = _module_shapes(geofile, types, linenos)
     medium = read_medium(geofile)
 
     sers = [random_serial() for _ in range(len(pos))]
@@ -162,8 +237,8 @@ def detector_from_geo(geofile: str, efficiency: float = 0.2, noise_rate: float =
     noise_rate = iter_or_rep(noise_rate)
 
     modules = [
-        Module(p, k, efficiency=e, noise_rate=nr, serial_no=ser)
-        for p, k, e, nr, ser in zip(pos, keys, efficiency, noise_rate, sers)
+        Module(p, k, efficiency=e, noise_rate=nr, serial_no=ser, **(shapes[t] if t != -1 else {}))
+        for p, k, t, e, nr, ser in zip(pos, keys, types, efficiency, noise_rate, sers)
     ]
     try:
         det = Detector(modules, medium)
