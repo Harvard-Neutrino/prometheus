@@ -5,9 +5,6 @@ import numpy as np
 #: Default IceCube DOM radius [m], matches PPC's OMR constant.
 _OMR = 0.16510
 
-#: Valid output modes understood by the serializer.
-_VALID_OUTPUT_MODES = ("minimal", "standard", "extended")
-
 
 class Module:
     """Detector optical module."""

@@ -8,7 +8,7 @@ from prometheus.photon_propagation.hit import Hit
 from .accumulate_hits import accumulate_hits
 
 #: Output modes understood by this module, in order of increasing verbosity.
-_VALID_MODES = ("minimal", "standard", "extended")
+_VALID_MODES = ("default", "photon", "full")
 
 
 def _hit_cartesian(hit: Hit, module):
@@ -47,7 +47,7 @@ def _hit_cartesian(hit: Hit, module):
 def serialize_particles_to_awkward(
     det: Detector,
     injection: Injection,
-    output_mode: str = "minimal",
+    output_mode: str = "default",
 ):
     """Serialize hit information from all injection events into an ``awkward.Array``.
 
@@ -60,15 +60,15 @@ def serialize_particles_to_awkward(
     output_mode : str, optional
         Controls which hit fields are written to the output array:
 
-        ``"minimal"``
+        ``"default"``
             ``sensor_pos_{x,y,z}``, ``string_id``, ``sensor_id``, ``t``,
-            ``id_idx``.  This is the default and matches the previous behaviour.
-        ``"standard"``
-            Everything in ``"minimal"`` plus ``wavelength``,
+            ``id_idx``, and ``pmt_id`` if any module in the detector has a type.
+        ``"photon"``
+            Everything in ``"default"`` plus ``wavelength``,
             ``photon_zenith``, ``photon_azimuth``, ``om_zenith``,
-            ``om_azimuth``, and ``pmt_id``.
-        ``"extended"``
-            Everything in ``"standard"`` plus ``hit_x``, ``hit_y``, ``hit_z``
+            ``om_azimuth``, and ``pmt_id`` (``None`` for detectors without types).
+        ``"full"``
+            Everything in ``"photon"`` plus ``hit_x``, ``hit_y``, ``hit_z``
             (Cartesian impact point in the module-centred frame, metres).
 
     Returns
@@ -109,20 +109,23 @@ def serialize_particles_to_awkward(
         ("id_idx", lambda x: [[idx for _, idx in ev] for ev in x]),
     ]
 
-    if output_mode in ("standard", "extended"):
+    photon_fields = output_mode in ("photon", "full")
+    if photon_fields:
         hit_functions += [
             ("wavelength", lambda x: [[h.wavelength for h, _ in ev] for ev in x]),
             ("photon_zenith", lambda x: [[h.photon_zenith for h, _ in ev] for ev in x]),
             ("photon_azimuth", lambda x: [[h.photon_azimuth for h, _ in ev] for ev in x]),
             ("om_zenith", lambda x: [[h.om_zenith for h, _ in ev] for ev in x]),
             ("om_azimuth", lambda x: [[h.om_azimuth for h, _ in ev] for ev in x]),
-            ("pmt_id", lambda x: [[h.pmt_id for h, _ in ev] for ev in x]),
         ]
+    # Without the PMT, hits on multi-PMT modules cannot be told from others.
+    if photon_fields or det.needs_nextgen():
+        hit_functions.append(("pmt_id", lambda x: [[h.pmt_id for h, _ in ev] for ev in x]))
 
     for field, fxn in hit_functions:
         outdict[field] = fxn(all_hits)
 
-    if output_mode == "extended":
+    if output_mode == "full":
         hit_x_list, hit_y_list, hit_z_list = [], [], []
         for event_hits in all_hits:
             xs, ys, zs = [], [], []

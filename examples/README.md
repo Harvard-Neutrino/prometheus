@@ -80,7 +80,7 @@ ppc.paths.ppc_exe = "/path/to/icecube-ppc/gpu/ppc"
 ppc.paths.ppctables = "/path/to/ice/tables"
 ppc.paths.om_tables = "resources/optical_modules/lom16"
 ppc.simulation.ppc_version = "official"
-ppc.simulation.output_mode = "extended"
+ppc.simulation.output_mode = "full"
 Prometheus(config, detector=Detector(modules, Medium.ICE)).sim()
 ```
 
@@ -93,7 +93,7 @@ Prometheus(config).sim()
 
 The other settings are the same. `resources/README.md` describes the format.
 
-Olympus does not support module types and raises an error for a detector that has them. `pmts/01_photon_to_pulses.py` and `pmts/03_mdom_view.py` take the geometry file with `--geo` and use the PMTs stored by PPC (`output_mode` `standard` or `extended`). No efficiency is applied to these hits. The electronics (time spread, dark noise, digitisation) are those of the mDOM for every module type.
+Olympus does not support module types and raises an error for a detector that has them. `pmts/01_photon_to_pulses.py` and `pmts/03_mdom_view.py` take the geometry file with `--geo` and use the PMTs from PPC, which are stored in every `output_mode`. No efficiency is applied to these hits. The electronics (time spread, dark noise, digitisation) are those of the mDOM for every module type.
 
 #### LOM example
 
@@ -162,4 +162,4 @@ Key topics covered in the notebook:
 - **PMT directions:** arbitrary `(zenith_deg, azimuth_deg)` per PMT via `pmt_dirs`
 - **Angular acceptance:** the `beta` parameter written to `om.conf`
 - **Mixed detectors:** legacy (`module_type=-1`) and next-gen modules in the same run
-- **Hit serialization:** `minimal`, `standard`, and `extended` output modes, including per-PMT `pmt_id` and Cartesian hit position (`hit_x/y/z`)
+- **Hit serialization:** `default`, `photon`, and `full` output modes, including per-PMT `pmt_id` and Cartesian hit position (`hit_x/y/z`)

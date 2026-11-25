@@ -119,7 +119,7 @@ def _group_by_pmt(key: tuple, times: list, pmt_ids: list, detector: Detector | N
             if detector[key].module_type != -1:
                 raise ValueError(
                     f"Module {key} has type {detector[key].module_type}, but its hits have no PMT "
-                    "IDs. Simulate with the official PPC and output_mode 'standard' or 'extended'."
+                    "IDs. Simulate with the official PPC, which stores them."
                 )
         return None
     if any(missing):

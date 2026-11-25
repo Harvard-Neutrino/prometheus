@@ -107,14 +107,14 @@ class TestOutputModeValidation:
 
 
 # ---------------------------------------------------------------------------
-# Minimal mode
+# Default mode
 # ---------------------------------------------------------------------------
 
 
-class TestMinimalMode:
+class TestDefaultMode:
     def _get(self):
         det, inj = _simple_setup()
-        return serialize_particles_to_awkward(det, inj, output_mode="minimal")
+        return serialize_particles_to_awkward(det, inj, output_mode="default")
 
     def test_has_sensor_pos_x(self):
         assert "sensor_pos_x" in self._get().fields
@@ -137,6 +137,12 @@ class TestMinimalMode:
     def test_no_pmt_id(self):
         assert "pmt_id" not in self._get().fields
 
+    def test_pmt_id_if_the_detector_has_types(self):
+        det, inj = _simple_setup(module_type=5, pmt_id=3)
+        result = serialize_particles_to_awkward(det, inj)
+        assert result["pmt_id"].to_list() == [[3]]
+        assert "wavelength" not in result.fields
+
     def test_no_hit_xyz(self):
         result = self._get()
         assert "hit_x" not in result.fields
@@ -145,21 +151,21 @@ class TestMinimalMode:
 
     def test_time_value_correct(self):
         det, inj = _simple_setup(time=999.9)
-        result = serialize_particles_to_awkward(det, inj, output_mode="minimal")
+        result = serialize_particles_to_awkward(det, inj, output_mode="default")
         import awkward as ak
 
         assert ak.to_list(result["t"])[0][0] == pytest.approx(999.9)
 
 
 # ---------------------------------------------------------------------------
-# Standard mode
+# Photon mode
 # ---------------------------------------------------------------------------
 
 
-class TestStandardMode:
+class TestPhotonMode:
     def _get(self, **kwargs):
         det, inj = _simple_setup(**kwargs)
-        return serialize_particles_to_awkward(det, inj, output_mode="standard")
+        return serialize_particles_to_awkward(det, inj, output_mode="photon")
 
     def test_has_wavelength(self):
         assert "wavelength" in self._get().fields
@@ -203,14 +209,14 @@ class TestStandardMode:
 
 
 # ---------------------------------------------------------------------------
-# Extended mode
+# Full mode
 # ---------------------------------------------------------------------------
 
 
-class TestExtendedMode:
+class TestFullMode:
     def _get(self, Rr=0.16510, Rz=0.16510, **kwargs):
         det, inj = _simple_setup(Rr=Rr, Rz=Rz, **kwargs)
-        return serialize_particles_to_awkward(det, inj, output_mode="extended")
+        return serialize_particles_to_awkward(det, inj, output_mode="full")
 
     def test_has_hit_x(self):
         assert "hit_x" in self._get().fields
@@ -268,7 +274,7 @@ class TestExtendedMode:
         import awkward as ak
 
         det, inj = _simple_setup(om_zenith=None, om_azimuth=None)
-        result = serialize_particles_to_awkward(det, inj, output_mode="extended")
+        result = serialize_particles_to_awkward(det, inj, output_mode="full")
         hx = ak.to_list(result["hit_x"])[0][0]
         assert hx is None
 
@@ -284,7 +290,7 @@ class TestNoHits:
         det = _FakeDetector([mod])
         particle = _FakeParticle([])
         injection = _FakeInjection([_FakeInjectionEvent([particle])])
-        result = serialize_particles_to_awkward(det, injection, output_mode="minimal")
+        result = serialize_particles_to_awkward(det, injection, output_mode="default")
         assert result is None
 
 

@@ -144,7 +144,7 @@ def build_event(row, number, modules, n_pmts):
     if i is None or not photons or not photons["t"]:
         return None
     if "pmt_id" not in photons:
-        raise SystemExit("The parquet file has no pmt_id; use output_mode 'standard'")
+        raise SystemExit("The parquet file has no pmt_id; were the modules multi-PMT?")
     index = {(m["string"], m["om"]): k for k, m in enumerate(modules)}
     hits = module_hits(index, photons)
     if max(photons["pmt_id"]) >= n_pmts:

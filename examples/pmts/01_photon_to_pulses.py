@@ -12,9 +12,9 @@ response model:
   3. Dark noise injection (thermal + correlated radioactive bursts)
   4. SPE-template convolution and FADC digitisation (3.3 ns bins)
 
-Photons with PMT IDs, from PPC with multi-PMT modules stored with ``output_mode``
-``standard`` or ``extended``, skip step 1 and keep their PMT. Pass the geometry
-file with ``--geo``. The electronics in steps 2 to 4 stay those of the mDOM.
+Photons with PMT IDs, from PPC with multi-PMT modules, skip step 1 and keep
+their PMT. Pass the geometry file with ``--geo``. The electronics in steps 2 to 4
+stay those of the mDOM.
 
 Output ``output/11_pulses.parquet`` has one row per event, with per-module
 fields ``string_id``, ``sensor_id``, ``n_pe``, ``fadc_t`` and ``fadc_q``.

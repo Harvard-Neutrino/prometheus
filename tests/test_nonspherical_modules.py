@@ -202,7 +202,7 @@ class TestPMTIndexParsing:
         ids = {h.pmt_id for h in hits}
         assert ids == {0, 1}
 
-    def test_pmt_id_in_standard_output_mode(self, tmp_path):
+    def test_pmt_id_in_photon_output_mode(self, tmp_path):
         import awkward as ak
 
         class _FakeMod:
@@ -231,7 +231,7 @@ class TestPMTIndexParsing:
             def __iter__(self):
                 return iter([_FakeEv()])
 
-        result = serialize_particles_to_awkward(_FakeDet(), _FakeInj(), output_mode="standard")
+        result = serialize_particles_to_awkward(_FakeDet(), _FakeInj(), output_mode="photon")
         pmt_ids = ak.to_list(result["pmt_id"])[0]
         assert set(pmt_ids) == {0, 1}
 
@@ -350,7 +350,7 @@ class TestPPCNonSphericalIntegration:
         pmt_ids = {h.pmt_id for h in hits}
         assert pmt_ids.issubset({0, 1})
 
-    def test_extended_output_round_trips_to_parquet(self, tmp_path):
+    def test_full_output_round_trips_to_parquet(self, tmp_path):
         import awkward as ak
 
         exe, tables = _require_ppc()
@@ -379,7 +379,7 @@ class TestPPCNonSphericalIntegration:
             def __iter__(self):
                 return iter(self._ev)
 
-        result = serialize_particles_to_awkward(det, _Inj(hits), output_mode="extended")
+        result = serialize_particles_to_awkward(det, _Inj(hits), output_mode="full")
         assert result is not None
 
         parquet_path = str(tmp_path / "out.parquet")

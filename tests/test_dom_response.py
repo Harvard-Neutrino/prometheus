@@ -196,7 +196,7 @@ class TestKnownPmts:
             self._run(self._photons([0, 2]), self._detector())
 
     def test_ids_not_stored(self):
-        with pytest.raises(ValueError, match="output_mode"):
+        with pytest.raises(ValueError, match="has type 5"):
             self._run(self._photons([None, None]), self._detector())
 
     def test_ids_partly_stored(self):

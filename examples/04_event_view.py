@@ -19,8 +19,8 @@ With ``--om-conf`` and ``--om-type`` the hit OMs are drawn as enlarged module
 shapes, and a second row shows one module from the side the light comes from
 and from the opposite side.  Each PMT is a disc colored by its number of
 photons; the arrow is the mean photon travel direction.  This needs ``pmt_id``
-and photon directions in the parquet file (``output_mode`` "standard" or
-"extended", or ``05_lom_ppc.py --out``).
+and photon directions in the parquet file (``output_mode`` "photon" or
+"full", or ``05_lom_ppc.py --out``).
 
 The module is drawn either as the pressure vessel, approximated by a capsule
 with the ``Rr`` and ``Rz`` of ``om.conf``, or as the surface PPC uses (a
@@ -297,7 +297,7 @@ def select_module(photons: dict, requested) -> tuple:
 def pmt_counts(photons: dict, mask: np.ndarray, n_pmts: int) -> np.ndarray:
     """Return the number of photons on each PMT of the masked module."""
     if "pmt_id" not in photons or photons["pmt_id"] is None:
-        raise SystemExit("The parquet file has no pmt_id; use output_mode 'standard'")
+        raise SystemExit("The parquet file has no pmt_id; were the modules multi-PMT?")
     ids = np.asarray(photons["pmt_id"], dtype=float)[mask]
     if np.isnan(ids).any():
         raise SystemExit("Some photons have no PMT; was PPC run in multi-PMT mode?")
@@ -309,6 +309,8 @@ def pmt_counts(photons: dict, mask: np.ndarray, n_pmts: int) -> np.ndarray:
 
 def mean_photon_direction(photons: dict, mask: np.ndarray) -> np.ndarray:
     """Return the unit mean travel direction of the masked photons."""
+    if photons.get("photon_zenith") is None:
+        raise SystemExit("The parquet file has no photon directions; use output_mode 'photon'")
     zenith = np.asarray(photons["photon_zenith"], dtype=float)[mask]
     azimuth = np.asarray(photons["photon_azimuth"], dtype=float)[mask]
     mean = unit_vector(zenith, azimuth).mean(axis=0)

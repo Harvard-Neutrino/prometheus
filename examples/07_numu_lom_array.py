@@ -147,7 +147,7 @@ def main():
         ppc.paths.ppctables = str(tables)
         ppc.paths.om_tables = str(LOM16_DIR)
         ppc.simulation.ppc_version = "official"
-        ppc.simulation.output_mode = "extended"
+        ppc.simulation.output_mode = "full"
         Prometheus(config, detector=detector).sim()
 
 

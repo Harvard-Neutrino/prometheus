@@ -643,13 +643,13 @@ class PPCSimConfig(ConfigBase):
 
     device: int = 0
     supress_output: bool = True
-    output_mode: str = "minimal"  # "minimal", "standard", or "extended"
+    output_mode: str = "default"  # "default", "photon", or "full"
     # Which PPC ppc_exe is: "bundled" (PPC or PPC_CUDA) or "official" (icecube/ppc).
     # They read track angles and write hit angles differently.
     ppc_version: str = "bundled"
 
     def __post_init__(self):
-        _valid = ("minimal", "standard", "extended")
+        _valid = ("default", "photon", "full")
         if self.output_mode not in _valid:
             raise ValueError(f"output_mode must be one of {_valid!r}, got {self.output_mode!r}")
         _versions = ("bundled", "official")

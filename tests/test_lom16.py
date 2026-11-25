@@ -144,7 +144,7 @@ def test_full_chain(tmp_path, from_geo):
     ppc.paths.ppctables = str(ice)
     ppc.paths.om_tables = str(_LOM16)
     ppc.simulation.ppc_version = "official"
-    ppc.simulation.output_mode = "extended"
+    ppc.simulation.output_mode = "full"
     if from_geo:
         # Through the config, as a user without Python code would.
         _detector().to_geo(str(tmp_path / "lom16.geo"))
